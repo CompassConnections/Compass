@@ -2113,6 +2113,8 @@ export type Database = {
         Args: {only_vote_id?: number; order_by?: string}
         Returns: {
           comment_count: number
+          top_against: Json
+          top_for: Json
           created_time: string
           creator_id: string
           description: Json

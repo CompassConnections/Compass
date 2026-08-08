@@ -21,7 +21,7 @@ import {useGetter} from 'web/hooks/use-getter'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
-import {getTopArgumentsForVotes, getVotes} from 'web/lib/supabase/votes'
+import {getVotes} from 'web/lib/supabase/votes'
 
 import {ShowMore} from '../widgets/show-more'
 
@@ -31,22 +31,6 @@ export function VoteComponent() {
   const [orderBy, setOrderBy] = useState<OrderBy>('recent')
 
   const {data: votes, refresh: refreshVotes} = useGetter('votes', {orderBy}, getVotes)
-
-  // Keyed on the ids actually on screen so re-sorting reuses the cached result instead of refetching
-  // the same comments in a different order.
-  const voteIdsWithComments = useMemo(
-    () =>
-      (votes ?? [])
-        .filter((v: Vote) => v.comment_count > 0)
-        .map((v: Vote) => v.id)
-        .sort((a: number, b: number) => a - b),
-    [votes],
-  )
-  const {data: topArguments} = useGetter(
-    'vote-top-arguments',
-    {voteIds: voteIdsWithComments},
-    getTopArgumentsForVotes,
-  )
 
   const [title, setTitle] = useState<string>('')
   const [editor, setEditor] = useState<any>(null)
@@ -223,14 +207,7 @@ export function VoteComponent() {
       {filteredVotes && filteredVotes.length > 0 ? (
         <Col className={'mt-6'}>
           {filteredVotes.map((vote: Vote) => {
-            return (
-              <VoteItem
-                key={vote.id}
-                vote={vote}
-                topArguments={topArguments?.[vote.id]}
-                onVoted={refreshVotes}
-              />
-            )
+            return <VoteItem key={vote.id} vote={vote} onVoted={refreshVotes} />
           })}
         </Col>
       ) : filteredVotes && filteredVotes.length === 0 ? (

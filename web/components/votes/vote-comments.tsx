@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import {MAX_VOTE_COMMENT_LENGTH, ReplyToUserInfo, type VoteComment} from 'common/comment'
 import {buildArray} from 'common/util/array'
 import {Stance, STANCE_CHOICES, STANCES} from 'common/votes/constants'
-import {buildThreads, CommentThread, pickHighlightedArguments} from 'common/votes/discussion'
+import {buildThreads, CommentThread} from 'common/votes/discussion'
 import {countBy} from 'lodash'
 import {memo, ReactNode, useEffect, useMemo, useRef, useState} from 'react'
 import {toast} from 'react-hot-toast'
@@ -55,9 +55,17 @@ export function VoteCommentSection(props: {
   choicesByUserId: Record<string, number>
   /** False once the proposal is settled: the thread stays readable but stops accepting new comments. */
   canComment: boolean
+  /**
+   * Ids of the comments to lift to the top, ranked by `get_votes_with_results`. Passed in rather
+   * than computed here so the proposal page and the proposal list highlight the same two comments —
+   * there is one ranking, and it lives in SQL.
+   */
+  highlightedIds?: string[]
+  /** Refetch the thread after a post, so showing the new comment never depends on the websocket. */
+  onPosted?: () => void
   idInUrl?: string
 }) {
-  const {voteId, comments, choicesByUserId, canComment, idInUrl} = props
+  const {voteId, comments, choicesByUserId, canComment, highlightedIds, onPosted, idInUrl} = props
   const t = useT()
   const user = useUser()
   const [filter, setFilter] = useState<StanceFilter>('all')
@@ -77,16 +85,19 @@ export function VoteCommentSection(props: {
   // stops that from stranding the reader on an empty list with no visibly-selected filter.
   const activeFilter = filter !== 'all' && !counts[filter] ? 'all' : filter
 
-  // The default view deliberately isn't chronological — see pickHighlightedArguments.
-  const highlighted = useMemo(
-    () => (activeFilter === 'all' ? pickHighlightedArguments(threads) : []),
-    [activeFilter, threads],
-  )
+  // The default view deliberately isn't chronological: a reader who only skims the top should still
+  // see the case from each side, rather than whatever happened to be posted first.
+  const highlighted = useMemo(() => {
+    if (activeFilter !== 'all' || !highlightedIds?.length) return []
+    // Filtered against the live list so a comment deleted since the proposal was fetched can't be
+    // rendered from a stale id.
+    return highlightedIds.filter((id) => threadsById.has(id))
+  }, [activeFilter, highlightedIds, threadsById])
 
-  const highlightedIds = new Set(highlighted.map((c) => c.id))
+  const highlightedSet = new Set(highlighted)
   const rest =
     activeFilter === 'all'
-      ? threads.filter((th) => !highlightedIds.has(th.parent.id))
+      ? threads.filter((th) => !highlightedSet.has(th.parent.id))
       : threads.filter((th) => th.parent.stance === activeFilter)
 
   // Only offer a filter for a stance that some thread actually has — same rule as the status filter
@@ -139,7 +150,7 @@ export function VoteCommentSection(props: {
         >
           <Col className="gap-3">
             <DiscussionGuidance />
-            <VoteCommentInput voteId={voteId} askForStance />
+            <VoteCommentInput voteId={voteId} askForStance onPosted={onPosted} />
           </Col>
         </ShowMore>
       ) : (
@@ -171,13 +182,14 @@ export function VoteCommentSection(props: {
                 {t('vote.comments.highlighted', 'Highlighted arguments')}
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
-                {highlighted.map((comment) => (
+                {highlighted.map((id) => (
                   <VoteCommentThread
-                    key={comment.id}
+                    key={id}
                     voteId={voteId}
-                    thread={threadsById.get(comment.id)!}
+                    thread={threadsById.get(id)!}
                     choicesByUserId={choicesByUserId}
                     canComment={canComment}
+                    onPosted={onPosted}
                     idInUrl={idInUrl}
                     className="rounded-lg bg-canvas-50 p-3 ring-1 ring-canvas-200/70"
                   />
@@ -197,6 +209,7 @@ export function VoteCommentSection(props: {
               thread={thread}
               choicesByUserId={choicesByUserId}
               canComment={canComment}
+              onPosted={onPosted}
               idInUrl={idInUrl}
             />
           ))}
@@ -258,10 +271,11 @@ function VoteCommentThread(props: {
   thread: CommentThread
   choicesByUserId: Record<string, number>
   canComment: boolean
+  onPosted?: () => void
   idInUrl?: string
   className?: string
 }) {
-  const {voteId, thread, choicesByUserId, canComment, idInUrl, className} = props
+  const {voteId, thread, choicesByUserId, canComment, onPosted, idInUrl, className} = props
   const {parent: parentComment, replies} = thread
   const [replyToUserInfo, setReplyToUserInfo] = useState<ReplyToUserInfo>()
 
@@ -313,6 +327,7 @@ function VoteCommentThread(props: {
             clearReply={clearReply}
             parentStance={parentComment.stance}
             askForStance
+            onPosted={onPosted}
             className="w-full min-w-0 grow"
           />
         </div>
@@ -571,6 +586,7 @@ export function VoteCommentInput(props: {
   askForStance?: boolean
   /** Stance of the comment being replied to, used to pick a sensible default for this one. */
   parentStance?: Stance
+  onPosted?: () => void
   className?: string
 }) {
   const {
@@ -580,6 +596,7 @@ export function VoteCommentInput(props: {
     clearReply,
     askForStance,
     parentStance,
+    onPosted,
     className,
   } = props
   const t = useT()
@@ -617,6 +634,7 @@ export function VoteCommentInput(props: {
     })
     setStance(undefined)
     clearReply?.()
+    onPosted?.()
     track('vote comment', {voteId, stance})
   })
 

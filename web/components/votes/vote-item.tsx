@@ -1,6 +1,7 @@
 import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
 import {type VoteComment} from 'common/comment'
+import {convertVoteComment} from 'common/supabase/comment'
 import {Row as rowFor} from 'common/supabase/utils'
 import {richTextToString} from 'common/util/parse'
 import {STANCE_CHOICES, STATUS_CHOICES} from 'common/votes/constants'
@@ -13,7 +14,6 @@ import {Content} from 'web/components/widgets/editor'
 import {eyebrow, surface} from 'web/components/widgets/surface'
 import {useUserInStore} from 'web/hooks/use-user-supabase'
 import {useT} from 'web/lib/locale'
-import {type TopArguments} from 'web/lib/supabase/votes'
 
 export type Vote = rowFor<'votes'> & {
   votes_for: number
@@ -22,6 +22,11 @@ export type Vote = rowFor<'votes'> & {
   priority: number
   comment_count: number
   status?: string
+  // The highlighted argument on each side, ranked by `get_votes_with_results` and returned as the
+  // raw vote_comments row (or null). Ranking lives in SQL so the list and the proposal page agree on
+  // which two comments those are without the list downloading every comment to work it out.
+  top_for: rowFor<'vote_comments'> | null
+  top_against: rowFor<'vote_comments'> | null
 }
 
 // Status pill colors. Grouped by outcome rather than by exact status so a reader can tell "this is
@@ -112,15 +117,11 @@ function ArgumentPreview(props: {voteId: number; comment: VoteComment; stance: '
   )
 }
 
-export function VoteItem(props: {
-  vote: Vote
-  topArguments?: TopArguments
-  onVoted?: () => void | Promise<void>
-}) {
-  const {vote, topArguments, onVoted} = props
+export function VoteItem(props: {vote: Vote; onVoted?: () => void | Promise<void>}) {
+  const {vote, onVoted} = props
   const t = useT()
-  const topFor = topArguments?.for
-  const topAgainst = topArguments?.against
+  const topFor = vote.top_for ? convertVoteComment(vote.top_for) : undefined
+  const topAgainst = vote.top_against ? convertVoteComment(vote.top_against) : undefined
   return (
     <Col
       className={clsx(

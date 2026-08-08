@@ -1,6 +1,6 @@
 import {type VoteComment} from 'common/comment'
 import {type Stance} from 'common/votes/constants'
-import {buildThreads, pickHighlightedArguments} from 'common/votes/discussion'
+import {buildThreads} from 'common/votes/discussion'
 
 const comment = (
   id: string,
@@ -40,46 +40,5 @@ describe('buildThreads', () => {
     const threads = buildThreads([comment('2', {replyTo: '1'})])
 
     expect(threads.map((t) => t.parent.id)).toEqual(['2'])
-  })
-})
-
-describe('pickHighlightedArguments', () => {
-  it('surfaces one argument from each side', () => {
-    const threads = buildThreads([
-      comment('1', {stance: 'for', createdTime: 10}),
-      comment('2', {stance: 'against', createdTime: 20}),
-      comment('3', {stance: 'for', createdTime: 30}),
-    ])
-
-    expect(pickHighlightedArguments(threads).map((c) => c.id)).toEqual(['1', '2'])
-  })
-
-  it('prefers the most-replied-to argument over the oldest', () => {
-    const threads = buildThreads([
-      comment('1', {stance: 'against', createdTime: 10}),
-      comment('2', {stance: 'against', createdTime: 20}),
-      comment('3', {replyTo: '2', createdTime: 30}),
-    ])
-
-    expect(pickHighlightedArguments(threads).map((c) => c.id)).toEqual(['2'])
-  })
-
-  it('ignores neutral, question and answer comments', () => {
-    const threads = buildThreads([
-      comment('1', {createdTime: 10}),
-      comment('2', {stance: 'question', createdTime: 20}),
-      comment('3', {stance: 'answer', createdTime: 30}),
-    ])
-
-    expect(pickHighlightedArguments(threads)).toEqual([])
-  })
-
-  it('does not let a both-ways comment stand in for a one-sided argument', () => {
-    const threads = buildThreads([
-      comment('1', {stance: 'both', createdTime: 10}),
-      comment('2', {stance: 'for', createdTime: 20}),
-    ])
-
-    expect(pickHighlightedArguments(threads).map((c) => c.id)).toEqual(['2'])
   })
 })

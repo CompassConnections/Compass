@@ -1,8 +1,6 @@
 import {type VoteComment} from 'common/comment'
 import {groupBy, orderBy} from 'lodash'
 
-import {OPPOSING_STANCES, type Stance} from './constants'
-
 export type CommentThread = {
   parent: VoteComment
   replies: VoteComment[]
@@ -26,25 +24,4 @@ export const buildThreads = (comments: VoteComment[]): CommentThread[] => {
     parent,
     replies: orderBy(replies[parent.id] ?? [], 'createdTime', 'asc'),
   }))
-}
-
-/**
- * One argument from each side to lift to the top of the page.
- *
- * Picked by reply count, tie-broken by age — engagement, not quality. Surfaced as "highlighted"
- * rather than "strongest" for exactly that reason: drawing replies means a comment got attention,
- * which is not the same as being right, and the label shouldn't claim more than the ranking earns.
- * The alternative — plain chronological order — reliably buries the counter-argument under whoever
- * posted first, which is the failure this feature exists to fix. If per-comment voting ever lands,
- * that becomes the better signal.
- */
-export const pickHighlightedArguments = (threads: CommentThread[]): VoteComment[] => {
-  const best = (stance: Stance) =>
-    orderBy(
-      threads.filter((t) => t.parent.stance === stance),
-      [(t) => t.replies.length, (t) => t.parent.createdTime],
-      ['desc', 'asc'],
-    )[0]?.parent
-
-  return OPPOSING_STANCES.map(best).filter((c): c is VoteComment => !!c)
 }

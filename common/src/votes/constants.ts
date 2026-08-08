@@ -22,11 +22,6 @@ export const STANCE_CHOICES: Record<Stance, string> = {
   answer: 'Answer',
 }
 
-// Only these two get pulled out into the highlighted pair at the top of a thread. 'both' is
-// deliberately excluded: a comment that argues each way can't stand in for the case on either side,
-// and promoting it would crowd out the one-sided argument a reader actually needs.
-export const OPPOSING_STANCES = ['for', 'against'] as const satisfies readonly Stance[]
-
 // Ordered roughly as a proposal moves through its life, because this doubles as the option order in
 // the admin status picker. Declared as a tuple so the API schema can validate against it — `status`
 // is a free-text column in Postgres, so this list is the only thing standing between a typo and a

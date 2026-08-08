@@ -69,4 +69,5 @@ BEGIN;
 \i backend/supabase/migrations/20260806_add_feed_visibility_to_profiles.sql
 \i backend/supabase/migrations/20260808_add_vote_comments.sql
 \i backend/supabase/migrations/20260808_extend_vote_comment_stances.sql
+\i backend/supabase/migrations/20260808_vote_top_arguments.sql
 COMMIT;

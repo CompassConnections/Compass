@@ -1,5 +1,6 @@
 import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
+import {filterDefined} from 'common/util/array'
 import {richTextToString} from 'common/util/parse'
 import {isCommentable, STATUS_CHOICES, VOTE_STATUSES, type VoteStatus} from 'common/votes/constants'
 import {ArrowLeft} from 'lucide-react'
@@ -46,7 +47,10 @@ export default function VoteDetailPage() {
     validId ? {voteId: voteId!} : undefined,
     getVoteResultsByUser,
   )
-  const comments = useLiveCommentsOnVote(validId ? voteId : undefined)
+  const {comments, refresh: refreshComments} = useLiveCommentsOnVote(
+    validId ? voteId : undefined,
+    refreshVote,
+  )
 
   // Anchor from a notification link (/vote/12#comment-34) — read once on mount rather than watched,
   // since the thread scrolls itself to the target and shouldn't yank the page afterwards.
@@ -82,6 +86,18 @@ export default function VoteDetailPage() {
 
   const typedVote = vote as Vote
   const canComment = isCommentable(typedVote.status)
+  // Refetch both the thread and the proposal: the comment list is what renders, and the proposal row
+  // carries the SQL-ranked highlighted pair, which a new argument can change.
+  const onPosted = () => {
+    refreshComments()
+    refreshVote()
+  }
+
+  // Same two ids the proposal list puts on this proposal's card.
+  const highlightedIds = filterDefined([
+    typedVote.top_for?.id?.toString(),
+    typedVote.top_against?.id?.toString(),
+  ])
 
   return (
     <PageBase trackPageView={'vote detail page'} className={'relative p-2 sm:pt-0'}>
@@ -155,6 +171,8 @@ export default function VoteDetailPage() {
           comments={comments}
           choicesByUserId={choicesByUserId ?? {}}
           canComment={canComment}
+          highlightedIds={highlightedIds}
+          onPosted={onPosted}
           idInUrl={idInUrl}
         />
       </Col>

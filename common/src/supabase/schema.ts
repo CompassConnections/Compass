@@ -758,6 +758,38 @@ export type Database = {
           },
         ]
       }
+      outreach_sends: {
+        Row: {
+          context: Json
+          id: number
+          kind: string
+          sent_at: string
+          user_id: string
+        }
+        Insert: {
+          context?: Json
+          id?: never
+          kind: string
+          sent_at?: string
+          user_id: string
+        }
+        Update: {
+          context?: Json
+          id?: never
+          kind?: string
+          sent_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'outreach_sends_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       private_user_message_channel_members: {
         Row: {
           channel_id: number
@@ -1577,6 +1609,113 @@ export type Database = {
           },
         ]
       }
+      search_alert_sends: {
+        Row: {
+          created_time: string
+          creator_id: string
+          id: number
+          matched_user_ids: string[]
+          search_ids: number[]
+        }
+        Insert: {
+          created_time?: string
+          creator_id: string
+          id?: never
+          matched_user_ids: string[]
+          search_ids: number[]
+        }
+        Update: {
+          created_time?: string
+          creator_id?: string
+          id?: never
+          matched_user_ids?: string[]
+          search_ids?: number[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'search_alert_sends_creator_id_fkey'
+            columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      testimonials: {
+        Row: {
+          author_avatar_url: string | null
+          author_id: string | null
+          author_name: string
+          author_username: string | null
+          body: string
+          created_time: string
+          featured_rank: number | null
+          headline: string | null
+          id: number
+          moderated_time: string | null
+          moderator_id: string | null
+          moderator_note: string | null
+          rating: number | null
+          show_author: boolean
+          source: string
+          status: string
+          updated_time: string
+        }
+        Insert: {
+          author_avatar_url?: string | null
+          author_id?: string | null
+          author_name: string
+          author_username?: string | null
+          body: string
+          created_time?: string
+          featured_rank?: number | null
+          headline?: string | null
+          id?: never
+          moderated_time?: string | null
+          moderator_id?: string | null
+          moderator_note?: string | null
+          rating?: number | null
+          show_author?: boolean
+          source?: string
+          status?: string
+          updated_time?: string
+        }
+        Update: {
+          author_avatar_url?: string | null
+          author_id?: string | null
+          author_name?: string
+          author_username?: string | null
+          body?: string
+          created_time?: string
+          featured_rank?: number | null
+          headline?: string | null
+          id?: never
+          moderated_time?: string | null
+          moderator_id?: string | null
+          moderator_note?: string | null
+          rating?: number | null
+          show_author?: boolean
+          source?: string
+          status?: string
+          updated_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'testimonials_author_id_fkey'
+            columns: ['author_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'testimonials_moderator_id_fkey'
+            columns: ['moderator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       user_activity: {
         Row: {
           last_online_time: string
@@ -2113,8 +2252,6 @@ export type Database = {
         Args: {only_vote_id?: number; order_by?: string}
         Returns: {
           comment_count: number
-          top_against: Json
-          top_for: Json
           created_time: string
           creator_id: string
           description: Json
@@ -2123,6 +2260,8 @@ export type Database = {
           priority: number
           status: string
           title: string
+          top_against: Json
+          top_for: Json
           votes_abstain: number
           votes_against: number
           votes_for: number
@@ -2142,6 +2281,10 @@ export type Database = {
       show_limit: {Args: never; Returns: number}
       show_trgm: {Args: {'': string}; Returns: string[]}
       to_jsonb: {Args: {'': Json}; Returns: Json}
+      top_argument: {
+        Args: {stance_param: string; vote_id_param: number}
+        Returns: Json
+      }
       update_compatibility_prompt_community_importance_score: {
         Args: {p_question_id: number}
         Returns: undefined

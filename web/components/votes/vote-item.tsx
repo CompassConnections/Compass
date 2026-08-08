@@ -1,5 +1,6 @@
 import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
+import {type DisplayUser} from 'common/api/user-types'
 import {type VoteComment} from 'common/comment'
 import {convertVoteComment} from 'common/supabase/comment'
 import {Row as rowFor} from 'common/supabase/utils'
@@ -12,7 +13,6 @@ import {VoteButtons} from 'web/components/votes/vote-buttons'
 import {Avatar} from 'web/components/widgets/avatar'
 import {Content} from 'web/components/widgets/editor'
 import {eyebrow, surface} from 'web/components/widgets/surface'
-import {useUserInStore} from 'web/hooks/use-user-supabase'
 import {useT} from 'web/lib/locale'
 
 export type Vote = rowFor<'votes'> & {
@@ -66,9 +66,12 @@ function StatusPill(props: {status: string}) {
   )
 }
 
-function Creator(props: {creatorId: string}) {
-  const {creatorId} = props
-  const creator = useUserInStore(creatorId)
+// Presentational: the creator is looked up once for the whole list and handed down. It used to call
+// `useUserInStore` per card, and that hook keys its state on the ids it is given, so every card
+// fired its own `get_display_users` with a single id — same request N times over when the same
+// person authored several proposals.
+function Creator(props: {creator: DisplayUser | undefined}) {
+  const {creator} = props
   if (!creator?.username) return null
   return (
     <Link
@@ -117,8 +120,12 @@ function ArgumentPreview(props: {voteId: number; comment: VoteComment; stance: '
   )
 }
 
-export function VoteItem(props: {vote: Vote; onVoted?: () => void | Promise<void>}) {
-  const {vote, onVoted} = props
+export function VoteItem(props: {
+  vote: Vote
+  creator?: DisplayUser
+  onVoted?: () => void | Promise<void>
+}) {
+  const {vote, creator, onVoted} = props
   const t = useT()
   const topFor = vote.top_for ? convertVoteComment(vote.top_for) : undefined
   const topAgainst = vote.top_against ? convertVoteComment(vote.top_against) : undefined
@@ -161,7 +168,7 @@ export function VoteItem(props: {vote: Vote; onVoted?: () => void | Promise<void
 
       <Row className="mt-3 items-center justify-between gap-2 flex-wrap text-sm">
         <Row className="items-center gap-3">
-          {!vote.is_anonymous ? <Creator creatorId={vote.creator_id} /> : <span />}
+          {!vote.is_anonymous ? <Creator creator={creator} /> : <span />}
           <Link
             href={`/vote/${vote.id}`}
             className="text-ink-500 hover:text-primary-700 whitespace-nowrap"

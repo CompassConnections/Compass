@@ -5,6 +5,7 @@ import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {ORDER_BY, ORDER_BY_CHOICES, OrderBy} from 'common/votes/constants'
 import {STATUS_CHOICES} from 'common/votes/constants'
+import {keyBy, uniq} from 'lodash'
 import Link from 'next/link'
 import {useEffect, useMemo, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -19,6 +20,7 @@ import {Input} from 'web/components/widgets/input'
 import {eyebrow, surface} from 'web/components/widgets/surface'
 import {useGetter} from 'web/hooks/use-getter'
 import {useUser} from 'web/hooks/use-user'
+import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {getVotes} from 'web/lib/supabase/votes'
@@ -31,6 +33,16 @@ export function VoteComponent() {
   const [orderBy, setOrderBy] = useState<OrderBy>('recent')
 
   const {data: votes, refresh: refreshVotes} = useGetter('votes', {orderBy}, getVotes)
+
+  // One lookup for every proposal author on the page, rather than one per card. Anonymous proposals
+  // are excluded: their card never renders a creator, so fetching them would leak nothing but would
+  // still cost a row.
+  const creatorIds: string[] = useMemo(() => {
+    const ids = ((votes ?? []) as Vote[]).filter((v) => !v.is_anonymous).map((v) => v.creator_id)
+    return uniq(ids).sort()
+  }, [votes])
+  const creators = useUsersInStore(creatorIds, 'vote-creators')
+  const creatorsById = useMemo(() => keyBy(creators ?? [], 'id'), [creators])
 
   const [title, setTitle] = useState<string>('')
   const [editor, setEditor] = useState<any>(null)
@@ -207,7 +219,14 @@ export function VoteComponent() {
       {filteredVotes && filteredVotes.length > 0 ? (
         <Col className={'mt-6'}>
           {filteredVotes.map((vote: Vote) => {
-            return <VoteItem key={vote.id} vote={vote} onVoted={refreshVotes} />
+            return (
+              <VoteItem
+                key={vote.id}
+                vote={vote}
+                creator={creatorsById[vote.creator_id]}
+                onVoted={refreshVotes}
+              />
+            )
           })}
         </Col>
       ) : filteredVotes && filteredVotes.length === 0 ? (

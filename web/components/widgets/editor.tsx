@@ -24,6 +24,15 @@ import {DEFAULT_PROTOCOL, SyncAutolink} from '../editor/autolink'
 import {EMOJI_ENABLED} from '../editor/emoji/emoji-enabled'
 import {EmojiExtension} from '../editor/emoji/emoji-extension'
 import {FloatingFormatMenu} from '../editor/floating-format-menu'
+import {FootnoteBackLink, FootnoteRef} from '../editor/footnote-link'
+import {
+  buildFootnoteIndex,
+  footnoteDefId,
+  footnoteDefinitionPrefix,
+  FootnoteIndex,
+  footnoteLabelOf,
+  isGoogleCommentAnchor,
+} from '../editor/footnotes'
 import {BasicImage, DisplayImage} from '../editor/image'
 import {nodeViewMiddleware} from '../editor/nodeview-middleware'
 import {limitPastedSlice} from '../editor/paste-limit'
@@ -421,22 +430,32 @@ export function TextEditor(props: {
   )
 }
 
-function RichContent(props: {content: JSONContent; className?: string; size?: 'sm' | 'md' | 'lg'}) {
-  const {className, content, size = 'md'} = props
+function RichContent(props: {
+  content: JSONContent
+  className?: string
+  size?: 'sm' | 'md' | 'lg'
+  footnotes?: boolean
+}) {
+  const {className, content, size = 'md', footnotes} = props
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxUrl, setLightboxUrl] = useState('')
 
   const jsxContent = useMemo(() => {
     try {
-      return renderJSONContent(content, size, (url) => {
-        setLightboxUrl(url)
-        setLightboxOpen(true)
+      return renderJSONContent(content, {
+        size,
+        footnotes: footnotes ? buildFootnoteIndex(content) : undefined,
+        anchored: new Set(),
+        onMediaClick: (url) => {
+          setLightboxUrl(url)
+          setLightboxOpen(true)
+        },
       })
     } catch (e) {
       console.error('Error generating react', e, 'for content', content)
       return ''
     }
-  }, [content, size])
+  }, [content, size, footnotes])
 
   if (!content) return null
 
@@ -457,25 +476,48 @@ function RichContent(props: {content: JSONContent; className?: string; size?: 's
   )
 }
 
-function renderJSONContent(
-  doc: JSONContent,
-  size: 'sm' | 'md' | 'lg',
-  onMediaClick?: (url: string) => void,
-): ReactNode {
-  return recurse(doc, 0, size, onMediaClick)
+type RenderCtx = {
+  size: 'sm' | 'md' | 'lg'
+  onMediaClick?: (url: string) => void
+  /** set only where footnote rendering is enabled and the document actually has footnotes */
+  footnotes?: FootnoteIndex
+  /** label of the footnote definition currently being rendered, if we're inside one */
+  defLabel?: string
+  /** labels whose first in-body reference has already claimed the anchor to scroll back to */
+  anchored: Set<string>
 }
 
-function recurse(
-  node: JSONContent,
-  key: number,
-  size: 'sm' | 'md' | 'lg',
-  onMediaClick?: (url: string) => void,
-): ReactNode {
-  const children = node.content?.map((n, i) => recurse(n, i, size, onMediaClick))
+function renderJSONContent(doc: JSONContent, ctx: RenderCtx): ReactNode {
+  return recurse(doc, 0, ctx)
+}
+
+/**
+ * A top-level node, wrapped in an anchor when it's the start of a footnote definition so the markers in the
+ * body have somewhere to scroll to. Google Docs' own `#cmnt…` names ride along as aliases, which keeps
+ * already-shared links like `/RichardNicholson#cmnt_ref2` pointing at the footnote they meant.
+ */
+function renderTopLevel(node: JSONContent, key: number, ctx: RenderCtx): ReactNode {
+  const label = ctx.footnotes?.definitionAt.get(key)
+  if (!label) return recurse(node, key, ctx)
+
+  const footnote = ctx.footnotes?.byLabel[label]
+  return (
+    <div key={key} id={footnoteDefId(label)} className="scroll-mt-24 rounded">
+      {footnote?.aliases.map((alias) => (
+        <span key={alias} id={alias} className="block scroll-mt-24" />
+      ))}
+      {recurse(node, key, {...ctx, defLabel: label})}
+    </div>
+  )
+}
+
+function recurse(node: JSONContent, key: number, ctx: RenderCtx): ReactNode {
+  // Top-level children are handled separately so footnote definitions can be given a scroll target.
+  if (node.type === 'doc') return <>{node.content?.map((n, i) => renderTopLevel(n, i, ctx))}</>
+
+  const children = node.content?.map((n, i) => recurse(n, i, ctx))
 
   switch (node.type) {
-    case 'doc':
-      return <>{children}</>
     case 'paragraph':
       return <p key={key}>{children}</p>
     case 'heading':
@@ -507,14 +549,14 @@ function recurse(
         <button
           key={key}
           type="button"
-          onClick={() => onMediaClick?.(node.attrs?.src ?? '')}
+          onClick={() => ctx.onMediaClick?.(node.attrs?.src ?? '')}
           className="cursor-pointer"
         >
           <img
             src={node.attrs?.src}
             alt={node.attrs?.alt ?? ''}
             title={node.attrs?.title ?? undefined}
-            className={size === 'sm' ? 'max-h-32' : size === 'md' ? 'max-h-64' : undefined}
+            className={ctx.size === 'sm' ? 'max-h-32' : ctx.size === 'md' ? 'max-h-64' : undefined}
           />
         </button>
       )
@@ -523,8 +565,8 @@ function recurse(
         <VideoThumbnail
           key={key}
           src={node.attrs?.src ?? ''}
-          onClick={() => onMediaClick?.(node.attrs?.src ?? '')}
-          className={size === 'sm' ? 'max-h-32' : size === 'md' ? 'max-h-64' : undefined}
+          onClick={() => ctx.onMediaClick?.(node.attrs?.src ?? '')}
+          className={ctx.size === 'sm' ? 'max-h-32' : ctx.size === 'md' ? 'max-h-64' : undefined}
         />
       )
     case 'table':
@@ -548,10 +590,39 @@ function recurse(
         </td>
       )
     case 'text':
-      return applyMarks(node.text ?? '', node.marks ?? [], key)
+      return renderText(node.text ?? '', node.marks ?? [], key, ctx)
     default:
       return null
   }
+}
+
+/**
+ * A run of text. Footnote markers (`[a]`) are swapped for interactive ones — their own link mark is
+ * dropped, since it points at an anchor that didn't survive the paste.
+ */
+function renderText(text: string, marks: JSONContent[], key: number, ctx: RenderCtx): ReactNode {
+  if (!ctx.footnotes) return applyMarks(text, marks, key)
+
+  // The marker heading a definition, which the paste may have merged into the footnote's own text run.
+  if (ctx.defLabel) {
+    const prefix = footnoteDefinitionPrefix(text, ctx.defLabel)
+    if (prefix)
+      return (
+        <span key={key}>
+          <FootnoteBackLink label={ctx.defLabel} text={prefix} />
+          {applyMarks(text.slice(prefix.length).trimStart(), marks, key)}
+        </span>
+      )
+  }
+
+  const label = footnoteLabelOf(text, ctx.footnotes)
+  if (!label) return applyMarks(text, marks, key)
+
+  const anchor = !ctx.anchored.has(label)
+  ctx.anchored.add(label)
+  return (
+    <FootnoteRef key={key} footnote={ctx.footnotes.byLabel[label]} text={text} anchor={anchor} />
+  )
 }
 
 function applyMarks(text: string, marks: JSONContent[], key: number): ReactNode {
@@ -571,7 +642,13 @@ function applyMarks(text: string, marks: JSONContent[], key: number): ReactNode 
         case 'highlight':
           return <mark>{node}</mark>
         case 'link':
-          return <CustomLink href={mark.attrs?.href}>{node}</CustomLink>
+          // A leftover Google Docs comment anchor points at an id that no paste preserves — render the
+          // text rather than a link that goes nowhere (in a new tab, no less).
+          return isGoogleCommentAnchor(mark.attrs?.href) ? (
+            node
+          ) : (
+            <CustomLink href={mark.attrs?.href}>{node}</CustomLink>
+          )
         default:
           return node
       }
@@ -586,6 +663,8 @@ export function Content(props: {
   /** font/spacing */
   size?: 'sm' | 'md' | 'lg'
   className?: string
+  /** pair up `[a]`-style markers with the footnote block at the bottom (see editor/footnotes.ts) */
+  footnotes?: boolean
 }) {
   const {className, size = 'md', content} = props
   return typeof content === 'string' ? (

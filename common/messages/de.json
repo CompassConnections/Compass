@@ -1,4 +1,6 @@
 {
+  "bio.footnote.back_to": "Zurück zu Fußnote {label} im Text",
+  "bio.footnote.go_to": "Fußnote {label}",
   "404.default_message": "Diese Seite konnte nicht gefunden werden.",
   "404.help_text": "Falls Sie dies nicht erwartet haben, holen Sie sich ",
   "404.title": "404: Hoppla!",

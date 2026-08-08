@@ -36,6 +36,7 @@ export function BioBlock(props: {
             <Content
               className={clsx('w-full', BIO_PARAGRAPH_SPACING)}
               content={profile.bio as JSONContent}
+              footnotes
             />
           </Col>
         )}

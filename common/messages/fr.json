@@ -1,4 +1,6 @@
 {
+  "bio.footnote.back_to": "Retour à la note {label} dans le texte",
+  "bio.footnote.go_to": "Note de bas de page {label}",
   "404.default_message": "Je ne trouve pas cette page.",
   "404.help_text": "Si vous ne vous attendiez pas à cela, essayez de recharger la page dans quelques secondes ou obtenez de l'",
   "404.title": "404 : Oups !",

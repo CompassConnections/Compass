@@ -42,7 +42,7 @@ export default function VoteDetailPage() {
     validId ? {voteId: voteId!} : undefined,
     getVote,
   )
-  const {data: choicesByUserId} = useGetter(
+  const {data: choicesByUserId, refresh: refreshChoices} = useGetter(
     'vote-results',
     validId ? {voteId: voteId!} : undefined,
     getVoteResultsByUser,
@@ -150,7 +150,12 @@ export default function VoteDetailPage() {
                 abstain: typedVote.votes_abstain,
                 against: typedVote.votes_against,
               }}
-              onVoted={refreshVote}
+              onVoted={() => {
+                refreshVote()
+                // The ballots feed the "voted For" badges and the composer's default stance, so a
+                // vote cast on this page has to invalidate them too — not just the tallies.
+                refreshChoices()
+              }}
               disabled={typedVote.status !== 'voting_open'}
             />
             {user && <MuteToggle voteId={typedVote.id} />}

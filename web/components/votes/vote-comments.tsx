@@ -152,7 +152,12 @@ export function VoteCommentSection(props: {
         >
           <Col className="gap-3">
             <DiscussionGuidance />
-            <VoteCommentInput voteId={voteId} askForStance onPosted={onPosted} />
+            <VoteCommentInput
+              voteId={voteId}
+              askForStance
+              userChoice={user ? choicesByUserId[user.id] : undefined}
+              onPosted={onPosted}
+            />
           </Col>
         </ShowMore>
       ) : (
@@ -279,6 +284,7 @@ function VoteCommentThread(props: {
 }) {
   const {voteId, thread, choicesByUserId, canComment, onPosted, idInUrl, className} = props
   const {parent: parentComment, replies} = thread
+  const user = useUser()
   const [replyToUserInfo, setReplyToUserInfo] = useState<ReplyToUserInfo>()
 
   const idInThisThread =
@@ -332,6 +338,7 @@ function VoteCommentThread(props: {
             replyToUserInfo={replyToUserInfo}
             clearReply={clearReply}
             parentStance={parentComment.stance}
+            userChoice={user ? choicesByUserId[user.id] : undefined}
             askForStance
             onPosted={onPosted}
             className="w-full min-w-0 grow"
@@ -749,6 +756,8 @@ export function VoteCommentInput(props: {
   askForStance?: boolean
   /** Stance of the comment being replied to, used to pick a sensible default for this one. */
   parentStance?: Stance
+  /** The viewer's own recorded choice (1 / 0 / -1), used as the other default. */
+  userChoice?: number
   onPosted?: () => void
   className?: string
 }) {
@@ -759,16 +768,33 @@ export function VoteCommentInput(props: {
     clearReply,
     askForStance,
     parentStance,
+    userChoice,
     onPosted,
     className,
   } = props
   const t = useT()
   const user = useUser()
-  // Replying to a question is almost always answering it, so that chip starts selected — still one
-  // click to clear or change, but the common case costs nothing.
-  const [stance, setStance] = useState<Stance | undefined>(
-    parentStance === 'question' ? 'answer' : undefined,
-  )
+  // Two defaults, both still one click to clear or change. Replying to a question is almost always
+  // answering it, so that wins. Otherwise someone who has already voted is almost always writing for
+  // the side they voted — and a stanceless argument is invisible to the highlighted-arguments
+  // ranking, which reads `stance`, not the ballot. Abstain and not-yet-voted leave it blank rather
+  // than guess a side.
+  const defaultStance: Stance | undefined =
+    parentStance === 'question'
+      ? 'answer'
+      : userChoice === 1
+        ? 'for'
+        : userChoice === -1
+          ? 'against'
+          : undefined
+  const [stance, setStance] = useState<Stance | undefined>(defaultStance)
+  // The ballot is fetched with the page, so it can land after this mounts, and it can change while
+  // the composer sits open. Track it until the writer picks a chip themselves — after that the
+  // default never overrides a deliberate choice.
+  const stanceTouched = useRef(false)
+  useEffect(() => {
+    if (!stanceTouched.current) setStance(defaultStance)
+  }, [defaultStance])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const key = `vote-comment ${voteId} ${parentCommentId ?? ''}`
@@ -795,7 +821,8 @@ export function VoteCommentInput(props: {
       replyToCommentId: parentCommentId,
       stance,
     })
-    setStance(undefined)
+    setStance(defaultStance)
+    stanceTouched.current = false
     clearReply?.()
     onPosted?.()
     track('vote comment', {voteId, stance})
@@ -836,7 +863,10 @@ export function VoteCommentInput(props: {
             <button
               key={s}
               type="button"
-              onClick={() => setStance((prev) => (prev === s ? undefined : s))}
+              onClick={() => {
+                stanceTouched.current = true
+                setStance((prev) => (prev === s ? undefined : s))
+              }}
               className={clsx(
                 'rounded-full px-2.5 py-1 text-xs font-semibold transition-opacity',
                 STANCE_COLOR[s],

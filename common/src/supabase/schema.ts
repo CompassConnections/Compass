@@ -1852,10 +1852,40 @@ export type Database = {
         }
         Relationships: []
       }
+      vote_comment_edits: {
+        Row: {
+          comment_id: number
+          content: Json
+          created_time: string
+          id: number
+        }
+        Insert: {
+          comment_id: number
+          content: Json
+          created_time?: string
+          id?: never
+        }
+        Update: {
+          comment_id?: number
+          content?: Json
+          created_time?: string
+          id?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'vote_comment_edits_comment_id_fkey'
+            columns: ['comment_id']
+            isOneToOne: false
+            referencedRelation: 'vote_comments'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       vote_comments: {
         Row: {
           content: Json
           created_time: string
+          edited_time: string | null
           hidden: boolean
           id: number
           reply_to_comment_id: number | null
@@ -1869,6 +1899,7 @@ export type Database = {
         Insert: {
           content: Json
           created_time?: string
+          edited_time?: string | null
           hidden?: boolean
           id?: never
           reply_to_comment_id?: number | null
@@ -1882,6 +1913,7 @@ export type Database = {
         Update: {
           content?: Json
           created_time?: string
+          edited_time?: string | null
           hidden?: boolean
           id?: never
           reply_to_comment_id?: number | null

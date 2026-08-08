@@ -26,6 +26,7 @@ export const convertVoteComment = (row: Row<'vote_comments'>): VoteComment => ({
   replyToCommentId: row.reply_to_comment_id ? row.reply_to_comment_id + '' : undefined,
   stance: (row.stance as Stance | null) ?? undefined,
   createdTime: tsToMillis(row.created_time),
+  editedTime: row.edited_time ? tsToMillis(row.edited_time) : undefined,
   userName: row.user_name,
   userUsername: row.user_username,
   userAvatarUrl: row.user_avatar_url ?? undefined,

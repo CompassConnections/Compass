@@ -2121,5 +2121,10 @@
   "vote.admin.saving": "Status wird aktualisiert...",
   "vote.admin.saved": "Status gesetzt auf",
   "vote.admin.error": "Status konnte nicht aktualisiert werden — bitte erneut versuchen",
-  "vote.admin.closed_hint": "(Abstimmung und Diskussion sind bei diesem Status geschlossen)"
+  "vote.admin.closed_hint": "(Abstimmung und Diskussion sind bei diesem Status geschlossen)",
+  "vote.comments.edited": "(bearbeitet)",
+  "vote.comments.edit_history": "Frühere Versionen",
+  "vote.comments.no_history": "Keine frühere Version gespeichert.",
+  "vote.comments.loading": "Wird geladen...",
+  "vote.comments.edit_error": "Bearbeitung konnte nicht gespeichert werden. Erneut versuchen?"
 }

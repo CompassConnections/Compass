@@ -6,6 +6,7 @@ import {createVote} from 'api/create-vote'
 import {createVoteComment} from 'api/create-vote-comment'
 import {deleteMessage} from 'api/delete-message'
 import {editMessage} from 'api/edit-message'
+import {editVoteComment} from 'api/edit-vote-comment'
 import {getChannelMemberships} from 'api/get-channel-memberships'
 import {getLastSeenChannelTime, setChannelLastSeenTime} from 'api/get-channel-seen-time'
 import {getChannelsCountEndpoint} from 'api/get-channels-count'
@@ -625,6 +626,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'delete-compatibility-answer': deleteCompatibilityAnswer,
   'delete-message': deleteMessage,
   'edit-message': editMessage,
+  'edit-vote-comment': editVoteComment,
   'get-channel-memberships': getChannelMemberships,
   'get-channel-messages': getChannelMessagesEndpoint,
   'get-channel-seen-time': getLastSeenChannelTime,

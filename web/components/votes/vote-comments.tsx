@@ -1,5 +1,6 @@
-import {EyeSlashIcon, FlagIcon} from '@heroicons/react/24/outline'
+import {EyeSlashIcon, FlagIcon, PencilIcon} from '@heroicons/react/24/outline'
 import {ArrowUturnLeftIcon, EllipsisHorizontalIcon} from '@heroicons/react/24/solid'
+import {JSONContent} from '@tiptap/core'
 import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
 import {MAX_VOTE_COMMENT_LENGTH, ReplyToUserInfo, type VoteComment} from 'common/comment'
@@ -15,6 +16,7 @@ import {CommentInputTextArea} from 'web/components/comments/comment-input'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {ReplyToggle} from 'web/components/comments/reply-toggle'
 import {Col} from 'web/components/layout/col'
+import {Modal} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {RelativeTimestamp} from 'web/components/relative-timestamp'
 import {Avatar} from 'web/components/widgets/avatar'
@@ -29,6 +31,7 @@ import {api} from 'web/lib/api'
 import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
+import {db} from 'web/lib/supabase/db'
 import {safeLocalStorage} from 'web/lib/util/local'
 import {scrollIntoViewCentered} from 'web/lib/util/scroll'
 
@@ -296,6 +299,8 @@ function VoteCommentThread(props: {
         choice={choicesByUserId[parentComment.userId]}
         highlighted={idInUrl === parentComment.id}
         onReplyClick={canComment ? onReplyClick : undefined}
+        canComment={canComment}
+        onPosted={onPosted}
         isParent
       >
         <ReplyToggle
@@ -313,6 +318,8 @@ function VoteCommentThread(props: {
             choice={choicesByUserId[comment.userId]}
             highlighted={idInUrl === comment.id}
             onReplyClick={canComment ? onReplyClick : undefined}
+            canComment={canComment}
+            onPosted={onPosted}
           />
         ))}
 
@@ -344,12 +351,17 @@ const VoteCommentRow = memo(function VoteCommentRow(props: {
   choice: number | undefined
   highlighted?: boolean
   onReplyClick?: (comment: VoteComment) => void
+  /** False on a settled proposal, which freezes editing along with posting. */
+  canComment?: boolean
+  onPosted?: () => void
   children?: ReactNode
   isParent?: boolean
 }) {
-  const {highlighted, onReplyClick, children, isParent, choice} = props
+  const {highlighted, onReplyClick, children, isParent, choice, canComment, onPosted} = props
   const ref = useRef<HTMLDivElement>(null)
   const [comment, setComment] = useState(props.comment)
+  const [isEditing, setIsEditing] = useState(false)
+  const user = useUser()
   const {userUsername, userAvatarUrl, userId, hidden} = comment
   const t = useT()
 
@@ -358,6 +370,10 @@ const VoteCommentRow = memo(function VoteCommentRow(props: {
       scrollIntoViewCentered(ref.current)
     }
   }, [highlighted])
+
+  // The row keeps a local copy so hide/undelete feels instant, which means it has to follow the prop
+  // when an edit arrives — otherwise the author sees their own edit but nobody else's.
+  useEffect(() => setComment(props.comment), [props.comment])
 
   return (
     <Col className="group" id={`comment-${comment.id}`}>
@@ -402,9 +418,13 @@ const VoteCommentRow = memo(function VoteCommentRow(props: {
                   value. */}
               {choice !== undefined && <VoteChip choice={choice} />}
               <RelativeTimestamp shortened={true} time={comment.createdTime} />
+              <EditedMarker comment={comment} />
               <VoteCommentDotMenu
                 comment={comment}
                 onHide={() => setComment({...comment, hidden: !comment.hidden})}
+                onEdit={
+                  canComment && user?.id === comment.userId ? () => setIsEditing(true) : undefined
+                }
               />
             </Row>
             {comment.stance && (
@@ -425,6 +445,16 @@ const VoteCommentRow = memo(function VoteCommentRow(props: {
             <span className="text-ink-500 text-sm italic">
               {t('vote.comments.deleted', 'Comment deleted')}
             </span>
+          ) : isEditing ? (
+            <VoteCommentEditor
+              comment={comment}
+              onDone={() => setIsEditing(false)}
+              onSaved={(content) => {
+                setComment((c) => ({...c, content, editedTime: Date.now()}))
+                setIsEditing(false)
+                onPosted?.()
+              }}
+            />
           ) : (
             <Content size="sm" className="mt-1 grow" content={comment.content} />
           )}
@@ -455,6 +485,126 @@ const VoteCommentRow = memo(function VoteCommentRow(props: {
   )
 })
 
+/**
+ * "(edited)", opening the previous versions. Not a bare tag: on a proposal an argument is what moved
+ * people's votes, so a reader who arrives after an edit needs to be able to see what they actually
+ * agreed with. The versions are public for the same reason.
+ */
+function EditedMarker(props: {comment: VoteComment}) {
+  const {comment} = props
+  const t = useT()
+  const [open, setOpen] = useState(false)
+  const [edits, setEdits] = useState<{id: number; content: JSONContent; createdTime: number}[]>()
+
+  useEffect(() => {
+    if (!open || edits) return
+    ;(async () => {
+      const {data, error} = await db
+        .from('vote_comment_edits')
+        .select('*')
+        .eq('comment_id', Number(comment.id))
+        .order('created_time', {ascending: false})
+      if (error) {
+        console.error(error)
+        return
+      }
+      setEdits(
+        (data ?? []).map((e) => ({
+          id: e.id,
+          content: e.content as JSONContent,
+          createdTime: new Date(e.created_time).valueOf(),
+        })),
+      )
+    })()
+  }, [open, edits, comment.id])
+
+  if (!comment.editedTime) return null
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="text-ink-400 hover:text-primary-700 whitespace-nowrap text-xs italic"
+      >
+        {t('vote.comments.edited', '(edited)')}
+      </button>
+      <Modal size="md" open={open} setOpen={setOpen}>
+        <Col className="bg-canvas-0 gap-3 rounded-2xl p-4">
+          <h3 className="font-heading text-lg text-ink-900">
+            {t('vote.comments.edit_history', 'Previous versions')}
+          </h3>
+          {!edits ? (
+            <span className="text-sm text-ink-500">{t('vote.comments.loading', 'Loading...')}</span>
+          ) : edits.length === 0 ? (
+            <span className="text-sm text-ink-500">
+              {t('vote.comments.no_history', 'No earlier version recorded.')}
+            </span>
+          ) : (
+            edits.map((edit) => (
+              <Col key={edit.id} className="bg-canvas-100 gap-1 rounded-xl p-3">
+                <span className="text-xs text-ink-500">
+                  {new Date(edit.createdTime).toLocaleString()}
+                </span>
+                <Content size="sm" content={edit.content} />
+              </Col>
+            ))
+          )}
+        </Col>
+      </Modal>
+    </>
+  )
+}
+
+/** Inline editor, prefilled with the current text. Same cap and same linkify pass as posting. */
+function VoteCommentEditor(props: {
+  comment: VoteComment
+  onDone: () => void
+  onSaved: (content: JSONContent) => void
+}) {
+  const {comment, onDone, onSaved} = props
+  const t = useT()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const editor = useTextEditor({
+    // No `key`: the draft autosave is for composing something new. Restoring a stale draft over the
+    // text you are trying to correct would be the opposite of helpful.
+    size: 'sm',
+    max: MAX_VOTE_COMMENT_LENGTH,
+    defaultValue: comment.content,
+  })
+
+  const save = useEvent(async () => {
+    if (!editor || editor.isEmpty || isSubmitting) return
+    setIsSubmitting(true)
+    try {
+      const content = editor.getJSON()
+      await api('edit-vote-comment', {commentId: comment.id, content})
+      onSaved(content)
+      track('edit vote comment', {voteId: comment.voteId})
+    } catch (e) {
+      console.error(e)
+      toast.error(t('vote.comments.edit_error', "Couldn't save the edit. Try again?"))
+    } finally {
+      setIsSubmitting(false)
+    }
+  })
+
+  return (
+    <Col className="mt-1 gap-1">
+      <CommentInputTextArea
+        editor={editor}
+        user={null}
+        submit={save}
+        cancelEditing={onDone}
+        isEditing
+        isSubmitting={isSubmitting}
+      />
+      <CharacterCounter editor={editor} max={MAX_VOTE_COMMENT_LENGTH} />
+    </Col>
+  )
+}
+
 function VoteChip(props: {choice: number}) {
   const {choice} = props
   const t = useT()
@@ -477,8 +627,12 @@ function VoteChip(props: {choice: number}) {
   )
 }
 
-function VoteCommentDotMenu(props: {comment: VoteComment; onHide: () => void}) {
-  const {comment, onHide} = props
+function VoteCommentDotMenu(props: {
+  comment: VoteComment
+  onHide: () => void
+  onEdit?: () => void
+}) {
+  const {comment, onHide, onEdit} = props
   const [isModalOpen, setIsModalOpen] = useState(false)
   const user = useUser()
   const isAdmin = useAdmin()
@@ -504,6 +658,13 @@ function VoteCommentDotMenu(props: {comment: VoteComment; onHide: () => void}) {
         closeOnClick={true}
         icon={<EllipsisHorizontalIcon className="mt-[0.12rem] h-4 w-4" aria-hidden="true" />}
         items={buildArray(
+          onEdit &&
+            isCurrentUser &&
+            !comment.hidden && {
+              name: 'Edit',
+              icon: <PencilIcon className="h-5 w-5" />,
+              onClick: onEdit,
+            },
           user &&
             !isCurrentUser && {
               name: 'Report',

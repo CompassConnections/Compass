@@ -1151,6 +1151,18 @@ export const API = (_apiTypeCheck = {
     summary: "Set a proposal's status (admin only)",
     tag: 'Votes',
   },
+  'edit-vote-comment': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as any,
+    props: z.object({
+      commentId: z.string(),
+      content: contentSchema,
+    }),
+    summary: 'Edit your own comment on a proposal',
+    tag: 'Votes',
+  },
   'set-vote-mute': {
     method: 'POST',
     authed: true,

@@ -3,6 +3,7 @@ import {ChatMessage} from 'common/chat-message'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {User} from 'common/user'
 import {parseJsonContentToText} from 'common/util/parse'
+import {uniq} from 'lodash'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -52,7 +53,8 @@ export default function MessagesPage() {
 export function MessagesContent(props: {currentUser: User}) {
   const {currentUser} = props
   const t = useT()
-  const {channels, memberIdsByChannelId} = useSortedPrivateMessageMemberships(currentUser.id)
+  const {channels, memberIdsByChannelId, leftMemberIdsByChannelId} =
+    useSortedPrivateMessageMemberships(currentUser.id)
   const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(true)
   const lastMessages = useLastPrivateMessages(currentUser.id)
 
@@ -79,7 +81,12 @@ export function MessagesContent(props: {currentUser: User}) {
           </div>
         )}
         {channels?.map((channel) => {
-          const userIds = memberIdsByChannelId?.[channel.channel_id]?.map((m) => m) || []
+          // Fall back to the people who left only when no one else is still here, so the row names
+          // who you can still talk to rather than everyone who ever passed through.
+          const activeIds = memberIdsByChannelId?.[channel.channel_id] ?? []
+          const userIds = activeIds.length
+            ? activeIds
+            : uniq(leftMemberIdsByChannelId?.[channel.channel_id] ?? [])
           return (
             <MessageChannelRow
               key={channel.channel_id}

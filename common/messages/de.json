@@ -600,6 +600,8 @@
   "messages.action.delete": "Löschen",
   "messages.action.edit": "Bearbeiten",
   "messages.cannot_message_deleted": "Sie können ihnen keine Nachricht senden, da sie ihr Konto gelöscht haben.",
+  "messages.cannot_message_left": "{name} hat den Chat verlassen, Sie können daher nicht mehr antworten.",
+  "messages.cannot_message_all_left": "Alle anderen haben den Chat verlassen, Sie können daher nicht mehr antworten.",
   "messages.cannot_message_banned": "Sie können ihnen keine Nachricht senden, da sie gesperrt wurden.",
   "messages.cannot_message_you_banned": "Sie können ihnen keine Nachricht senden, da Sie gesperrt wurden.",
   "messages.copy.me_suffix": "(ich)",

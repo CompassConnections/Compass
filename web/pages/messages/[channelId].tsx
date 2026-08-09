@@ -81,16 +81,23 @@ export function PrivateMessagesContent(props: {user: User; channelId: number}) {
   const {channelId, user} = props
   const t = useT()
   const channelMembership = useSortedPrivateMessageMemberships(user.id, 1, channelId)
-  const {channels, memberIdsByChannelId} = channelMembership
+  const {channels, memberIdsByChannelId, leftMemberIdsByChannelId} = channelMembership
   const thisChannel = channels?.find((c) => c.channel_id == channelId)
   const loaded = channels !== undefined && channelId
   const memberIds = (thisChannel ? memberIdsByChannelId?.[thisChannel.channel_id] : undefined) ?? []
+  const leftMemberIds =
+    (thisChannel ? leftMemberIdsByChannelId?.[thisChannel.channel_id] : undefined) ?? []
 
   return (
     <>
       {user && loaded ? (
         thisChannel ? (
-          <PrivateChat channel={thisChannel} user={user} memberIds={memberIds} />
+          <PrivateChat
+            channel={thisChannel}
+            user={user}
+            memberIds={memberIds}
+            leftMemberIds={leftMemberIds}
+          />
         ) : (
           <div className="flex h-[50vh] flex-col items-center justify-center mx-4">
             <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center max-w-md">
@@ -158,8 +165,11 @@ export const PrivateChat = (props: {
   user: User
   channel: PrivateMessageChannel
   memberIds: string[]
+  // Members who left the chat. Only displayed when nobody else is left, so a group chat names the
+  // people you can still talk to rather than everyone who ever passed through.
+  leftMemberIds?: string[]
 }) => {
-  const {user, channel, memberIds} = props
+  const {user, channel, memberIds, leftMemberIds = []} = props
   const t = useT()
   useHideBottomNavOnKeyboard()
   useVisualViewportHeight()
@@ -167,7 +177,10 @@ export const PrivateChat = (props: {
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
   const isMobile = useIsMobile()
 
+  // No one else is still in the channel: either they left, or they deleted their account. The two
+  // read very differently to the reader, so they're told apart below by whether the user still exists.
   const noOtherUser = memberIds.length === 0
+  const displayedMemberIds = noOtherUser ? uniq(leftMemberIds) : memberIds
 
   const totalMessagesToLoad = 100
   const {
@@ -203,12 +216,16 @@ export const PrivateChat = (props: {
 
   // Note: we may have messages from users not in the channel, e.g., a system message
   const otherUsers = useUsersInStore(
-    uniq(messageUserIds.concat(memberIds)),
+    uniq(messageUserIds.concat(displayedMemberIds)),
     `${channelId}`,
     maxUsersToGet,
   )
 
-  const members = filterDefined(otherUsers?.filter((user) => memberIds.includes(user.id)) ?? [])
+  const members = filterDefined(
+    otherUsers?.filter((user) => displayedMemberIds.includes(user.id)) ?? [],
+  )
+  // They left the chat but their account is still around, so we can name them.
+  const leftMembers = members.filter((member) => leftMemberIds.includes(member.id))
   const router = useRouter()
 
   // Check ban status for messaging restrictions
@@ -345,10 +362,10 @@ export const PrivateChat = (props: {
         )}
         {members && members.length > 0 ? (
           (() => {
-            const nameClassName = clsx(
-              'ml-1 cursor-pointer hover:text-primary-600 transition-colors font-medium text-sm text-ink-900',
-              noOtherUser && 'italic text-ink-500',
-            )
+            // Members here can include someone who left the chat — they're still a real person with a
+            // real profile, so they're shown like any other member.
+            const nameClassName =
+              'ml-1 cursor-pointer hover:text-primary-600 transition-colors font-medium text-sm text-ink-900'
             const nameContent = (
               <>
                 {members
@@ -608,10 +625,19 @@ export const PrivateChat = (props: {
         ) : noOtherUser ? (
           <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
             <span className="text-ink-500 text-sm">
-              {t(
-                'messages.cannot_message_deleted',
-                "You can't text them as they deleted their account.",
-              )}
+              {leftMembers.length > 0
+                ? leftMembers.length === 1
+                  ? t('messages.cannot_message_left', "{name} left the chat, so you can't reply.", {
+                      name: getFirstName(leftMembers[0].name),
+                    })
+                  : t(
+                      'messages.cannot_message_all_left',
+                      "Everyone else left the chat, so you can't reply.",
+                    )
+                : t(
+                    'messages.cannot_message_deleted',
+                    "You can't text them as they deleted their account.",
+                  )}
             </span>
           </div>
         ) : (

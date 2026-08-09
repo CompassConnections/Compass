@@ -121,6 +121,32 @@ describe('getChannelMemberships', () => {
       )
     })
 
+    it('should separate members who left the chat from active ones', async () => {
+      const mockProps = {limit: 10, channelId: 1}
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+      const mockChannels = [
+        {
+          channel_id: 123,
+          notify_after_time: 'mockNotifyAfterTime',
+          created_time: 'mockCreatedTime',
+          last_updated_time: 'mockLastUpdatedTime',
+        },
+      ]
+      const mockMembers = [
+        {channel_id: 123, user_id: 'stillHere', status: 'proposed'},
+        {channel_id: 123, user_id: 'leftUser', status: 'left'},
+      ]
+      ;(mockPg.map as jest.Mock)
+        .mockResolvedValueOnce(mockChannels)
+        .mockResolvedValueOnce(mockMembers)
+
+      const results: any = await getChannelMemberships(mockProps, mockAuth, mockReq)
+
+      expect(results.memberIdsByChannelId).toStrictEqual({123: ['stillHere']})
+      expect(results.leftMemberIdsByChannelId).toStrictEqual({123: ['leftUser']})
+    })
+
     it('should return nothing if there are no channels', async () => {
       const mockProps = {
         limit: 10,
@@ -137,7 +163,11 @@ describe('getChannelMemberships', () => {
 
       console.log(results)
 
-      expect(results).toStrictEqual({channels: [], memberIdsByChannelId: {}})
+      expect(results).toStrictEqual({
+        channels: [],
+        memberIdsByChannelId: {},
+        leftMemberIdsByChannelId: {},
+      })
 
       expect(mockPg.map).toBeCalledTimes(1)
       expect(mockPg.map).toHaveBeenNthCalledWith(

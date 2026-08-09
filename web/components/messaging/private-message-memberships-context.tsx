@@ -7,6 +7,7 @@ type ChannelMembershipsValue = ReturnType<typeof useSortedPrivateMessageMembersh
 const PrivateMessageMembershipsContext = createContext<ChannelMembershipsValue>({
   channels: undefined,
   memberIdsByChannelId: undefined,
+  leftMemberIdsByChannelId: undefined,
 })
 
 export const usePrivateMessageMembershipsContext = () =>

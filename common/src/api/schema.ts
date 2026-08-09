@@ -926,6 +926,7 @@ export const API = (_apiTypeCheck = {
     returns: {
       channels: [] as PrivateMessageChannel[],
       memberIdsByChannelId: {} as {[channelId: string]: string[]},
+      leftMemberIdsByChannelId: {} as {[channelId: string]: string[]},
     },
     summary: 'List private message channel memberships',
     tag: 'Messages',

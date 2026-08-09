@@ -162,6 +162,8 @@ const useLastSeenMessagesPageTime = () => {
 export type ChannelMembership = {
   channels: PrivateMessageChannel[]
   memberIdsByChannelId: {[key: string]: string[]}
+  // Members who left the chat: still shown in the conversation, but can't be messaged.
+  leftMemberIdsByChannelId: {[key: string]: string[]}
 }
 
 export const useSortedPrivateMessageMemberships = (
@@ -171,7 +173,7 @@ export const useSortedPrivateMessageMemberships = (
 ) => {
   const [channelMemberships, setChannelMemberships] = usePersistentLocalState<
     ChannelMembership | undefined
-  >(undefined, `private-message-memberships-${userId}-${forChannelId}-v1`)
+  >(undefined, `private-message-memberships-${userId}-${forChannelId}-v2`)
 
   useEffect(() => {
     if (userId) getSortedChatMessageChannels(limit, forChannelId).then(setChannelMemberships)
@@ -180,6 +182,7 @@ export const useSortedPrivateMessageMemberships = (
     channelMemberships ?? {
       channels: undefined,
       memberIdsByChannelId: undefined,
+      leftMemberIdsByChannelId: undefined,
     }
   )
 }

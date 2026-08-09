@@ -600,6 +600,8 @@
   "messages.action.delete": "Supprimer",
   "messages.action.edit": "Modifier",
   "messages.cannot_message_deleted": "Vous ne pouvez pas leur envoyer de message car ils ont supprimé leur compte.",
+  "messages.cannot_message_left": "{name} a quitté la conversation, vous ne pouvez donc plus répondre.",
+  "messages.cannot_message_all_left": "Tous les autres ont quitté la conversation, vous ne pouvez donc plus répondre.",
   "messages.cannot_message_banned": "Ce profil a été supprimé en raison d'une activité suspecte; n'envoyez jamais d'argent à une personne que vous n'avez jamais rencontrée.",
   "messages.cannot_message_you_banned": "Vous ne pouvez pas leur envoyer de message car vous avez été banni.",
   "messages.copy.me_suffix": "(moi)",

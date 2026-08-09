@@ -58,29 +58,34 @@ export const getChannelMemberships: APIHandler<'get-channel-memberships'> = asyn
       convertRow,
     )
   }
-  if (!channels || channels.length === 0) return {channels: [], memberIdsByChannelId: {}}
+  if (!channels || channels.length === 0)
+    return {channels: [], memberIdsByChannelId: {}, leftMemberIdsByChannelId: {}}
   const channelIds = channels.map((c) => c.channel_id)
 
-  const members = await pg.map(
-    `select channel_id, user_id
+  // Members who left are returned separately rather than dropped: the chat still shows who you were
+  // talking to (name, avatar), it just can't be replied to anymore.
+  const allMembers = await pg.map(
+    `select channel_id, user_id, status
      from private_user_message_channel_members
      where not user_id = $1
        and channel_id in ($2:list)
-       and not status = 'left'
     `,
     [auth.uid, channelIds],
     (r) => ({
       channel_id: r.channel_id as number,
       user_id: r.user_id as string,
+      status: r.status as string,
     }),
   )
+  const members = allMembers.filter((m) => m.status !== 'left')
+  const leftMembers = allMembers.filter((m) => m.status === 'left')
 
-  const memberIdsByChannelId = mapValues(groupBy(members, 'channel_id'), (members) =>
-    members.map((m) => m.user_id),
-  )
+  const idsByChannelId = (rows: typeof allMembers) =>
+    mapValues(groupBy(rows, 'channel_id'), (members) => members.map((m) => m.user_id))
 
   return {
     channels,
-    memberIdsByChannelId,
+    memberIdsByChannelId: idsByChannelId(members),
+    leftMemberIdsByChannelId: idsByChannelId(leftMembers),
   }
 }

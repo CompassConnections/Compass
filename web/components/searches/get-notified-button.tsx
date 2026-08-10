@@ -88,12 +88,16 @@ export function GetNotifiedButton(props: {
 
   const button = (
     <Button
-      disabled={loading || !canSave}
+      // A natively `disabled` button swallows pointer events, so the tap never reaches the Tooltip
+      // wrapper and touch users get no explanation for why the button is dead. Mark it disabled for
+      // assistive tech only (`aria-disabled`) and let `handleClick` no-op instead.
+      disabled={loading}
+      aria-disabled={!canSave || undefined}
       loading={loading}
       onClick={handleClick}
       size={size}
       color={color}
-      className={className}
+      className={clsx(className, !canSave && 'cursor-not-allowed opacity-50')}
       aria-label={label}
     >
       <Bell className={clsx('h-4 w-4', !iconOnly && 'mr-1.5', bookmarked && 'fill-current')} />

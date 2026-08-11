@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/node'
 import {JSONContent} from '@tiptap/core'
 import {Editor} from '@tiptap/react'
 import clsx from 'clsx'
+import {APIError} from 'common/api/utils'
 import {
   CANNABIS_CHOICES,
   DEFAULT_NEUROTYPES,
@@ -284,11 +285,15 @@ export const OptionalProfileUserForm = (props: {
       return extractedProfile
     } catch (error) {
       console.error(error)
+      // A 400 is the backend telling the user something specific and actionable — that LinkedIn
+      // cannot be scraped, say — which is far more use than the catch-all below.
+      const apiMessage = error instanceof APIError && error.code === 400 ? error.message : null
       setExtractionError(
-        t(
-          'profile.llm.extract.error',
-          'Profile extraction failed. No worries — you can fill in your profile manually, or save it now and come back to extract later.',
-        ),
+        apiMessage ??
+          t(
+            'profile.llm.extract.error',
+            'Profile extraction failed. No worries — you can fill in your profile manually, or save it now and come back to extract later.',
+          ),
       )
       Sentry.captureException(error, {
         user, // shows in the User section

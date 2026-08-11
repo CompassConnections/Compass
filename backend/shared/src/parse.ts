@@ -1,6 +1,7 @@
 import {Readability} from '@mozilla/readability'
 import {JSONContent} from '@tiptap/core'
 import {debug} from 'common/logger'
+import {parseJsonContentToText} from 'common/util/parse'
 import {JSDOM} from 'jsdom'
 import {marked} from 'marked'
 
@@ -20,6 +21,39 @@ export function htmlToJSONContent(html: string, url: string): JSONContent {
   // To implement if really needed (i.e., lots of users want to extract profile info from client-side rendered pages)
   // const renderedHtml = await fetchWithBrowser(url)
   // return tryReadability(renderedHtml, url) ?? emptyContent()
+}
+
+/** Whether a parsed document carries any actual prose, as opposed to only empty structure. */
+export function hasText(content: JSONContent | null | undefined): boolean {
+  return parseJsonContentToText(content).trim().length > 0
+}
+
+/**
+ * Sites that cannot be scraped at all, mapped to their display name. LinkedIn answers any
+ * unauthenticated request with HTTP 999 regardless of user agent — it is an IP/session block, not
+ * something headers can talk their way past — so there is nothing to parse and no point retrying.
+ * Detected up front so the user gets told what to do instead of a generic fetch failure.
+ */
+const BLOCKED_PROFILE_HOSTS: Record<string, string> = {
+  'linkedin.com': 'LinkedIn',
+  // Instagram answers 200 but with a bare SPA shell: the body carries no text at all, so an
+  // extraction from it would quietly come back empty.
+  'instagram.com': 'Instagram',
+  'facebook.com': 'Facebook',
+}
+
+export function getBlockedProfileHost(url: string): string | null {
+  let hostname: string
+  try {
+    hostname = new URL(url).hostname
+  } catch {
+    return null
+  }
+
+  for (const [domain, name] of Object.entries(BLOCKED_PROFILE_HOSTS)) {
+    if (hostname === domain || hostname.endsWith(`.${domain}`)) return name
+  }
+  return null
 }
 
 function extractNextData(html: string): Record<string, any> | null {

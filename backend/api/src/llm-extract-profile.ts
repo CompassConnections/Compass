@@ -2,6 +2,7 @@ import {JSONContent} from '@tiptap/core'
 import {getOptions} from 'api/get-options'
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {searchLocation} from 'api/search-location'
+import {APIError} from 'common/api/utils'
 import {
   CANNABIS_CHOICES,
   DIET_CHOICES,
@@ -37,6 +38,8 @@ import {
   convertToJSONContent,
   extractGoogleDocId,
   extractNotionPageId,
+  getBlockedProfileHost,
+  hasText,
   NotionRecordMap,
   notionRecordMapToJSONContent,
 } from 'shared/parse'
@@ -697,8 +700,24 @@ async function fetchNotionRecordMap(pageId: string): Promise<NotionRecordMap> {
   return {block: blocks}
 }
 
+/**
+ * Rejects URLs we know we cannot read, with a message that tells the user what to do instead. Kept
+ * separate from `fetchOnlineProfile` so the endpoint can run it synchronously: extraction is
+ * otherwise fire-and-forget, and an error raised in there only ever reaches the client as a generic
+ * `status: 'error'`.
+ */
+export function assertProfileUrlIsFetchable(url: string) {
+  const blockedHost = getBlockedProfileHost(url)
+  if (blockedHost) {
+    throw APIErrors.badRequest(
+      `${blockedHost} profiles cannot be read automatically. Please copy the text of the profile and paste it instead.`,
+    )
+  }
+}
+
 export async function fetchOnlineProfile(url: string | undefined): Promise<JSONContent> {
   if (!url) throw APIErrors.badRequest('Content or URL is required')
+  assertProfileUrlIsFetchable(url)
 
   try {
     // 1a. Notion shortcut — must run before the generic fetch, which only ever gets the SPA shell.
@@ -775,9 +794,21 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
     debug({content})
 
     // 3. Route by content type
-    return convertToJSONContent(content, contentType, url)
+    const parsed = convertToJSONContent(content, contentType, url)
+
+    // A page that fetches fine but yields no text is a client-rendered app whose content never
+    // reached us. Extracting from it would silently produce an empty profile, so say so instead.
+    if (!hasText(parsed)) {
+      throw APIErrors.badRequest(
+        `We could not read any text from ${new URL(url).hostname} — the page builds its content with JavaScript. Please copy the text and paste it instead.`,
+      )
+    }
+
+    return parsed
   } catch (error) {
     log('Error fetching URL', {url, error})
+    // Errors we raised ourselves already say something useful; only the rest need the generic one.
+    if (error instanceof APIError) throw error
     throw APIErrors.badRequest('Failed to fetch content from URL')
   }
 }
@@ -789,6 +820,10 @@ export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = asyn
   if (content && url) {
     throw APIErrors.badRequest('Content and URL cannot be provided together')
   }
+
+  // Checked here and not only in fetchOnlineProfile: the fetch happens after we have already
+  // replied, so this is the last point at which the client can still be told why.
+  if (url) assertProfileUrlIsFetchable(url)
 
   // Check cache based on parsedBody hash
   const cacheKey = getCacheKey(parsedBody)

@@ -9,6 +9,7 @@
 
 import chalk from 'chalk'
 import {writeFileSync} from 'fs'
+import {uniq} from 'lodash'
 
 import {debug} from 'common/logger'
 import {
@@ -92,6 +93,13 @@ runScript(async ({pg}) => {
   if (!user) throw new Error(`No user with username "${USERNAME}"`)
 
   const profile = await pg.oneOrNone<any>(`select * from profiles where user_id = $1`, [user.id])
+
+  // The primary photo lives in its own column and isn't always mirrored into photo_urls, so counting
+  // photo_urls alone reads someone with one pinned photo as having none. Same union-and-dedupe the
+  // profile page does (web/components/profile/profile-photos.tsx).
+  const photoCount = uniq(
+    [profile?.pinned_url, ...(profile?.photo_urls ?? [])].filter(Boolean),
+  ).length
 
   const options = profile
     ? await pg.manyOrNone<{kind: string; name: string}>(
@@ -210,7 +218,7 @@ runScript(async ({pg}) => {
   const completeness = getProfileCompleteness({
     bioLength: profile?.bio_length ?? null,
     headline: profile?.headline ?? null,
-    photoCount: profile?.photo_urls?.length ?? 0,
+    photoCount,
     pinnedUrl: profile?.pinned_url ?? null,
     // Either column counts — a member who filled in a job title has said what they do, whichever field
     // the form put it in.
@@ -368,7 +376,7 @@ runScript(async ({pg}) => {
         `${list(profile.is_smoker)} / ${list(profile.drinks_per_month)}`,
       ),
       field('Exercise', profile.exercise),
-      field('Photos', profile.photo_urls?.length ?? 0),
+      field('Photos', photoCount),
       field('Links', profile.links ? JSON.stringify(profile.links) : '—'),
       field('Keywords', profile.keywords),
       field('Open to matches', profile.looking_for_matches ? 'yes' : 'no'),

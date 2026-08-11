@@ -6,6 +6,10 @@
 //
 // Options (env vars):
 //   USERNAME=evelynwagaman   the member to find candidates for (or pass as the first argument)
+//   TARGET_FILE=../../martin/outreach/targets/dan.json
+//                            rank for someone who is *not* a member — a date-me doc, a referral, anyone
+//                            with no profile row. JSON of the profile fields this script reads; see
+//                            OFF_PLATFORM_TARGET_FIELDS below. Mutually exclusive with USERNAME.
 //   ME=Martin                whose thread with them is read to spot names already handed over
 //   LIMIT=12                 how many to print in full (default 12)
 //   NEARBY_KM=500            radius for the separate nearby list (default 500)
@@ -17,7 +21,7 @@
 // caveats — dormant, empty bio, kids mismatch, members-only
 
 import chalk from 'chalk'
-import {writeFileSync} from 'fs'
+import {readFileSync, writeFileSync} from 'fs'
 import {countBy, uniq} from 'lodash'
 
 import {debug} from 'common/logger'
@@ -35,6 +39,7 @@ import {convertPrivateChatMessage} from 'shared/supabase/messages'
 import {runScript} from './run-script'
 
 const USERNAME = process.argv[2] ?? process.env.USERNAME
+const TARGET_FILE = process.env.TARGET_FILE
 const ME = process.env.ME ?? 'Martin'
 const LIMIT = Number(process.env.LIMIT ?? 12)
 const NEARBY_KM = Number(process.env.NEARBY_KM ?? 500)
@@ -113,19 +118,57 @@ type Row = ProfileRow & {
   is_banned_from_posting: boolean
 }
 
+/**
+ * The fields a `TARGET_FILE` may set. Everything here is read by the scoring below; anything else in
+ * the JSON is ignored rather than silently mattering. The four that decide *eligibility* — and so the
+ * ones worth getting right in the file — are `gender`, `age`, `pref_gender` and the age bounds.
+ */
+const OFF_PLATFORM_TARGET_FIELDS = `name age gender pref_gender pref_age_min pref_age_max
+   pref_relation_styles wants_kids_strength city country city_latitude city_longitude headline bio_text
+   occupation occupation_title company keywords diet political_beliefs political_details
+   religion languages mbti`
+
+/**
+ * A target with no profile row: a date-me doc, a referral, anyone not signed up. Scoring only ever
+ * reads profile *fields*, so a plain object is enough — but `user_id` stays null, which is what the
+ * two thread lookups below key off to skip themselves. There is no thread with someone who isn't here.
+ */
+const loadOffPlatformTarget = (path: string): Row => {
+  const parsed = JSON.parse(readFileSync(path, 'utf8'))
+  if (!parsed.gender || !parsed.age) {
+    throw new Error(`${path}: needs at least "gender" and "age" — they gate mutual eligibility`)
+  }
+  return {
+    username: parsed.username ?? 'off-platform',
+    name: parsed.name ?? 'Off-platform target',
+    user_id: null,
+    profile_id: 0,
+    last_online_time: null,
+    distance_km: null,
+    is_banned_from_posting: false,
+    ...parsed,
+  } as Row
+}
+
 runScript(async ({pg}) => {
-  if (!USERNAME) throw new Error('Usage: npx tsx backend/scripts/candidates.ts <username>')
+  if (!USERNAME && !TARGET_FILE) {
+    throw new Error(
+      'Usage: npx tsx backend/scripts/candidates.ts <username>   (or TARGET_FILE=<profile.json>)',
+    )
+  }
 
   const me = await pg.oneOrNone<{id: string}>(`select id from users where username ilike $1`, [ME])
 
-  const target = await pg.oneOrNone<Row>(
-    `select u.username, u.name, u.id as user_id, ua.last_online_time, p.*, p.id as profile_id
+  const target = TARGET_FILE
+    ? loadOffPlatformTarget(TARGET_FILE)
+    : await pg.oneOrNone<Row>(
+        `select u.username, u.name, u.id as user_id, ua.last_online_time, p.*, p.id as profile_id
      from users u
               join profiles p on p.user_id = u.id
               left join user_activity ua on ua.user_id = u.id
      where u.username ilike $1`,
-    [USERNAME],
-  )
+        [USERNAME],
+      )
   if (!target) throw new Error(`No member with username "${USERNAME}"`)
 
   /**
@@ -136,6 +179,9 @@ runScript(async ({pg}) => {
    * Distance comes back on every row but gates nothing — most members here search far wider than their
    * city, and filtering on locality would silently hide the only good fit in the world from someone
    * who never asked to stay home.
+   *
+   * The origin is passed in rather than re-read from the target's row, so an off-platform target with
+   * a city in its JSON still gets real distances. A null origin means no distances, not no pool.
    */
   const pool = await pg.manyOrNone<Row>(
     `select u.username,
@@ -145,22 +191,24 @@ runScript(async ({pg}) => {
             p.*,
             p.id as profile_id,
             case
-                when me.lat is null or p.city_latitude is null then null
-                else round(calculate_earth_distance_km(me.lat, me.lon, p.city_latitude,
-                                                       p.city_longitude)::numeric)
+                when $(lat) is null or p.city_latitude is null then null
+                else round(calculate_earth_distance_km($(lat)::double precision,
+                                                       $(lon)::double precision,
+                                                       p.city_latitude, p.city_longitude)::numeric)
                 end as distance_km
      from users u
               join profiles p on p.user_id = u.id
               left join user_activity ua on ua.user_id = u.id
-              cross join (select city_latitude as lat, city_longitude as lon
-                          from profiles
-                          where user_id = $(userId)) me
-     where p.user_id <> $(userId)
+     where ($(userId) is null or p.user_id <> $(userId))
        and p.looking_for_matches
        and not coalesce(p.disabled, false)
        and not coalesce(u.is_banned_from_posting, false)
        and coalesce(u.data ->> 'userDeleted', 'false') <> 'true'`,
-    {userId: target.user_id},
+    {
+      userId: target.user_id ?? null,
+      lat: target.city_latitude ?? null,
+      lon: target.city_longitude ?? null,
+    },
   )
 
   // Interests, causes and work for everyone at once. Three round trips per candidate would be a
@@ -186,17 +234,19 @@ runScript(async ({pg}) => {
   // possible signal of interest — but handing back a name they are mid-conversation with reads as
   // not having looked.
   const spokenTo = new Set(
-    (
-      await pg.manyOrNone<{username: string}>(
-        `select distinct u.username
+    target.user_id
+      ? (
+          await pg.manyOrNone<{username: string}>(
+            `select distinct u.username
          from private_user_message_channel_members mine
                   join private_user_message_channel_members other
                        on other.channel_id = mine.channel_id and other.user_id <> mine.user_id
                   join users u on u.id = other.user_id
          where mine.user_id = $(userId)`,
-        {userId: target.user_id},
-      )
-    ).map((r) => r.username.toLowerCase()),
+            {userId: target.user_id},
+          )
+        ).map((r) => r.username.toLowerCase())
+      : [],
   )
 
   /**
@@ -205,7 +255,7 @@ runScript(async ({pg}) => {
    * from two messages ago is the cheapest possible way to look like a template.
    */
   const alreadySent = new Set<string>()
-  if (me) {
+  if (me && target.user_id) {
     const thread = await pg.map(
       `select m.*
        from private_user_messages m

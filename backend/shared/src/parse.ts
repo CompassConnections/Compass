@@ -537,6 +537,222 @@ export function extractGoogleDocId(url: string) {
   return null
 }
 
+/**
+ * Notion pages are client-rendered: a plain fetch only ever returns the SPA shell whose <noscript>
+ * body reads "JavaScript must be enabled in order to use Notion." The page content lives behind
+ * notion.so's internal `loadPageChunk` API, which serves public pages without auth (see
+ * `fetchNotionRecordMap` in backend/api/src/llm-extract-profile.ts). What comes back is a
+ * `recordMap` — a flat id → block dictionary — which we walk here into TipTap JSONContent.
+ */
+export function extractNotionPageId(url: string): string | null {
+  let hostname: string
+  let pathname: string
+  try {
+    const parsed = new URL(url)
+    hostname = parsed.hostname
+    pathname = parsed.pathname
+  } catch {
+    return null
+  }
+
+  const isNotionHost = ['notion.so', 'notion.com', 'notion.site'].some(
+    (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
+  )
+  if (!isNotionHost) return null
+
+  // The id is the last path segment, either bare 32-hex or a dashed uuid, usually preceded by a
+  // slugified title (e.g. /p/Date-Tristan-1b5e1848224780a1ab1fcd5e4260ed16).
+  const dashed = pathname.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i)
+  if (dashed) return dashed[1].toLowerCase()
+
+  const bare = pathname.match(/([0-9a-f]{32})(?:[^0-9a-f]|$)/i)
+  if (!bare) return null
+  const id = bare[1].toLowerCase()
+  return `${id.slice(0, 8)}-${id.slice(8, 12)}-${id.slice(12, 16)}-${id.slice(16, 20)}-${id.slice(20)}`
+}
+
+/** A single [text, marks?] segment of a Notion rich-text array. */
+type NotionRichText = [string, Array<[string, ...any[]]>?]
+
+export type NotionRecordMap = {
+  block?: Record<string, {value?: {value?: NotionBlock} & NotionBlock}>
+}
+
+type NotionBlock = {
+  id: string
+  type: string
+  properties?: Record<string, NotionRichText[]>
+  content?: string[]
+  format?: Record<string, any>
+}
+
+function notionRichTextToInline(title: NotionRichText[] | undefined): JSONContent[] {
+  if (!title) return []
+
+  const nodes: JSONContent[] = []
+  for (const segment of title) {
+    const text = segment?.[0]
+    if (typeof text !== 'string' || !text) continue
+
+    const marks: JSONContent[] = []
+    for (const mark of segment[1] ?? []) {
+      const [kind, value] = mark
+      if (kind === 'b') marks.push({type: 'bold'})
+      else if (kind === 'i') marks.push({type: 'italic'})
+      else if (kind === '_') marks.push({type: 'underline'})
+      else if (kind === 's') marks.push({type: 'strike'})
+      else if (kind === 'c') marks.push({type: 'code'})
+      // 'h' is Notion's text/background colour. There is no highlight mark in our TipTap schema
+      // (see common/util/parse `extensions`), and colour carries nothing for profile extraction.
+      else if (kind === 'a' && typeof value === 'string') {
+        marks.push({type: 'link', attrs: {href: value, target: '_blank'}})
+      }
+    }
+
+    nodes.push({
+      type: 'text',
+      text,
+      ...(marks.length > 0 && {marks: marks as Array<{type: string; attrs?: Record<string, any>}>}),
+    })
+  }
+
+  return nodes
+}
+
+const NOTION_HEADING_LEVELS: Record<string, number> = {
+  header: 1,
+  sub_header: 2,
+  sub_sub_header: 3,
+}
+
+function notionBlocksToJSONContent(
+  ids: string[],
+  blocks: Record<string, NotionBlock>,
+  depth = 0,
+): JSONContent[] {
+  if (depth > 10) return []
+
+  const content: JSONContent[] = []
+
+  // Notion stores list items as individual sibling blocks; TipTap needs them wrapped in a single
+  // list node, so consecutive items of the same kind get collected as we go.
+  let listType: 'bulletList' | 'orderedList' | null = null
+  let listItems: JSONContent[] = []
+  const flushList = () => {
+    if (!listType || listItems.length === 0) {
+      listType = null
+      listItems = []
+      return
+    }
+    content.push({
+      type: listType,
+      ...(listType === 'orderedList' && {attrs: {start: 1}}),
+      content: listItems,
+    })
+    listType = null
+    listItems = []
+  }
+
+  for (const id of ids) {
+    const block = blocks[id]
+    if (!block) continue
+
+    const inline = notionRichTextToInline(block.properties?.title)
+    const children = block.content ?? []
+
+    const itemType =
+      block.type === 'numbered_list'
+        ? ('orderedList' as const)
+        : ['bulleted_list', 'to_do'].includes(block.type)
+          ? ('bulletList' as const)
+          : null
+
+    if (itemType) {
+      if (listType && listType !== itemType) flushList()
+      listType = itemType
+
+      const checked = block.properties?.checked?.[0]?.[0]
+      const prefix =
+        block.type === 'to_do' ? [{type: 'text', text: checked === 'Yes' ? '[x] ' : '[ ] '}] : []
+      const itemContent: JSONContent[] = [
+        {type: 'paragraph', content: [...prefix, ...inline]},
+        ...(children.length ? notionBlocksToJSONContent(children, blocks, depth + 1) : []),
+      ]
+      listItems.push({type: 'listItem', content: itemContent})
+      continue
+    }
+
+    flushList()
+
+    const headingLevel = NOTION_HEADING_LEVELS[block.type]
+    if (headingLevel) {
+      if (inline.length)
+        content.push({type: 'heading', attrs: {level: headingLevel}, content: inline})
+    } else if (block.type === 'divider') {
+      content.push({type: 'horizontalRule'})
+    } else if (block.type === 'code') {
+      const text = (block.properties?.title ?? []).map((s) => s?.[0] ?? '').join('')
+      content.push({
+        type: 'codeBlock',
+        attrs: {language: block.format?.language ?? null},
+        content: text ? [{type: 'text', text}] : [],
+      })
+    } else if (['quote', 'callout'].includes(block.type)) {
+      content.push({
+        type: 'blockquote',
+        content: [
+          ...(inline.length ? [{type: 'paragraph', content: inline}] : []),
+          ...(children.length ? notionBlocksToJSONContent(children, blocks, depth + 1) : []),
+        ],
+      })
+      continue
+    } else if (block.type === 'image') {
+      // Notion's own uploads sit behind signed S3 URLs that expire, so only externally hosted
+      // images survive being stored in a bio.
+      const src = block.format?.display_source ?? block.properties?.source?.[0]?.[0]
+      if (typeof src === 'string' && /^https?:\/\//.test(src) && !src.includes('secure.notion')) {
+        content.push({type: 'image', attrs: {src, alt: null, title: null}})
+      }
+    } else if (inline.length) {
+      content.push({type: 'paragraph', content: inline})
+    }
+
+    // page / toggle / column_list / column / anything unhandled: keep walking the tree so no text
+    // is silently dropped.
+    if (children.length) content.push(...notionBlocksToJSONContent(children, blocks, depth + 1))
+  }
+
+  flushList()
+
+  return content
+}
+
+export function notionRecordMapToJSONContent(
+  recordMap: NotionRecordMap,
+  rootId: string,
+): JSONContent {
+  const blocks: Record<string, NotionBlock> = {}
+  for (const [id, record] of Object.entries(recordMap.block ?? {})) {
+    // The API nests the block one or two levels deep depending on the endpoint.
+    const value = (record?.value?.value ?? record?.value) as NotionBlock | undefined
+    if (value?.type) blocks[id] = value
+  }
+
+  const root = blocks[rootId]
+  if (!root) {
+    debug('Notion record map has no root block', {rootId, blockCount: Object.keys(blocks).length})
+    return {type: 'doc', content: []}
+  }
+
+  const title = notionRichTextToInline(root.properties?.title)
+  const content: JSONContent[] = [
+    ...(title.length ? [{type: 'heading', attrs: {level: 1}, content: title}] : []),
+    ...notionBlocksToJSONContent(root.content ?? [], blocks),
+  ]
+
+  return {type: 'doc', content}
+}
+
 function markdownToJSONContent(markdown: string): JSONContent {
   const html = marked(markdown) as string
   const dom = new JSDOM(html)

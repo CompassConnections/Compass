@@ -33,13 +33,21 @@ import {promises as fs} from 'fs'
 import {tmpdir} from 'os'
 import {join} from 'path'
 import {log} from 'shared/monitoring/log'
-import {convertToJSONContent, extractGoogleDocId} from 'shared/parse'
+import {
+  convertToJSONContent,
+  extractGoogleDocId,
+  extractNotionPageId,
+  NotionRecordMap,
+  notionRecordMapToJSONContent,
+} from 'shared/parse'
 
 const MAX_CONTEXT_LENGTH = 7 * 10 * 30 * 50
 const USE_CACHE = true
 const CACHE_DIR = join(tmpdir(), 'compass-llm-cache')
 const CACHE_TTL_MS = 24 * HOUR_MS
 const PROCESSING_TTL_MS = 10 * MINUTE_MS
+// 100 blocks per chunk — plenty for any realistic profile page, and a hard stop on runaway paging.
+const MAX_NOTION_CHUNKS = 10
 
 type ExtractSource = 'text' | 'url' | 'voice'
 
@@ -644,11 +652,68 @@ ${isVoice ? 'TRANSCRIPT TO ANALYZE' : 'TEXT TO ANALYZE'}:
   return parsed
 }
 
+/**
+ * Notion serves nothing but an empty SPA shell to a plain fetch ("JavaScript must be enabled in
+ * order to use Notion."), and rejects crawler user agents with a 403. Its internal `loadPageChunk`
+ * API, on the other hand, returns the full content of a publicly shared page without auth, so we
+ * use that instead of trying to scrape the HTML.
+ */
+async function fetchNotionRecordMap(pageId: string): Promise<NotionRecordMap> {
+  const blocks: NotionRecordMap['block'] = {}
+  let cursor: any = {stack: []}
+
+  // Long pages come back paginated; keep pulling chunks until Notion hands back an empty cursor.
+  for (let chunk = 0; chunk < MAX_NOTION_CHUNKS; chunk++) {
+    const response = await fetch('https://www.notion.so/api/v3/loadPageChunk', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent':
+          'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
+      body: JSON.stringify({
+        pageId,
+        limit: 100,
+        cursor,
+        chunkNumber: chunk,
+        verticalColumns: false,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      log('Notion API error', {pageId, status: response.status, error: errorText.slice(0, 500)})
+      throw new Error(`Failed to fetch Notion page: ${response.status} ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    Object.assign(blocks, data?.recordMap?.block ?? {})
+
+    // loadPageChunk returns `cursor`; some responses use the plural `cursors` array instead.
+    cursor = data?.cursor ?? data?.cursors?.[0]
+    if (!cursor?.stack?.length) break
+  }
+
+  return {block: blocks}
+}
+
 export async function fetchOnlineProfile(url: string | undefined): Promise<JSONContent> {
   if (!url) throw APIErrors.badRequest('Content or URL is required')
 
   try {
-    // 1. Google Docs shortcut
+    // 1a. Notion shortcut — must run before the generic fetch, which only ever gets the SPA shell.
+    const notionPageId = extractNotionPageId(url)
+    if (notionPageId) {
+      const recordMap = await fetchNotionRecordMap(notionPageId)
+      log('Fetched content from Notion', {
+        url,
+        pageId: notionPageId,
+        blockCount: Object.keys(recordMap.block ?? {}).length,
+      })
+      return notionRecordMapToJSONContent(recordMap, notionPageId)
+    }
+
+    // 1b. Google Docs shortcut
     const googleDocId = extractGoogleDocId(url)
     if (googleDocId) {
       url = `https://docs.google.com/document/d/${googleDocId}/export?format=html`

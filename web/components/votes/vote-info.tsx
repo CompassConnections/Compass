@@ -14,6 +14,7 @@ import {linkifyUrls} from 'web/components/editor/autolink'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {EnglishOnlyWarning} from 'web/components/news/english-only-warning'
+import {choiceFromNumber} from 'web/components/votes/vote-buttons'
 import {STATUS_COLOR, Vote, VoteItem} from 'web/components/votes/vote-item'
 import {TextEditor, useTextEditor} from 'web/components/widgets/editor'
 import {Input} from 'web/components/widgets/input'
@@ -23,7 +24,7 @@ import {useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
-import {getVotes} from 'web/lib/supabase/votes'
+import {getMyVoteChoices, getVotes} from 'web/lib/supabase/votes'
 
 import {ShowMore} from '../widgets/show-more'
 
@@ -33,6 +34,20 @@ export function VoteComponent() {
   const [orderBy, setOrderBy] = useState<OrderBy>('recent')
 
   const {data: votes, refresh: refreshVotes} = useGetter('votes', {orderBy}, getVotes)
+
+  // Which button to highlight on each card. Keyed on the user id rather than fetched once and held,
+  // so signing out doesn't leave the previous account's ballots lit up on the cards.
+  const {data: myChoices, refresh: refreshMyChoices} = useGetter(
+    'my-vote-choices',
+    user ? {userId: user.id} : undefined,
+    getMyVoteChoices,
+  )
+
+  // The tallies and the viewer's own ballot come from two queries, so a vote has to invalidate both —
+  // refreshing only the tallies would move the counts while the highlight stayed on the old choice.
+  const onVoted = async () => {
+    await Promise.all([refreshVotes(), refreshMyChoices()])
+  }
 
   // One lookup for every proposal author on the page, rather than one per card. Anonymous proposals
   // are excluded: their card never renders a creator, so fetching them would leak nothing but would
@@ -224,7 +239,8 @@ export function VoteComponent() {
                 key={vote.id}
                 vote={vote}
                 creator={creatorsById[vote.creator_id]}
-                onVoted={refreshVotes}
+                userChoice={choiceFromNumber(myChoices?.[vote.id])}
+                onVoted={onVoted}
               />
             )
           })}

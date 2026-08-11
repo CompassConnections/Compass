@@ -9,7 +9,7 @@ import {STANCE_CHOICES, STATUS_CHOICES} from 'common/votes/constants'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import {VoteButtons} from 'web/components/votes/vote-buttons'
+import {VoteButtons, type VoteChoice} from 'web/components/votes/vote-buttons'
 import {Avatar} from 'web/components/widgets/avatar'
 import {Content} from 'web/components/widgets/editor'
 import {eyebrow, surface} from 'web/components/widgets/surface'
@@ -70,7 +70,7 @@ function StatusPill(props: {status: string}) {
 // `useUserInStore` per card, and that hook keys its state on the ids it is given, so every card
 // fired its own `get_display_users` with a single id — same request N times over when the same
 // person authored several proposals.
-function Creator(props: {creator: DisplayUser | undefined}) {
+export function Creator(props: {creator: DisplayUser | undefined}) {
   const {creator} = props
   if (!creator?.username) return null
   return (
@@ -123,9 +123,10 @@ function ArgumentPreview(props: {voteId: number; comment: VoteComment; stance: '
 export function VoteItem(props: {
   vote: Vote
   creator?: DisplayUser
+  userChoice?: VoteChoice
   onVoted?: () => void | Promise<void>
 }) {
-  const {vote, creator, onVoted} = props
+  const {vote, creator, userChoice, onVoted} = props
   const t = useT()
   const topFor = vote.top_for ? convertVoteComment(vote.top_for) : undefined
   const topAgainst = vote.top_against ? convertVoteComment(vote.top_against) : undefined
@@ -199,6 +200,7 @@ export function VoteItem(props: {
             abstain: vote.votes_abstain,
             against: vote.votes_against,
           }}
+          userChoice={userChoice}
           onVoted={onVoted}
           disabled={vote.status !== 'voting_open'}
         />

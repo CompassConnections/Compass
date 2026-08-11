@@ -11,10 +11,11 @@ import toast from 'react-hot-toast'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {PageBase} from 'web/components/page-base'
+import {RelativeTimestamp} from 'web/components/relative-timestamp'
 import {SEO} from 'web/components/SEO'
-import {VoteButtons} from 'web/components/votes/vote-buttons'
+import {choiceFromNumber, VoteButtons} from 'web/components/votes/vote-buttons'
 import {VoteCommentSection} from 'web/components/votes/vote-comments'
-import {STATUS_COLOR, Vote} from 'web/components/votes/vote-item'
+import {Creator, STATUS_COLOR, Vote} from 'web/components/votes/vote-item'
 import {Content} from 'web/components/widgets/editor'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import ShortToggle from 'web/components/widgets/short-toggle'
@@ -24,6 +25,7 @@ import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useLiveCommentsOnVote} from 'web/hooks/use-comments-on-vote'
 import {useGetter} from 'web/hooks/use-getter'
 import {useUser} from 'web/hooks/use-user'
+import {useUserInStore} from 'web/hooks/use-user-supabase'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {getVote, getVoteResultsByUser} from 'web/lib/supabase/votes'
@@ -132,6 +134,8 @@ export default function VoteDetailPage() {
             )}
           </Row>
 
+          <Byline vote={typedVote} />
+
           <Content className="w-full" content={typedVote.description as JSONContent} />
 
           <div className="h-px bg-canvas-200/60" />
@@ -150,6 +154,9 @@ export default function VoteDetailPage() {
                 abstain: typedVote.votes_abstain,
                 against: typedVote.votes_against,
               }}
+              // The same ballots that label the comments below say which button is the viewer's own,
+              // so the highlight costs no extra query here.
+              userChoice={choiceFromNumber(user ? choicesByUserId?.[user.id] : undefined)}
               onVoted={() => {
                 refreshVote()
                 // The ballots feed the "voted For" badges and the composer's default stance, so a
@@ -182,6 +189,34 @@ export default function VoteDetailPage() {
         />
       </Col>
     </PageBase>
+  )
+}
+
+/**
+ * Who proposed this, and when — the same author link the proposal list puts on each card, which this
+ * page was missing entirely. Arriving here from a notification or a shared link meant reading a
+ * proposal with no idea who was asking for it.
+ *
+ * Anonymous proposals say so rather than rendering an empty row: the list can leave the slot blank
+ * because the card has other things in it, but here the byline is the only line in that position and
+ * a gap would read as a failed lookup.
+ */
+function Byline(props: {vote: Vote}) {
+  const {vote} = props
+  const t = useT()
+  const creator = useUserInStore(vote.is_anonymous ? null : vote.creator_id)
+
+  return (
+    <Row className="items-center gap-2 text-sm text-ink-500">
+      {vote.is_anonymous ? (
+        <span>{t('vote.detail.anonymous_author', 'Anonymous')}</span>
+      ) : (
+        <Creator creator={creator ?? undefined} />
+      )}
+      {vote.created_time && (
+        <RelativeTimestamp time={new Date(vote.created_time).valueOf()} shortened />
+      )}
+    </Row>
   )
 }
 

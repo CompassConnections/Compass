@@ -16,10 +16,7 @@ import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
 import {usePrivateMessageMembershipsContext} from 'web/components/messaging/private-message-memberships-context'
-import {
-  AccountOnHoldNotice,
-  isAutoBanUnderReviewError,
-} from 'web/components/moderation/account-on-hold'
+import {AccountOnHoldNotice, isAutoBanUnderReviewError,} from 'web/components/moderation/account-on-hold'
 import {useTextEditor} from 'web/components/widgets/editor'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
@@ -101,14 +98,18 @@ export const SendMessageButton = (props: {
     nRowsMin: 5,
   })
 
-  useEffect(() => {
-    if (openComposeModal && editor) {
-      // Focus the editor after a short delay to ensure the modal is fully rendered
-      setTimeout(() => {
-        editor.commands.focus()
-      }, 100)
-    }
-  }, [openComposeModal, editor])
+  // Deliberately NOT focusing the editor when the modal opens for now: on mobile, focusing it pops the
+  // keyboard up immediately and hides most of the modal — the header, the topic chips and the
+  // guidance — before the user has had a chance to read any of it. They tap into the editor
+  // themselves when they're ready to write.
+  // useEffect(() => {
+  //   if (openComposeModal && editor) {
+  //     // Focus the editor after a short delay to ensure the modal is fully rendered
+  //     setTimeout(() => {
+  //       editor.commands.focus()
+  //     }, 100)
+  //   }
+  // }, [openComposeModal, editor])
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const editorWrapRef = useRef<HTMLDivElement>(null)

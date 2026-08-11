@@ -1742,7 +1742,15 @@ const CitySearchBox = (props: {onCitySelected: (city: City | undefined) => void}
         }}
         searchIcon
       />
-      <div className="relative w-full" ref={dropdownRef}>
+      <div
+        className="relative w-full"
+        ref={dropdownRef}
+        // Keep the input focused while a result is being clicked. Without this, mousedown blurs the
+        // input and the blur handler's "best guess" fallback selects `cities[0]` — which unmounts this
+        // box (the parent swaps in the selected-city row) before the click ever lands, so every option
+        // resolved to the first one.
+        onMouseDown={(e) => e.preventDefault()}
+      >
         <Col className="bg-canvas-50 absolute left-0 right-0 top-1 z-10 w-full overflow-hidden rounded-md">
           {focused &&
             cities.map((c) => (

@@ -77,6 +77,7 @@ import {getMe} from './get-me'
 import {getMyReferrals} from './get-my-referrals'
 import {getNotifications} from './get-notifications'
 import {getOutreachQueue} from './get-outreach-queue'
+import {getOutreachStats} from './get-outreach-stats'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfileFeed} from './get-profile-feed'
 import {getProfiles} from './get-profiles'
@@ -638,6 +639,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-notifications': getNotifications,
   'get-options': getOptionsEndpoint,
   'get-outreach-queue': getOutreachQueue,
+  'get-outreach-stats': getOutreachStats,
   'get-my-referrals': getMyReferrals,
   'update-outreach-contact': updateOutreachContact,
   'create-outreach-search': createOutreachSearch,

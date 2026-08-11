@@ -2,6 +2,7 @@ import {BellIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {IS_LOCAL} from 'common/hosting/constants'
 import {
+  getEffectiveStage,
   isAskReadyTrigger,
   MAX_NEXT_ACTION_LENGTH,
   OUTREACH_STAGE_LABELS,
@@ -17,6 +18,7 @@ import {groupBy, orderBy} from 'lodash'
 import Link from 'next/link'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
+import {OutreachStats} from 'web/components/admin/outreach-stats'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {NoSEO} from 'web/components/NoSEO'
@@ -146,6 +148,12 @@ export default function Outreach() {
           <button className={'text-ink-500 text-xs underline'} onClick={refresh}>
             refresh
           </button>
+          {/* The stats live under the queue rather than above it — the queue is what the page is
+              opened to work, and a funnel table between the header and the first row is a screenful
+              of context in front of the first actionable member. */}
+          <a className={'text-ink-500 text-xs underline'} href={'#outreach-stats'}>
+            stats
+          </a>
         </Row>
 
         {STATUS_ORDER.map((status) => {
@@ -192,6 +200,10 @@ export default function Outreach() {
             </Col>
           )
         })}
+
+        <div id={'outreach-stats'} className={'scroll-mt-4'}>
+          <OutreachStats />
+        </div>
       </Col>
     </PageBase>
   )
@@ -305,9 +317,12 @@ function OutreachTableRow(props: {
       </td>
 
       <td className={'py-2 pr-3'}>
+        {/* An unset stage on a thread I have written in shows as 'Opened' rather than 'Not started'.
+            Nothing is saved until it is changed by hand — the default is what the thread already
+            proves, not a guess written back into the table. */}
         <Select
           className={'!h-8 !py-0 !pl-2 !pr-8 !text-xs'}
-          value={row.stage ?? 'not_started'}
+          value={getEffectiveStage(row.stage, row.contacted)}
           onChange={(e) => onSave(row.user.id, {stage: e.target.value as OutreachStage})}
         >
           {OUTREACH_STAGES.map((stage) => (

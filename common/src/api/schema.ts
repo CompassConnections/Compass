@@ -11,7 +11,12 @@ import {COMMENT_TYPES} from 'common/comment'
 import {FeedItem, MAX_FEED_LIMIT} from 'common/feed/feed'
 import {BAN_REASONS} from 'common/moderation/ban'
 import {Notification} from 'common/notifications'
-import {MAX_NEXT_ACTION_LENGTH, OUTREACH_STAGES, OutreachRow} from 'common/outreach/outreach'
+import {
+  MAX_NEXT_ACTION_LENGTH,
+  OUTREACH_STAGES,
+  OutreachRow,
+  OutreachStats,
+} from 'common/outreach/outreach'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
 import {Profile, ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
@@ -1462,6 +1467,18 @@ export const API = (_apiTypeCheck = {
       .strict(),
     returns: {} as {rows: OutreachRow[]},
     summary: 'Get the member outreach queue. Admin only.',
+    tag: 'Admin',
+  },
+  'get-outreach-stats': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    // Deliberately unparameterised: the queue's `newMemberLimit` decides how much of the directory is
+    // worth paging through today, and letting it move these numbers would make a page-size control
+    // look like a change in how outreach is going.
+    props: z.object({}).strict(),
+    returns: {} as OutreachStats,
+    summary: 'Measured outcome rates per outreach stage and per automated send. Admin only.',
     tag: 'Admin',
   },
   'get-my-referrals': {

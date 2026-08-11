@@ -1,8 +1,9 @@
-import {clamp} from 'lodash'
+import {clamp, sumBy} from 'lodash'
 
 /**
  * Where a one-to-one conversation with a member stands. Set by hand: it depends on what was actually
- * said, which no query can infer. Absence of a row means `not_started`.
+ * said, which no query can infer. Absence of a row means whatever `getEffectiveStage` says it means —
+ * `not_started` for someone never written to, `opened` for someone already written to.
  *
  * `excluded` takes a member out of the queue for good — people already known personally, test
  * accounts, anyone outreach does not apply to.
@@ -28,6 +29,22 @@ export const OUTREACH_STAGE_LABELS: Record<OutreachStage, string> = {
   closed: 'Closed',
   excluded: 'Excluded',
 }
+
+/**
+ * The stage to treat a member as being at when nothing is stored for them.
+ *
+ * A stored stage always wins — the whole point of the column is that it records what a query cannot
+ * infer. But the *absence* of one is not evidence of `not_started` once there is a thread you have
+ * written in: it means the row was never filled in, and showing "Not started" next to a conversation
+ * you opened weeks ago is the dashboard contradicting itself. The one thing a query can infer about
+ * the stage is that a message you sent opened it, so that is the only inference made here.
+ *
+ * Nothing is written to `outreach_contacts` on the strength of this. It is what the queue shows before
+ * anyone has said otherwise, and what the stats bucket a member into — so the `not_started` line stays
+ * what it claims to be: members nobody has written to.
+ */
+export const getEffectiveStage = (stage: OutreachStage | null, contacted: boolean): OutreachStage =>
+  stage ?? (contacted ? 'opened' : 'not_started')
 
 export const MAX_NEXT_ACTION_LENGTH = 200
 
@@ -234,10 +251,85 @@ export const getOutreachTier = (p: OutreachTierInput): OutreachTier => {
   return (['C', 'B', 'A'] as const)[level]
 }
 
+/**
+ * The automated messages whose sends are logged in `outreach_sends`.
+ *
+ * Mirrors the CHECK constraint in `20260803_add_outreach_sends.sql`. It lives here rather than in
+ * `backend/shared` because the stats endpoint returns these keys to the dashboard, and the wire type
+ * has to be nameable from both sides.
+ */
+export const OUTREACH_SEND_KINDS = ['city_number', 'empty_room'] as const
+
+export type OutreachSendKind = (typeof OUTREACH_SEND_KINDS)[number]
+
+export const OUTREACH_SEND_KIND_LABELS: Record<OutreachSendKind, string> = {
+  city_number: 'City-number email',
+  empty_room: 'Empty room (#E)',
+}
+
+/**
+ * What the members of one bucket — a stage, or an automated send — actually went on to do.
+ *
+ * Every count is a *measured* behaviour, never a hand-set field: the stage says what was intended,
+ * these say what happened. That is the whole point of the panel, since the stage is set by the same
+ * person whose work it would otherwise be scoring.
+ *
+ * All four are lifetime, not "since the stage was set". A stage carries no reliable timestamp of when
+ * it began (`outreach_contacts.updated_time` moves on every edit), so a time-scoped version would be
+ * available for automated sends and guesswork for everything else — and the comparison between those
+ * two is exactly what the panel exists to make. One imperfect definition applied consistently beats
+ * two that cannot be read against each other.
+ */
+export type OutreachOutcomes = {
+  /** Members in this bucket. Denominator for every rate below. */
+  members: number
+  /** Wrote back in the founder thread — the outreach message landed. */
+  repliedToUs: number
+  /** Sent a message to another member. The product working, rather than the founder working. */
+  messagedMember: number
+  /** Another member wrote to them: they are findable, whether or not they acted on it. */
+  heardFromMember: number
+  /** At least one member joined naming them as referrer — Contact #3's ask, answered. */
+  broughtSomeone: number
+}
+
+/**
+ * Outcome rates for every stage side by side, plus the same rates for the automated sends.
+ *
+ * The two halves are what makes it readable: the automated rows are the control the hand-written
+ * stages are worth measuring against, and `not_started` is the control for both — members nobody has
+ * written to. None of it is a controlled experiment (the queue is deliberately worked best-first, so
+ * the deeper stages start from better members), which is why these are rates to compare, not credit
+ * to claim.
+ */
+export type OutreachStats = {
+  stages: ({stage: OutreachStage} & OutreachOutcomes)[]
+  sends: ({kind: OutreachSendKind} & OutreachOutcomes)[]
+}
+
+/** Percentage of `total` that `n` is, rounded, and 0 when the bucket is empty. */
+export const outcomeRate = (n: number, total: number) => (total ? Math.round((100 * n) / total) : 0)
+
+/** Sum of a set of buckets, for the "all members" line the per-stage rows are read against. */
+export const sumOutcomes = (rows: OutreachOutcomes[]): OutreachOutcomes => ({
+  members: sumBy(rows, 'members'),
+  repliedToUs: sumBy(rows, 'repliedToUs'),
+  messagedMember: sumBy(rows, 'messagedMember'),
+  heardFromMember: sumBy(rows, 'heardFromMember'),
+  broughtSomeone: sumBy(rows, 'broughtSomeone'),
+})
+
 /** One member as the outreach queue sees them: stored state plus everything derived at query time. */
 export type OutreachRow = {
   user: {id: string; name: string; username: string; avatarUrl?: string}
+  /** What was stored by hand, if anything. Read it through `getEffectiveStage`, not directly. */
   stage: OutreachStage | null
+  /**
+   * You have sent them at least one message. Stricter than "a thread exists" on purpose: a member who
+   * wrote to you first has not been contacted by you, and their stage should still read `not_started`
+   * — what is owed there is a reply, not an opening.
+   */
+  contacted: boolean
   nextAction: string | null
   status: OutreachStatus
   tier: OutreachTier

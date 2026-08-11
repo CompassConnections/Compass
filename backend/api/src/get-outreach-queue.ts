@@ -66,6 +66,7 @@ type QueueQueryRow = {
   alert_fired: boolean
   got_member_reply: boolean
   sent_member_message: boolean
+  i_messaged_them: boolean
 }
 
 /**
@@ -191,7 +192,16 @@ const QUEUE_SQL = `
                                on other.channel_id = pm.channel_id and other.user_id != u.id
                  where pm.user_id = u.id
                    and other.user_id != $(adminId)
-                   and pm.visibility != 'system_status')         as sent_member_message
+                   and pm.visibility != 'system_status')         as sent_member_message,
+         -- I have written in their thread. This is what makes the stage default to 'opened' instead of
+         -- 'not_started' — an empty stage column on a conversation I started means nobody recorded it,
+         -- not that it never happened. Membership of a channel is not enough: they may have written
+         -- first, and that is a reply I owe, not an opening I made.
+         exists (select 1
+                 from private_user_messages pm
+                 where pm.channel_id = c.channel_id
+                   and pm.user_id = $(adminId)
+                   and pm.visibility != 'system_status')         as i_messaged_them
   from candidates c
     join users u on u.id = c.user_id
     left join profiles p on p.user_id = u.id
@@ -262,6 +272,7 @@ const toOutreachRow = (row: QueueQueryRow, adminId: string): OutreachRow => {
       avatarUrl: row.avatar_url ?? undefined,
     },
     stage: row.stage,
+    contacted: row.i_messaged_them,
     nextAction: row.next_action,
     status: getStatus(row.channel_id, repliedToUs, daysSinceLastMessage),
     tier: getOutreachTier({

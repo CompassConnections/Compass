@@ -1,9 +1,9 @@
+import {OutreachSendKind} from 'common/outreach/outreach'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 
-/** Mirrors the CHECK constraint in `20260803_add_outreach_sends.sql`. */
-export const OUTREACH_SEND_KINDS = ['city_number', 'empty_room'] as const
-
-export type OutreachSendKind = (typeof OUTREACH_SEND_KINDS)[number]
+// The kinds themselves moved to `common/outreach/outreach` once the dashboard needed to name them;
+// re-exported here so the send helpers stay a single import for callers.
+export {OUTREACH_SEND_KINDS, type OutreachSendKind} from 'common/outreach/outreach'
 
 /**
  * Record that an automated message reached a member.

@@ -1,8 +1,12 @@
 import {
+  getEffectiveStage,
   getLookingForSearchFilters,
   getOutreachTier,
   getProfileCompleteness,
+  outcomeRate,
+  OutreachOutcomes,
   ProfileCompletenessInput,
+  sumOutcomes,
 } from 'common/outreach/outreach'
 
 const emptyProfile: ProfileCompletenessInput = {
@@ -158,5 +162,72 @@ describe('getLookingForSearchFilters', () => {
         prefRelationStyles: null,
       }),
     ).toBeNull()
+  })
+})
+
+describe('outcomeRate', () => {
+  it('is a rounded percentage of the bucket', () => {
+    expect(outcomeRate(1, 3)).toBe(33)
+    expect(outcomeRate(3, 3)).toBe(100)
+  })
+
+  // An empty stage is normal — nothing has reached it yet — and must not render NaN%.
+  it('is zero for an empty bucket rather than a division by zero', () => {
+    expect(outcomeRate(0, 0)).toBe(0)
+  })
+})
+
+describe('sumOutcomes', () => {
+  const a: OutreachOutcomes = {
+    members: 10,
+    repliedToUs: 4,
+    messagedMember: 3,
+    heardFromMember: 2,
+    broughtSomeone: 1,
+  }
+  const b: OutreachOutcomes = {
+    members: 5,
+    repliedToUs: 1,
+    messagedMember: 1,
+    heardFromMember: 0,
+    broughtSomeone: 0,
+  }
+
+  it('adds every column, so the total line reconciles with the rows above it', () => {
+    expect(sumOutcomes([a, b])).toEqual({
+      members: 15,
+      repliedToUs: 5,
+      messagedMember: 4,
+      heardFromMember: 2,
+      broughtSomeone: 1,
+    })
+  })
+
+  it('sums to zero when there is nothing to sum', () => {
+    expect(sumOutcomes([])).toEqual({
+      members: 0,
+      repliedToUs: 0,
+      messagedMember: 0,
+      heardFromMember: 0,
+      broughtSomeone: 0,
+    })
+  })
+})
+
+describe('getEffectiveStage', () => {
+  it('shows a thread I opened as opened, not as not started', () => {
+    expect(getEffectiveStage(null, true)).toBe('opened')
+  })
+
+  it('leaves someone I have never written to at not started', () => {
+    expect(getEffectiveStage(null, false)).toBe('not_started')
+  })
+
+  // The column exists to record what a query cannot infer, so an inference must never overrule it —
+  // including the deliberate act of setting a contacted member back to 'not_started'.
+  it('never overrules a stage that was set by hand', () => {
+    expect(getEffectiveStage('closed', true)).toBe('closed')
+    expect(getEffectiveStage('not_started', true)).toBe('not_started')
+    expect(getEffectiveStage('excluded', false)).toBe('excluded')
   })
 })

@@ -36,6 +36,24 @@ export const getReferredMembers = async (
 }
 
 /**
+ * The member a `referred_by_username` names, or null when it names nobody.
+ *
+ * `?referrer=` is whatever was in the URL, so the column can hold a username that never existed or one
+ * whose account is gone. Every caller has to handle that: crediting a name that resolves to no member
+ * is worse than crediting nobody.
+ */
+export const getReferrer = async (
+  username: string,
+  pg?: SupabaseDirectClient,
+): Promise<{id: string; name: string; username: string} | null> => {
+  pg = pg ?? createSupabaseDirectClient()
+  return await pg.oneOrNone<{id: string; name: string; username: string}>(
+    `select id, name, username from users where username = $1`,
+    [username],
+  )
+}
+
+/**
  * Tell a member that someone they brought has arrived.
  *
  * The gap this closes: `?referrer=` has always been recorded and never surfaced, so bringing someone
@@ -53,9 +71,7 @@ export const notifyReferrerOfSignup = async (
 ) => {
   pg = pg ?? createSupabaseDirectClient()
 
-  const referrer = await pg.oneOrNone<{id: string}>(`select id from users where username = $1`, [
-    referrerUsername,
-  ])
+  const referrer = await getReferrer(referrerUsername, pg)
   if (!referrer) return
 
   const privateUser = await getPrivateUser(referrer.id)

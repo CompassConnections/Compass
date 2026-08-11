@@ -3,7 +3,7 @@ import {setProfileOptions} from 'api/update-options'
 import {APIErrors} from 'common/api/utils'
 import {defaultLocale} from 'common/constants'
 import {sendDiscordMessage} from 'common/discord/core'
-import {DEPLOYED_WEB_URL} from 'common/envs/constants'
+import {newMemberDiscordMessage} from 'common/discord/messages'
 import {debug} from 'common/logger'
 import {trimStrings} from 'common/parsing'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
@@ -16,7 +16,7 @@ import * as admin from 'firebase-admin'
 import {getIp, track} from 'shared/analytics'
 import {getBucket} from 'shared/firebase-utils'
 import {generateAvatarUrl} from 'shared/helpers/generate-and-update-avatar-urls'
-import {notifyReferrerOfSignup} from 'shared/outreach/referrals'
+import {getReferrer, notifyReferrerOfSignup} from 'shared/outreach/referrals'
 import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
@@ -161,9 +161,21 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
     } catch (e) {
       console.error('Failed to set last online time', e)
     }
+    // Resolved before the announcement rather than inside it, so a failed lookup costs the mention
+    // and not the whole post. Null covers both "nobody referred them" and "the name refers to no
+    // member" — `?referrer=` is whatever was in the URL, and a link to a profile that does not exist
+    // is worse in a public channel than saying nothing.
+    let referrer: {name: string; username: string} | null = null
     try {
-      const message: string = `[**${user.name}**](${DEPLOYED_WEB_URL}/${user.username}) just created a profile`
-      await sendDiscordMessage(message, 'members')
+      if (newProfileRow.referred_by_username) {
+        referrer = await getReferrer(newProfileRow.referred_by_username, pg)
+      }
+    } catch (e) {
+      console.error('Failed to resolve referrer for discord new profile', e)
+    }
+
+    try {
+      await sendDiscordMessage(newMemberDiscordMessage(user, referrer), 'members')
     } catch (e) {
       console.error('Failed to send discord new profile', e)
     }

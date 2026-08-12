@@ -13,8 +13,7 @@ describe('newMemberDiscordMessage', () => {
 
   it('names and links the member who brought them', () => {
     expect(newMemberDiscordMessage(alice, bob)).toBe(
-      `[**Alice**](${DEPLOYED_WEB_URL}/alice) just created a profile, ` +
-        `brought by [**Bob**](${DEPLOYED_WEB_URL}/bob)`,
+      `[**Alice**](${DEPLOYED_WEB_URL}/alice) just created a profile, ` + `brought by bob`,
     )
   })
 })

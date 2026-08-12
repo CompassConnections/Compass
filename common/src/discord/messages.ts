@@ -21,4 +21,4 @@ export const newMemberDiscordMessage = (
   referrer: DiscordMember | null,
 ): string =>
   `${profileLink(member)} just created a profile` +
-  (referrer ? `, brought by ${profileLink(referrer)}` : '')
+  (referrer ? `, brought by ${referrer.username}` : '')

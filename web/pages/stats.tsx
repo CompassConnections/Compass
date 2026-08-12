@@ -77,7 +77,7 @@ function HeroBand({
   members: number | null
   active: number | null | undefined
   countries: number | null | undefined
-  discussions: number | null
+  discussions: number | null | undefined
   messages: number | null | undefined
 }) {
   const t = useT()
@@ -204,9 +204,11 @@ function ActivityPanel({
  */
 function ActivitySection({
   data,
+  discussions,
   messages,
 }: {
   data: Record<string, number | null>
+  discussions: number | null | undefined
   messages: number | null | undefined
 }) {
   const t = useT()
@@ -215,7 +217,7 @@ function ActivitySection({
       icon: ChatBubbleLeftRightIcon,
       title: t('stats.group.conversations', 'Conversations'),
       rows: [
-        {label: t('stats.discussions', 'Discussions'), value: data.private_user_message_channels},
+        {label: t('stats.discussions', 'Discussions'), value: discussions},
         {label: t('stats.messages', 'Messages'), value: messages},
       ],
     },
@@ -405,8 +407,11 @@ export default function Stats() {
       // No 'profiles' here: the anon/authenticated SELECT grant on that table was revoked (bulk-read
       // cap, migration 20260730_cap_profiles_users_reads.sql), so the PostgREST count threw and the
       // member count silently dropped out of the hero band. It comes from the cached /stats aggregate.
+      // No 'private_user_message_channels' here either: the discussion count comes from /stats
+      // (`conversations` = channels with at least one message), so the stats page and the
+      // home/about stat bands report the same number. Counting the channels table instead also
+      // counted channels created but never written in, which read higher than the about page.
       const tables = [
-        'private_user_message_channels',
         'compatibility_prompts',
         'compatibility_answers',
         'votes',
@@ -483,7 +488,7 @@ export default function Stats() {
               members={statsData?.profiles ?? null}
               active={statsData?.activeMembers}
               countries={statsData?.countryCount}
-              discussions={data.private_user_message_channels}
+              discussions={statsData?.conversations}
               messages={statsData?.messages}
             />
 
@@ -497,7 +502,11 @@ export default function Stats() {
             </Section>
 
             {/* ── Activity & participation ── */}
-            <ActivitySection data={data} messages={statsData?.messages} />
+            <ActivitySection
+              data={data}
+              discussions={statsData?.conversations}
+              messages={statsData?.messages}
+            />
           </>
         )}
       </div>

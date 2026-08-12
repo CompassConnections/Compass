@@ -1,8 +1,17 @@
+import {BirthDateString} from 'common/profiles/birth-date'
 import {OptionTableKey} from 'common/profiles/constants'
 import {Row, run, SupabaseClient} from 'common/supabase/utils'
 import {User} from 'common/user'
 
-export type ProfileRow = Row<'profiles'>
+/**
+ * `birth_date` is spelled out rather than left to the generated row type so this compiles against a
+ * `schema.ts` regenerated either side of the birth-date migration. Drop the intersection once
+ * `regen-types-dev` has run against a database that has the column.
+ *
+ * `age` stays on the row — it is a column, kept in step with `birth_date` by the database (see
+ * `common/profiles/birth-date`), so reads are unchanged and nothing outside the form writes it.
+ */
+export type ProfileRow = Row<'profiles'> & {birth_date?: BirthDateString | null}
 export type ProfileWithoutUser = ProfileRow & {[K in OptionTableKey]?: string[]}
 export type Profile = ProfileWithoutUser & {
   user: User

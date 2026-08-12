@@ -67,6 +67,11 @@ export const MultiCheckbox = (props: {
   addOption?: (label: string) => string | {key: string; value: string} | null | undefined
   addPlaceholder?: string
   translationPrefix?: string
+  /**
+   * Rendered as the last item of the chip row, so it wraps with the chips instead of claiming a line
+   * below them. Where a `ShowMoreOptions` link goes.
+   */
+  trailing?: React.ReactNode
 }) => {
   const {
     choices,
@@ -77,6 +82,7 @@ export const MultiCheckbox = (props: {
     addOption,
     addPlaceholder,
     translationPrefix,
+    trailing,
   } = props
 
   // Keep a local merged copy to allow optimistic adds while remaining in sync with props
@@ -196,6 +202,7 @@ export const MultiCheckbox = (props: {
             }}
           />
         ))}
+        {trailing}
       </Row>
       {addOption && newLabel.trim() && filteredEntries.length === 0 && (
         <div className="px-2 text-sm text-ink-500">

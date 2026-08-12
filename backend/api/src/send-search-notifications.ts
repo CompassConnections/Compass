@@ -23,6 +23,7 @@ import {groupBy, keyBy, uniq, uniqBy} from 'lodash'
 import {createT} from 'shared/locale'
 import {sendMobileNotifications, sendWebNotifications} from 'shared/mobile'
 import {log} from 'shared/monitoring/log'
+import {refreshProfileAges} from 'shared/profiles/refresh-ages'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 import {insertNotificationToSupabase} from 'shared/supabase/notifications'
 
@@ -253,6 +254,12 @@ export const notifyBookmarkedSearch = async (
 
 export const sendSearchNotifications = async () => {
   const pg = createSupabaseDirectClient()
+
+  // Birthdays before anything else reads an age: this is the daily pass that keeps `profiles.age` in
+  // step with `profiles.birth_date`, and doing it before the snapshot is taken means both sides of
+  // the diff below agree about how old everyone is.
+  // For better task separation, could be its own scheduled job in the future.
+  await refreshProfileAges(pg)
 
   // A crashed run leaves its staging snapshot behind on purpose. Reusing it means the searches it
   // already emailed are skipped by their watermark, and the rest see exactly the diff they would

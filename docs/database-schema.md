@@ -54,6 +54,7 @@ CREATE TABLE profiles (
     age INTEGER NULL,
     bio JSONB,
     bio_length integer null,
+    birth_date DATE,
     born_in_location TEXT,
     city TEXT,
     city_latitude NUMERIC(9, 6),
@@ -115,7 +116,14 @@ CREATE TABLE profiles (
 
 **Columns:**
 
-- `age`: User's age
+- `age`: User's age. **Derived, never written by hand** — a trigger recomputes it from `birth_date` on
+  every write, and `refresh_profile_ages()` (run daily by the search-alert job, or on its own via
+  `/internal/refresh-profile-ages`) moves it on for anyone whose birthday has passed. Filters and
+  indexes still use this column; it is the read shape of `birth_date`.
+- `birth_date`: Source of truth for age. Always the **1st of July of the birth year** — we ask members
+  for a year, never a full date of birth, and a CHECK constraint enforces it so the table cannot hold
+  a real birthday whatever a caller sends. Excluded from list endpoints and from
+  `get-user-and-profile`; see `common/src/profiles/birth-date.ts`.
 - `bio`: JSONB field containing detailed biography information
 - `bio_length`: Length of biography text
 - `born_in_location`: Location where user was born

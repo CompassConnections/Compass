@@ -53,6 +53,9 @@ describe('getUserAndProfile', () => {
           interests: mockInterests.map((e) => e.id),
           causes: mockCauses.map((e) => e.id),
           work: mockWork.map((e) => e.id),
+          // Anyone can ask this endpoint for anyone's profile, so the date behind the age is blanked
+          // out here — only `age`, which the database derives from it, ever reaches a reader.
+          birth_date: null,
         },
       })
 

@@ -9,8 +9,11 @@ $$;
 
 CREATE TABLE IF NOT EXISTS profiles
 (
+    -- Derived from birth_date by profiles_sync_age() and refreshed daily — never written by hand.
     age                       INTEGER                                                 NULL,
     bio                       JSONB,
+    -- Always the 1st of July of the birth year — a year is all we ask for and all this may hold.
+    birth_date                DATE,
     bio_length                integer                                                 null,
     born_in_location          TEXT,
     city                      TEXT,
@@ -116,6 +119,7 @@ CREATE INDEX profiles_active_idx
         AND disabled = false;
 
 CREATE INDEX profiles_age_idx ON profiles (age);
+CREATE INDEX profiles_birth_date_idx ON profiles (birth_date);
 CREATE INDEX profiles_drinks_idx ON profiles (drinks_per_month);
 CREATE INDEX profiles_has_kids_idx ON profiles (has_kids);
 CREATE INDEX profiles_wants_kids_idx ON profiles (wants_kids_strength);

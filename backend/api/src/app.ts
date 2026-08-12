@@ -46,6 +46,8 @@ import {OpenAPIV3} from 'openapi-types'
 import {withMonitoringContext} from 'shared/monitoring/context'
 import {log} from 'shared/monitoring/log'
 import {metrics} from 'shared/monitoring/metrics'
+import {refreshProfileAges} from 'shared/profiles/refresh-ages'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 import swaggerUi from 'swagger-ui-express'
 import {z, ZodFirstPartyTypeKind, ZodTypeAny} from 'zod'
 
@@ -756,6 +758,26 @@ app.post(pathWithPrefix('/internal/send-search-notifications'), async (req, res)
       'Failed to send [daily notifications](https://console.cloud.google.com/cloudscheduler?project=compass-130ba) for bookmarked searches...',
       'health',
     )
+    return res.status(500).json({error: 'Internal server error'})
+  }
+})
+
+// Ages tick over at midnight rather than on save, so `profiles.age` needs a daily nudge (see
+// refreshProfileAges). The daily search-alert job above already runs it — this is the same pass on
+// its own, for scheduling it independently or catching up by hand after an outage. Running it twice
+// costs nothing: it only touches rows whose cached age is wrong.
+app.post(pathWithPrefix('/internal/refresh-profile-ages'), async (req, res) => {
+  const apiKey = req.header('x-api-key')
+  if (!IS_LOCAL && apiKey !== process.env.COMPASS_API_KEY) {
+    return res.status(401).json({error: 'Unauthorized'})
+  }
+
+  try {
+    const updated = await refreshProfileAges(createSupabaseDirectClient())
+    return res.status(200).json({status: 'success', updated})
+  } catch (err) {
+    console.error('Failed to refresh profile ages:', err)
+    await sendDiscordMessage('Failed to refresh profile ages...', 'health')
     return res.status(500).json({error: 'Internal server error'})
   }
 })

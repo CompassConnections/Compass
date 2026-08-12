@@ -34,6 +34,7 @@ import {DEFAULT_FEED_VISIBILITY, feedVisibilityForMembersOnly} from 'common/feed
 import {DEFAULT_GENDERS, EXTRA_GENDERS} from 'common/gender'
 import {debug} from 'common/logger'
 import {isUrl} from 'common/parsing'
+import {ageFromBirthDate, MAX_PROFILE_AGE, MIN_PROFILE_AGE} from 'common/profiles/birth-date'
 import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {BaseUser} from 'common/user'
@@ -53,6 +54,7 @@ import {Row} from 'web/components/layout/row'
 import {CustomLink} from 'web/components/links'
 import {LLMExtractSection} from 'web/components/llm-extract-section'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {BirthDateInput} from 'web/components/profile/birth-date-input'
 import {City, CityRow, profileToCity, useCitySearch} from 'web/components/search-location'
 import {SocialLinksSection} from 'web/components/social-links-section'
 import {VoiceAutofillSection} from 'web/components/voice-autofill-section'
@@ -61,6 +63,7 @@ import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
 import {Input} from 'web/components/widgets/input'
 import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
 import {Select} from 'web/components/widgets/select'
+import {ShowMoreOptions} from 'web/components/widgets/show-more-options'
 import {Slider} from 'web/components/widgets/slider'
 import {ChoiceMap, ChoiceSetter, useChoicesContext} from 'web/hooks/use-choices'
 import {api} from 'web/lib/api'
@@ -99,23 +102,20 @@ function PrefGenderCheckbox(props: {
   )
 
   return (
-    <>
-      <MultiCheckbox
-        choices={visibleChoices}
-        translationPrefix={'profile.gender'}
-        selected={selected}
-        onChange={(selected) => setProfile('pref_gender', selected)}
-      />
-      {!showAll && (
-        <button
-          type="button"
-          className="text-primary-700 mt-1 text-sm font-medium hover:underline"
-          onClick={() => setShowAll(true)}
-        >
-          {t('profile.gender.show_more', 'Show more options')}
-        </button>
-      )}
-    </>
+    <MultiCheckbox
+      choices={visibleChoices}
+      translationPrefix={'profile.gender'}
+      selected={selected}
+      onChange={(selected) => setProfile('pref_gender', selected)}
+      trailing={
+        !showAll && (
+          <ShowMoreOptions
+            label={t('profile.gender.show_more', 'Show more options')}
+            onClick={() => setShowAll(true)}
+          />
+        )
+      }
+    />
   )
 }
 
@@ -358,15 +358,17 @@ export const OptionalProfileUserForm = (props: {
       finalProfile = {...profile, ...extractedProfile}
     }
 
-    // Validate age before submitting
-    if (typeof finalProfile['age'] === 'number') {
-      if (finalProfile['age'] < 18) {
+    // Validate age before submitting. Off the birth date rather than `age`, which the database
+    // derives — an auto-fill that only worked out an approximate year still has to clear 18.
+    const finalAge = ageFromBirthDate(finalProfile['birth_date']) ?? finalProfile['age']
+    if (typeof finalAge === 'number') {
+      if (finalAge < MIN_PROFILE_AGE) {
         setAgeError(t('profile.optional.age.error_min', 'You must be at least 18 years old'))
         setIsSubmitting(false)
         errorToast()
         return
       }
-      if (finalProfile['age'] > 100) {
+      if (finalAge > MAX_PROFILE_AGE) {
         setAgeError(t('profile.optional.age.error_max', 'Please enter a valid age'))
         setIsSubmitting(false)
         errorToast()
@@ -559,31 +561,17 @@ export const OptionalProfileUserForm = (props: {
         <Category title={t('profile.optional.category.basics', 'Basics')} className={'mt-0'} />
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>{t('profile.optional.age', 'Age')}</label>
-          <Input
-            type="number"
-            className={'!w-24'}
-            placeholder={t('profile.optional.age', 'Age')}
-            value={profile['age'] ?? undefined}
-            min={18}
-            max={100}
-            step={1}
-            error={!!ageError}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              const value = e.target.value ? Number(e.target.value) : null
-              if (value !== null && value < 18) {
-                setAgeError(
-                  t('profile.optional.age.error_min', 'You must be at least 18 years old'),
-                )
-              } else if (value !== null && value > 100) {
-                setAgeError(t('profile.optional.age.error_max', 'Please enter a valid age'))
-              } else {
-                setAgeError(null)
-              }
-              setProfile('age', value)
+          <BirthDateInput
+            birthDate={profile['birth_date']}
+            error={ageError}
+            setError={setAgeError}
+            onChange={(birthDate) => {
+              setProfile('birth_date', birthDate)
+              // The database derives `age` from the date on write; keeping the local row in step
+              // means the preview card and the compatibility hints don't lag a save behind.
+              setProfile('age', ageFromBirthDate(birthDate))
             }}
           />
-          {ageError && <p className="text-error text-sm mt-1">{ageError}</p>}
         </Col>
 
         <Row className={'items-center gap-2'}>
@@ -604,16 +592,14 @@ export const OptionalProfileUserForm = (props: {
                 ) as any
               }
               setChoice={(c) => setProfile('gender', c)}
-            />
-            {!showAllGenders && (
-              <button
-                type="button"
-                className="text-primary-700 mt-1 text-sm font-medium hover:underline"
-                onClick={() => setShowAllGenders(true)}
-              >
-                {t('profile.gender.show_more', 'Show more options')}
-              </button>
-            )}
+            >
+              {!showAllGenders && (
+                <ShowMoreOptions
+                  label={t('profile.gender.show_more', 'Show more options')}
+                  onClick={() => setShowAllGenders(true)}
+                />
+              )}
+            </ChoicesToggleGroup>
             {showAllGenders && (
               <>
                 <p className={clsx(labelClassName, 'mt-1')}>
@@ -959,16 +945,15 @@ export const OptionalProfileUserForm = (props: {
                   selected={profile['orientation'] ?? []}
                   translationPrefix={'profile.orientation'}
                   onChange={(selected) => setProfile('orientation', selected)}
+                  trailing={
+                    !showAllOrientations && (
+                      <ShowMoreOptions
+                        label={t('profile.orientation.show_more', 'Show more options')}
+                        onClick={() => setShowAllOrientations(true)}
+                      />
+                    )
+                  }
                 />
-                {!showAllOrientations && (
-                  <button
-                    type="button"
-                    className="text-primary-700 mt-1 text-sm font-medium hover:underline"
-                    onClick={() => setShowAllOrientations(true)}
-                  >
-                    {t('profile.orientation.show_more', 'Show more options')}
-                  </button>
-                )}
                 {showAllOrientations && (
                   <>
                     <p className={clsx(labelClassName, 'mt-1')}>
@@ -1294,16 +1279,15 @@ export const OptionalProfileUserForm = (props: {
             selected={(profile as any)['neurotype'] ?? []}
             translationPrefix={'profile.neurotype'}
             onChange={(selected) => setProfile('neurotype' as any, selected)}
+            trailing={
+              !showAllNeurotypes && (
+                <ShowMoreOptions
+                  label={t('profile.neurotype.show_more', 'Show more options')}
+                  onClick={() => setShowAllNeurotypes(true)}
+                />
+              )
+            }
           />
-          {!showAllNeurotypes && (
-            <button
-              type="button"
-              className="text-primary-700 mt-1 text-sm font-medium hover:underline"
-              onClick={() => setShowAllNeurotypes(true)}
-            >
-              {t('profile.neurotype.show_more', 'Show more options')}
-            </button>
-          )}
           {showAllNeurotypes && (
             <>
               <p className={clsx(labelClassName, 'mt-1')}>

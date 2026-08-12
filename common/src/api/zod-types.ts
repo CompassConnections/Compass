@@ -1,5 +1,6 @@
 import {type JSONContent} from '@tiptap/core'
 import {FEED_VISIBILITY_LEVELS} from 'common/feed/feed'
+import {MAX_PROFILE_AGE, MIN_PROFILE_AGE, STORED_BIRTH_DATE_REGEX} from 'common/profiles/birth-date'
 import {arrify} from 'common/util/array'
 import {z} from 'zod'
 
@@ -49,7 +50,13 @@ const linkValueSchema = z.union([z.string(), z.array(z.string())]).nullable()
 
 // TODO: merge the two below when the deprecated /create-profile is deleted
 export const baseProfilesSchema = z.object({
-  age: z.number().min(18).max(100).optional().nullable(),
+  // `age` is derived from `birth_date` by the database and is only still accepted here for clients
+  // that predate the column — whatever they send is overwritten from the date. New writers send
+  // `birth_date` instead.
+  age: z.number().min(MIN_PROFILE_AGE).max(MAX_PROFILE_AGE).optional().nullable(),
+  // Mid-year dates only: we ask for a birth year, so a caller sending a real date of birth is
+  // rejected here rather than quietly storing one. The database check constraint says the same.
+  birth_date: z.string().regex(STORED_BIRTH_DATE_REGEX).optional().nullable(),
   allow_direct_messaging: zBoolean.optional(),
   allow_interest_indicating: zBoolean.optional(),
   bio: contentSchema.optional().nullable(),

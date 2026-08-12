@@ -10,6 +10,7 @@ import {toKey} from 'common/parsing'
 import {Profile} from 'common/profiles/profile'
 import {useState} from 'react'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {ShowMoreOptions} from 'web/components/widgets/show-more-options'
 import {useT} from 'web/lib/locale'
 import stringOrStringArrayToText from 'web/lib/util/string-or-string-array-to-text'
 
@@ -80,25 +81,22 @@ export function OrientationFilter(props: {
   )
 
   return (
-    <>
-      <MultiCheckbox
-        selected={selected}
-        choices={visibleChoices}
-        translationPrefix={'profile.orientation'}
-        onChange={(c) => {
-          updateFilter({orientation: c} as any)
-        }}
-        optionsClassName={className}
-      />
-      {!showAll && (
-        <button
-          type="button"
-          className="text-primary-600 mt-1 text-sm"
-          onClick={() => setShowAll(true)}
-        >
-          {t('filter.orientation.show_more', 'Show more orientations')}
-        </button>
-      )}
-    </>
+    <MultiCheckbox
+      selected={selected}
+      choices={visibleChoices}
+      translationPrefix={'profile.orientation'}
+      onChange={(c) => {
+        updateFilter({orientation: c} as any)
+      }}
+      optionsClassName={className}
+      trailing={
+        !showAll && (
+          <ShowMoreOptions
+            label={t('filter.orientation.show_more', 'Show more orientations')}
+            onClick={() => setShowAll(true)}
+          />
+        )
+      }
+    />
   )
 }

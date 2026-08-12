@@ -13,6 +13,7 @@ import {
   RelationshipStyleTuple,
   ReligionTuple,
 } from 'common/choices'
+import {birthYearFromStatedAge} from 'common/profiles/birth-date'
 
 import {clickCheckbox, optionChip, optionChipInput} from '../utils/optionChip'
 
@@ -118,7 +119,7 @@ export class SignUpPage {
     this.locationField = page.getByPlaceholder('Search city...')
     this.headlineField = page.getByTestId('headline')
     this.keywordsField = page.getByTestId('keywords')
-    this.ageField = page.getByPlaceholder('Age', {exact: true})
+    this.ageField = page.getByTestId('birth-year')
     this.feetHeightField = page.getByTestId('height-feet')
     this.inchesHeightField = page.getByTestId('height-inches')
     this.centimetersHeightField = page.getByTestId('height-centimeters')
@@ -206,10 +207,16 @@ export class SignUpPage {
     await expect(this.page.locator(`:text-is("${gender[0]}")`)).toBeChecked()
   }
 
+  /**
+   * The form asks for a year of birth rather than an age, so that a profile does not go stale a year
+   * after it is filled in — and never for a full date of birth. The fixtures still describe people
+   * by age, so translate with the same rule the app uses, which keeps the assertions downstream
+   * comparing the saved `age` with the fixture's age exact whatever time of year the suite runs.
+   */
   async fillAge(age: string | undefined) {
     if (!age) return
     await expect(this.ageField).toBeVisible()
-    await this.ageField.fill(age)
+    await this.ageField.fill(String(birthYearFromStatedAge(Number(age))))
   }
 
   async fillHeight(height: {feet?: string; inches?: string; centimeters?: string}) {

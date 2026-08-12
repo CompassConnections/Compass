@@ -47,6 +47,11 @@ export async function getUserAndProfile(username: string) {
 
   const profileWithItems = {
     ...profileRes,
+    // A profile page shows an age, and `age` is derived from the date server-side, so the date has
+    // no reason to leave: this endpoint serves anyone's profile to anyone, and an owner editing
+    // their own reads it back through get_profile_by_user_id instead. Nulled rather than dropped so
+    // the row keeps the shape callers type against.
+    birth_date: null,
     interests: interestsRes.map((r: any) => String(r.id)),
     causes: causesRes.map((r: any) => String(r.id)),
     work: workRes.map((r: any) => String(r.id)),

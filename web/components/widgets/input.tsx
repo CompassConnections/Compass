@@ -47,6 +47,10 @@ export const Input = forwardRef(
         onChange={handleChange}
         className={clsx(
           'w-full bg-canvas-50 invalid:border-error invalid:text-error  invalid:placeholder-rose-700 focus:outline-none focus:ring-0 disabled:cursor-not-allowed md:text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0 [&::-webkit-outer-spin-button]:m-0',
+          // Firefox ignores the -webkit- spin-button rules above and draws its own pair of arrows
+          // inside the field, which on a narrow numeric input (a year, a height) takes a third of
+          // the box. `appearance: textfield` is the half of the trick that it does listen to.
+          rest.type === 'number' && '[appearance:textfield]',
           error
             ? 'border-error text-error focus:border-error focus:ring-error placeholder-rose-700' // matches invalid: styles
             : '',

@@ -15,7 +15,8 @@ import {labelClassName} from 'web/pages/signup'
 const LAST_STEP = 0
 
 export const initialRequiredState = {
-  age: undefined,
+  // `age` is derived from `birth_date` by the database, so the form only ever sets the date.
+  birth_date: undefined,
   gender: '',
   pref_gender: [],
   pref_age_min: undefined,

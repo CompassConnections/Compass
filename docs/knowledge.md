@@ -414,7 +414,7 @@ const {data, error} = await tryCatch(
 
 if (error) throw APIError(500, 'Error creating profile: ' + error.message)
 
-await update(pg, 'profiles', 'user_id', {user_id: auth.uid, age: 99})
+await update(pg, 'profiles', 'user_id', {user_id: auth.uid, drinks_per_month: 4})
 
 await updateData(pg, 'private_users', {id: userId, notifications: {...}})
 ```

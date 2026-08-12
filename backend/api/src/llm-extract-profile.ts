@@ -24,6 +24,7 @@ import {
   SUBSTANCE_PREFERENCE_CHOICES,
 } from 'common/choices'
 import {debug} from 'common/logger'
+import {ageFromBirthDate, birthDateFromStated} from 'common/profiles/birth-date'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {SITE_ORDER} from 'common/socials'
 import {removeNullOrUndefinedProps} from 'common/util/object'
@@ -64,7 +65,7 @@ interface ParsedBody {
 // Bump whenever the extraction prompt changes. The cache key is otherwise derived purely from the
 // request, so a prompt fix would keep returning the old answer for the 24h TTL — which looks exactly
 // like the fix not working.
-const PROMPT_VERSION = 2
+const PROMPT_VERSION = 3
 
 function getCacheKey(parsedBody: ParsedBody): string {
   if (!USE_CACHE) return ''
@@ -218,6 +219,20 @@ async function validateProfileFields(
       {} as Record<string, any>,
     )
   }
+
+  // Whether the document stated a year or an age, store a birth date — an extracted age is only
+  // true for the year the document was written, and profiles built from one are otherwise wrong
+  // forever after. A bare age is dated from now, because now is when it was read to us.
+  const birthDate = birthDateFromStated({
+    // Asked of the model, but not a profile column — a year is stored as its mid-year date.
+    birthYear: (llmProfile as any).birth_year,
+    age: result.age,
+  })
+  delete (result as any).birth_year
+  result.birth_date = birthDate ?? undefined
+  // `age` is derived from `birth_date` by the database; this only keeps the copy the form previews in
+  // step with the date we just worked out.
+  result.age = ageFromBirthDate(birthDate) ?? undefined
 
   // Validate age preferences
   if (result.pref_age_min !== undefined) {
@@ -492,9 +507,19 @@ export async function callLLM(
     neurotype: Object.values(NEUROTYPE_CHOICES),
   }
 
-  const PROFILE_FIELDS: Partial<Record<keyof ProfileWithoutUser, any>> = {
-    // Basic info
-    age: 'Number. Age in years (between 18 and 100).',
+  const PROFILE_FIELDS: Partial<Record<keyof ProfileWithoutUser | 'birth_year', any>> = {
+    // Basic info.
+    //
+    // Two ways of saying the same thing, because documents say it both ways and we want whichever
+    // one is actually written there. Working out the stored date is done in code afterwards (see
+    // validateProfileFields): a model asked to subtract years from today's date gets it wrong often
+    // enough to matter, and asking it only to report what it read cannot go stale.
+    //
+    // Note we never ask for a full date of birth, even from a document that gives one — see
+    // `common/profiles/birth-date` for why we do not want to be holding one.
+    birth_year:
+      'Number. Year of birth, if stated — including as part of a full date of birth, of which you should report ONLY the year. Do NOT compute it from an age.',
+    age: 'Number. Age in years (between 18 and 100), exactly as stated in the text — never worked out from a date.',
     gender: `String. One of: ${validChoices.pref_gender?.join(', ')}. If multiple mentioned, use the most likely one. Infer if you have enough evidence`,
     gender_details:
       'String. Free-form elaboration on their gender identity, only if they say more than the label itself.',

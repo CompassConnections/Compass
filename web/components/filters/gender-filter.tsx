@@ -6,6 +6,7 @@ import {Profile} from 'common/profiles/profile'
 import {useState} from 'react'
 import {Row} from 'web/components/layout/row'
 import {MultiCheckbox} from 'web/components/multi-checkbox'
+import {ShowMoreOptions} from 'web/components/widgets/show-more-options'
 import {useT} from 'web/lib/locale'
 
 import GenderIcon from '../gender-icon'
@@ -57,24 +58,21 @@ export function GenderFilter(props: {
   )
 
   return (
-    <>
-      <MultiCheckbox
-        selected={selected}
-        choices={visibleChoices}
-        translationPrefix={'profile.gender'}
-        onChange={(c) => {
-          updateFilter({genders: c})
-        }}
-      />
-      {!showAll && (
-        <button
-          type="button"
-          className="text-primary-600 mt-1 text-sm"
-          onClick={() => setShowAll(true)}
-        >
-          {t('filter.gender.show_more', 'Show more genders')}
-        </button>
-      )}
-    </>
+    <MultiCheckbox
+      selected={selected}
+      choices={visibleChoices}
+      translationPrefix={'profile.gender'}
+      onChange={(c) => {
+        updateFilter({genders: c})
+      }}
+      trailing={
+        !showAll && (
+          <ShowMoreOptions
+            label={t('filter.gender.show_more', 'Show more genders')}
+            onClick={() => setShowAll(true)}
+          />
+        )
+      }
+    />
   )
 }

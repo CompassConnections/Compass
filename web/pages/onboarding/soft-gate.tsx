@@ -66,7 +66,7 @@ export default function SoftGatePage() {
               <p className="text-base text-ink-700 leading-relaxed">
                 {t(
                   'onboarding.soft-gate.profile_card',
-                  'You created a public profile card and values-based profile. Share them to attract people who think like you. Shared profiles are discovered much more often.',
+                  'You created a public values-based profile. Share it to attract people who think like you. Shared profiles are discovered much more often.',
                 )}
               </p>
               {user?.username && (
@@ -85,13 +85,13 @@ export default function SoftGatePage() {
           )}
 
           <Col className="gap-4 text-base text-ink-700 leading-relaxed">
-            <p>
-              {t(
-                'onboarding.soft-gate.intro',
-                "You've answered your first compatibility questions and shared your top interests.",
-              )}
-            </p>
-            <p>{t('onboarding.soft-gate.what_it_means', "Here's what that means for you:")}</p>
+            {/*<p>*/}
+            {/*  {t(*/}
+            {/*    'onboarding.soft-gate.intro',*/}
+            {/*    "You've answered your first compatibility questions and shared your top interests.",*/}
+            {/*  )}*/}
+            {/*</p>*/}
+            {/*<p>{t('onboarding.soft-gate.what_it_means', "Here's what that means for you:")}</p>*/}
 
             {/*<li>*/}
             {/*  {t("onboarding.soft-gate.bullet1", "Compatibility scores now reflect your values and preferences")}*/}
@@ -100,7 +100,7 @@ export default function SoftGatePage() {
               items={[
                 t(
                   'onboarding.soft-gate.bullet2',
-                  "You'll see match percentages that align closely with what you care about",
+                  "You'll see match percentages that align closely with what you care about.",
                 ),
                 t(
                   'onboarding.soft-gate.bullet3',

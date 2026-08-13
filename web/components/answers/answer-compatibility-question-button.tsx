@@ -124,29 +124,29 @@ function CompatibilityOnboardingScreen({onNext, onSkip}: {onNext: () => void; on
   return (
     <Col className={clsx(SCROLLABLE_MODAL_CLASS, 'max-w-2xl mx-auto text-center px-6')}>
       <h1 className="text-4xl font-bold text-ink-900 mb-6">
-        {t('compatibility.onboarding.title', "See who you'll actually align with")}
+        {t('compatibility.onboarding.title', "See who you'll align with")}
       </h1>
 
       <div className="text-lg text-ink-700 leading-relaxed mb-8 space-y-4">
         <p>
           {t(
             'compatibility.onboarding.body1',
-            'Answer a few short questions to calculate compatibility based on values and preferences — not photos or swipes.',
+            'Answer a few short questions to calculate compatibility based on values and preferences.',
           )}
         </p>
-        <p>
-          {t(
-            'compatibility.onboarding.body2',
-            'Your answers directly affect who matches with you and how strongly.',
-          )}
-        </p>
+        {/*<p>*/}
+        {/*  {t(*/}
+        {/*    'compatibility.onboarding.body2',*/}
+        {/*    'Your answers directly affect who matches with you and how strongly.',*/}
+        {/*  )}*/}
+        {/*</p>*/}
       </div>
 
       <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-8">
         <p className="text-primary-800 font-medium">
           {t(
             'compatibility.onboarding.impact',
-            'Most people who answer at least 5 questions see far more relevant matches.',
+            'Most people who answer at least 5 questions see far more relevant people.',
           )}
         </p>
       </div>
@@ -226,7 +226,15 @@ function AnswerCompatibilityQuestionModal(props: {
         onClose?.()
       }}
     >
-      <Col className={MODAL_CLASS}>
+      <Col
+        className={clsx(
+          MODAL_CLASS,
+          // The question screens want the full fixed height, but the onboarding screen is short and
+          // was leaving a large empty block under the "Do this later" link. Let it size to content,
+          // still capped at the viewport so it scrolls if the copy grows.
+          showOnboarding && '!h-auto max-h-[calc(100dvh-var(--hloss)-120px)] pb-6',
+        )}
+      >
         {showOnboarding ? (
           <CompatibilityOnboardingScreen
             onNext={handleStartQuestions}

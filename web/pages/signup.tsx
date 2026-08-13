@@ -212,12 +212,14 @@ export const colClassName = 'items-start gap-1.5 w-full'
 export const labelClassName = 'text-ink-500 text-sm font-normal'
 
 function getInitialBaseUser() {
-  const emailName = auth.currentUser?.email?.replace(/@.*$/, '')
+  // `john.doe_1` in an email reads as a name once the separators become spaces.
+  const emailName = auth.currentUser?.email?.replace(/@.*$/, '').replace(/[^A-Za-z0-9]+/g, ' ')
   const name = cleanDisplayName(
     auth.currentUser?.displayName || emailName || 'User' + randomString(4),
   )
   const initialState = {
     id: auth.currentUser?.uid ?? '',
+    // cleanUsername strips the spaces again, so the suggested username is unchanged.
     username: cleanUsername(name),
     name: name,
   }

@@ -1,7 +1,7 @@
-import {BookmarkIcon, XMarkIcon} from '@heroicons/react/24/outline'
+import {BookmarkIcon, MagnifyingGlassIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
-import {FilterFields} from 'common/filters'
+import {FilterFields, OriginLocation} from 'common/filters'
 import {formatFilters, locationType} from 'common/filters-format'
 import {User} from 'common/user'
 import {Users} from 'lucide-react'
@@ -19,6 +19,7 @@ import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+import {track} from 'web/lib/service/analytics'
 import {deleteBookmarkedSearch} from 'web/lib/supabase/searches'
 
 export function BookmarkSearchButton(props: {
@@ -26,8 +27,12 @@ export function BookmarkSearchButton(props: {
   refreshBookmarkedSearches: () => void
   open: boolean
   setOpen: (checked: boolean) => void
+  applySavedSearch?: (
+    filters: Partial<FilterFields>,
+    location: {location?: OriginLocation | null; radius?: number} | null,
+  ) => void
 }) {
-  const {bookmarkedSearches, refreshBookmarkedSearches, open, setOpen} = props
+  const {bookmarkedSearches, refreshBookmarkedSearches, open, setOpen, applySavedSearch} = props
   const user = useUser()
 
   const t = useT()
@@ -51,6 +56,7 @@ export function BookmarkSearchButton(props: {
         user={user}
         bookmarkedSearches={bookmarkedSearches}
         refreshBookmarkedSearches={refreshBookmarkedSearches}
+        applySavedSearch={applySavedSearch}
       />
     </>
   )
@@ -74,8 +80,12 @@ function ButtonModal(props: {
   user: User
   bookmarkedSearches: BookmarkedSearchesType[]
   refreshBookmarkedSearches: () => void
+  applySavedSearch?: (
+    filters: Partial<FilterFields>,
+    location: {location?: OriginLocation | null; radius?: number} | null,
+  ) => void
 }) {
-  const {open, setOpen, bookmarkedSearches, refreshBookmarkedSearches} = props
+  const {open, setOpen, bookmarkedSearches, refreshBookmarkedSearches, applySavedSearch} = props
   const t = useT()
   const choicesIdsToLabels = useChoicesContext()
   const {measurementSystem} = useMeasurementSystem()
@@ -116,6 +126,27 @@ function ButtonModal(props: {
                           )?.join(' • ')}
                         </div>
                       </div>
+                      {applySavedSearch && (
+                        <button
+                          data-testid="apply-saved-search"
+                          onClick={() => {
+                            applySavedSearch(
+                              (search.search_filters ?? {}) as Partial<FilterFields>,
+                              search.location as {
+                                location?: OriginLocation | null
+                                radius?: number
+                              } | null,
+                            )
+                            track('bookmarked_searches apply', {id: search.id})
+                            setOpen(false)
+                          }}
+                          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-canvas-300 bg-canvas-0 px-2.5 h-8 text-xs font-medium text-ink-600 hover:border-primary-400 hover:bg-primary-50 hover:text-primary-700 transition-all focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-1"
+                          aria-label={t('saved_searches.apply', 'Apply this search')}
+                        >
+                          <MagnifyingGlassIcon className="h-4 w-4" />
+                          {t('saved_searches.apply_short', 'Apply')}
+                        </button>
+                      )}
                       <button
                         onClick={async () => {
                           await deleteBookmarkedSearch(search.id)

@@ -2,7 +2,7 @@ import {QuestionMarkCircleIcon} from '@heroicons/react/24/outline'
 import {XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
-import {FilterFields} from 'common/filters'
+import {FilterFields, OriginLocation} from 'common/filters'
 import {Profile} from 'common/profiles/profile'
 import {DisplayOptions} from 'common/profiles-rendering'
 import {debounce as debounceFn} from 'lodash'
@@ -39,6 +39,10 @@ export const Search = forwardRef<
     locationFilterProps: LocationFilterProps
     bookmarkedSearches: BookmarkedSearchesType[]
     refreshBookmarkedSearches: () => void
+    applySavedSearch: (
+      filters: Partial<FilterFields>,
+      location: {location?: OriginLocation | null; radius?: number} | null,
+    ) => void
     profileCount: number | undefined
     activeFilterCount?: number
     openFilters?: () => void
@@ -62,6 +66,7 @@ export const Search = forwardRef<
     filters,
     bookmarkedSearches,
     refreshBookmarkedSearches,
+    applySavedSearch,
     starredUsers,
     refreshStars,
     profileCount,
@@ -279,6 +284,7 @@ export const Search = forwardRef<
             bookmarkedSearches={bookmarkedSearches}
             open={openBookmarks}
             setOpen={setOpenBookmarks}
+            applySavedSearch={applySavedSearch}
           />
 
           <BookmarkStarButton

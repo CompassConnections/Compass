@@ -5,7 +5,7 @@ import {debug} from 'common/logger'
 import {kmToMiles} from 'common/measurement-utils'
 import {Profile, ProfileRow} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
-import {debounce, isEqual, mapValues, omitBy} from 'lodash'
+import {debounce, isEqual, mapValues, omit, omitBy} from 'lodash'
 import {useCallback, useEffect, useRef} from 'react'
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
@@ -169,6 +169,26 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
     setRaisedInLocation(undefined)
   }
 
+  // Loads a bookmarked search back into the grid. Like applyLookingForFilters this *replaces* the
+  // current search rather than merging into it — a saved search stands for the whole set of criteria
+  // that was saved, so leftovers from the current one would silently narrow it.
+  // Same single-setFilters-call constraint as applyLookingForFilters (see the comment there).
+  // The saved row only stores the "lives near" location object, not the "grew up near" one, so the
+  // raised_in_* coordinates are dropped instead of being applied as an unlabeled filter that the
+  // raised-in effect would clear on the next mount anyway.
+  const applySavedSearch = (
+    savedFilters: Partial<FilterFields>,
+    savedLocation: {location?: OriginLocation | null; radius?: number} | null | undefined,
+  ) => {
+    setFilters({
+      ...baseFilters,
+      ...omit(savedFilters, ['raised_in_lat', 'raised_in_lon', 'raised_in_radius']),
+    })
+    setRaisedInLocation(undefined)
+    setLocation(savedLocation?.location ?? undefined)
+    if (savedLocation?.radius) setRadius(savedLocation.radius)
+  }
+
   const setLookingForFilters = (checked: boolean) => {
     applyLookingForFilters(checked ? you : undefined)
   }
@@ -197,6 +217,7 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
     clearFilters,
     setLookingForFilters,
     applyLookingForFilters,
+    applySavedSearch,
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,

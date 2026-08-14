@@ -71,6 +71,7 @@ export function ProfilesHome() {
     clearFilters,
     setLookingForFilters,
     applyLookingForFilters,
+    applySavedSearch,
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
@@ -378,6 +379,7 @@ export function ProfilesHome() {
           locationFilterProps={locationFilterProps}
           bookmarkedSearches={bookmarkedSearches}
           refreshBookmarkedSearches={refreshBookmarkedSearches}
+          applySavedSearch={applySavedSearch}
           profileCount={profileCount}
           activeFilterCount={activeFilterCount}
           filtersElement={filtersElement}

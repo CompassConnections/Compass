@@ -110,55 +110,38 @@ function ButtonModal(props: {
                 "We'll notify you daily when new people match your searches below.",
               )}
             </p>
-            <Col className={clsx('divide-y divide-canvas-200 w-full pr-2', SCROLLABLE_MODAL_CLASS)}>
+            <Col className={clsx('w-full gap-2 pr-1', SCROLLABLE_MODAL_CLASS)}>
               {(bookmarkedSearches || []).map((search) => (
-                <div key={search.id} className="py-3 first:pt-0 last:pb-0">
-                  <div className="bg-canvas-0 border border-canvas-200 rounded-xl p-3 transition-all hover:border-primary-300 hover:shadow-sm">
-                    <Row className="items-center justify-between gap-3">
-                      <div className="flex-1">
-                        <div className="font-medium text-ink-900 text-sm leading-relaxed">
-                          {formatFilters(
-                            search.search_filters as Partial<FilterFields>,
-                            search.location as locationType,
-                            choicesIdsToLabels,
-                            measurementSystem,
-                            t,
-                          )?.join(' • ')}
-                        </div>
-                      </div>
-                      {applySavedSearch && (
-                        <button
-                          data-testid="apply-saved-search"
-                          onClick={() => {
-                            applySavedSearch(
-                              (search.search_filters ?? {}) as Partial<FilterFields>,
-                              search.location as {
-                                location?: OriginLocation | null
-                                radius?: number
-                              } | null,
-                            )
-                            track('bookmarked_searches apply', {id: search.id})
-                            setOpen(false)
-                          }}
-                          className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-canvas-300 bg-canvas-0 px-2.5 h-8 text-xs font-medium text-ink-600 hover:border-primary-400 hover:bg-primary-50 hover:text-primary-700 transition-all focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-1"
-                          aria-label={t('saved_searches.apply', 'Apply this search')}
-                        >
-                          <MagnifyingGlassIcon className="h-4 w-4" />
-                          {t('saved_searches.apply_short', 'Apply')}
-                        </button>
-                      )}
-                      <button
-                        onClick={async () => {
-                          await deleteBookmarkedSearch(search.id)
-                          refreshBookmarkedSearches()
-                        }}
-                        className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-canvas-300 bg-canvas-0 text-ink-500 hover:border-red-300 hover:bg-red-50 hover:text-red-600 transition-all focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
-                      >
-                        <XMarkIcon className="h-4 w-4" />
-                      </button>
-                    </Row>
-                  </div>
-                </div>
+                <SavedSearchRow
+                  key={search.id}
+                  criteria={
+                    formatFilters(
+                      search.search_filters as Partial<FilterFields>,
+                      search.location as locationType,
+                      choicesIdsToLabels,
+                      measurementSystem,
+                      t,
+                    ) ?? []
+                  }
+                  onApply={
+                    applySavedSearch &&
+                    (() => {
+                      applySavedSearch(
+                        (search.search_filters ?? {}) as Partial<FilterFields>,
+                        search.location as {
+                          location?: OriginLocation | null
+                          radius?: number
+                        } | null,
+                      )
+                      track('bookmarked_searches apply', {id: search.id})
+                      setOpen(false)
+                    })
+                  }
+                  onDelete={async () => {
+                    await deleteBookmarkedSearch(search.id)
+                    refreshBookmarkedSearches()
+                  }}
+                />
               ))}
             </Col>
           </>
@@ -191,6 +174,71 @@ function ButtonModal(props: {
         {/*/>*/}
       </Col>
     </Modal>
+  )
+}
+
+// A saved search can carry 30+ criteria. Rendered as one bullet-joined sentence beside the buttons it
+// wrapped into a tall narrow column on mobile and left a dead column of whitespace next to the buttons
+// on desktop, so the criteria get the full width as wrapping chips and the actions sit in a footer row.
+// Long searches show every chip for now; collapsing them behind a "+N more" toggle is commented out
+// below in case the longest searches make the list unwieldy.
+// const COLLAPSED_CRITERIA_COUNT = 6
+
+function SavedSearchRow(props: {criteria: string[]; onApply?: () => void; onDelete: () => void}) {
+  const {criteria, onApply, onDelete} = props
+  const t = useT()
+  // const [expanded, setExpanded] = useState(false)
+
+  // const hiddenCount = criteria.length - COLLAPSED_CRITERIA_COUNT
+  // const shownCriteria = expanded ? criteria : criteria.slice(0, COLLAPSED_CRITERIA_COUNT)
+  const shownCriteria = criteria
+
+  return (
+    <Col
+      className="gap-2.5 rounded-xl border border-canvas-200 bg-canvas-0 p-3 transition-all hover:border-primary-300 hover:shadow-sm"
+      data-testid="saved-search"
+    >
+      <Row className="flex-wrap gap-1.5">
+        {shownCriteria.map((criterion, i) => (
+          <span
+            key={`${i}-${criterion}`}
+            className="rounded-full bg-canvas-100 px-2 py-1 text-xs text-ink-700"
+          >
+            {criterion}
+          </span>
+        ))}
+        {/*{hiddenCount > 0 && (*/}
+        {/*  <button*/}
+        {/*    onClick={() => setExpanded(!expanded)}*/}
+        {/*    className="rounded-full px-2 py-1 text-xs font-medium text-primary-600 hover:text-primary-700"*/}
+        {/*  >*/}
+        {/*    {expanded*/}
+        {/*      ? t('saved_searches.show_less', 'Show less')*/}
+        {/*      : `+${hiddenCount} ${t('saved_searches.more', 'more')}`}*/}
+        {/*  </button>*/}
+        {/*)}*/}
+      </Row>
+      <Row className="items-center gap-2 sm:justify-end">
+        {onApply && (
+          <button
+            data-testid="apply-saved-search"
+            onClick={onApply}
+            className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg border border-canvas-300 bg-canvas-0 px-3 text-xs font-medium text-ink-600 transition-all hover:border-primary-400 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-1 sm:h-8 sm:flex-none"
+            aria-label={t('saved_searches.apply', 'Apply this search')}
+          >
+            <MagnifyingGlassIcon className="h-4 w-4" />
+            {t('saved_searches.apply_short', 'Apply')}
+          </button>
+        )}
+        <button
+          onClick={onDelete}
+          aria-label={t('saved_searches.delete', 'Delete this search')}
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-canvas-300 bg-canvas-0 text-ink-500 transition-all hover:border-red-300 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 sm:h-8 sm:w-8"
+        >
+          <XMarkIcon className="h-4 w-4" />
+        </button>
+      </Row>
+    </Col>
   )
 }
 

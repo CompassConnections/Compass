@@ -21,10 +21,27 @@ export const choiceFromNumber = (choice: number | null | undefined): VoteChoice 
 // `teal` is remapped in tailwind.config.js to the "yes" ramp, which is greyscale, not a color — using
 // it here would render "for" as a grey button indistinguishable from a disabled one. `green` is the
 // real green ramp.
+//
+// Every pill is a light fill with fixed near-black text, which is what puts all three labels at AAA
+// (7:1) in both themes: 12.05 green, 12.58 amber, 7.59 red. The combinations this replaced were not
+// close — white on `green-500` is 3.63:1 and on `red-500` 3.76:1, under even the 4.5:1 AA floor at
+// this size, and `text-ink-900` on the amber inverted to near-white in dark mode and rendered at
+// 2.90:1.
+//
+// `green-500` is the palette's sage, and sage with black text caps out at 5.79:1 — AA, not AAA — so
+// "for" moves one step up the ramp. Each fill is written as a light/dark pair that resolves to the
+// *same* rgb, since the ramps invert under `.dark` (`X-400` there is what `X-600` is in light): one
+// colour per choice across both themes. A theme-fixed fill needs theme-fixed text on it too — any
+// `ink` token would flip out from under it again.
+//
+// Hover moves one further step up the same ramp, as another identical-rgb pair, rather than
+// darkening: below these fills the ramp drops off fast, and the step under the red — `red-500` — is
+// 5.58:1, which would take the hover state back out of AAA.
 const CHOICE_COLOR: Record<VoteChoice, string> = {
-  for: 'bg-green-500 hover:bg-green-600 text-white',
-  abstain: 'bg-yellow-400 hover:bg-yellow-500 text-ink-900',
-  against: 'bg-red-500 hover:bg-red-600 text-white',
+  for: 'bg-green-400 dark:bg-green-600 hover:bg-green-300 dark:hover:bg-green-700 text-black',
+  abstain:
+    'bg-yellow-400 dark:bg-yellow-600 hover:bg-yellow-300 dark:hover:bg-yellow-700 text-black',
+  against: 'bg-red-400 dark:bg-red-600 hover:bg-red-300 dark:hover:bg-red-700 text-black',
 }
 
 // The three pills are already saturated, so "this one is yours" can't be another fill — it has to sit
@@ -32,12 +49,17 @@ const CHOICE_COLOR: Record<VoteChoice, string> = {
 // check mark says it twice, which matters because the ring alone would be the only cue and colored
 // rings on colored pills are exactly what gets lost on a dim screen.
 //
-// Deliberately *not* done by fading the other two: white-on-green-500 and ink-900-on-yellow-400 are
-// already near the AA floor at this size, and any opacity below 1 pushes them under it. The selected
-// pill gets marked; the unselected ones stay legible.
+// Deliberately *not* done by fading the other two: opacity blends the label and its fill toward the
+// page together, which is exactly what pulls a pill back out of the AAA the fills above were chosen
+// for. The selected pill gets marked; the unselected ones stay legible.
+//
+// The ring is read against the canvas showing through the offset, not against the pill, so each one
+// is chosen for ≥3:1 on the surface behind it (WCAG 1.4.11): a dark ramp step on the cream canvas, a
+// light one on the dark canvas. `yellow-500` on cream was 1.96:1 — visible on a good monitor, gone
+// on a dim one.
 const CHOICE_RING: Record<VoteChoice, string> = {
-  for: 'ring-green-600 dark:ring-green-400',
-  abstain: 'ring-yellow-500 dark:ring-yellow-300',
+  for: 'ring-green-700 dark:ring-green-400',
+  abstain: 'ring-yellow-700 dark:ring-yellow-500',
   against: 'ring-red-600 dark:ring-red-400',
 }
 

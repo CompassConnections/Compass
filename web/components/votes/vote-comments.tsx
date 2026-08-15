@@ -128,10 +128,15 @@ export function VoteCommentSection(props: {
                 key={f.key}
                 type="button"
                 onClick={() => setFilter(f.key)}
+                // Ring rather than fading the unselected ones, same as the status chips on the
+                // proposal list: `opacity-50` drags the label and its fill toward the page together
+                // and lands around 2:1, under AA.
                 className={clsx(
-                  'rounded-full px-2.5 py-1 text-xs font-semibold transition-opacity',
+                  'rounded-full px-2.5 py-1 text-xs font-semibold transition-shadow',
                   f.key === 'all' ? 'bg-canvas-200 text-ink-600' : STANCE_COLOR[f.key],
-                  activeFilter === f.key ? 'opacity-100' : 'opacity-50 hover:opacity-80',
+                  activeFilter === f.key
+                    ? 'ring-2 ring-ink-900 ring-offset-1 ring-offset-canvas-50'
+                    : 'hover:ring-1 hover:ring-ink-400',
                 )}
               >
                 {f.label} <span className="tabular-nums">{f.count}</span>

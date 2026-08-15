@@ -88,7 +88,7 @@ export const WelcomeEmail = ({
                   first and the page that convinced them read as one product. */}
               {t(
                 'email.welcome.intro.v2',
-                'Compass is a free, public directory for finding your people — friends, partners, or collaborators. Every profile is written by hand and fully searchable: values, interests, politics, diet, languages, and twenty-odd other filters, plus free-text search that reads what people actually wrote. No swiping, no ads, and no algorithm deciding for you who’s worth writing to. It’s built by volunteers, funded by donations, and governed by its members.',
+                'Compass is a free, public directory for finding your people — friends, partners, or collaborators. Every profile is written by hand and fully searchable: values, interests, politics, diet, languages, and twenty-odd other filters, plus free-text search that reads what people actually wrote. No swiping, no ads. You decide who to write to. It’s built by volunteers, funded by donations, and governed by its members.',
               )}
             </Text>
 
@@ -204,7 +204,7 @@ export const WelcomeEmail = ({
               >
                 {t(
                   'email.welcome.founder_note',
-                  "I'm Martin, I started Compass, and this address reaches me directly. Hit reply and tell me two things: what brought you here, and who you're hoping to find. I answer every one, and I can usually point you straight at two or three people worth writing to.",
+                  "I'm Martin, I started Compass, and this address reaches me directly. If you'd like, reply and tell me what brought you here as well as who you're hoping to find. I answer every one, and I can usually point you straight at two or three people worth writing to.",
                 )}
               </Text>
 
@@ -230,7 +230,7 @@ export const WelcomeEmail = ({
               >
                 {t(
                   'email.welcome.ps',
-                  'P.S. — Compass is still small enough that this genuinely matters: it gets better for you with every person you bring, because even a friend who isn’t who you’re looking for brings their whole circle with them. If someone comes to mind while you’re writing your profile, here’s your link — it’s tagged to you: ',
+                  'P.S. — Compass is still small enough that this genuinely matters: it gets better for you with every person you bring, because even a friend who isn’t who you’re looking for brings their whole circle with them. If someone comes to mind, here’s your link: ',
                 )}
                 <Link
                   href={referralUrl}

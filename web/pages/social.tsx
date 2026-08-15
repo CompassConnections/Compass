@@ -4,12 +4,11 @@ import {
   githubRepo,
   instagramLink,
   mastodonLink,
-  redditLink,
   supportEmail,
   xLink,
 } from 'common/constants'
 import {ComponentType, ReactNode, SVGProps} from 'react'
-import {FaDiscord, FaGithub, FaInstagram, FaMastodon, FaReddit} from 'react-icons/fa'
+import {FaDiscord, FaGithub, FaInstagram, FaMastodon} from 'react-icons/fa'
 import {FaXTwitter} from 'react-icons/fa6'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
@@ -135,11 +134,12 @@ export default function Social() {
           icon: <FaDiscord className="w-4 h-4" />,
           primary: true,
         },
-        {
-          url: redditLink,
-          label: t('social.reddit', 'Reddit'),
-          icon: <FaReddit className="w-4 h-4" />,
-        },
+        // Got banned for some reason. Fix it?
+        // {
+        //   url: redditLink,
+        //   label: t('social.reddit', 'Reddit'),
+        //   icon: <FaReddit className="w-4 h-4" />,
+        // },
         // {url: stoatLink, label: t('social.stoat', 'Revolt / Stoat'), icon: '💬'},
       ],
     },

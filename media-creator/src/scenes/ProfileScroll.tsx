@@ -1,13 +1,5 @@
 import React from 'react'
-import {
-  AbsoluteFill,
-  Easing,
-  Img,
-  interpolate,
-  staticFile,
-  useCurrentFrame,
-  useVideoConfig,
-} from 'remotion'
+import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig,} from 'remotion'
 import {colors, fonts, FORMATS} from '../theme'
 
 // A twelve-second silent b-roll scroll of a single profile, made to sit *under* the
@@ -19,27 +11,53 @@ import {colors, fonts, FORMATS} from '../theme'
 //   - a pass over the whole page in page order, but not at a constant speed: it
 //     rests on three things a viewer can actually read and glides over the rest
 //
-// Artwork is a real full-page screenshot of the live page, captured by
-// scripts/capture-profile.mjs:
-//   node scripts/capture-profile.mjs https://www.compassmeet.com/mhg1 --out profile-mhg1
-// Re-run that after any profile-UI change; update FULL and STOPS below if the page moves.
+// *Which* profile it plays is a prop, not an edit here. Everything the scene needs to
+// know about the page — the PNG's pixel size, where the content starts, where the
+// readable sections sit — is measured off the live DOM by the capture script and
+// written beside the artwork as public/profile-<username>/manifest.json:
+//
+//   node scripts/capture-profile.mjs https://www.compassmeet.com/euniiiiiiiiiice
+//   npm run render:scroll euniiiiiiiiiice
+//
+// Re-run the capture after any profile-UI change; nothing in this file moves.
 
-const USERNAME = 'martin'
-const DIR = `profile-${USERNAME}`
-const PROFILE_URL = `compassmeet.com/${USERNAME}`
+export interface ProfileScrollSection {
+  /** Card heading as it reads on the page ('About Me', 'Details', …). */
+  title: string
+  /** Absolute y of the card's top edge in full.png, source px. */
+  y: number
+  /** Card height, source px. */
+  h: number
+}
 
-// Pixel dimensions of the full-page PNG as written by the capture script (it shoots
-// at DPR 2, so these are 2× the CSS numbers). We scale by width, so only the ratio
-// matters.
-const FULL = {src: `${DIR}/full.png`, w: 860, h: 10204}
+export interface ProfileScrollManifest {
+  username: string
+  /**
+   * Pixel dimensions of the full-page PNG. The capture shoots at DPR 2, so these are
+   * 2× the CSS numbers; we scale by width, so only the ratio matters.
+   */
+  full: {w: number; h: number}
+  /**
+   * First row of real profile content. The page's own top bar sits above it and is
+   * cropped off the head of the shot: it is chrome, not profile, and holding on it
+   * would spend the opening beat on nothing.
+   */
+  cropTop: number
+  /**
+   * Where the scroll finishes. The shot's own bottom edge unless there is blank canvas
+   * under the last card, which would spend the closing beat on nothing.
+   */
+  cropBottom: number
+  /** Every card on the page, in page order. Source px. */
+  sections: ProfileScrollSection[]
+}
 
-// The page's own top bar, cropped off the head of the shot: it is chrome, not profile,
-// and holding on it would spend the opening beat on nothing. In source-PNG px, so 100
-// here is 50 CSS px.
-const CROP_TOP = 100
-// Blank canvas below the sign-up button, cropped off the tail so the clip doesn't
-// spend its last beat resting on nothing.
-const CROP_BOTTOM = 8460
+// The index signature is what makes this assignable to Remotion's `Props extends
+// Record<string, unknown>` constraint on <Composition>.
+export type ProfileScrollProps = Record<string, unknown> & {
+  username: string
+  manifest: ProfileScrollManifest | null
+}
 
 // ─── Motion ─────────────────────────────────────────────────────────────────
 // Twelve seconds flat, whatever the profile's length — this clip is cut to a fixed
@@ -47,7 +65,7 @@ const CROP_BOTTOM = 8460
 //
 // What does NOT give is an even speed. Time here is spent in proportion to how long
 // something takes to *read*, not to how many pixels it occupies: a constant scroll
-// spends as long on 800px of photograph as on 800px of prose, and at this page's
+// spends as long on 800px of photograph as on 800px of prose, and at a full profile's
 // length that works out to ~14 lines of body text per second — nobody reads a word.
 //
 // So the clip rests on three things and glides over everything else. Under a voice
@@ -55,50 +73,99 @@ const CROP_BOTTOM = 8460
 // the eye nowhere to land, and a viewer half-listening takes away nothing at all.
 // Three stops, three impressions. The glides in between are not filler — a bio
 // streaming past too fast to read is still legibly *long*, which is the point.
-//
-// Anchors are absolute source-PNG y, i.e. what sits at the top of the frame. Re-measure
-// them against a fresh full.png; everything else here is derived.
 const DURATION_SECONDS = 12
-const STOPS = [
-  // [seconds, source-px y]
-  // CROP_TOP, not 0: the anchor is an absolute source-px y, so opening at 0 would
-  // scroll back above the crop line and put the page's own Card/Share bar on screen.
-  [0.0, CROP_TOP], // the face, his name, the pull-quote's first line
-  [1.1, CROP_TOP],
-  [3.6, 2115], // "First, the good news / The bad news" — the passage that reads as a person
-  [4.9, 2115],
-  [8.5, 5340], // the rest of the bio streams past, arriving at Details
-  [9.6, 5340], // the key/value table: politics, religion, cannabis, psychedelics
-  [DURATION_SECONDS, -1], // -1 = the page bottom, resolved below
-] as const
 
-// ─── Geometry ───────────────────────────────────────────────────────────────
-// Derived at module scope because the composition's duration depends on it, and
-// that has to be known before the component renders. Canvas is the story format's,
-// which is the only format this scene is registered for.
-const SCALE = FORMATS.story.width / FULL.w
-const PAGE_HEIGHT = (CROP_BOTTOM - CROP_TOP) * SCALE
+// The two mid-clip stops, named by card heading and visited in page order. Both are
+// picked for reading rather than for looks: the bio is the passage that reads as a
+// person rather than as a form, and the Details table — work, education, politics,
+// religion, exercise — is what says "not a swiping app". A profile that is missing one
+// of them falls back to a proportional anchor, so this is a preference, not a
+// requirement.
+const STOP_TITLES = ['About Me', 'Details']
+
+// Where a stop's anchor sits relative to its card: a little above the card's own top
+// edge, so the heading isn't glued to the top of the frame. Source px.
+const STOP_LEAD = 60
+
+// Fractions of the scrollable range used for any stop the page doesn't provide — two
+// evenly spread resting points, the best a page we know nothing about can do.
+const FALLBACK_FRACTIONS = [0.25, 0.6]
+
+// [seconds, index into the anchors resolved below]. Repeated anchors are the dwells;
+// `interpolate` eases *within each segment*, which is what the dwells need: every move
+// accelerates away from a stop and decelerates into the next one, so the clip reads as
+// someone thumbing down a page rather than as a series of cuts.
+const BEATS = [
+  [0.0, 0], // the photograph, the name, the pull-quote's first line
+  [1.2, 0],
+  [3.4, 1], // first stop — the bio
+  [4.7, 1],
+  [8.2, 2], // the rest of the bio streams past, arriving at the second stop
+  [9.4, 2], // the key/value table
+  [DURATION_SECONDS, 3], // the page bottom
+] as const
 
 export const PROFILE_SCROLL_DURATION = DURATION_SECONDS * FORMATS.story.fps
 
-// Where the scroll finishes: the bottom of the page resting on the bottom of the frame.
-const END_Y = -(PAGE_HEIGHT - FORMATS.story.height)
+/**
+ * The four anchors the clip moves between — page top, stop 1, stop 2, page bottom —
+ * plus the scale everything is drawn at.
+ *
+ * An anchor is an absolute source-PNG y: the row that sits at the top of the frame.
+ * They are clamped and forced monotonic, so a page that is short, or one whose cards
+ * come back in an odd order, can only ever scroll downwards and never past its own end.
+ */
+function geometry(manifest: ProfileScrollManifest, canvas: {width: number; height: number}) {
+  const {full, cropTop, cropBottom} = manifest
+  const scale = canvas.width / full.w
+  const pageHeight = (cropBottom - cropTop) * scale
 
-const FRAMES = STOPS.map(([t]) => Math.round(t * FORMATS.story.fps))
-const OFFSETS = STOPS.map(([, y]) => (y < 0 ? END_Y : -((y - CROP_TOP) * SCALE)))
+  // What one frame shows of the page, in source px — so `lastAnchor` is the lowest row
+  // that can sit at the top of the frame with the page's end resting on the frame's.
+  const frameHeight = canvas.height / scale
+  const lastAnchor = Math.max(cropTop, cropBottom - frameHeight)
 
-export const ProfileScroll: React.FC = () => {
-  const frame = useCurrentFrame()
-  const {width} = useVideoConfig()
+  const stops = STOP_TITLES.map((title) =>
+    manifest.sections.find((s) => s.title.toLowerCase() === title.toLowerCase()),
+  )
+    .filter((s): s is ProfileScrollSection => Boolean(s))
+    .map((s) => s.y - STOP_LEAD)
+    .sort((a, b) => a - b)
 
-  // interpolate eases *within each segment*, which is what the dwells need: every move
-  // accelerates away from a stop and decelerates into the next one, so the clip reads as
-  // someone thumbing down a page rather than as a series of cuts.
-  const y = interpolate(frame, FRAMES, OFFSETS, {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-    easing: Easing.inOut(Easing.ease),
+  // Top up from the proportional fallbacks, so there are always exactly two mid stops
+  // whatever the page turned out to contain.
+  while (stops.length < FALLBACK_FRACTIONS.length) {
+    stops.push(cropTop + (lastAnchor - cropTop) * FALLBACK_FRACTIONS[stops.length])
+  }
+
+  let previous = cropTop
+  const anchors = [cropTop, ...stops.slice(0, 2), lastAnchor].map((y) => {
+    previous = Math.min(Math.max(y, previous), lastAnchor)
+    return previous
   })
+
+  // Offset, not anchor: what the page is translated by to put that row at the top.
+  return {scale, pageHeight, offsets: anchors.map((y) => -((y - cropTop) * scale))}
+}
+
+export const ProfileScroll: React.FC<ProfileScrollProps> = ({username, manifest}) => {
+  const frame = useCurrentFrame()
+  const {width, height, fps} = useVideoConfig()
+
+  if (!manifest) return <AbsoluteFill style={{backgroundColor: colors.canvas100}} />
+
+  const {scale, pageHeight, offsets} = geometry(manifest, {width, height})
+
+  const y = interpolate(
+    frame,
+    BEATS.map(([t]) => Math.round(t * fps)),
+    BEATS.map(([, anchor]) => offsets[anchor]),
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+      easing: Easing.inOut(Easing.ease),
+    },
+  )
 
   return (
     <AbsoluteFill style={{backgroundColor: colors.canvas100, overflow: 'hidden'}}>
@@ -108,26 +175,47 @@ export const ProfileScroll: React.FC = () => {
           top: 0,
           left: 0,
           width,
-          height: PAGE_HEIGHT,
+          height: pageHeight,
           transform: `translateY(${y}px)`,
           willChange: 'transform',
         }}
       >
         <Img
-          src={staticFile(FULL.src)}
+          src={staticFile(`profile-${username}/full.png`)}
           style={{
             position: 'absolute',
-            top: -CROP_TOP * SCALE,
+            top: -manifest.cropTop * scale,
             left: 0,
             width,
-            height: FULL.h * SCALE,
+            height: manifest.full.h * scale,
           }}
         />
       </div>
 
-      <UrlBar url={PROFILE_URL} />
+      <UrlBar url={`compassmeet.com/${username}`} />
     </AbsoluteFill>
   )
+}
+
+/**
+ * Reads the capture manifest written beside the artwork, so pointing the clip at a
+ * different profile is a prop rather than an edit to this file.
+ *
+ * public/profile-*\/ is regenerated by the capture script, so a missing manifest is the
+ * normal "you haven't captured this profile yet" state: fail with the command that
+ * fixes it rather than rendering a silently blank video.
+ */
+export const calculateProfileScrollMetadata = async ({props}: {props: ProfileScrollProps}) => {
+  const path = `profile-${props.username}/manifest.json`
+  const res = await fetch(staticFile(path))
+  if (!res.ok) {
+    throw new Error(
+      `public/${path} is missing (HTTP ${res.status}). Run: ` +
+        `node scripts/capture-profile.mjs https://www.compassmeet.com/${props.username}`,
+    )
+  }
+  const manifest: ProfileScrollManifest = await res.json()
+  return {props: {...props, manifest}}
 }
 
 // Always on screen. The scrim is what guarantees it stays legible whatever the page

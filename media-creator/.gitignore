@@ -21,3 +21,6 @@ public/alert/
 # Brand web faces for the OG card. Build inputs, not ours to redistribute — refetch from Google
 # with `npm run fonts` (which `npm run still:og` does for you).
 public/fonts/
+
+# Capture manifests, written beside the (gitignored) profile screenshots.
+public/profile*/manifest.json

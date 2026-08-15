@@ -80,6 +80,10 @@ npm run capture:profile                         # -> public/profile/*.png
 npm run capture:profile -- http://localhost:3000/SomeoneElse
 ```
 
+That npm script pins `--out profile`, because the tour scene reads `public/profile/` whoever the page
+belongs to. Calling the script directly instead writes to `public/profile-<username>/`, which is what
+the scroll clip below addresses its artwork by.
+
 `scripts/capture-profile.mjs` shoots the page at 430×932 CSS px @ DPR 2 (so the PNGs are 2× and stay
 crisp on the 1080-wide canvas), hides fixed chrome and the Next.js dev badge, and clips one image per
 card. It borrows Playwright from the **monorepo root** by absolute path, deliberately — this package
@@ -134,23 +138,32 @@ Under a voice track this matters more than it would for a standalone video: unif
 nowhere to land, and a half-listening viewer takes away nothing. The glides between stops aren't filler —
 a bio streaming past too fast to read is still legibly _long_, which is the point being made.
 
-The `STOPS` table at the top of the scene is `[seconds, source-px y]` pairs, where y is the absolute
-y in `full.png` that sits at the top of the frame (`-1` means the page bottom). `interpolate` eases
-within each segment, so every move accelerates out of a stop and decelerates into the next. A different
-profile needs those y values re-measured against its own `full.png` — nothing else.
+**Pointing it at a different member is one argument, not an edit.** The username is a prop, and every
+page-specific number the scene needs comes from `public/profile-<username>/manifest.json`, which the
+capture script writes by measuring the live DOM:
 
 ```bash
-node scripts/capture-profile.mjs https://www.compassmeet.com/mhg1 --out profile-mhg1
-npm run render:scroll      # -> out/compass-profile-scroll-story.mp4  9:16 (1080×1920)
+node scripts/capture-profile.mjs https://www.compassmeet.com/mhg1   # -> public/profile-mhg1/
+npm run render:scroll mhg1     # -> out/compass-profile-scroll-mhg1.mp4  9:16 (1080×1920)
 ```
 
-`--out <dir>` is what keeps this from overwriting `public/profile/`, which the profile-tour video is
-built from. The scene draws the single `full.png` full-page shot rather than the per-card clips, so a
-profile of any length needs no re-measuring — only the `FULL` dimensions at the top of
-`src/scenes/ProfileScroll.tsx` updated to match the new PNG.
+Note the capture writes to `public/profile-<username>/`, not `public/profile/` — the latter is the
+profile-tour video's artwork, and is what the `npm run capture:profile` script (which passes
+`--out profile`) still targets.
+
+The manifest carries the PNG's pixel size, `cropTop` (the first row of real content, below the page's
+own top bar), `cropBottom` (where the scroll finishes) and every card's y in page order. The scene turns
+that into four anchors — page top, two reading stops, page bottom — and `interpolate` eases within each
+segment, so every move accelerates out of a stop and decelerates into the next. The stops are chosen by
+card heading (`STOP_TITLES` in the scene: About Me, then Details); a profile missing one of them falls
+back to a proportional anchor, so nothing has to be hand-measured either way.
+
+Two things are still worth a human eye: lower `cropBottom` by hand if a page ends on dead canvas, and
+re-run the capture after any profile-UI change so the measurements track the page.
 
 > Long renders here can trip the 30s `delayRender` on `BrandFonts` (registered for the OG card, but
-> bundled into every composition). Hence `--timeout=120000` in the script.
+> bundled into every composition). Hence the `--timeout=120000` that `scripts/render-scroll.mjs` passes.
+> Extra Remotion flags go after a `--`: `npm run render:scroll mhg1 -- --crf 30`.
 
 ## Stills
 

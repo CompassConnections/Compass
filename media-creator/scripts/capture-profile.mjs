@@ -1,8 +1,13 @@
-// Captures the section screenshots used by the profile-tour video.
+// Captures the artwork the profile videos are built from.
 //
 // Shoots the public profile page at a phone-sized viewport (430×932 CSS px @ DPR 2,
-// so every PNG is 2× and stays crisp on the 1080-wide canvas) and clips one image
-// per profile section into public/profile/.
+// so every PNG is 2× and stays crisp on the 1080-wide canvas) and writes, per profile:
+// one clip per section (the profile-tour video), the whole page as full.png (the
+// profile-scroll video), and manifest.json — the page's measurements, so the scroll
+// video never carries hard-coded pixel values for one particular profile.
+//
+// Output goes to public/profile-<username>/ unless --out says otherwise; the tour's
+// artwork lives in public/profile/, which is what `npm run capture:profile` passes.
 //
 // Playwright lives in the monorepo root, NOT in this standalone package — this
 // script reaches for it by absolute path on purpose, so `npm install` here stays
@@ -20,7 +25,7 @@
 //
 // That opens a real window; sign in yourself, and the session is kept in
 // .auth-profile/ (gitignored) for every later headless run.
-import {existsSync, mkdirSync} from 'node:fs'
+import {existsSync, mkdirSync, writeFileSync} from 'node:fs'
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
@@ -32,13 +37,24 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 const args = process.argv.slice(2)
 const LOGIN = args.includes('--login')
 // --out <dir> writes elsewhere under public/, so capturing a second profile doesn't
-// overwrite the artwork the profile-tour video is built from.
-const outAt = args.indexOf('--out')
-const OUT_NAME = outAt === -1 ? 'profile' : args[outAt + 1]
-const URL =
-  args.find((a, i) => !a.startsWith('--') && i !== outAt + 1) ?? 'http://localhost:3000/Martin'
+// overwrite the artwork the profile-tour video is built from. Last one wins, because
+// `npm run capture:profile` passes `--out profile` itself and a hand-typed --out has to
+// be able to override it.
+const outAt = args.lastIndexOf('--out')
+const positional = args.filter((a, i) => !a.startsWith('--') && args[i - 1] !== '--out')
+const PAGE_URL = positional[0] ?? 'http://localhost:3000/Martin'
+// The scroll video addresses its artwork by username — public/profile-<username>/ — so
+// that pointing it at someone else is a render argument rather than a source edit.
+const USERNAME = decodeURIComponent(
+  new URL(PAGE_URL).pathname.split('/').filter(Boolean).pop() ?? '',
+)
+const OUT_NAME = outAt === -1 ? `profile-${USERNAME}` : args[outAt + 1]
 const OUT_DIR = join(HERE, '..', 'public', OUT_NAME)
 const PROFILE_DIR = join(HERE, '..', '.auth-profile')
+
+// Everything measured off the DOM is in CSS px; the PNGs are shot at DPR 2. The video
+// works in source-PNG px, so measurements are scaled on the way into the manifest.
+const DPR = 2
 
 // Card title -> output file. Titles come from the ProfileCard headings in
 // web/components/profile/profile-info.tsx. The last two need a signed-in
@@ -83,7 +99,7 @@ if (!existsSync(join(PROFILE_DIR, 'Default'))) {
   console.log('Run with --login once to capture them.\n')
 }
 
-await page.goto(URL, {waitUntil: 'networkidle', timeout: 60000})
+await page.goto(PAGE_URL, {waitUntil: 'networkidle', timeout: 60000})
 await page.waitForSelector('[data-testid="profile-content"]', {timeout: 30000})
 // Photos are lazy next/image — walk the page top to bottom so every one of them
 // starts loading, then come back up and let them decode.
@@ -165,8 +181,77 @@ await shoot(
 )
 
 // 8 — the whole page, for the establishing slow-scroll shot.
-await page.screenshot({path: join(OUT_DIR, 'full.png'), fullPage: true})
-console.log('  ✓ full.png  (full page, for the scroll shot)')
+const full = await page.screenshot({fullPage: true})
+writeFileSync(join(OUT_DIR, 'full.png'), full)
+// Straight out of the PNG's IHDR chunk (width at byte 16, height at 20) rather than out
+// of the DOM: this is the one number the video cannot be wrong about, and Playwright's
+// full-page stitching can round differently than scrollHeight × DPR would suggest.
+const fullSize = {w: full.readUInt32BE(16), h: full.readUInt32BE(20)}
+console.log(`  ✓ full.png  ${fullSize.w}×${fullSize.h} px (full page, for the scroll shot)`)
+
+// 9 — the manifest the ProfileScrollStory video reads instead of hard-coded pixel
+// values: the page's size, where its content starts, and where each section sits.
+// Measured here because this is where the live DOM is, so the video never has to be
+// re-measured by hand after a profile-UI change — or when pointed at another profile.
+//
+// Sections are found by their heading, not by a card wrapper: the profile page is prose
+// with small-caps labels, and which blocks are boxed has changed more than once
+// (`SectionHeading` in web/components/profile/section.tsx is the h2 both the reading
+// column and the attribute rail head their blocks with).
+const measurements = await page.evaluate(() => {
+  const rect = (el) => {
+    const r = el.getBoundingClientRect()
+    return {y: r.top + scrollY, h: r.height}
+  }
+  const header = document.querySelector('.animate-profile-appear')
+  // Scoped to the profile grid so a heading in the page's own furniture — footer,
+  // language switcher, sign-up CTA — can never become a resting point.
+  const scope = document.querySelector('[data-testid="profile-content"]') ?? document
+  return {
+    // Content starts at the header; the page's own top bar sits above it and is chrome,
+    // not profile. 0 rather than the header's y if the header somehow isn't there —
+    // better a top bar on screen than a crop into the middle of the face.
+    contentTop: header ? rect(header).y : 0,
+    sections: [...scope.querySelectorAll('h2')]
+      .map((h) => {
+        // textContent, not innerText: the headings are uppercased in CSS, and the video
+        // matches them against source-cased titles ('About Me').
+        const title = (h.textContent ?? '').trim()
+        // The heading's y is the anchor — a stop rests with the label at the top of the
+        // frame. The height is the whole block's, which is the more useful number if a
+        // future beat ever wants to dwell in proportion to how much there is to read.
+        const block = h.closest('section') ?? h.parentElement ?? h
+        return {title, y: rect(h).y, h: rect(block).h}
+      })
+      .filter((s) => s.title)
+      .sort((a, b) => a.y - b.y),
+  }
+})
+
+const toSource = (n) => Math.round(n * DPR)
+writeFileSync(
+  join(OUT_DIR, 'manifest.json'),
+  JSON.stringify(
+    {
+      username: USERNAME,
+      url: PAGE_URL,
+      full: fullSize,
+      cropTop: toSource(measurements.contentTop),
+      // The shot's own bottom edge. Lower it by hand if a page ends on dead space — the
+      // clip's last beat should rest on content, not on blank canvas.
+      cropBottom: fullSize.h,
+      sections: measurements.sections.map((s) => ({
+        title: s.title,
+        y: toSource(s.y),
+        h: toSource(s.h),
+      })),
+    },
+    null,
+    2,
+  ) + '\n',
+)
+console.log(`  ✓ manifest.json  ${measurements.sections.length} sections`)
 
 await context.close()
 console.log(`\nWrote ${OUT_DIR}`)
+console.log(`Render the scroll clip with:  npm run render:scroll ${USERNAME}`)

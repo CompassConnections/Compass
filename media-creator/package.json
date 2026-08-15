@@ -7,7 +7,7 @@
   "scripts": {
     "capture:alert": "node scripts/capture-alert.mjs --theme light",
     "capture:alert:dark": "node scripts/capture-alert.mjs --theme dark",
-    "capture:profile": "node scripts/capture-profile.mjs",
+    "capture:profile": "node scripts/capture-profile.mjs --out profile",
     "capture:search": "node scripts/capture-search.mjs --theme light",
     "capture:search:dark": "node scripts/capture-search.mjs --theme dark",
     "capture:vote": "node scripts/capture-vote.mjs",
@@ -17,7 +17,7 @@
     "render:alert:dark": "remotion render SearchAlertDark out/compass-search-alert-dark.mp4 --crf 30",
     "render:carousel": "node scripts/render-carousel.mjs",
     "render:post": "remotion render IntroPost out/compass-intro-post.mp4",
-    "render:scroll": "remotion render ProfileScrollStory out/compass-profile-scroll-story.mp4 --timeout=120000",
+    "render:scroll": "node scripts/render-scroll.mjs",
     "render:search": "remotion render SearchDemoLight out/compass-search-demo-light.mp4 --crf 30",
     "render:search:dark": "remotion render SearchDemoDark out/compass-search-demo-dark.mp4 --crf 30",
     "render:story": "remotion render IntroStory out/compass-intro-story.mp4",

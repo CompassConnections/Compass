@@ -2,10 +2,15 @@ import {Composition, Still} from 'remotion'
 import {FORMATS} from './theme'
 import {Intro, INTRO_DURATION} from './scenes/Intro'
 import {OgCard} from './scenes/OgCard'
-import {ProfileScroll, PROFILE_SCROLL_DURATION} from './scenes/ProfileScroll'
-import {ProfileTour, PROFILE_TOUR_DURATION} from './scenes/ProfileTour'
-import {SearchDemo, SearchDemoProps, calculateSearchDemoMetadata} from './scenes/SearchDemo'
-import {SearchAlert, SearchAlertProps, calculateSearchAlertMetadata} from './scenes/SearchAlert'
+import {
+  calculateProfileScrollMetadata,
+  PROFILE_SCROLL_DURATION,
+  ProfileScroll,
+  ProfileScrollProps,
+} from './scenes/ProfileScroll'
+import {PROFILE_TOUR_DURATION, ProfileTour} from './scenes/ProfileTour'
+import {calculateSearchDemoMetadata, SearchDemo, SearchDemoProps} from './scenes/SearchDemo'
+import {calculateSearchAlertMetadata, SearchAlert, SearchAlertProps} from './scenes/SearchAlert'
 
 // Register every video composition here. The same Intro scenes render into two
 // Instagram-ready canvases; render with:
@@ -49,7 +54,12 @@ export const RemotionRoot: React.FC = () => {
       />
       {/* Twelve-second silent b-roll of one whole profile, to lay under the closing sentences of a
           talking-head story. Story format only — it is never a standalone post.
-            node scripts/capture-profile.mjs <profileUrl> --out profile-mhg1 && npm run render:scroll */}
+
+          Which profile it plays is the `username` prop: the page's dimensions, crop and stops all
+          come from public/profile-<username>/manifest.json via calculateMetadata, so a new profile
+          needs no change here or in the scene.
+            node scripts/capture-profile.mjs https://www.compassmeet.com/mhg1
+            npm run render:scroll mhg1 */}
       <Composition
         id="ProfileScrollStory"
         component={ProfileScroll}
@@ -57,6 +67,10 @@ export const RemotionRoot: React.FC = () => {
         fps={FORMATS.story.fps}
         width={FORMATS.story.width}
         height={FORMATS.story.height}
+        // Cast so the prop type stays `ProfileScrollManifest | null` rather than being narrowed to
+        // `null` by inference; calculateMetadata supplies the real manifest.
+        defaultProps={{username: 'Martin', manifest: null} as ProfileScrollProps}
+        calculateMetadata={calculateProfileScrollMetadata}
       />
       {/* Home-page hero clip. Not a social format: its canvas is the capture viewport, and both
           size and duration come from public/search/manifest.json via calculateMetadata, so a

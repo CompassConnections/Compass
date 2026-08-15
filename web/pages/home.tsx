@@ -4,7 +4,7 @@ import {PageBase} from 'web/components/page-base'
 
 export default function Home() {
   return (
-    <PageBase trackPageView={'home'}>
+    <PageBase trackPageView={'home'} className={'col-span-10'}>
       <Col className="items-center">
         <Col className={'w-full rounded px-3 py-4 sm:px-6'}>
           <LoggedOutHome />

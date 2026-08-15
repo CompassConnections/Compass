@@ -5,6 +5,7 @@
   "homepage": ".",
   "scripts": {
     "build": "node scripts/fetch-media.mjs && next build",
+    "build-social-logos": "node scripts/build-social-logos.mjs",
     "clear-nextjs-cache": "rm -rf ./.next/cache",
     "dev": "NEXT_PUBLIC_FIREBASE_ENV=DEV yarn serve",
     "disk-space-info": "du -hs ./node_modules && du -hs ./.next && du -hs ./.next/cache",

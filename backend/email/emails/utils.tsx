@@ -9,6 +9,22 @@ interface Props {
   locale?: string
 }
 
+/**
+ * The footer icon row: where we are, then where we're funded. Each `path` is a redirect defined in
+ * `web/next.config.ts`, so the destinations stay in one place rather than being baked into sent mail.
+ * The images live in `web/public/images/` at 512px so they stay sharp on retina clients.
+ */
+const SOCIAL_LINKS = [
+  {path: 'github', file: 'github-logo.png', alt: 'GitHub'},
+  {path: 'discord', file: 'discord-logo.png', alt: 'Discord'},
+  {path: 'x', file: 'x-logo.png', alt: 'X'},
+  {path: 'instagram', file: 'instagram-logo.png', alt: 'Instagram'},
+  {path: 'patreon', file: 'patreon-logo.png', alt: 'Patreon'},
+  {path: 'paypal', file: 'paypal-logo.png', alt: 'PayPal'},
+  {path: 'liberapay', file: 'liberapay-logo.png', alt: 'Liberapay'},
+  {path: 'kofi', file: 'kofi-logo.png', alt: 'Ko-fi'},
+]
+
 export const Footer = ({email, unsubscribeUrl, locale}: Props) => {
   const t = createT(locale)
   return (
@@ -28,76 +44,22 @@ export const Footer = ({email, unsubscribeUrl, locale}: Props) => {
       >
         <Row>
           <Column align="center">
-            <Link href={`${DEPLOYED_WEB_URL}/github`} target="_blank">
-              <Img
-                src={`${DEPLOYED_WEB_URL}/images/github-logo.png`}
-                width="24"
-                height="24"
-                alt="GitHub"
-                style={{
-                  display: 'inline-block',
-                  margin: '0 6px',
-                  opacity: '0.7',
-                  transition: 'opacity 0.12s ease',
-                }}
-              />
-            </Link>
-            <Link href={`${DEPLOYED_WEB_URL}/discord`} target="_blank">
-              <Img
-                src={`${DEPLOYED_WEB_URL}/images/discord-logo.png`}
-                width="24"
-                height="24"
-                alt="Discord"
-                style={{
-                  display: 'inline-block',
-                  margin: '0 6px',
-                  opacity: '0.7',
-                  transition: 'opacity 0.12s ease',
-                }}
-              />
-            </Link>
-            <Link href={`${DEPLOYED_WEB_URL}/x`} target="_blank">
-              <Img
-                src={`${DEPLOYED_WEB_URL}/images/x-logo.png`}
-                width="24"
-                height="24"
-                alt="X"
-                style={{
-                  display: 'inline-block',
-                  margin: '0 6px',
-                  opacity: '0.7',
-                  transition: 'opacity 0.12s ease',
-                }}
-              />
-            </Link>
-            <Link href={`${DEPLOYED_WEB_URL}/patreon`} target="_blank">
-              <Img
-                src={`${DEPLOYED_WEB_URL}/images/patreon-logo.png`}
-                width="24"
-                height="24"
-                alt="Patreon"
-                style={{
-                  display: 'inline-block',
-                  margin: '0 6px',
-                  opacity: '0.7',
-                  transition: 'opacity 0.12s ease',
-                }}
-              />
-            </Link>
-            <Link href={`${DEPLOYED_WEB_URL}/paypal`} target="_blank">
-              <Img
-                src={`${DEPLOYED_WEB_URL}/images/paypal-logo.png`}
-                width="24"
-                height="24"
-                alt="PayPal"
-                style={{
-                  display: 'inline-block',
-                  margin: '0 6px',
-                  opacity: '0.7',
-                  transition: 'opacity 0.12s ease',
-                }}
-              />
-            </Link>
+            {SOCIAL_LINKS.map(({path, file, alt}) => (
+              <Link key={path} href={`${DEPLOYED_WEB_URL}/${path}`} target="_blank">
+                <Img
+                  src={`${DEPLOYED_WEB_URL}/images/${file}`}
+                  width="24"
+                  height="24"
+                  alt={alt}
+                  style={{
+                    display: 'inline-block',
+                    margin: '0 6px',
+                    opacity: '0.7',
+                    transition: 'opacity 0.12s ease',
+                  }}
+                />
+              </Link>
+            ))}
           </Column>
         </Row>
 

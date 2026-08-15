@@ -132,8 +132,19 @@ const nextConfig: NextConfig = {
         permanent: false,
       },
       {
+        source: '/instagram',
+        destination: 'https://www.instagram.com/compassmeet/',
+        permanent: false,
+      },
+      {source: '/kofi', destination: 'https://ko-fi.com/compassconnections', permanent: false},
+      {
         source: '/github',
         destination: 'https://github.com/CompassConnections/Compass',
+        permanent: false,
+      },
+      {
+        source: '/liberapay',
+        destination: 'https://liberapay.com/CompassConnections',
         permanent: false,
       },
       {source: '/charts', destination: '/stats', permanent: true},

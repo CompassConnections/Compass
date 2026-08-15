@@ -40,6 +40,11 @@ export const geodbFetch = async (
     return {status: 'failure', data: error}
   }
 }
+const usCountryNames = ['United States', 'United States of America', 'USA', 'US']
+
+export const isUnitedStates = (country: unknown) =>
+  typeof country === 'string' && usCountryNames.includes(country.trim())
+
 export function getLocationText(
   profile: ProfileRow | undefined | null,
   prefix?: string | undefined | null,
@@ -50,13 +55,18 @@ export function getLocationText(
   const country = profile[`${prefix}country` as keyof ProfileRow]
   const regionCode = profile[`${prefix}region_code` as keyof ProfileRow]
 
-  const stateOrCountry = country === 'United States of America' ? regionCode : country
-
   if (!city) {
     return null
   }
 
-  return `${city}${stateOrCountry && ', '}${stateOrCountry}`
+  // US cities share names across states, so the state code is what actually pins the location down.
+  // GeoDB sometimes returns a numeric region code, which means nothing to a reader — drop those.
+  const state =
+    isUnitedStates(country) && typeof regionCode === 'string' && !/^\d+$/.test(regionCode)
+      ? regionCode
+      : null
+
+  return [city, state, isUnitedStates(country) ? 'USA' : country].filter(Boolean).join(', ')
 }
 
 export function getGoogleMapsUrl(locationText: string) {

@@ -11,9 +11,11 @@ export function ProfileLocation(props: {
   prefix?: string
   /** Drop the pin icon and let the caller size the text — used on profile cards. */
   hideIcon?: boolean
+  /** Render the location as plain text. Grid cards are already a link to the profile. */
+  noLink?: boolean
   className?: string
 }) {
-  const {profile, prefix, hideIcon, className} = props
+  const {profile, prefix, hideIcon, noLink, className} = props
 
   const text = getLocationText(profile, prefix)
 
@@ -21,7 +23,9 @@ export function ProfileLocation(props: {
     return null
   }
 
-  const link = (
+  const link = noLink ? (
+    text
+  ) : (
     <CustomLink href={getGoogleMapsUrl(text)} className={'hover:text-primary-500'}>
       {text}
     </CustomLink>

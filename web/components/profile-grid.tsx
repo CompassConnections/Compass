@@ -837,6 +837,7 @@ export function ProfilePreview(props: {
                 <ProfileLocation
                   profile={profile}
                   hideIcon
+                  noLink
                   className={clsx('text-ink-500', config.metaClass)}
                 />
               )}

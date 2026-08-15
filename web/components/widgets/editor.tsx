@@ -125,7 +125,9 @@ const proseClass = (size: 'sm' | 'md' | 'lg') =>
     // double Shift+Enter used to render as.
     size !== 'lg' && '[&_p+p]:mt-3',
     '[&>p]:prose-li:my-0',
-    'prose-h1:text-ink-900 prose-h2:text-ink-900 prose-h3:text-ink-900',
+    // Headings sit a notch below full contrast: `ink-900` renders near-white in dark mode, which
+    // read as harsh against the body text around it.
+    'prose-h1:text-primary-900 prose-h2:text-primary-900 prose-h3:text-primary-900',
     'prose-strong:font-bold prose-strong:text-ink-700',
     'text-ink-600 prose-blockquote:text-teal-700 ',
     'break-anywhere',

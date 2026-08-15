@@ -48,14 +48,21 @@ export default function ProfileAbout(props: {
   const {profile, userActivity, isCurrentUser, omitConnectionGoals} = props
 
   return (
-    <Col
-      className={clsx(
-        'divide-canvas-200 relative divide-y',
-        // The section supplies the space under its rule and the gap to the next block, so the first
-        // and last rows shed their own padding rather than doubling it.
-        '[&>div:first-child]:pt-0 [&>div:last-child]:pb-0',
-      )}
-    >
+    // A plain block rather than a flex column: at `3xl` this list splits down the middle into the
+    // rail's two columns, and only a block container fragments reliably.
+    //
+    // Every row is identical — same padding, same rule above it — because at that width there are
+    // two of every edge and only one of them is the list's real first or last row. Anything keyed
+    // to `:first-child` or `:last-child` treats the other column's edges as the middle of the list:
+    // a first row without its top padding sat higher than the row starting column two, and a last
+    // row without its rule closed one column and not the other.
+    //
+    // Which leaves the leading rule, one per column, with nothing above it. Rules go on the top of
+    // each row and the whole list is painted a pixel high, so each column's first one falls outside
+    // the block that clips it (`overflow-hidden`, in `RailBlocks`) — every column then reads as
+    // rules between rows and nothing at either end. `top`, not a margin: this only needs to move
+    // where the rules are drawn, and the columns must stay where they are.
+    <div className={clsx('relative -top-px', '[&>div]:border-canvas-200 [&>div]:border-t')}>
       {/* Ordered by what decides whether someone reaches out, not by field category:
           1. Goals — whether the rest of this is even relevant.
           2. What they do — work, education, children.
@@ -94,7 +101,7 @@ export default function ProfileAbout(props: {
           <LastOnline lastOnlineTime={userActivity?.last_online_time} />
         </>
       )}
-    </Col>
+    </div>
   )
 }
 
@@ -144,7 +151,7 @@ function AboutRow(props: {
   const {title, text, details, children, testId} = props
   return (
     <div
-      className="3xl:grid-cols-[84px_minmax(0,1fr)] 3xl:gap-x-4 2xl:grid-cols-[120px_minmax(0,1fr)] 2xl:gap-x-6 grid grid-cols-[84px_minmax(0,1fr)] gap-x-4 py-4"
+      className="3xl:grid-cols-[84px_minmax(0,1fr)] 3xl:gap-x-4 2xl:grid-cols-[120px_minmax(0,1fr)] 2xl:gap-x-6 grid break-inside-avoid grid-cols-[84px_minmax(0,1fr)] gap-x-4 py-4"
       data-testid={testId}
     >
       <div className="text-ink-500" style={{fontSize: '14px', lineHeight: '1.5'}}>
@@ -1074,9 +1081,6 @@ function Big5Traits(props: {profile: Profile}) {
         {traits.map((trait) => {
           if (trait.value === null || trait.value === undefined) return null
 
-          const isHigh = trait.value >= 70
-          const isLow = trait.value <= 30
-
           return (
             <div key={trait.key} className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
@@ -1088,19 +1092,18 @@ function Big5Traits(props: {profile: Profile}) {
                   {trait.value}
                 </span>
               </div>
-              <div
-                className="h-1.5 rounded-full overflow-hidden bg-canvas-200"
-                style={{height: '6px'}}
-              >
+              {/* Five full-strength gold bars stacked in the rail were the loudest thing on a page
+                  whose subject is the person, not their scores — and the number beside each label
+                  already says everything the bar does. So: a hairline, and the accent at partial
+                  strength, which is enough to read a length off at a glance and not enough to pull
+                  the eye away from the prose. One fill for every value, too — colouring the ends of
+                  the range differently from the middle passed a judgement on the trait. */}
+              <div className="bg-canvas-200 overflow-hidden rounded-full" style={{height: '3px'}}>
                 <div
                   className="h-full rounded-full transition-all duration-600"
                   style={{
                     width: `${trait.value}%`,
-                    backgroundColor: isHigh
-                      ? 'rgb(var(--color-primary-500))'
-                      : isLow
-                        ? 'rgb(var(--color-canvas-300))'
-                        : 'rgb(var(--color-primary-400))',
+                    backgroundColor: 'rgb(var(--color-primary-500) / 0.55)',
                   }}
                 />
               </div>

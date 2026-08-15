@@ -323,20 +323,36 @@ function RailBlocks(props: {
 
   // Blocks are spaced apart rather than divided inside a shared panel — with no card there is nothing
   // for a divider to belong to, and whitespace is what separates the sections on the left too.
+  //
+  // Two column blocks stacked, rather than one column flow or two hand-assigned columns. Details is
+  // reliably several times taller than everything else put together, so giving it a column of its
+  // own set the rail's height from its longest block and left the other column half empty — a rail
+  // you had to scroll while it had space to spare beside it. Balancing everything as one flow fixed
+  // the height but ran Details into the sections below it, so one column read attributes while the
+  // other had already moved on to interests. Splitting Details evenly on its own and starting the
+  // rest under it keeps both: half the height, and one thing at a time across the rail.
   return (
-    <div className="3xl:grid-cols-2 grid grid-cols-1 gap-x-10 gap-y-10">
-      <div className="flex min-w-0 flex-col gap-10">
-        <RailSection title={t('profile.details', 'Details')}>
-          <ProfileAbout
-            profile={profile}
-            userActivity={userActivity}
-            isCurrentUser={isCurrentUser}
-            omitConnectionGoals
-          />
-        </RailSection>
+    <div>
+      {/* Full width because the block under it is: this heads both columns of Details, not one. */}
+      <RailHeading>{t('profile.details', 'Details')}</RailHeading>
+
+      {/* The rows are individually atomic, so the split lands between two attributes, and the two
+          halves come out level because this block is balanced on its own. No padding of its own at
+          either end — every row brings the same 16px, which is what makes the top of column two
+          match the top of column one — so the gap below is `mb-6` plus that row padding, landing on
+          the same 40px every other block is spaced by. */}
+      <div className="3xl:columns-2 3xl:gap-x-10 mb-6 overflow-hidden">
+        <ProfileAbout
+          profile={profile}
+          userActivity={userActivity}
+          isCurrentUser={isCurrentUser}
+          omitConnectionGoals
+        />
       </div>
 
-      <div className="flex min-w-0 flex-col gap-10">
+      {/* Everything below Details is short enough to stay whole, so these balance as blocks: the
+          browser fills the shorter column next and no section is ever cut in two. */}
+      <div className="3xl:columns-2 3xl:gap-x-10 [&>*:last-child]:mb-0">
         {!!profile.interests?.length && (
           <RailSection title={t('profile.interests', 'Interests')}>
             <ProfileInterests profile={profile} />
@@ -385,22 +401,41 @@ function RailBlocks(props: {
  * No card. `bg-canvas-50` is the elevated-surface token and should mean "raised, or you can act on
  * this"; the rail is reference text, the same class of thing as the bio beside it. Boxing one and not
  * the other was the last place two visual languages ran side by side on this page.
+ *
+ * Spacing is a bottom margin rather than a parent `gap` because the rail is a column flow at `3xl`,
+ * where there is no gap to inherit. Sections stay whole when that flow splits — a break through
+ * Interests would strand a middot. Details is the exception and is composed by hand in `RailBlocks`.
  */
 function RailSection(props: {title?: ReactNode; children: ReactNode}) {
   const {title, children} = props
   if (children == null) return null
   return (
-    <div className="min-w-0">
-      {title != null && (
-        <>
-          <SectionHeading className="!mb-3">{title}</SectionHeading>
-          <div className="border-canvas-300 border-t" />
-        </>
-      )}
-      {/* Every section gets the same breathing room under its rule. Details used to get it from its
-          first row's own padding, which left the sections that are not row-based — interests, causes,
-          Big Five, links — sitting hard against the rule. */}
+    // `!mt-0`: headings carry a 1.5rem top margin from the global type styles, which collapses out
+    // through this block. Between two sections it vanishes into the larger gap below them, but at
+    // the top of a column flow it is the only margin there, and it started column one that much
+    // lower than column two. Spacing between sections is unchanged — it was never coming from here.
+    <div className="mb-10 min-w-0 break-inside-avoid [&_h2]:!mt-0">
+      {title != null && <RailHeading>{title}</RailHeading>}
+      {/* Every section gets the same breathing room under its rule. The sections that are not
+          row-based — interests, causes, Big Five, links — have no padding of their own and sat hard
+          against the rule without it. Details is the one that does, and heads its own rows in
+          `RailBlocks` so that padding is the same in every column it breaks into. */}
       <div className={clsx(title != null && 'pt-4')}>{children}</div>
+    </div>
+  )
+}
+
+/**
+ * The label-and-rule that heads a rail block. Its own component because the Details heading sits
+ * outside the column block it heads (see `RailBlocks`) and must still be the same object as the
+ * headings inside one. `break-after-avoid` keeps a heading from being stranded at the foot of a
+ * column, which reads as a section with nothing in it.
+ */
+function RailHeading(props: {children: ReactNode}) {
+  return (
+    <div className="break-inside-avoid break-after-avoid">
+      <SectionHeading className="!mb-3">{props.children}</SectionHeading>
+      <div className="border-canvas-300 border-t" />
     </div>
   )
 }

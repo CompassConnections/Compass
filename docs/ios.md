@@ -41,8 +41,10 @@ and use `Capacitor.getPlatform()` (`'ios' | 'android' | 'web'`) wherever behavio
 
 ## 2. Prerequisites (hard blockers)
 
-- **A Mac.** Xcode is macOS-only, and there is no supported way to build or sign an iOS app without it.
-  This includes CI: GitHub Actions needs a `macos-latest` runner (billed at 10× Linux minutes).
+- **macOS, but not necessarily a Mac you own.** Xcode is macOS-only and there is no supported way to build
+  or sign an iOS app without it — but that macOS can be a `macos-latest` GitHub Actions runner (billed at
+  10× Linux minutes) or a rented remote Mac. See [§2.1](#21-working-without-a-mac) — the whole
+  build → sign → TestFlight loop is drivable from Linux/Windows.
 - **Apple Developer Program membership** — $99/year. Not just for shipping: the Push Notifications and
   Sign in with Apple **entitlements are unavailable on a free account**, so the two features that make
   this more than a wrapped website can't even be built without it.
@@ -75,6 +77,51 @@ $50–100. False economy.
 Dynamic Island phones (14 Pro and later) have slightly larger top insets than notched ones, but since
 everything is driven by `env()` rather than hardcoded values, a notched device is a fine proxy. Check the
 top of the profile page and the filter sheet on whatever you get.
+
+### 2.1 Working without a Mac
+
+We develop on Linux and Windows. Buying a Mac is not a prerequisite — the plan below assumes a physical
+iPhone (above) plus cloud/rented macOS for the steps that genuinely need Xcode.
+
+**Build and ship from CI.** The `macos-latest` runner in §7 does `npx cap sync ios`, CocoaPods, `xcodebuild`,
+fastlane `match` (certs/profiles) and `pilot` (TestFlight upload). Triggering it is just pushing a commit and
+setting secrets, so the whole release path is Mac-free. Install builds on the iPhone over the air via the
+**TestFlight app** — no cable, no Xcode, and the resulting build is a real signed one, so the APNs work in §6
+is testable.
+
+**Everything in `web/` is normal work.** `Info.plist`, `*.entitlements`, `capacitor.config.ts` and even
+`project.pbxproj` are text; editing them in a normal editor is fine. Xcode's GUI is a convenience for the
+capability toggles, not a requirement.
+
+**On-device debugging over USB works from Linux.** This is the part that is usually assumed to need a Mac and
+doesn't:
+
+| Need                           | Linux tool                                                                 |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| Pair / list devices, read UDID | `libimobiledevice` (`idevice_id -l`, `ideviceinfo`)                        |
+| Install an ad-hoc `.ipa`       | `ideviceinstaller`                                                         |
+| Native + Capacitor plugin logs | `idevicesyslog` (system log; does **not** include WKWebView `console.log`) |
+| **JS console / DOM / network** | `ios-webkit-debug-proxy` → `chrome://inspect`                              |
+| Retrieve native crash reports  | `idevicecrashreport`                                                       |
+
+`ios-webkit-debug-proxy` is the important one: enable Settings → Safari → Advanced → Web Inspector on the
+phone, run the proxy over USB, and attach Chrome DevTools to the WKWebView. That is functionally Safari's
+Web Inspector — JS console, DOM, network — which matters a lot for a webview app. It is a community project
+and can be picky about iOS/tool version pairings, so budget some setup time.
+
+**What still needs a real interactive macOS session:**
+
+- First-time Apple Developer setup done through Xcode's UI — Associated Domains (§4.1), Sign in with Apple
+  (§5), push entitlement (§6), `fastlane match init`. All scriptable/hand-editable, but error-prone blind;
+  expect to burn CI cycles on provisioning-profile mismatches Xcode would have shown visually.
+- The first App Store Connect submission and its metadata (§7).
+- **Crash symbolication** — turning a `.ips` from `idevicecrashreport` into a readable stack trace needs the
+  `.dSYM` and Xcode's `symbolicatecrash`. Do it on the CI runner as a step, or on a rented Mac.
+
+**Getting that macOS time.** AWS EC2 Mac (`mac2.metal`) gives a full GUI machine but bills a **24-hour
+minimum dedicated-host allocation** — wrong shape for a 20-minute Xcode session. A monthly Mac mini rental
+(MacStadium, Scaleway, ~$25–50/mo) is the better fit for occasional interactive use. Recommendation: CI for
+the pipeline, a short rental for the one-time setup and submission, cable + `iwdp` for day-to-day.
 
 ---
 
@@ -236,13 +283,17 @@ Notes:
 
 ## 7. Build, sign, ship
 
-Local:
+Local (on macOS):
 
 ```bash
 yarn build-web-view
 npx cap sync ios
 npx cap open ios     # then Product → Archive
 ```
+
+From Linux/Windows there is no local archive step — push and let the `macos-latest` job below do it
+([§2.1](#21-working-without-a-mac)). Everything up to `npx cap sync ios` still runs fine locally; it's only
+`xcodebuild`/Archive that needs macOS.
 
 Add `yarn build-sync-ios` mirroring `scripts/build_sync_android.sh`.
 
@@ -263,7 +314,10 @@ APP_STORE_CONNECT_KEY_P8
 MATCH_PASSWORD / MATCH_GIT_URL   (or a manually managed .p12 + provisioning profile)
 ```
 
-Do the first submission by hand from Xcode to shake out the metadata, then automate.
+Do the first submission by hand from Xcode to shake out the metadata, then automate. This is the step worth
+renting a Mac for — App Store Connect metadata, screenshots and capability toggles are fiddly enough that
+doing them blind through CI on the first pass invites a rejection round. Add a `symbolicatecrash` step to the
+same runner so crash reports pulled off the device from Linux can be symbolicated.
 
 ---
 
@@ -304,6 +358,11 @@ Ordered by how likely they are to cost us a rejection round:
 8. Manual TestFlight build; internal testing.
 9. fastlane + GitHub Action; first App Store submission.
 
+Without a Mac ([§2.1](#21-working-without-a-mac)), reorder slightly: stand the CI job (step 9's fastlane
+half) up right after step 4, since it replaces the Simulator as the way to get a build onto the phone, and do
+steps 5–8 against TestFlight builds with `ios-webkit-debug-proxy` attached over cable. Batch the
+Xcode-GUI-only work — capabilities for §4.1, §5 and §6 — into one rented-Mac session before step 5.
+
 ---
 
 ## 10. Resources
@@ -314,3 +373,5 @@ Ordered by how likely they are to cost us a rejection round:
 - [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
 - [Supporting Universal Links](https://developer.apple.com/documentation/xcode/supporting-associated-domains)
 - [fastlane for iOS](https://docs.fastlane.tools/getting-started/ios/setup/)
+- Linux tooling (§2.1): [libimobiledevice](https://libimobiledevice.org/) ·
+  [ios-webkit-debug-proxy](https://github.com/google/ios-webkit-debug-proxy)

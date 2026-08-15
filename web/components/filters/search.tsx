@@ -306,7 +306,7 @@ export const Search = forwardRef<
               <Tooltip
                 text={t(
                   'search.include_short_bios_tooltip',
-                  'To list incomplete profiles, go to Filters, then Advanced, and tick "Include incomplete profiles"',
+                  'To list incomplete profiles, go to Filters > Advanced > Include incomplete profiles',
                 )}
               >
                 <QuestionMarkCircleIcon className="w-5 h-5" />

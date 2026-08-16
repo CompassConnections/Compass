@@ -4,3 +4,5 @@ Allow: /
 # Internal tools. They already send `noindex` per page; this keeps crawlers from spending the budget
 # on pages that only ever render "Not authorized" for them.
 Disallow: /admin
+
+Sitemap: https://www.compassmeet.com/sitemap.xml

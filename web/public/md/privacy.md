@@ -26,7 +26,9 @@ out what to improve next.
 
 - We **do not sell your personal information**, and we do not run ads.
 - We do not share your precise location with other members without your explicit consent.
-- We do not use your content to train machine learning models.
+- We do not train any model on your content, and we do not sell or share it for anyone else's advertising.
+  Compass does send material to AI providers for two optional features you trigger yourself — see
+  [AI features](/privacy#ai-features-and-what-we-send-them) below, which spells out exactly what goes where.
 - Aggregate, non-identifying numbers — member counts, growth, activity — are published openly on
   [/stats](/stats), because a platform asking you to trust it should show its own figures.
 
@@ -85,9 +87,12 @@ data on our behalf, and each has its own privacy policy worth reading:
   **[Google Cloud](https://cloud.google.com/terms/cloud-privacy-notice)** hosts the API.
 - **[Resend](https://resend.com/legal/privacy-policy)** — sends the emails we send you, so it processes your
   email address and the contents of those emails.
-- **[OpenAI](https://openai.com/policies/privacy-policy/)** — transcribes voice input, and **only** when you
-  choose to dictate a profile answer instead of typing it. The recording is sent for transcription and not
-  retained by us; if you never use the microphone button, nothing of yours reaches OpenAI.
+- **[Google Gemini](https://ai.google.dev/gemini-api/terms)** and
+  **[OpenAI](https://openai.com/policies/privacy-policy/)** — the optional profile assistant, described in
+  full in the next section.
+- **[Notion](https://www.notion.so/privacy) and [Google Docs](https://policies.google.com/privacy)** — not
+  processors of ours, but if you point the profile assistant at a page hosted there, we fetch it, so they see
+  a request for it.
 - **[PostHog](https://posthog.com/privacy)** — product analytics, as described above.
 - **[Sentry](https://sentry.io/privacy/)** — error reporting, plus session replay on about 1 in 10 sessions —
   and on any session where an error occurs — so we can see what a bug looked like. Replay **masks all text, all
@@ -97,6 +102,42 @@ data on our behalf, and each has its own privacy policy worth reading:
   above, and never runs in the Android app at all.
 - **Google Fonts** — the site loads its typefaces from Google's servers, which means Google sees the IP address
   of anyone who opens a page. Self-hosting them is a known improvement we have not made yet.
+
+## AI features, and what we send them
+
+Two features send your material to an external AI provider. Both are things you start yourself — nothing here
+runs over your profile, your answers or your messages in the background — but they are the point at which your
+words leave our infrastructure, so here is the whole of it.
+
+**Building a profile from a document, a link, or your voice.** If you paste text, give a link, or dictate an
+answer instead of typing it:
+
+- The text — or the text of the page you linked — is sent to **Google's Gemini API**, which returns structured
+  fields the form pre-fills. Nothing is saved until you have reviewed and accepted it.
+- If you gave a link, we fetch that page ourselves first, including Notion pages and Google Docs.
+- If you dictated, the audio goes to **OpenAI** for transcription before the text goes to Gemini.
+- The result is cached on our server for up to 24 hours so a repeated request does not repeat the work.
+
+**The fields it extracts include sensitive ones** — religion, political views, sexual orientation, ethnicity,
+neurotype, health-related notes, substance use — because those are fields the profile form offers. If your
+document mentions them, they go to Gemini along with everything else. The feature is entirely optional: every
+field can be typed in directly, and typing loses you nothing but time.
+
+**What these providers do with it is governed by their terms, not ours.** Read Google's
+[Gemini API terms](https://ai.google.dev/gemini-api/terms) before using the assistant with anything you would not want
+reviewed. As of this writing, content should not be used to improve Google's products:
+
+> When you use Paid Services, including, for example, the paid quota of the Gemini API, Google doesn't use your
+> prompts (including associated system instructions, cached content, and files such as images, videos, or documents) or
+> responses to improve our products, and will process your prompts and responses in accordance with the Data Processing
+> Addendum for Products Where Google is a Data Processor.
+
+**Nothing else goes to a model.** Your bio, compatibility answers, search history and private messages are not
+sent to any AI provider as part of running Compass. The compatibility score is arithmetic, and
+[its code is public](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts).
+Admins moderating the site or preparing an introduction may use assistive tools, including AI assistants, on
+profile content and on conversations they are themselves part of — never on private conversations between
+other people.
 
 ## Storage and security
 

@@ -429,7 +429,6 @@ async function callGemini(text: string) {
 }
 
 async function _callClaude(text: string) {
-  // We don't use it as there is no free tier
   const apiKey = process.env.ANTHROPIC_API_KEY
 
   if (!apiKey) {

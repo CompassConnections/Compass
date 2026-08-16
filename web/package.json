@@ -4,7 +4,7 @@
   "private": true,
   "homepage": ".",
   "scripts": {
-    "build": "node scripts/fetch-media.mjs && next build",
+    "build": "node scripts/fetch-media.mjs && node scripts/build-sitemap.mjs && next build",
     "build-social-logos": "node scripts/build-social-logos.mjs",
     "clear-nextjs-cache": "rm -rf ./.next/cache",
     "dev": "NEXT_PUBLIC_FIREBASE_ENV=DEV yarn serve",

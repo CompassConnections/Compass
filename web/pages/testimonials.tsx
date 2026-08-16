@@ -1,8 +1,8 @@
 import {ChatBubbleBottomCenterTextIcon, HeartIcon, StarIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {ModTestimonial, PublicTestimonial} from 'common/testimonials/testimonials'
+import {typedAPICall} from 'common/util/api'
 import {keyBy} from 'lodash'
-import Head from 'next/head'
 import {useMemo, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -20,8 +20,14 @@ import {useAdminOrMod} from 'web/hooks/use-admin'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+import {isNativeMobile} from 'web/lib/util/webview'
 
 type Filter = 'all' | 'found_someone'
+
+type Props = {
+  /** Approved testimonials as of the last build; absent in the Android export. */
+  initialTestimonials?: PublicTestimonial[]
+}
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
@@ -203,7 +209,37 @@ function FilterTabs({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function TestimonialsPage() {
+/**
+ * Fetched at build and refreshed on the client.
+ *
+ * The wall used to be fetched only after hydration, which meant the served HTML was a hero and six
+ * grey skeleton boxes — a page whose entire value is member-written prose, invisible to the first
+ * crawl and to anything that does not run JavaScript. Building it in puts the text in the first byte.
+ *
+ * The client fetch below is deliberately kept: a testimonial approved after the last deploy would
+ * otherwise not appear until the next one. So the prop is the seed and `useAPIGetter` is the
+ * refresh — whichever is fresher wins, and there is no skeleton flash in between.
+ *
+ * `revalidate` regenerates the static copy in the background at most once a minute, which matches
+ * the `cache: 'public, max-age=60'` already on the `get-testimonials` endpoint. The
+ * `isNativeMobile()` early return is the `output: 'export'` guard the news page uses: the Android
+ * build has no server to revalidate against, and there the client fetch is the only path anyway.
+ */
+export async function getStaticProps() {
+  if (isNativeMobile()) return {props: {}}
+
+  try {
+    const {testimonials} = await typedAPICall('get-testimonials', {}, null)
+    return {props: {initialTestimonials: testimonials}, revalidate: 60}
+  } catch (e) {
+    // Never fail the build over the wall. An API that is down at deploy time would otherwise take
+    // the whole site with it, to save one page a round trip.
+    console.error('Failed to prefetch testimonials', e)
+    return {props: {}, revalidate: 60}
+  }
+}
+
+export default function TestimonialsPage({initialTestimonials}: Props) {
   const t = useT()
   const isMod = useAdminOrMod()
 
@@ -231,11 +267,13 @@ export default function TestimonialsPage() {
   // Everyone else reads the cached public one.
   const approved: PublicTestimonial[] = modData
     ? modRows.filter((row) => row.status === 'approved')
-    : (publicData?.testimonials ?? [])
+    : (publicData?.testimonials ?? initialTestimonials ?? [])
 
   const pending = modRows.filter((row) => row.status === 'pending')
 
-  const loading = !publicData && !modData
+  // The build-time copy counts as loaded: showing skeletons over content we already have would be a
+  // regression from the very thing this page was changed to fix.
+  const loading = !publicData && !modData && !initialTestimonials
 
   const foundSomeone = approved.filter((row) => row.source === 'deletion_survey')
   const shown = filter === 'found_someone' ? foundSomeone : approved
@@ -266,8 +304,6 @@ export default function TestimonialsPage() {
         )}
         url="/testimonials"
       />
-      <TestimonialsJsonLd testimonials={approved} averageRating={averageRating} />
-
       <Col className="mx-auto w-full max-w-6xl gap-10 px-4 py-6 sm:px-6 sm:py-10">
         <Hero
           count={approved.length}
@@ -400,70 +436,5 @@ function ClosingCta() {
       </p>
       <WriteTestimonialButton className="mt-2" />
     </Col>
-  )
-}
-
-// ─── Structured data ──────────────────────────────────────────────────────────
-
-/**
- * Review markup, so the wall can surface as rich results rather than as a page of anonymous prose.
- *
- * Only approved testimonials are ever passed in, and anonymous ones are published as "Anonymous"
- * rather than being dropped — the count matters to `aggregateRating`, and quietly excluding them
- * would make the structured data disagree with the visible page.
- */
-function TestimonialsJsonLd({
-  testimonials,
-  averageRating,
-}: {
-  testimonials: PublicTestimonial[]
-  averageRating: number | null
-}) {
-  const rated = testimonials.filter((row) => row.rating !== null)
-  if (!testimonials.length) return null
-
-  const json = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Compass',
-    url: 'https://compassmeet.com',
-    ...(averageRating !== null && rated.length > 0
-      ? {
-          aggregateRating: {
-            '@type': 'AggregateRating',
-            ratingValue: averageRating.toFixed(2),
-            reviewCount: rated.length,
-            bestRating: 5,
-            worstRating: 1,
-          },
-        }
-      : {}),
-    review: testimonials.slice(0, 50).map((row) => ({
-      '@type': 'Review',
-      author: {'@type': 'Person', name: row.author?.name ?? 'Anonymous'},
-      datePublished: row.createdTime.slice(0, 10),
-      reviewBody: row.body,
-      ...(row.headline ? {name: row.headline} : {}),
-      ...(row.rating !== null
-        ? {
-            reviewRating: {
-              '@type': 'Rating',
-              ratingValue: row.rating,
-              bestRating: 5,
-              worstRating: 1,
-            },
-          }
-        : {}),
-    })),
-  }
-
-  return (
-    <Head>
-      <script
-        type="application/ld+json"
-        key="testimonials-jsonld"
-        dangerouslySetInnerHTML={{__html: JSON.stringify(json)}}
-      />
-    </Head>
   )
 }

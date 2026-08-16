@@ -28,7 +28,11 @@ comme vous, et à déterminer quoi améliorer ensuite.
 
 - Nous **ne vendons pas vos informations personnelles** et nous n'affichons pas de publicité.
 - Nous ne partageons pas votre position précise avec d'autres membres sans votre consentement explicite.
-- Nous n'utilisons pas vos contenus pour entraîner des modèles d'apprentissage automatique.
+- Nous n'entraînons aucun modèle sur vos contenus, et nous ne les vendons ni ne les partageons pour la
+  publicité de qui que ce soit. Compass envoie en revanche du contenu à des prestataires d'IA pour deux
+  fonctions facultatives que vous déclenchez vous-même — voir
+  [Fonctions d'IA](/privacy#fonctions-d-ia-et-ce-que-nous-leur-envoyons) ci-dessous, qui détaille exactement
+  ce qui part où.
 - Les chiffres agrégés et non identifiants — nombre de membres, croissance, activité — sont publiés ouvertement
   sur [/stats](/stats), parce qu'une plateforme qui demande votre confiance devrait montrer ses propres
   chiffres.
@@ -99,10 +103,12 @@ partie de vos données pour notre compte, et chacun a sa propre politique de con
   **[Google Cloud](https://cloud.google.com/terms/cloud-privacy-notice)** héberge l'API.
 - **[Resend](https://resend.com/legal/privacy-policy)** — envoie les e-mails que nous vous adressons, et traite
   donc votre adresse e-mail et le contenu de ces messages.
-- **[OpenAI](https://openai.com/policies/privacy-policy/)** — transcrit la dictée vocale, et **uniquement**
-  lorsque vous choisissez de dicter une réponse de profil au lieu de la taper. L'enregistrement est transmis
-  pour transcription et n'est pas conservé par nous ; si vous n'utilisez jamais le bouton micro, rien de ce qui
-  vous concerne n'atteint OpenAI.
+- **[Google Gemini](https://ai.google.dev/gemini-api/terms)** et
+  **[OpenAI](https://openai.com/policies/privacy-policy/)** — l'assistant de profil facultatif, décrit en
+  entier dans la section suivante.
+- **[Notion](https://www.notion.so/privacy) et [Google Docs](https://policies.google.com/privacy)** — ce ne
+  sont pas nos sous-traitants, mais si vous pointez l'assistant de profil vers une page hébergée chez eux,
+  nous allons la chercher, et ils voient donc passer la requête.
 - **[PostHog](https://posthog.com/privacy)** — analyse produit, comme décrit plus haut.
 - **[Sentry](https://sentry.io/privacy/)** — rapports d'erreur, ainsi qu'un rejeu de session sur environ une
   session sur dix — et sur toute session où survient une erreur — pour voir à quoi ressemblait un bug. Le
@@ -114,6 +120,44 @@ partie de vos données pour notre compte, et chacun a sa propre politique de con
 - **Google Fonts** — le site charge ses polices depuis les serveurs de Google, qui voit donc l'adresse IP de
   toute personne ouvrant une page. Les héberger nous-mêmes est une amélioration connue que nous n'avons pas
   encore faite.
+
+## Fonctions d'IA, et ce que nous leur envoyons
+
+Deux fonctions envoient votre contenu à un prestataire d'IA externe. Toutes deux sont déclenchées par vous —
+rien ici ne tourne en arrière-plan sur votre profil, vos réponses ou vos messages —, mais c'est le moment où
+vos mots quittent notre infrastructure, alors voici l'ensemble.
+
+**Construire un profil à partir d'un document, d'un lien ou de votre voix.** Si vous collez du texte, donnez un
+lien, ou dictez une réponse au lieu de la taper :
+
+- Le texte — ou celui de la page que vous avez liée — est envoyé à l'**API Gemini de Google**, qui renvoie des
+  champs structurés dont le formulaire se pré-remplit. Rien n'est enregistré avant que vous ayez relu et
+  accepté.
+- Si vous avez donné un lien, nous allons d'abord chercher la page nous-mêmes, y compris les pages Notion et
+  les Google Docs.
+- Si vous avez dicté, l'audio part chez **OpenAI** pour la transcription avant que le texte ne parte vers
+  Gemini.
+- Le résultat est mis en cache sur notre serveur pendant 24 heures au maximum, pour qu'une demande répétée ne
+  refasse pas le travail.
+
+**Les champs extraits comprennent des données sensibles** — religion, opinions politiques, orientation
+sexuelle, origine, neurotype, informations liées à la santé, consommation de substances — parce que ce sont des
+champs que le formulaire propose. Si votre document les mentionne, ils partent chez Gemini avec le reste. La
+fonction est entièrement facultative : chaque champ se saisit directement, et le faire à la main ne vous coûte
+que du temps.
+
+**Ce que ces prestataires en font relève de leurs conditions, pas des nôtres.** Lisez les
+[conditions de l'API Gemini](https://ai.google.dev/gemini-api/terms) de Google avant d'utiliser l'assistant
+avec quoi que ce soit que vous ne voudriez pas voir relu : l'offre gratuite et l'offre payante de cette API
+diffèrent nettement quant à l'utilisation possible du contenu soumis pour améliorer les produits de Google.
+
+**Rien d'autre ne part vers un modèle.** Votre biographie, vos réponses de compatibilité, votre historique de
+recherche et vos messages privés ne sont envoyés à aucun prestataire d'IA dans le cadre du fonctionnement de
+Compass. Le score de compatibilité est un calcul, et
+[son code est public](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts).
+Les administrateurs qui modèrent ou préparent une mise en relation peuvent utiliser des outils d'assistance, y
+compris des assistants d'IA, sur des contenus de profil et sur des conversations auxquelles ils participent
+eux-mêmes — jamais sur des conversations privées entre d'autres personnes.
 
 ## Stockage et sécurité
 

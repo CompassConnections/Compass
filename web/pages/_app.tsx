@@ -20,6 +20,7 @@ import posthog from 'posthog-js'
 import {PostHogProvider} from 'posthog-js/react'
 import {useEffect, useState} from 'react'
 import {AuthProvider, AuthUser} from 'web/components/auth-context'
+import {ConsentBanner} from 'web/components/consent-banner'
 import {ErrorBoundary} from 'web/components/error-boundary'
 import {LiveRegionProvider} from 'web/components/live-region'
 import {UnseenMessageChannelsProvider} from 'web/components/messaging/messages-icon'
@@ -33,10 +34,11 @@ import {ProfileProvider} from 'web/hooks/use-profile'
 import {markBackNavigation, useScrollRestoration} from 'web/hooks/use-scroll-restoration'
 import {updateStatusBar} from 'web/hooks/use-theme'
 import {updateBackendLocale} from 'web/lib/api'
+import {getConsent} from 'web/lib/consent'
 import {DAYJS_LOCALE_IMPORTS, registerDatePickerLocale} from 'web/lib/dayjs'
 import {I18nContext} from 'web/lib/locale'
-import {getLocale, resetCachedLocale} from 'web/lib/locale-cookie'
-import {initTracking} from 'web/lib/service/analytics'
+import {getLocale, resetCachedLocale, setLocaleCookie} from 'web/lib/locale-cookie'
+import {initTracking, trackPageView} from 'web/lib/service/analytics'
 import AndroidPush from 'web/lib/service/android-push'
 import WebPush from 'web/lib/service/web-push'
 import {isAndroidApp} from 'web/lib/util/webview'
@@ -130,7 +132,7 @@ function MyApp(props: AppProps<PageProps>) {
   // console.log('_app locale', locale)
   const setLocale = (newLocale: string) => {
     debug('setLocale', newLocale)
-    document.cookie = `lang=${newLocale}; path=/; max-age=31536000`
+    setLocaleCookie(newLocale)
     setLocaleState(newLocale)
     resetCachedLocale()
     DAYJS_LOCALE_IMPORTS[newLocale]?.()
@@ -182,9 +184,11 @@ function MyApp(props: AppProps<PageProps>) {
   }, [])
 
   useEffect(() => {
-    initTracking()
+    // Only for visitors who have already said yes. Everyone else gets PostHog started by the consent
+    // banner instead, or never — see web/lib/consent.ts.
+    if (getConsent() === 'granted') initTracking()
 
-    const handleRouteChange = () => posthog?.capture('$pageview')
+    const handleRouteChange = () => trackPageView()
     Router.events.on('routeChangeComplete', handleRouteChange)
 
     return () => {
@@ -319,6 +323,7 @@ function MyApp(props: AppProps<PageProps>) {
                         <HiddenProfilesProvider>
                           <UnseenMessageChannelsProvider>
                             <PrivateMessageMembershipsProvider>
+                              <ConsentBanner />
                               <WebPush />
                               <AndroidPush />
                               <Component {...pageProps} />

@@ -654,6 +654,19 @@ ol > li::marker {
   }
 }
 
+/* Consent banner entrance. Short and small-travel on purpose — it appears in the corner of a page the
+   reader is already looking at, so anything longer pulls attention off what they came for. */
+@keyframes consent-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Was `opacity: 0.7`, which dimmed whatever it inherited to roughly 3.2:1 — and dimmed any link
    inside it along with the text. A real colour token hits the same "secondary" register while
    staying legible, and leaves nested links at their own contrast. */

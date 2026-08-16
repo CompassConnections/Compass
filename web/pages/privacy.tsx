@@ -1,93 +1,66 @@
-import {supportEmail} from 'common/constants'
+import {defaultLocale, supportedLocales} from 'common/constants'
+import fs from 'fs'
+import path from 'path'
+import {DocPage} from 'web/components/doc/doc-page'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
-import {useT} from 'web/lib/locale'
+import {useLocale, useT} from 'web/lib/locale'
+import {MarkdownDoc, parseDoc} from 'web/lib/markdown-doc'
 
-// TODO: convert to MarkDown for better readability during modifications?
-export default function PrivacyPage() {
+type Props = {
+  /** Every locale's parsed policy, keyed by locale code. */
+  docs: Record<string, MarkdownDoc>
+}
+
+/**
+ * Read and parsed at build time, the same way `/faq` is.
+ *
+ * The policy used to be ~60 lines of JSX with every sentence behind a `t('privacy.storage.text', …)`
+ * key, which made the two things a privacy policy needs most — being read end to end, and being
+ * *changed* when the stack changes — both awkward. It is now `public/md/privacy.md`, with the
+ * translations as sibling markdown files, so updating a clause is editing a paragraph rather than
+ * threading a new key through three JSON files.
+ *
+ * All locales ship in the props because locale here is a cookie read after hydration, not a route
+ * segment — there is no per-locale URL to render separately, so the client has to be able to switch
+ * without another round trip. This still works under `output: 'export'` for the Android build, since
+ * `getStaticProps` runs at build time.
+ */
+export const getStaticProps = async () => {
+  const dir = path.join(process.cwd(), 'public', 'md')
+  const docs: Record<string, MarkdownDoc> = {}
+
+  for (const locale of supportedLocales) {
+    const file =
+      locale === defaultLocale ? path.join(dir, 'privacy.md') : path.join(dir, locale, 'privacy.md')
+    // A locale without its own translation falls back to English at render time rather than failing
+    // the build — the same behaviour the FAQ has.
+    if (!fs.existsSync(file)) continue
+    docs[locale] = parseDoc(fs.readFileSync(file, 'utf-8'))
+  }
+
+  if (!docs[defaultLocale]) throw new Error(`Missing ${path.join(dir, 'privacy.md')}`)
+
+  return {props: {docs}}
+}
+
+export default function PrivacyPage({docs}: Props) {
   const t = useT()
+  const {locale} = useLocale()
+  const doc = docs[locale] ?? docs[defaultLocale]
 
   return (
-    <PageBase trackPageView={'terms'} className="max-w-4xl mx-auto p-8 col-span-8">
+    <PageBase trackPageView="privacy" className="col-span-8">
       <SEO
         title={t('privacy.seo.title', 'Privacy')}
         description={t('privacy.seo.description', 'Privacy Policy for Compass')}
-        url={`/privacy`}
+        url="/privacy"
       />
-      <h1 className="text-3xl font-semibold text-center mb-6">
-        {t('privacy.title', 'Privacy Policy')}
-      </h1>
-
-      <p className="text-center mb-12">
-        {t('privacy.effective_date', 'Effective Date: January 1, 2025')}
-      </p>
-
-      <section className="space-y-6 text-base leading-relaxed">
-        <p>
-          {t('privacy.intro.prefix', 'At ')}
-          <span className="font-semibold">Compass</span>
-          {t(
-            'privacy.intro.suffix',
-            ', we value transparency and respect for your data. This Privacy Policy explains how we handle your information.',
-          )}
-        </p>
-
-        <h2 className="text-xl font-semibold">
-          {t('privacy.info.title', '1. Information We Collect')}
-        </h2>
-        <p>
-          {t(
-            'privacy.info.text',
-            'We collect basic account details such as your name, email, and profile data. Additionally, we may collect usage data to improve platform functionality.',
-          )}
-        </p>
-
-        <h2 className="text-xl font-semibold">
-          {t('privacy.use.title', '2. How We Use Your Data')}
-        </h2>
-        <p>
-          {t(
-            'privacy.use.text',
-            'Your data is used solely to operate, personalize, and improve the platform. We do not sell your personal information to third parties.',
-          )}
-        </p>
-
-        <h2 className="text-xl font-semibold">
-          {t('privacy.storage.title', '3. Data Storage & Security')}
-        </h2>
-        <p>
-          {t(
-            'privacy.storage.text',
-            'We use modern encryption and security practices to protect your data. However, no online system is completely secure, so use the platform responsibly.',
-          )}
-        </p>
-
-        <h2 className="text-xl font-semibold">
-          {t('privacy.third_party.title', '4. Third-Party Services')}
-        </h2>
-        <p>
-          {t(
-            'privacy.third_party.text',
-            'Compass may integrate with third-party tools (e.g., Google Sign-In). These services have their own privacy policies that we encourage you to review.',
-          )}
-        </p>
-
-        <h2 className="text-xl font-semibold">{t('privacy.rights.title', '5. Your Rights')}</h2>
-        <p>
-          {t(
-            'privacy.rights.text',
-            'You can download or delete all your data in the settings. You can also request deletion of your account and data at any time by contacting ',
-          )}
-          {supportEmail}
-          {'.'}
-        </p>
-
-        <p className="italic mt-8">
-          {t('privacy.contact', 'For questions about this Privacy Policy, reach out at ')}
-          {supportEmail}
-          {'.'}
-        </p>
-      </section>
+      <DocPage
+        doc={doc}
+        label={t('privacy.label', 'Legal')}
+        meta={t('privacy.effective_date', 'Last updated: August 16, 2026')}
+      />
     </PageBase>
   )
 }

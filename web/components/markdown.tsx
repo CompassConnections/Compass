@@ -7,9 +7,10 @@ import {CustomLink} from 'web/components/links'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 
-// `faq` is deliberately absent: /faq no longer renders through this generic loader. It parses its
-// markdown at build time (see web/lib/faq.ts) so the questions reach the served HTML and the page can
-// group, search, and deep-link them — none of which is possible with the file as one opaque blob.
+// `faq` and `privacy` are deliberately absent: neither renders through this generic loader any more.
+// Both parse their markdown at build time (see web/lib/faq.ts and web/lib/markdown-doc.ts) so the
+// text reaches the served HTML and the pages can section, deep-link, and — for the FAQ — search it,
+// none of which is possible with the file as one opaque blob fetched after hydration.
 export const MD_PATHS = ['constitution', 'financials', 'members', 'support', 'tips-bio'] as const
 
 type Props = {

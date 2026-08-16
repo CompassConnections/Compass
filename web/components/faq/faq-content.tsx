@@ -10,13 +10,12 @@ import clsx from 'clsx'
 import {discordLink} from 'common/constants'
 import Link from 'next/link'
 import {useEffect, useMemo, useRef, useState} from 'react'
+import {MarkdownBody} from 'web/components/widgets/markdown-body'
 import {eyebrow, surface} from 'web/components/widgets/surface'
 import {FaqDoc, FaqQuestion, normalizeForSearch, toPlainText} from 'web/lib/faq'
 import {useT} from 'web/lib/locale'
 
 import {FaqItem} from './faq-item'
-import {FaqMarkdown} from './faq-markdown'
-
 /**
  * The FAQ page body.
  *
@@ -156,7 +155,7 @@ export function FaqContent({doc}: {doc: FaqDoc}) {
           {t('faq.title', 'Frequently asked questions')}
         </h1>
         {doc.intro && (
-          <FaqMarkdown className="max-w-2xl !text-lg text-ink-700">{doc.intro}</FaqMarkdown>
+          <MarkdownBody className="max-w-2xl !text-lg text-ink-700">{doc.intro}</MarkdownBody>
         )}
       </div>
 

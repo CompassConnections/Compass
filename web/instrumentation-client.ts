@@ -4,8 +4,8 @@
 
 import * as Sentry from '@sentry/nextjs'
 import {IS_LOCAL, SENTRY_DSN} from 'common/hosting/constants'
-
-const IS_NATIVE = !!process.env.NEXT_PUBLIC_WEBVIEW
+import {getConsent} from 'web/lib/consent'
+import {SENTRY_REPLAY_ENABLED} from 'web/lib/sentry-config'
 
 Sentry.init({
   // Skip tunneling in native app context
@@ -13,8 +13,12 @@ Sentry.init({
 
   enabled: !IS_LOCAL,
 
-  // Add optional integrations for additional features
-  integrations: IS_NATIVE ? [] : [Sentry.replayIntegration()],
+  // Error reporting starts unconditionally — it keeps the app fixable and puts nothing persistent on
+  // the visitor's device. Session replay is the part that needs permission (it records the page), so
+  // it only joins if a previous visit already granted it; otherwise the consent banner adds it later
+  // via `startConsentedTracking()`. See web/lib/consent.ts.
+  integrations:
+    SENTRY_REPLAY_ENABLED && getConsent() === 'granted' ? [Sentry.replayIntegration()] : [],
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 0.1,

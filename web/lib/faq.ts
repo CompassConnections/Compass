@@ -16,6 +16,8 @@
  * JSON-LD possible and removes the empty-page flash the old client-side `fetch` had.
  */
 
+import {slugify} from 'web/lib/markdown-doc'
+
 export type FaqQuestion = {
   /** Slug used as the element id, so `/faq#is-my-data-safe` deep-links to a question. */
   id: string
@@ -39,26 +41,10 @@ export type FaqDoc = {
 
 const HEADING = /^(#{1,6})\s+(.*?)\s*$/
 
-/**
- * Slugs come from the question text rather than its position, so an anchor survives questions being
- * reordered or inserted above it — the thing that actually happens to an FAQ. The cost is that the
- * anchors are per-locale, since the text they derive from is translated; a shared cross-locale anchor
- * would need an explicit id in the markdown, which is exactly the markup the source files are meant
- * to stay free of.
- */
-export function slugify(text: string) {
-  return (
-    text
-      .normalize('NFD')
-      // Strip diacritics so `Confidentialité` and `Für` produce clean ASCII anchors.
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 60)
-      .replace(/-+$/g, '')
-  )
-}
+// Anchors here work exactly as they do for the long-form documents (`/privacy`, and any other page
+// built on `parseDoc`), so the slug rule lives with the generic parser rather than being maintained
+// in two places. Re-exported because it has always been part of this module's surface.
+export {slugify}
 
 export function parseFaq(markdown: string): FaqDoc {
   const lines = markdown.split('\n')

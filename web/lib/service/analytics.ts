@@ -1,8 +1,10 @@
+import * as Sentry from '@sentry/nextjs'
 import {ENV_CONFIG} from 'common/envs/constants'
 import {Json} from 'common/supabase/schema'
 import {run, SupabaseClient} from 'common/supabase/utils'
 import {removeUndefinedProps} from 'common/util/object'
 import posthog from 'posthog-js'
+import {SENTRY_REPLAY_ENABLED} from 'web/lib/sentry-config'
 import {db} from 'web/lib/supabase/db'
 
 type EventIds = {
@@ -14,10 +16,21 @@ type EventIds = {
 
 type EventData = Record<string, Json | undefined>
 
+/**
+ * Whether `initTracking` has actually run.
+ *
+ * PostHog is only initialised once the visitor has said yes (see `web/lib/consent.ts`), so every call
+ * into it has to be guarded — an uninitialised instance would otherwise queue events and warn on
+ * every `capture`. The Supabase half of `track` below is deliberately *not* gated: it writes to our
+ * own database rather than to the visitor's device, so it is a first-party server-side record rather
+ * than something ePrivacy's consent rule covers.
+ */
+let posthogStarted = false
+
 export async function track(name: string, properties?: EventIds & EventData) {
   const {commentId, userId, ...data} = properties || {}
   try {
-    posthog?.capture(name, data)
+    if (posthogStarted) posthog?.capture(name, data)
     await insertUserEvent(name, data, db, userId, commentId)
     // console.debug('result', result)
   } catch (e) {
@@ -25,7 +38,18 @@ export async function track(name: string, properties?: EventIds & EventData) {
   }
 }
 
+/** Guarded page view, for the router hook in `_app`. */
+export function trackPageView() {
+  if (posthogStarted) posthog?.capture('$pageview')
+}
+
+export function isTrackingStarted() {
+  return posthogStarted
+}
+
 export function initTracking() {
+  if (posthogStarted) return
+  posthogStarted = true
   posthog.init(ENV_CONFIG.posthogKey, {
     api_host: 'https://us.i.posthog.com',
     // ui_host: 'https://us.posthog.com',
@@ -40,6 +64,20 @@ export function initTracking() {
     // cookie_expiration: 365,
     // capture_pageview: true,
   })
+}
+
+/**
+ * Turns on everything that needed permission, called the moment the banner's "Allow" is clicked.
+ *
+ * Sentry itself is already running by this point — error reporting is what keeps the app fixable and
+ * stores nothing on the visitor's device beyond a session id — so the only thing waiting on consent
+ * is the replay recorder, added here rather than at init. Safe from double-adding because the banner
+ * only appears when no choice has been recorded, which is exactly the case where
+ * `instrumentation-client.ts` decided not to add it.
+ */
+export function startConsentedTracking() {
+  initTracking()
+  if (SENTRY_REPLAY_ENABLED) Sentry.addIntegration(Sentry.replayIntegration())
 }
 
 // Convenience functions:
@@ -75,10 +113,12 @@ function insertUserEvent(
 }
 
 export function identifyUser(userId: string | null) {
+  if (!posthogStarted) return
   if (userId) posthog.identify(userId)
   else posthog.reset()
 }
 
 export async function setUserProperty(property: string, value: string) {
+  if (!posthogStarted) return
   posthog.setPersonProperties({property: value})
 }

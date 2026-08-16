@@ -22,8 +22,10 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import MeasurementSystemToggle from 'web/components/measurement-system-toggle'
 import {DeleteAccountSurveyModal} from 'web/components/profile/delete-account-survey-modal'
+import {AnalyticsConsentSetting} from 'web/components/settings/analytics-consent-setting'
 import HiddenProfilesModal from 'web/components/settings/hidden-profiles-modal'
 import {SettingsCard, SettingsRow} from 'web/components/settings/settings-card'
+import {SpotlightConsentSetting} from 'web/components/settings/spotlight-consent-setting'
 import {ThemePicker} from 'web/components/settings/theme-picker'
 import {WithPrivateUser} from 'web/components/user/with-user'
 import {Input} from 'web/components/widgets/input'
@@ -150,7 +152,9 @@ const LoadedGeneralSettings = (props: {privateUser: PrivateUser}) => {
           )}
           style={enter(1)}
         >
+          <SpotlightConsentSetting />
           <DataPrivacySettings />
+          <AnalyticsConsentSetting />
         </SettingsCard>
 
         <SettingsCard

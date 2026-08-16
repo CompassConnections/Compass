@@ -3,19 +3,23 @@ import ReactMarkdown from 'react-markdown'
 import {CustomLink} from 'web/components/links'
 
 /**
- * The answer body renderer.
+ * The prose renderer for markdown that is part of the product — FAQ answers, `/privacy` sections.
  *
- * The old FAQ handed the entire file to `react-markdown` inside one `prose prose-neutral` div, which
- * is why it read as a document rather than as part of the product: `prose` is a *reset for unstyled
- * HTML*, not a design, so none of the tokens `/about` and `/home` are built on (`text-ink-600`,
- * `primary-*`, the leading scale) ever reached it. This maps the handful of node types an FAQ answer
- * actually uses onto those tokens instead.
+ * The old pages handed the entire file to `react-markdown` inside one `prose prose-neutral` div,
+ * which is why they read as documents rather than as part of the product: `prose` is a *reset for
+ * unstyled HTML*, not a design, so none of the tokens `/about` and `/home` are built on
+ * (`text-ink-600`, `primary-*`, the leading scale) ever reached it. This maps the handful of node
+ * types the markdown sources actually use onto those tokens instead.
  *
- * `a` goes through `CustomLink` — the FAQ links to `/news`, `/vote`, `/support`, `/stats` and a dozen
- * other internal routes, and `CustomLink` is what keeps those as client-side navigations while still
- * opening external links in a new tab.
+ * `a` goes through `CustomLink` — the sources link to `/news`, `/vote`, `/support`, `/settings` and a
+ * dozen other internal routes, and `CustomLink` is what keeps those as client-side navigations while
+ * still opening external links in a new tab.
+ *
+ * Lives in `widgets/` rather than beside either page for the reason `surface` does: two unrelated
+ * pages share it, and `/privacy` importing its typography from `components/faq/` would be the kind of
+ * dependency that quietly becomes load-bearing.
  */
-export function FaqMarkdown({children, className}: {children: string; className?: string}) {
+export function MarkdownBody({children, className}: {children: string; className?: string}) {
   return (
     <div className={clsx('text-[15px] leading-relaxed text-ink-600', className)}>
       <ReactMarkdown
@@ -37,6 +41,30 @@ export function FaqMarkdown({children, className}: {children: string; className?
             <strong className="font-semibold text-ink-900" {...props}>
               {children}
             </strong>
+          ),
+          // Subheadings inside a body — the per-cookie blocks on /privacy are what needs these.
+          // globals.css puts Newsreader at 20px with 1.5rem of top margin on every `h3`, which at
+          // body scale reads as a second document title sitting inside a paragraph; `font-figtree`
+          // and a tighter rhythm make it a label for the block that follows it. `mt-0` on the first
+          // one so a section that opens with a subheading does not start with dead space.
+          h3: ({node: _node, children, ...props}) => (
+            <h3
+              className="mb-2 mt-7 font-figtree text-base font-semibold text-ink-900 first:mt-0"
+              {...props}
+            >
+              {children}
+            </h3>
+          ),
+          h4: ({node: _node, children, ...props}) => (
+            <h4
+              className="mb-1.5 mt-5 font-figtree text-[15px] font-semibold text-ink-800 first:mt-0"
+              {...props}
+            >
+              {children}
+            </h4>
+          ),
+          hr: ({node: _node, ...props}) => (
+            <hr className="my-7 border-0 border-t border-canvas-200" {...props} />
           ),
           // A drawn marker rather than a native bullet: the bulleted answers are the page's densest
           // content, and a small primary dot pinned to the first line's optical centre is both calmer

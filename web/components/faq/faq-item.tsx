@@ -1,9 +1,8 @@
 import {ChevronDownIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
+import {MarkdownBody} from 'web/components/widgets/markdown-body'
 import {surface, surfaceHover} from 'web/components/widgets/surface'
 import {FaqQuestion} from 'web/lib/faq'
-
-import {FaqMarkdown} from './faq-markdown'
 
 /**
  * One question, as a disclosure card.
@@ -86,7 +85,7 @@ export function FaqItem({
               a keyboard, still present for crawlers. */}
           <div className="px-5 pb-5 sm:px-6 sm:pb-6" inert={!open}>
             <div className="border-t border-canvas-200/70 pt-4">
-              <FaqMarkdown>{item.answer}</FaqMarkdown>
+              <MarkdownBody>{item.answer}</MarkdownBody>
             </div>
           </div>
         </div>

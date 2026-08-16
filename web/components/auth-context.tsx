@@ -1,10 +1,9 @@
 'use client'
-import {AUTH_COOKIE_NAME, TEN_YEARS_SECS} from 'common/envs/constants'
+import {AUTH_COOKIE_NAME} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {type PrivateUser, type User, type UserAndPrivateUser} from 'common/user'
 import {randomString} from 'common/util/random'
 import {onAuthStateChanged, onIdTokenChanged, User as FirebaseUser} from 'firebase/auth'
-import {pickBy} from 'lodash'
 import {createContext, ReactNode, useEffect, useState} from 'react'
 import {useEffectCheckEquality} from 'web/hooks/use-effect-check-equality'
 import {useStateCheckEquality} from 'web/hooks/use-state-check-equality'
@@ -44,27 +43,41 @@ export const ensureDeviceToken = () => {
 //   return localStorageToken?.replace(/"/g, '') ?? ''
 // }
 
-const stripUserData = (user: object) => {
-  // there's some risk that this cookie could be too big for some clients,
-  // so strip it down to only the keys that the server auth actually needs
-  // in order to auth to the firebase SDK
-  const whitelist = ['uid', 'emailVerified', 'isAnonymous', 'stsTokenManager']
-  const stripped = pickBy(user, (_v, k) => whitelist.includes(k))
-  // mqp: temp fix to get cookie size under 4k in edge cases
-  delete (stripped as any).stsTokenManager.accessToken
-  return JSON.stringify(stripped)
-}
+// const stripUserData = (user: object) => {
+//   // there's some risk that this cookie could be too big for some clients,
+//   // so strip it down to only the keys that the server auth actually needs
+//   // in order to auth to the firebase SDK
+//   const whitelist = ['uid', 'emailVerified', 'isAnonymous', 'stsTokenManager']
+//   const stripped = pickBy(user, (_v, k) => whitelist.includes(k))
+//   // mqp: temp fix to get cookie size under 4k in edge cases
+//   delete (stripped as any).stsTokenManager.accessToken
+//   return JSON.stringify(stripped)
+// }
+//
+// const setUserCookie = (data: object | undefined) => {
+//   const stripped = data ? stripUserData(data) : ''
+//   setCookie(AUTH_COOKIE_NAME, stripped, [
+//     ['path', '/'],
+//     ['max-age', (data === undefined ? 0 : TEN_YEARS_SECS).toString()],
+//     ['samesite', 'lax'],
+//     ['secure'],
+//   ])
+// }
 
-const setUserCookie = (data: object | undefined) => {
-  const stripped = data ? stripUserData(data) : ''
-  setCookie(AUTH_COOKIE_NAME, stripped, [
-    ['path', '/'],
-    ['max-age', (data === undefined ? 0 : TEN_YEARS_SECS).toString()],
-    ['samesite', 'lax'],
-    ['secure'],
-  ])
-}
-
+/**
+ * Deletes the legacy `FBUSER_*` auth cookie.
+ *
+ * That cookie mirrored the Firebase user into a cookie so `getServerSideProps` could hand a
+ * pre-resolved `serverUser` to `AuthProvider`. Nothing does that any more — no page sets
+ * `pageProps.auth`, and nothing anywhere reads `AUTH_COOKIE_NAME` — so all the cookie did was park
+ * `stsTokenManager.refreshToken` in JS-readable storage for ten years. The access token was stripped
+ * (see the commented-out `stripUserData` above), but the refresh token is the one that mints new
+ * access tokens indefinitely, so any XSS on the page was a durable account takeover.
+ *
+ * Still *called*, not just deleted, because removing the writer alone would leave the token sitting
+ * in every existing browser until 2035. This clears it on the next load for anyone who has one. Safe
+ * to drop entirely once the population that visited before this change has cycled through.
+ */
 export const clearUserCookie = () => {
   setCookie(AUTH_COOKIE_NAME, '', [
     ['path', '/'],
@@ -178,7 +191,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
 
   function onAuthLoggedOut() {
     // User logged out; reset to null
-    setUserCookie(undefined)
+    clearUserCookie()
     setUser(null)
     setPrivateUser(undefined)
     // Clear local storage only if we were signed in, otherwise we'll clear referral info
@@ -190,7 +203,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
       auth,
       async (fbUser) => {
         if (fbUser) {
-          setUserCookie(fbUser.toJSON())
+          clearUserCookie()
           if (isOnboardingFlag()) {
             debug(
               'Logged into firebase but onboarding, skipping auth load until onboarding is complete',

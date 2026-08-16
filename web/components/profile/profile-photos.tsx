@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
 import {buildArray} from 'common/util/array'
+import {uniq} from 'lodash'
 import Image from 'next/image'
 import {useState} from 'react'
 import {MediaModal} from 'web/components/media-modal'
@@ -19,7 +20,9 @@ export function useProfilePhotos(profile: Profile) {
   const [index, setIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
-  const urls = buildArray(profile.pinned_url, profile.photo_urls)
+  // `photo_urls` holds the full ordered list including the profile picture, so without the dedupe
+  // the first photo showed up twice in the carousel.
+  const urls = uniq(buildArray(profile.pinned_url, profile.photo_urls))
 
   // Signed-out visitors on a members-only profile see the pinned photo and a locked count.
   const isLocked = !currentUser && profile.visibility !== 'public'

@@ -1,12 +1,11 @@
 import {CheckCircleIcon} from '@heroicons/react/24/outline'
-import {PlusIcon, XMarkIcon} from '@heroicons/react/24/solid'
+import {ChevronLeftIcon, ChevronRightIcon, PlusIcon, XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {buildArray} from 'common/util/array'
 import {uniq} from 'lodash'
 import Image from 'next/image'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
-import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {isVideo, uploadImage} from 'web/lib/firebase/storage'
@@ -35,6 +34,32 @@ export const AddPhotosWidget = (props: {
   const t = useT()
 
   const [uploadingImages, setUploadingImages] = useState(false)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+
+  // The order shown is the order stored: the first photo is the profile picture, so `pinned_url` is
+  // just a mirror of `urls[0]` rather than something the member picks separately.
+  const urls = uniq(buildArray(pinned_url, photo_urls))
+
+  const commitOrder = (newUrls: string[]) => {
+    setPhotoUrls(newUrls)
+    setPinnedUrl(newUrls[0] ?? '')
+  }
+
+  const moveTo = (from: number, to: number) => {
+    if (to < 0 || to >= urls.length || from === to) return
+    const newUrls = [...urls]
+    const [moved] = newUrls.splice(from, 1)
+    newUrls.splice(to, 0, moved)
+    commitOrder(newUrls)
+  }
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    if (draggedIndex === null || draggedIndex === index) return
+    moveTo(draggedIndex, index)
+    setDraggedIndex(index)
+  }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -45,15 +70,14 @@ export const AddPhotosWidget = (props: {
     // Convert files to an array and take only the first 6 files
     const selectedFiles = Array.from(files).slice(0, 6)
 
-    const urls = await Promise.all(
+    const newUrls = await Promise.all(
       selectedFiles.map((f) => uploadImage(username, f, 'love-images')),
     ).catch((e) => {
       console.error(e)
       toast.error(e)
       return []
     })
-    if (!pinned_url) setPinnedUrl(urls[0])
-    setPhotoUrls(uniq([...(photo_urls ?? []), ...urls]))
+    commitOrder(uniq([...urls, ...newUrls]))
     setUploadingImages(false)
     onUpload?.(false)
   }
@@ -91,64 +115,98 @@ export const AddPhotosWidget = (props: {
             )}
           </label>
         </div>
-        {uniq(buildArray(pinned_url, photo_urls))?.map((url, index) => {
-          const isPinned = url === pinned_url
+        {urls.map((url, index) => {
+          const isProfilePic = index === 0
           return (
             <div
-              key={index}
+              key={url}
               className={clsx(
-                'relative cursor-pointer rounded-md border-2 p-2',
-                isPinned ? 'border-teal-500' : 'border-canvas-100',
-                'hover:border-teal-900',
+                'relative rounded-md border-2 p-2',
+                isProfilePic ? 'border-teal-500' : 'border-canvas-100',
+                draggedIndex === index && 'opacity-50',
               )}
-              onClick={() => {
-                if (isPinned) return
-                setPhotoUrls(uniq(buildArray(pinned_url, photo_urls)))
-                setPinnedUrl(url)
-              }}
+              onDragOver={(e: React.DragEvent) => handleDragOver(e, index)}
+              onDrop={(e: React.DragEvent) => e.preventDefault()}
+              onDragEnd={() => setDraggedIndex(null)}
             >
-              {isPinned && (
-                <div className={clsx(' absolute left-0 top-0 rounded-full')}>
-                  <CheckCircleIcon className={' bg-canvas-50 h-6 w-6 rounded-full text-teal-500'} />
+              {/* Every badge and arrow lives in here with the photo. Positioned siblings paint in
+                  DOM order, so a control left outside this wrapper ends up *under* the image. They
+                  are siblings of the draggable element, not children, so pressing one never starts
+                  a drag. */}
+              <div className="relative">
+                {/* Only the media itself is the drag handle: making the whole card draggable would
+                    swallow text selection inside the description textarea. */}
+                <div
+                  draggable
+                  onDragStart={(e: React.DragEvent) => {
+                    // Firefox refuses to start a drag unless some data is attached.
+                    e.dataTransfer.setData('text/plain', url)
+                    e.dataTransfer.effectAllowed = 'move'
+                    setDraggedIndex(index)
+                  }}
+                  className={clsx(urls.length > 1 && 'cursor-move')}
+                >
+                  {isVideo(url) ? (
+                    <video
+                      src={url}
+                      width={80}
+                      height={80}
+                      className="h-[200px] w-[200px] object-cover"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <Image
+                      src={url}
+                      width={80}
+                      height={80}
+                      alt={`preview ${index}`}
+                      className="h-[200px] w-[200px] object-cover"
+                      draggable={false}
+                    />
+                  )}
                 </div>
-              )}
-              <Button
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  e.stopPropagation()
-                  const newUrls = (photo_urls ?? []).filter((u) => u !== url)
-                  if (isPinned) setPinnedUrl(newUrls[0] ?? '')
-                  setPhotoUrls(newUrls)
-                }}
-                color={'gray-outline'}
-                size={'2xs'}
-                className={clsx('bg-canvas-50 absolute right-0 top-0 !rounded-full !px-1 py-1')}
-              >
-                <XMarkIcon className={'h-4 w-4'} />
-              </Button>
-              {isVideo(url) ? (
-                <video
-                  src={url}
-                  width={80}
-                  height={80}
-                  className="h-[200px] w-[200px] object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                />
-              ) : (
-                <Image
-                  src={url}
-                  width={80}
-                  height={80}
-                  alt={`preview ${index}`}
-                  className="h-[200px] w-[200px] object-cover"
-                />
-              )}
+
+                {isProfilePic && (
+                  <CheckCircleIcon
+                    className="bg-canvas-50 absolute left-1 top-1 h-6 w-6 rounded-full text-teal-500 shadow"
+                    title={t('add_photos.profile_picture_badge', 'This is your profile picture')}
+                  />
+                )}
+                <OverlayButton
+                  label={t('add_photos.remove_photo', 'Remove photo')}
+                  className="right-1 top-1"
+                  onClick={() => commitOrder(urls.filter((u) => u !== url))}
+                >
+                  <XMarkIcon className="h-5 w-5" />
+                </OverlayButton>
+
+                {/* Drag-and-drop is mouse-only, so the same reordering is reachable by tap and by
+                    keyboard through these two arrows. Ends are omitted rather than disabled — a
+                    greyed-out control floating over a photo is just noise. */}
+                {index > 0 && (
+                  <OverlayButton
+                    label={t('add_photos.move_earlier', 'Move photo earlier')}
+                    className="left-1 top-1/2 -translate-y-1/2"
+                    onClick={() => moveTo(index, index - 1)}
+                  >
+                    <ChevronLeftIcon className="h-5 w-5" />
+                  </OverlayButton>
+                )}
+                {index < urls.length - 1 && (
+                  <OverlayButton
+                    label={t('add_photos.move_later', 'Move photo later')}
+                    className="right-1 top-1/2 -translate-y-1/2"
+                    onClick={() => moveTo(index, index + 1)}
+                  >
+                    <ChevronRightIcon className="h-5 w-5" />
+                  </OverlayButton>
+                )}
+              </div>
 
               <textarea
-                // stop click bubbling so clicking/focusing the input doesn't pin the image
-                onClick={(e: React.MouseEvent<HTMLTextAreaElement>) => e.stopPropagation()}
                 aria-label={`description for image ${index}`}
                 placeholder={t('add_photos.add_description', 'Add description')}
                 value={image_descriptions?.[url] ?? ''}
@@ -164,16 +222,52 @@ export const AddPhotosWidget = (props: {
           )
         })}
       </Row>
-      {photo_urls?.length ? (
-        <span className={'text-ink-500 text-xs italic'}>
-          {t('add_photos.profile_picture_hint', 'The highlighted image is your profile picture')}
-          {' — '}
-          {t(
-            'add_photos.profile_picture_center_face_hint',
-            'make sure your face is centered in it, since this is what appears on your profile card',
+      {urls.length ? (
+        <Col className={'text-ink-500 gap-1 text-xs italic'}>
+          <span>
+            {t('add_photos.profile_picture_hint', 'The highlighted image is your profile picture')}
+            {' — '}
+            {t(
+              'add_photos.profile_picture_center_face_hint',
+              'make sure your face is centered in it, since this is what appears on your profile card',
+            )}
+          </span>
+          {urls.length > 1 && (
+            <span>
+              {t(
+                'add_photos.reorder_hint',
+                'Drag a photo, or use the arrows on it, to reorder them. The first one is your profile picture.',
+              )}
+            </span>
           )}
-        </span>
+        </Col>
       ) : null}
     </Col>
+  )
+}
+
+/** A round icon button floating over a photo — `className` places it. */
+const OverlayButton = (props: {
+  label: string
+  className: string
+  onClick: () => void
+  children: React.ReactNode
+}) => {
+  const {label, className, onClick, children} = props
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      className={clsx(
+        // Translucent canvas rather than a solid chip: the photo stays readable underneath, and
+        // the blur keeps the icon legible over a busy one either way.
+        'bg-canvas-50/70 text-ink-900 hover:bg-canvas-50 absolute rounded-full p-1 shadow backdrop-blur-sm transition-colors',
+        className,
+      )}
+    >
+      {children}
+    </button>
   )
 }

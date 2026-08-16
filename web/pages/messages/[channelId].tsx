@@ -649,7 +649,9 @@ export const PrivateChat = (props: {
             user={user}
             submit={submitMessage}
             isSubmitting={isSubmitting}
-            submitOnEnter={!isMobile}
+            // Same as mobile: enter starts a new paragraph, sending goes through the send button
+            // (or ctrl/cmd+enter), so a multi-paragraph message never gets fired off half-written.
+            submitOnEnter={false}
             replyTo={replyToUserInfo}
             isEditing={!!editingMessage}
             cancelEditing={cancelEditing}

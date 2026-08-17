@@ -1,6 +1,7 @@
 import {Browser} from '@playwright/test'
 
 import {App} from '../web/pages/app'
+import {newTestContext} from './consentState'
 
 export class ContextManager {
   private contexts: Map<string, App> = new Map()
@@ -13,7 +14,7 @@ export class ContextManager {
     // Return the existing one instead of closing it?
     if (existing) await existing.page.context().close()
 
-    const context = await this.browser.newContext()
+    const context = await newTestContext(this.browser)
     try {
       const page = await context.newPage()
       const app = new App(page)

@@ -1,5 +1,6 @@
 import {test as base} from '@playwright/test'
 
+import {newTestContext} from '../../utils/consentState'
 import {seedUser} from '../../utils/seedDatabase'
 import {App} from '../pages/app'
 import {testAccounts, UserAccountInformation} from '../utils/accountInformation'
@@ -25,7 +26,7 @@ export const test = base.extend<{
   app2: async ({browser}, use) => {
     // Totally isolated app which can be used to sign in a different user
     // Use {storageState: 'auth/receiver.json'} later on to save compute time by signing in only once
-    const context = await browser.newContext()
+    const context = await newTestContext(browser)
     const page = await context.newPage()
     await use(new App(page))
     await context.close() // guaranteed teardown, even on failure/timeout

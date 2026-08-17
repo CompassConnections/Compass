@@ -3,6 +3,8 @@ import 'tsconfig-paths/register'
 import {execSync} from 'child_process'
 import {config} from 'dotenv'
 
+import {consentStorageState} from './tests/e2e/utils/consentState'
+
 // Load static env vars from .env.test
 config({path: '.env.test', quiet: true})
 
@@ -45,6 +47,9 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
+    // Answers the analytics consent prompt before the first page load, so its corner card never
+    // overlays the controls a test is clicking. Contexts built by hand need `newTestContext()`.
+    storageState: consentStorageState,
     // headless: false,
   },
   projects: [

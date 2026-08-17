@@ -24,6 +24,110 @@ only runs at tag-creation time, so it won't touch releases that already exist.
 
 ---
 
+## 1.15.0 — 2026-08-17
+
+### New features
+
+- Testimonials: share your experience of Compass with a rating and a short write-up, browse everyone
+  else's, and leave one on your way out if you delete your account
+- Proposals are now discussions — comment for or against, reply to others, edit your comment (with its
+  history kept), and get notified when someone responds. The strongest arguments on each side surface at
+  the top
+- Spotlight: the home page now features real members who opted in. Turn it on or off any time in settings
+- Search alerts: bookmark a search, get an email the moment a new member matches, and open the alert on
+  its own page to see who's new
+- Referrals page showing who joined through your link
+- Fill your profile from an existing write-up: paste a Notion page or Firefly profile link and Compass
+  drafts your answers from it
+- Reorder your profile photos by dragging them or with arrow buttons, and duplicates of your profile
+  picture are now prevented
+- Footnotes in profiles and posts, with tooltip previews and smooth scrolling between marker and note
+- Choose how the profile grid looks — masonry or uniform cards — from a new display-options button in the
+  search toolbar
+- Copy any chat message as plain text
+- Choose whether your profile is public or members-only right in the sign-up form, and control separately
+  whether it appears in Compass's public feeds
+- Analytics are now opt-in: a consent banner on first visit and a toggle in settings
+
+### Improvements
+
+- Pressing Enter in a message now starts a new paragraph instead of sending — use the send button (or
+  Ctrl/Cmd+Enter). Same behavior on desktop and mobile, so half-written messages don't fly off
+- Profiles now store a birth date, so your age stays correct instead of going stale
+- Conversations show when someone has left, instead of looking like an active chat with nobody in it
+- Pasting formatted text (from Markdown or another document) keeps its structure instead of collapsing
+  into one block
+- Saved searches are easier to reuse: cleaner rows, and applying one restores both its filters and its
+  location
+- Vote buttons show which way you voted, with much better contrast and screen-reader support
+- Redesigned the link preview card for profiles shared on social media
+- Profile previews no longer repeat bio scaffolding like "About me" headings and status notes
+- Privacy policy and terms of service are now available in French and German
+- Reorganized profile sections: height moved to demographics, age and location swapped
+- Clearer onboarding and compatibility copy, shorter share and welcome emails, and better username
+  suggestions from your email
+- Distances in miles are rounded, and US locations read more naturally
+- Emails now mention how many members are near you
+- Fixed a dropdown that closed before you could pick an option, a large gap under the Android header, and
+  chat jumping when scrolling to the newest message
+- Faster proposal pages and profile loading — fewer redundant lookups behind the scenes
+- Removed the Reddit link from the social page (account suspended)
+
+<!--tech-->
+
+### Database
+
+- New tables and migrations: `outreach_contacts`, `outreach_sends`, `search_alert_sends`, `testimonials`,
+  `vote_comments` (+ stance extension, top-arguments ranking, edit history, nullable avatar),
+  `profile_spotlights`, plus `feed_visibility` and `birth_date` columns on `profiles`
+- `birth_date` replaces stored `age` — DB triggers derive and backfill age, with matching frontend
+  validation and input handling
+- Highlighted-argument ranking moved into SQL so list and detail views rank identically and comment
+  payloads shrink
+
+### Backend & API
+
+- New endpoints: testimonials (create/get/moderate), vote comments (create/edit/mute/hide), spotlights
+  (public/admin create/update), `get-search-alert`, `create-outreach-search`, `get-my-referrals`,
+  `get-outreach-stats`, `send-city-number-emails`, `send-empty-room-emails`
+- `llm-extract-profile` gained Notion (`fetchNotionRecordMap` → TipTap `JSONContent`) and Firefly
+  (Supabase RPC, displayed fields only, quiz answers excluded) extraction paths, with unit tests
+- Outreach system: admin interface, member queue, contact tracking, local-density and referral helpers;
+  banned and disabled members excluded from the queue
+- New-member profiles announced on Discord via `newMemberDiscordMessage`, with referrer attribution
+- Batched creator lookups on vote pages and deduplicated concurrent `useProfileByUserId` requests
+- API version 1.57.1 → 1.66.0
+
+### Web
+
+- Analytics consent (`web/lib/consent.ts`) gates Sentry and analytics init; markdown-backed doc pages
+  (`markdown-doc.ts`, `doc-page.tsx`) now serve privacy/terms from `web/public/md/{,fr,de}`
+- Added `build-sitemap.mjs`, `robots.txt` entries, and JSON-LD structured-data components
+- Split editor toolbars into `minimal` / `full` modes; added footnote marker pairing/indexing and
+  Markdown-paste-to-HTML conversion, both with unit tests
+- Profile rail switched from flex to block layout; grid layout selector, display-options button, and
+  optional plain-text location rendering for non-linked cards
+- Single member profile links use `Link` so open-in-new-tab and copy-link work
+
+### Android
+
+- versionCode 145 → 157, versionName 1.35.0 → 1.39.0
+
+### Tooling, scripts & docs
+
+- Scripts: `render-scroll.mjs` profile scroll videos, `build-social-logos`, chat-transcript export to
+  Markdown (with local-timezone timestamps), interest deduplication, ranked candidate generation with
+  off-platform `TARGET_FILE` support
+- CI: conditional Jest worker settings, lint timeout down to 5 min, test timeout up to 15 min, `jq` for
+  `metadata.json` generation, `package.json` in the Node cache key
+- Docs: iOS-without-a-Mac workflow, Play Store review plan, fediverse/ActivityPub feed plan
+- E2E: scoped locators, centralized `clearFilters`, "Search as member" admin filter for testing
+  member-specific results
+
+**Full Changelog**: https://github.com/CompassConnections/Compass/compare/1.14.0...1.15.0
+
+---
+
 ## 1.14.0 — 2026-08-02
 
 ### New features

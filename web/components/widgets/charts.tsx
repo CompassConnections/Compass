@@ -1,4 +1,5 @@
 import {ArrowTrendingUpIcon} from '@heroicons/react/24/outline'
+import clsx from 'clsx'
 import {useEffect, useRef, useState} from 'react'
 import {
   Area,
@@ -178,7 +179,15 @@ function CustomLegend({payload}: any) {
 // fades in, so the dot lands exactly when the line reaches it rather than floating ahead of it.
 const GROWTH_DRAW_MS = 1400
 
-export function MemberGrowth() {
+export function MemberGrowth({
+  className,
+  plotClassName = 'h-[120px] sm:h-[140px]',
+}: {
+  /** Applied to the figure — call sites cap the width here. */
+  className?: string
+  /** Height of the plot box. Paired with a width cap, this is what sets the figure's aspect ratio. */
+  plotClassName?: string
+} = {}) {
   const t = useT()
   const [data, setData] = useState<{dateTs: number; members: number}[]>([])
   const [failed, setFailed] = useState(false)
@@ -256,7 +265,10 @@ export function MemberGrowth() {
   return (
     <figure
       ref={figureRef}
-      className="bg-canvas-50 border-[1.5px] border-canvas-200 rounded-2xl p-5 sm:p-7"
+      className={clsx(
+        'bg-canvas-50 border-[1.5px] border-canvas-200 rounded-2xl p-5 sm:p-7',
+        className,
+      )}
     >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 mb-[-20px] sm:mb-[-40px]">
         <div className="flex items-baseline gap-2">
@@ -273,7 +285,7 @@ export function MemberGrowth() {
         )}
       </div>
 
-      <div className="h-[120px] sm:h-[140px] -mx-1">
+      <div className={clsx(plotClassName, '-mx-1')}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{top: 8, right: 8, bottom: 0, left: 4}}>
             <defs>

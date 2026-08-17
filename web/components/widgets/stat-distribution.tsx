@@ -101,11 +101,21 @@ export function DistRow({
       <div className="w-24 shrink-0 truncate text-[13px] text-ink-700 sm:w-28" title={label}>
         {label}
       </div>
-      <div className="h-2 flex-1 overflow-hidden rounded-full bg-canvas-200">
+      {/* Quieter than it was: 6px rather than 8, a half-strength track, and the fill held at 75%.
+          Full-strength amber on a solid `canvas-200` track made every row read as two competing bars,
+          which is loud beside prose and unnecessary even on /stats — the bar only has to show a
+          proportion, and it does that at any weight.
+
+          Opacity rather than a different step on the ramp, because the ramp inverts between themes:
+          primary-400 is 208 147 82 in light but 166 104 46 in dark, so stepping down would calm one
+          theme and brighten the other. primary-500 is 193 127 62 in both, so alpha on the base is the
+          only lever that moves each theme the same direction. */}
+      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-canvas-200/50">
         <div
-          className="h-full rounded-full bg-primary-500 transition-[width] duration-700 ease-out"
-          // The bar shortens the ranking gently down the list — the top value stays full-strength amber
-          // and each lower row loses a little, so the order reads even where two counts are close.
+          className="h-full rounded-full bg-primary-500/75 transition-[width] duration-700 ease-out"
+          // The bar shortens the ranking gently down the list — the top value stays at the fill's own
+          // strength and each lower row loses a little (this multiplies with the 75% above), so the
+          // order reads even where two counts are close.
           style={{width: `${widthPct}%`, opacity: Math.max(0.45, 1 - rank * 0.11)}}
         />
       </div>

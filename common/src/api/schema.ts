@@ -20,6 +20,20 @@ import {
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
 import {Profile, ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
+import {
+  AdminSpotlight,
+  HOME_SPOTLIGHT_LIMIT,
+  MAX_SPOTLIGHT_ADMIN_NOTE_LENGTH,
+  MAX_SPOTLIGHT_HEADLINE_LENGTH,
+  MAX_SPOTLIGHT_QUOTE_CONTEXT_LENGTH,
+  MAX_SPOTLIGHT_QUOTE_LENGTH,
+  MAX_SPOTLIGHT_TAG_LENGTH,
+  MAX_SPOTLIGHT_TAGS,
+  MIN_SPOTLIGHT_QUOTE_LENGTH,
+  PublicSpotlight,
+  SPOTLIGHT_STATUSES,
+  SpotlightCandidate,
+} from 'common/profiles/spotlights'
 import {RepoStats, Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
@@ -1621,6 +1635,105 @@ export const API = (_apiTypeCheck = {
       .strict(),
     summary: 'Approve, reject, hide or feature a testimonial. Mods and admins only.',
     tag: 'Testimonials',
+  },
+  'get-spotlights': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z
+      .object({
+        limit: z.coerce.number().int().min(1).max(HOME_SPOTLIGHT_LIMIT).optional(),
+      })
+      .strict(),
+    returns: {} as {spotlights: PublicSpotlight[]},
+    // Same shape of cache as the testimonials wall: identical for everyone, changes only when an admin
+    // acts. Kept short because withdrawing consent has to take effect quickly — a member who unticks
+    // the box should not stay on the front page for an hour.
+    cache: 'public, max-age=60, stale-while-revalidate=300',
+    summary: 'Get the live member spotlights for the home page, most featured first.',
+    tag: 'Spotlights',
+  },
+  'get-spotlights-admin': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({}).strict(),
+    returns: {} as {spotlights: AdminSpotlight[]; candidates: SpotlightCandidate[]},
+    // Separate endpoint rather than a flag on `get-spotlights`, for the same reason the testimonials
+    // pair is split: that one is CDN-cached under a public key, and an admin response landing in it
+    // would serve drafts — and the candidate list, which is a roster of consenting members — to
+    // everyone.
+    summary: 'Every spotlight in any state, plus consenting members without one. Admins only.',
+    tag: 'Spotlights',
+  },
+  'create-spotlight': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z
+      .object({
+        userId: z.string(),
+        // The editorial fields. Everything else on the card (name, age, city, photo, headline) is
+        // snapshotted from the live profile by the handler and is not client-supplied — an admin
+        // typing a member's details by hand is how a spotlight ends up saying something the profile
+        // never said.
+        quote: z.string().trim().min(MIN_SPOTLIGHT_QUOTE_LENGTH).max(MAX_SPOTLIGHT_QUOTE_LENGTH),
+        quoteContext: z
+          .string()
+          .trim()
+          .max(MAX_SPOTLIGHT_QUOTE_CONTEXT_LENGTH)
+          .nullable()
+          .optional(),
+        tags: z
+          .array(z.string().trim().min(1).max(MAX_SPOTLIGHT_TAG_LENGTH))
+          .max(MAX_SPOTLIGHT_TAGS)
+          .optional(),
+        adminNote: z.string().max(MAX_SPOTLIGHT_ADMIN_NOTE_LENGTH).nullable().optional(),
+      })
+      .strict(),
+    returns: {} as {spotlight: AdminSpotlight},
+    summary: 'Snapshot a consenting member’s profile into a draft spotlight. Admins only.',
+    tag: 'Spotlights',
+  },
+  'update-spotlight': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z
+      .object({
+        id: z.number().int(),
+        status: z.enum(SPOTLIGHT_STATUSES).optional(),
+        // Higher floats to the front of the rail; null returns it to newest-first.
+        featuredRank: z.number().int().min(0).max(1000).nullable().optional(),
+        quote: z
+          .string()
+          .trim()
+          .min(MIN_SPOTLIGHT_QUOTE_LENGTH)
+          .max(MAX_SPOTLIGHT_QUOTE_LENGTH)
+          .optional(),
+        quoteContext: z
+          .string()
+          .trim()
+          .max(MAX_SPOTLIGHT_QUOTE_CONTEXT_LENGTH)
+          .nullable()
+          .optional(),
+        headline: z.string().trim().max(MAX_SPOTLIGHT_HEADLINE_LENGTH).nullable().optional(),
+        tags: z
+          .array(z.string().trim().min(1).max(MAX_SPOTLIGHT_TAG_LENGTH))
+          .max(MAX_SPOTLIGHT_TAGS)
+          .optional(),
+        adminNote: z.string().max(MAX_SPOTLIGHT_ADMIN_NOTE_LENGTH).nullable().optional(),
+        /**
+         * Re-read name, age, city, country, photo and headline from the live profile and re-stamp
+         * `captured_time`. The escape hatch for "they changed their photo and asked us to update it" —
+         * explicit, admin-triggered, and never automatic, which is the entire point of the table.
+         */
+        refreshSnapshot: zBoolean.optional(),
+      })
+      .strict(),
+    returns: {} as {spotlight: AdminSpotlight},
+    summary: 'Edit, re-snapshot, publish or take down a spotlight. Admins only.',
+    tag: 'Spotlights',
   },
 } as const)
 

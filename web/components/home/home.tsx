@@ -1,9 +1,11 @@
 import {ChatBubbleLeftRightIcon, ScaleIcon, ViewColumnsIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {discordLink, FINANCIALS, githubRepo} from 'common/constants'
+import {partition} from 'lodash'
 import Link from 'next/link'
 import {ComponentType, ReactNode, SVGProps, useEffect, useRef} from 'react'
 import {FaDiscord, FaGithub} from 'react-icons/fa'
+import {ProfileSpotlights} from 'web/components/home/profile-spotlights'
 import {SearchDemo} from 'web/components/home/search-demo'
 import {SignUpButton} from 'web/components/nav/sidebar'
 import {MemberGrowth} from 'web/components/widgets/charts'
@@ -134,12 +136,16 @@ function LookingForChart({looking}: {looking: TopValue[]}) {
   if (!base) return null
 
   return (
-    <div className="mt-8 rounded-xl bg-canvas-100 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
+    // Frame copied from `MemberGrowth` rather than specced independently — same width, radius, padding
+    // and border. That card sits one block above this one in the same column, close enough that any
+    // difference between the two reads as a misaligned edge rather than as a distinction. `MemberGrowth`
+    // is the one that can't move (/about draws it too), so this is the side that matches.
+    <div className="mt-8 rounded-2xl bg-canvas-50 p-5 sm:p-7 lg:mt-0 lg:w-80 lg:flex-shrink-0">
       <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">
         {t('home.who.chart.title', 'Looking for')}
       </p>
       <p className="mb-4 text-xs text-ink-500">
-        {t('home.who.chart.subtitle', 'Of {base} who answered', {base: base.toLocaleString()})}
+        {/*{t('home.who.chart.subtitle', '{base} answers', {base: base.toLocaleString()})}*/}
       </p>
       <div className="flex flex-col gap-3">
         {looking.map((v) => {
@@ -178,7 +184,7 @@ function WhosHere() {
 
   const age = shareOf(data, 'age', CORE_AGE_BUCKETS)
   const degree = shareOf(data, 'education_level', ['bachelors', 'masters', 'doctorate'])
-  const manRatio = data?.genderRatio?.male
+  // const manRatio = data?.genderRatio?.male
   const looking = topOf(data, 'pref_relation_styles', 3)
 
   // Nothing to say without the two figures the paragraph is built around; a version of this section with
@@ -186,26 +192,29 @@ function WhosHere() {
   if (!age || !degree) return null
 
   return (
-    <div className={clsx(surface, 'p-6 sm:p-10')}>
+    // The neutral `surface`, not the page itself. This block and `StageBlock` above it are the same
+    // shape — prose left, one stat card right — and the run used to read tinted card / bare page / dark
+    // slab, three container weights with no progression between them, which made this one look
+    // unstyled rather than deliberately quieter. `surface` keeps the gradient reserved for `StageBlock`
+    // (the page's one gradient) while still giving this a frame, so the sequence steps tinted → plain →
+    // dark. Padding is `StageBlock`'s to the pixel: two instances of one pattern set 8px apart read as
+    // a ragged edge, not as rhythm.
+    <div className={clsx(surface, 'mt-24 px-7 py-9 sm:px-12 sm:py-12')}>
       <div className="lg:flex lg:items-start lg:justify-between lg:gap-12">
         <div className="min-w-0">
           <p className={clsx(eyebrow, 'text-primary-700 mb-4')}>
             {t('home.who.label', "Who's here")}
           </p>
           <h2 className="font-heading text-ink-900 text-[clamp(24px,3vw,36px)] leading-[1.15] tracking-tight mt-0 mb-5 text-balance">
-            {t('home.who.title', "You can see exactly who you'd be joining.")}
+            {t('home.who.title', 'Our transparent community.')}
           </h2>
           <p className="text-base sm:text-lg text-ink-600 leading-relaxed max-w-2xl">
-            {t('home.who.intro', 'No generic adjectives. Among the members who answered: ')}
-            {age.pct}%{t('home.who.age', ' are between 25 and 44, ')}
-            {degree.pct}%{t('home.who.education', ' hold a bachelor’s degree or higher')}
-            {manRatio != null && t('home.who.gender', ', and {pct}% are men', {pct: manRatio})}
-            {'. '}
-            {looking &&
-              t(
-                'home.who.looking.v2',
-                'Most are looking for a relationship, though many are seeking friendships as well.',
-              )}
+            {/* "No generic adjectives." was one of six one-line mic-drops across the two pages. The
+                sentence that follows is the demonstration; announcing it first was the tell. */}
+            {t(
+              'home.who.intro.v2',
+              'Our members tend to be between 25 and 45, highly educated, secular, and more plant-based than average. Most are looking for friends or a long-term partner.',
+            )}
           </p>
           <Link
             href="/stats"
@@ -242,7 +251,7 @@ function FieldChips() {
   ]
 
   return (
-    <div className="mt-8 rounded-xl bg-canvas-100 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
+    <div className="mt-8 rounded-xl bg-canvas-50 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
       <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-ink-500">
         {t('home.profile.chips.title', 'What a profile can hold')}
       </p>
@@ -276,9 +285,9 @@ function ScoreDiagram() {
   const t = useT()
 
   return (
-    <div className="mt-8 rounded-xl bg-canvas-100 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
+    <div className="mt-8 rounded-xl bg-canvas-50 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
       <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-ink-500">
-        {t('home.score.mock.title', 'One question, scored')}
+        {t('home.score.mock.title.v2', 'A worked example')}
       </p>
       <div className="flex flex-col gap-3">
         <div>
@@ -330,7 +339,7 @@ function MessageComposerMock() {
   const t = useT()
 
   return (
-    <div className="mt-8 rounded-xl bg-canvas-100 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
+    <div className="mt-8 rounded-xl bg-canvas-50 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
       <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-500">
         {t('home.message.mock.title', 'First message')}
       </p>
@@ -389,7 +398,7 @@ function ClaimBlock({
   visual?: ReactNode
 }) {
   return (
-    <div className={clsx(surface, 'p-6 sm:p-8')}>
+    <div className={clsx('p-6 sm:p-8')}>
       <div className={clsx(visual && 'lg:flex lg:items-start lg:justify-between lg:gap-10')}>
         <div className="min-w-0">
           <div className="flex items-center gap-3 mb-4">
@@ -457,8 +466,8 @@ function StageBlock() {
           </h2>
           <p className="text-base sm:text-lg text-ink-700 leading-relaxed max-w-2xl">
             {t(
-              'home.stage.text',
-              'Compass has {members} members and is growing every month, which is enough to have started {conversations} conversations and not enough to guarantee somebody in your town. So do two things: save a search, and we’ll email you the day someone who fits joins. And if you know someone who belongs here, bring them — at this size, one person you introduce changes your odds more than any feature we could ship.',
+              'home.stage.text.v2',
+              'Compass is growing every month. That has been enough to start {conversations} conversations, but not enough to guarantee somebody for you. So save a search: we’ll email you the day someone who fits joins. And if you know someone who belongs here, bring them!',
               {
                 members: data.profiles.toLocaleString(),
                 conversations: data.conversations.toLocaleString(),
@@ -526,6 +535,15 @@ function OpenSourceStrip({
   description: string
   badges: {label: string; url: string; primary?: boolean; icon?: ReactNode}[]
 }) {
+  // The CTA is pulled out of the badge list rather than rendered inline with it. In one equal-width
+  // grid, "Join Now" was a third rectangle the same size as GitHub and Discord — the page's closing
+  // action, styled as a peer of two links to somewhere else. Splitting it onto its own row lets it take
+  // the full width of the column, so weight and position both say it is the thing to do here.
+  const [[primary], secondary] = partition(badges, (b) => b.primary)
+
+  const badgeClass =
+    'inline-flex items-center justify-center gap-2 px-5 rounded-xl text-sm font-semibold border transition-all duration-200 ease-out'
+
   return (
     // `bg-canvas-950` in both themes rather than the old `dark:bg-canvas-300`. Inverting it made the
     // closing block a *pale* slab on a dark page — the one element meant to read as the page's ending
@@ -548,22 +566,40 @@ function OpenSourceStrip({
           </h3>
           <p className="text-white/70 text-base leading-relaxed">{description}</p>
         </div>
-        <div className="grid grid-cols-2 gap-3 lg:flex-shrink-0">
-          {badges.map((b) => (
+        <div className="flex flex-col gap-3 lg:w-72 lg:flex-shrink-0">
+          {/* The secondary links share one row: they are the same kind of thing (go read the code, go
+              talk to us) and belong grouped, which also leaves the row below entirely to the CTA. */}
+          <div className="grid grid-cols-2 gap-3">
+            {secondary.map((b) => (
+              <Link
+                href={b.url}
+                key={b.label}
+                className={clsx(
+                  badgeClass,
+                  'py-2.5',
+                  'bg-white/[0.06] text-white/70 border-white/10 hover:bg-white/[0.12] hover:text-white',
+                )}
+              >
+                {b.icon}
+                {b.label}
+              </Link>
+            ))}
+          </div>
+          {primary && (
             <Link
-              href={b.url}
-              key={b.label}
+              href={primary.url}
               className={clsx(
-                'inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 ease-out',
-                b.primary
-                  ? 'bg-cta text-white border-cta hover:bg-cta-hover shadow-[0_6px_20px_-6px_rgba(193,127,62,0.6)]'
-                  : 'bg-white/[0.06] text-white/70 border-white/10 hover:bg-white/[0.12] hover:text-white',
+                badgeClass,
+                // Taller than the row above it, not just wider — width alone on a full-bleed row can
+                // read as "stretched to fit" rather than as emphasis.
+                'w-full py-3 text-base',
+                'bg-cta text-white border-cta hover:bg-cta-hover shadow-[0_6px_20px_-6px_rgba(193,127,62,0.6)]',
               )}
             >
-              {b.icon}
-              {b.label}
+              {primary.icon}
+              {primary.label}
             </Link>
-          ))}
+          )}
         </div>
       </div>
     </div>
@@ -675,7 +711,7 @@ export function LoggedOutHome() {
       url: discordLink,
       icon: <FaDiscord className="w-4 h-4" />,
     },
-    {label: t('home.strip.books', 'See the books'), url: '/financials'},
+    // {label: t('home.strip.books', 'See the books'), url: '/financials'},
     {label: t('home.strip.join', 'Join Now →'), url: '/register', primary: true},
   ]
 
@@ -715,9 +751,10 @@ export function LoggedOutHome() {
                 and the "The only algorithm" block below now says so. Reusing the old key would have left
                 the French and German files asserting the falsehood, since they resolve ahead of this
                 fallback. */}
-            <EyebrowBadge>
-              {t('home.eyebrow.v2', 'Free forever · Open source · No swiping')}
-            </EyebrowBadge>
+            {/* Two items, not three. The old third claim ("No swiping") repeats the <h1> directly
+                below it, and three chips of which the last is a negation was the same cadence as every
+                other list on the page. */}
+            <EyebrowBadge>{t('home.eyebrow.v3', 'Free forever · Open source')}</EyebrowBadge>
 
             <h1 className="animate-fade-up text-[clamp(52px,8vw,96px)] lg:text-[clamp(44px,5.4vw,84px)] leading-none tracking-tight mb-2">
               {t('home.title', "Don't Swipe.")}
@@ -744,11 +781,12 @@ export function LoggedOutHome() {
               className="animate-fade-up text-[clamp(17px,2.2vw,22px)] text-ink-600 leading-relaxed max-w-xl mb-10"
               style={{animationDelay: '160ms'}}
             >
+              {/* One key rather than the two the old copy was split across, and a comma where the em
+                  dash was: the dash-apposition was the page's default punctuation and it started here. */}
               {t(
-                'home.subtitle.v2',
-                'Read and search every profile — by values, interests, or demographics',
+                'home.subtitle.v3',
+                'Read and search every profile, by values, interests, or demographics. You decide who to write to.',
               )}
-              {t('home.subtitle.v2.end', '. No algorithm decides for you who’s worth writing to.')}
             </p>
 
             {/* CTAs */}
@@ -793,11 +831,14 @@ export function LoggedOutHome() {
             each block rather than on the blocks themselves. The gradient divider that used to sit here
             is gone with it — `Section`'s rhythm separates them without a drawn rule. */}
         <div className="w-full max-w-6xl">
-          {/* ── Who's here ── */}
+          {/* ── Who's here ──
+              The distributions, then the people. `WhosHere` answers "what kind of place is this?" with
+              percentages, which is the honest and unfalsifiable version; `ProfileSpotlights` answers the
+              same question with three or four actual members, which is the version a stranger feels.
+              Neither works alone — a rail of nice-looking members with no denominators is every
+              marketing page ever written, and a page of denominators with nobody in it is a census. */}
           <Section>
-            <Reveal>
-              <WhosHere />
-            </Reveal>
+            <ProfileSpotlights />
           </Section>
 
           {/* ── The three claims ──
@@ -809,22 +850,25 @@ export function LoggedOutHome() {
               {t('home.features.label', 'Why Compass')}
             </p>
             <h2 className="text-center text-[clamp(26px,3.4vw,40px)] text-ink-1000 tracking-tight mb-12 text-balance">
-              {t('home.features.title.v3', 'Three things worth knowing before you sign up.')}
+              {/* Not "Three things…": counted-promise headings ("Three things", "Four steps", "One
+                  Mission", "in three numbers") were the same shape four times across the two pages.
+                  /about keeps the one where the count is load-bearing; this one drops it. */}
+              {t('home.features.title.v4', 'What to know before you sign up.')}
             </h2>
             <div className="grid gap-4 sm:gap-5">
               <Reveal>
                 <ClaimBlock
                   icon={ViewColumnsIcon}
                   label={t('home.profile.label', 'What you’re searching')}
-                  title={t(
-                    'home.profile.title',
-                    'A profile here takes twenty minutes to write, not two.',
-                  )}
+                  title={t('home.profile.title', 'A profile takes twenty minutes to write.')}
                   visual={<FieldChips />}
                 >
+                  {/* Three sentences of deliberately unequal length (long / short / long) instead of
+                      three of the same ~25 words, and the "Not a photo and a one-liner." opener is gone
+                      — the title above it already makes that contrast. */}
                   {t(
-                    'home.profile.text',
-                    'Not a photo and a one-liner. A bio in your own words, answers to prompts, the causes you care about, your politics, religion, diet, languages, education, personality type, and what kind of connection you’re after. More than twenty filters run across all of it — and free-text search reads the prose, so "meditation" finds the person who wrote about it in their bio, not just the one who tagged it.',
+                    'home.profile.text.v2',
+                    'A bio in your own words, answers to prompts, the causes you care about, your politics, religion, diet, languages, education, personality type, and what kind of connection you’re after. More than twenty filters run across all of it. Free-text search reads the prose too, so "meditation" finds the person who wrote about it in their bio, not just the one who tagged it.',
                   )}
                 </ClaimBlock>
               </Reveal>
@@ -833,10 +877,7 @@ export function LoggedOutHome() {
                 <ClaimBlock
                   icon={ScaleIcon}
                   label={t('home.score.label', 'The only algorithm')}
-                  title={t(
-                    'home.score.title',
-                    'One algorithm. You set the weights, and you can read the source.',
-                  )}
+                  title={t('home.score.title', 'You set the weights, and you can read the source.')}
                   link={{
                     href: `${githubRepo}/blob/main/common/src/profiles/compatibility-score.ts`,
                     label: t('home.score.link', 'Read the implementation →'),
@@ -844,9 +885,12 @@ export function LoggedOutHome() {
                   }}
                   visual={<ScoreDiagram />}
                 >
+                  {/* Three stacked negatives cut to two, and the em dash split into its own sentence.
+                      "There is no paying." stays: it is the one closer on the page that earns the
+                      full stop before it. */}
                   {t(
-                    'home.score.text',
-                    'For each compatibility question you give three things: your answer, the answers you’d accept from someone else, and how much it matters to you. The score is those three things compared — 130 lines of open code, no engagement optimization, no hidden ranking, no boost for paying. There is no paying.',
+                    'home.score.text.v2',
+                    'For each compatibility question you give three things: your answer, the answers you’d accept from someone else, and how much it matters to you. The score compares that with the other person. It runs open code, with no hidden ranking and no boost for paying.',
                   )}
                 </ClaimBlock>
               </Reveal>
@@ -862,8 +906,8 @@ export function LoggedOutHome() {
                   visual={<MessageComposerMock />}
                 >
                   {t(
-                    'home.message.text',
-                    'No "hey". To open a conversation you have to say something real about the person you’re writing to — the composer won’t send until you do, and you need a verified email before your first message.',
+                    'home.message.text.v2',
+                    'To open a conversation you have to say something real about the person you’re writing to, and the composer won’t send until you do. You also need a verified email before your first message.',
                   )}
                 </ClaimBlock>
               </Reveal>
@@ -879,6 +923,9 @@ export function LoggedOutHome() {
             <Reveal>
               <StageBlock />
             </Reveal>
+            <Reveal>
+              <WhosHere />
+            </Reveal>
           </Section>
 
           {/* ── Open source strip ── */}
@@ -890,9 +937,11 @@ export function LoggedOutHome() {
                 // never quote different figures. "Built transparently by the community" was a claim;
                 // the deficit is the same claim with the receipt attached, and it is one click from
                 // /financials.
+                // Four stacked negatives opened this; two of them (ads, subscriptions) are already
+                // claimed twice elsewhere on the page, so they go and the receipt stays.
                 description={t(
-                  'home.strip.description.v2',
-                  'No venture capital, no ads, no subscriptions, and nobody on payroll. Compass has cost ${spent} to run since launch; members have donated ${donated}. One person covers the difference. Every expense is published.',
+                  'home.strip.description.v3',
+                  'There is no venture capital and nobody on payroll. Compass has cost ${spent} to run since launch; members have donated ${donated}.',
                   {spent: FINANCIALS.spent, donated: FINANCIALS.donated},
                 )}
                 badges={openSourceBadges}

@@ -1,9 +1,7 @@
 import {CodeBracketIcon, StarIcon, UserGroupIcon} from '@heroicons/react/24/outline'
-import clsx from 'clsx'
 import {githubRepo} from 'common/constants'
 import {ComponentType, ReactNode, SVGProps} from 'react'
 import {Reveal} from 'web/components/widgets/reveal'
-import {surface} from 'web/components/widgets/surface'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useT} from 'web/lib/locale'
 
@@ -123,8 +121,11 @@ export function RepoActivity({className}: {className?: string}) {
   return (
     // <Section>
     // <SectionLabel>{t('about.repo.label', 'Built in the open')}</SectionLabel>
-    <Reveal className={clsx(surface, 'p-6 sm:p-8', className)}>
-      <p className="font-heading text-ink-900 text-xl sm:text-2xl leading-snug tracking-tight mb-3 max-w-2xl text-balance">
+    // Unframed, and at the page's one 24px heading size. Boxed, this sat directly under `VoteEvidence`'s box — two
+    // identical rectangles closing the governance section, which is the shape the rest of the page just
+    // shed. The rule-topped metric row below already gives the block its own edge.
+    <Reveal className={className}>
+      <p className="font-heading font-bold text-ink-900 text-[24px] leading-[1.2] tracking-tight mb-4 max-w-2xl text-balance">
         {t(
           'about.repo.claim',
           'Community owned. No investors, no acquisition, nothing to sell you.',
@@ -133,7 +134,7 @@ export function RepoActivity({className}: {className?: string}) {
       <p className="text-sm text-ink-600 leading-relaxed max-w-2xl">
         {t(
           'about.repo.intro',
-          'The whole thing is built in public — every line of code, every change, open to read and to challenge:',
+          'The whole thing is built in public — every line of code, every change, open to read and to challenge.',
         )}
       </p>
 

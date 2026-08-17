@@ -65,6 +65,7 @@ import {createEvent} from './create-event'
 import {createOutreachSearch} from './create-outreach-search'
 import {createPrivateUserMessage} from './create-private-user-message'
 import {createPrivateUserMessageChannel} from './create-private-user-message-channel'
+import {createSpotlight} from './create-spotlight'
 import {createTestimonial} from './create-testimonial'
 import {createUserAndProfile} from './create-user-and-profile'
 import {deleteBookmarkedSearch} from './delete-bookmarked-search'
@@ -84,6 +85,8 @@ import {getProfileAnswers} from './get-profile-answers'
 import {getProfileFeed} from './get-profile-feed'
 import {getProfiles} from './get-profiles'
 import {getSearchAlert} from './get-search-alert'
+import {getSpotlights} from './get-spotlights'
+import {getSpotlightsAdmin} from './get-spotlights-admin'
 import {getSupabaseToken} from './get-supabase-token'
 import {getTestimonials} from './get-testimonials'
 import {getTestimonialsMod} from './get-testimonials-mod'
@@ -118,6 +121,7 @@ import {updateNotifSettings} from './update-notif-setting'
 import {updateOutreachContact} from './update-outreach-contact'
 import {updatePrivateUserMessageChannel} from './update-private-user-message-channel'
 import {updateProfileEndpoint} from './update-profile'
+import {updateSpotlight} from './update-spotlight'
 import {updateTestimonialStatus} from './update-testimonial-status'
 import {updateUserLocale} from './update-user-locale'
 import {validateUsernameEndpoint} from './validate-username'
@@ -587,6 +591,11 @@ Commit: ${git.revision} (${git.commitDate})`,
         'The public testimonials wall, plus the moderation endpoints that decide what appears on it',
     },
     {
+      name: 'Spotlights',
+      description:
+        'Member spotlights on the home page: consent-gated, admin-curated snapshots of real profiles',
+    },
+    {
       name: 'Moderation',
       description: 'Report system and user moderation',
     },
@@ -650,6 +659,10 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-testimonials-mod': getTestimonialsMod,
   'create-testimonial': createTestimonial,
   'update-testimonial-status': updateTestimonialStatus,
+  'get-spotlights': getSpotlights,
+  'get-spotlights-admin': getSpotlightsAdmin,
+  'create-spotlight': createSpotlight,
+  'update-spotlight': updateSpotlight,
   'get-profile-answers': getProfileAnswers,
   'get-profile-feed': getProfileFeed,
   'get-profiles': getProfiles,

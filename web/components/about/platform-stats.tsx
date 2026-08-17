@@ -208,7 +208,7 @@ export function StatBand() {
           a single reason to want in — self-criticism before value is just discouragement. The same point is
           made properly on the home page, attached to something to do about it. */}
       <p className="w-full text-sm text-ink-500">
-        {t('about.stat.caption', 'Read live from the database, not from a press kit.')}
+        {t('about.stat.caption', 'Read live from the database.')}
       </p>
     </div>
   )

@@ -3,6 +3,7 @@ import fs from 'fs'
 import Head from 'next/head'
 import path from 'path'
 import {FaqContent} from 'web/components/faq/faq-content'
+import {JsonLd} from 'web/components/json-ld'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {allQuestions, FaqDoc, parseFaq, toPlainText} from 'web/lib/faq'
@@ -60,18 +61,16 @@ export default function Faq({docs}: Props) {
           is English (locale is a cookie, resolved after hydration), so emitting the visitor's
           translated questions here would describe markup the crawler never saw. */}
       <Head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{__html: faqJsonLd(docs[defaultLocale])}}
-        />
+        <JsonLd data={faqJsonLd(docs[defaultLocale])} />
       </Head>
       <FaqContent doc={doc} />
     </PageBase>
   )
 }
 
+// Serialisation and escaping are `JsonLd`'s job now, so this only has to build the object.
 function faqJsonLd(doc: FaqDoc) {
-  const json = JSON.stringify({
+  return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: allQuestions(doc).map((q) => ({
@@ -79,8 +78,5 @@ function faqJsonLd(doc: FaqDoc) {
       name: q.question,
       acceptedAnswer: {'@type': 'Answer', text: toPlainText(q.answer)},
     })),
-  })
-  // `</script>` inside the JSON would close the tag early; escaping the slash is the standard fix and
-  // stays valid JSON.
-  return json.replace(/</g, '\\u003c')
+  }
 }

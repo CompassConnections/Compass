@@ -1,6 +1,5 @@
 import clsx from 'clsx'
 import Link from 'next/link'
-import {surface} from 'web/components/widgets/surface'
 import {useT} from 'web/lib/locale'
 
 /**
@@ -95,15 +94,24 @@ export function VoteEvidence() {
   )
 
   return (
-    <figure className={clsx(surface, 'p-6 sm:p-8 lg:p-10')}>
+    // Unframed: the ballot screenshot inside brings its own border, so the card around it was a frame
+    // holding a frame — and it was advertising its own emptiness, since a short text column against a
+    // tall capture left roughly a third of the box as air.
+    <figure>
       {/* Two columns from lg up: the claim and its link sit left, the ballot that proves them fills the
           right — the width the capped screenshot used to leave empty. This was the "Democratic" feature
           card, moved down here verbatim; asserting it one screen above its own evidence read as a
           duplicate, so claim and proof are now one thought. The translation keys are unchanged from the
           card, so the existing fr/de strings apply as they are. */}
-      <div className="grid grid-cols-1 items-center gap-8 sm:grid-cols-[1fr_auto] lg:gap-12">
+      {/* `items-start`, not `items-center`: centring a four-line text column against a tall screenshot
+          padded the top and bottom with dead space instead of letting the claim start where the section
+          does. */}
+      <div className="grid grid-cols-1 items-start gap-8 sm:grid-cols-[1fr_auto] lg:gap-12">
         <div className="min-w-0">
-          <p className="font-heading text-ink-900 text-xl sm:text-2xl leading-snug tracking-tight mb-3 max-w-2xl text-balance">
+          {/* 24px flat, the one heading size every block on this page now uses. It was `text-xl
+              sm:text-2xl`, which put the page's governance claim below the prose around it in the
+              hierarchy, and then briefly a larger clamp — a single fixed size settles it for good. */}
+          <p className="font-heading font-bold text-ink-900 text-[24px] leading-[1.2] tracking-tight mb-4 max-w-2xl text-balance">
             {t('about.block.democratic.prefix', 'Governed and ')}
             {t('about.block.democratic.link_voted', 'voted')}
             {t(

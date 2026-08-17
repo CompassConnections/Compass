@@ -47,11 +47,10 @@ import {
   TestimonialsTeaser,
   useHasTestimonials,
 } from 'web/components/testimonials/testimonials-teaser'
-import {MemberGrowth} from 'web/components/widgets/charts'
 import {Reveal} from 'web/components/widgets/reveal'
 import {ShareCTAButton} from 'web/components/widgets/share-cta-button'
 import {DistRow, labelFor} from 'web/components/widgets/stat-distribution'
-import {eyebrow, Section, surface, surfaceHover} from 'web/components/widgets/surface'
+import {eyebrow, Section, surface} from 'web/components/widgets/surface'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
@@ -99,9 +98,16 @@ function IconChip({icon: Icon, large}: {icon: IconType; large?: boolean}) {
 
 // ─── Feature Card ─────────────────────────────────────────────────────────────
 
+/**
+ * Three of these sit in a row under `NotifySpotlight`, and boxed they were the most literal "lego
+ * blocks" on the page: three identical bordered rectangles, same size, same weight, saying three things
+ * of quite different importance. They are supporting notes to the spotlight above them, not peers of
+ * it, so they lose the frame and keep only a hairline rule on top — enough to say "three of these",
+ * nothing like enough to compete with the block they follow.
+ */
 function FeatureCard({icon, title, text}: FeatureCardProps) {
   return (
-    <div className={clsx(surface, surfaceHover, 'h-full p-6 sm:p-7')}>
+    <div className="h-full border-t border-canvas-200 pt-6">
       <div className="mb-5">
         <IconChip icon={icon} />
       </div>
@@ -115,11 +121,12 @@ function FeatureCard({icon, title, text}: FeatureCardProps) {
 
 function FeatureCardWide({icon, title, text}: FeatureCardProps) {
   return (
+    // Sits directly under `MissionStatement`, the one gradient block on the page. A bordered card
+    // immediately below a tinted one is two frames in a row saying different things; a plain row lets
+    // the statement keep the weight and reads as a footnote to it, which is what it is.
     <div
       className={clsx(
-        surface,
-        surfaceHover,
-        'col-span-1 md:col-span-2 p-6 sm:p-7',
+        'col-span-1 md:col-span-2',
         'flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6',
       )}
     >
@@ -193,7 +200,7 @@ function NotifySpotlight({title, text}: {title: string; text: string}) {
       title: t('about.block.notify.step1.title', 'Search by keyword'),
       text: t(
         'about.block.notify.step1.text',
-        'Filter the whole community down to the exact person — values, interests, location.',
+        'Filter the whole community down to your people, by values, interests, and location.',
       ),
     },
     {
@@ -226,7 +233,7 @@ function NotifySpotlight({title, text}: {title: string; text: string}) {
             by content rather than padded by air. */}
         <div className="min-w-0">
           <IconChip icon={BellIcon} large />
-          <h3 className="font-heading font-bold text-ink-900 text-[clamp(26px,3vw,38px)] leading-[1.15] tracking-tight mt-6 mb-4 text-balance">
+          <h3 className="font-heading font-bold text-ink-900 text-[24px] leading-[1.15] tracking-tight mt-6 mb-4 text-balance">
             {title}
           </h3>
           <p className="text-base sm:text-lg text-ink-600 leading-relaxed max-w-lg">{text}</p>
@@ -278,7 +285,7 @@ function MissionStatement({title, text}: {title: string; text: string}) {
     >
       <IconChip icon={FlagIcon} large />
       <h3 className={clsx(eyebrow, 'text-primary-700 mt-6 mb-3')}>{title}</h3>
-      <p className="font-heading text-ink-900 text-[clamp(22px,3vw,36px)] leading-[1.25] tracking-tight max-w-3xl text-balance">
+      <p className="font-heading text-ink-900 text-[clamp(24px,3vw,36px)] leading-[1.25] tracking-tight max-w-3xl text-balance">
         {text}
       </p>
     </div>
@@ -302,49 +309,61 @@ function ProseBlock({
   children,
   links,
   visual,
+  flip,
 }: {
   icon: IconType
   label: string
   title: string
   children: ReactNode
   links?: {href: string; label: string; external?: boolean}[]
-  // Optional right-hand column for a block that has something to show, not just say — e.g. the costs
-  // block's funding bar. Without it, text capped at `max-w-2xl` inside a full-bleed card leaves a wide
-  // empty strip on desktop; `visual` is where that space goes to work instead of sitting blank.
+  // Optional second column for a block that has something to show, not just say — e.g. the costs
+  // block's funding bar. Without it, text capped at `max-w-2xl` leaves a wide empty strip on desktop;
+  // `visual` is where that space goes to work instead of sitting blank.
   visual?: ReactNode
+  // Puts the visual on the left instead. Used to alternate down a run of these: three in a row with
+  // the artwork always on the right is the shape that reads as a template rather than as a page.
+  flip?: boolean
 }) {
   return (
-    <div className={clsx(surface, 'p-6 sm:p-8')}>
-      <div className={clsx(visual && 'lg:flex lg:items-start lg:justify-between lg:gap-10')}>
-        <div className="min-w-0">
-          <div className="flex items-center gap-3 mb-4">
-            <IconChip icon={icon} />
-            <p className={clsx(eyebrow, 'text-primary-700')}>{label}</p>
-          </div>
-          <h3 className="font-heading font-bold text-ink-900 text-[clamp(20px,2.4vw,28px)] leading-[1.2] tracking-tight mt-0 mb-4 max-w-2xl text-balance">
-            {title}
-          </h3>
-          <div className="text-base text-ink-600 leading-relaxed max-w-2xl [&>p+p]:mt-4">
-            {children}
-          </div>
-          {links && (
-            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
-              {links.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  target={l.external ? '_blank' : undefined}
-                  rel={l.external ? 'noopener noreferrer' : undefined}
-                  className="inline-flex w-fit items-center text-sm font-semibold text-primary-700 transition-colors hover:text-primary-800"
-                >
-                  {l.label}
-                </Link>
-              ))}
-            </div>
-          )}
+    // No card. A `ProseBlock` is a heading and three paragraphs — the section label and the rhythm
+    // around it already say where it starts and stops, so the border was drawing a box around the fact
+    // that text exists. It also produced the page's worst shape: a frame containing a frame, since the
+    // `visual` these blocks carry (the toggle mock, the costs bar, the platform glyphs) is itself a
+    // card. Now exactly one thing in the block is framed, and it is the thing worth framing.
+    <div
+      className={clsx(
+        visual && 'lg:flex lg:items-start lg:justify-between lg:gap-12',
+        flip && 'lg:flex-row-reverse',
+      )}
+    >
+      <div className="min-w-0">
+        <div className="flex items-center gap-3 mb-4">
+          <IconChip icon={icon} />
+          <p className={clsx(eyebrow, 'text-primary-700')}>{label}</p>
         </div>
-        {visual}
+        <h3 className="font-heading font-bold text-ink-900 text-[24px] leading-[1.2] tracking-tight mt-0 mb-4 max-w-2xl text-balance">
+          {title}
+        </h3>
+        <div className="text-base text-ink-600 leading-relaxed max-w-2xl [&>p+p]:mt-4">
+          {children}
+        </div>
+        {links && (
+          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
+            {links.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                target={l.external ? '_blank' : undefined}
+                rel={l.external ? 'noopener noreferrer' : undefined}
+                className="inline-flex w-fit items-center text-sm font-semibold text-primary-700 transition-colors hover:text-primary-800"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
+      {visual}
     </div>
   )
 }
@@ -399,24 +418,27 @@ function HowItWorks() {
       icon: PencilSquareIcon,
       title: t('about.how.step1.title', 'Write a profile'),
       text: t(
-        'about.how.step1.text',
-        'Twenty minutes, not two: a bio in your own words, prompt answers, the causes you care about, your politics, religion, diet, languages, education, personality type, and what you’re looking for. Every field is optional — what you leave blank stays blank.',
+        'about.how.step1.text.v2',
+        'Twenty minutes: a bio in your own words, prompt answers, the causes you care about, your politics, religion, diet, languages, and what you’re looking for. Every field is optional.',
       ),
     },
     {
       icon: MagnifyingGlassIcon,
       title: t('about.how.step2.title', 'Search everyone'),
+      // Was "No feed, no queue, no daily allowance of people." — the same three-negatives-in-a-row
+      // shape the page used five other times. Stated positively it also says something the negative
+      // version only implied: you can look at everyone, in any order, as often as you like.
       text: t(
-        'about.how.step2.text',
-        'No feed, no queue, no daily allowance of people. More than twenty filters, plus free-text search that reads the prose in people’s bios — so "meditation" finds the person who wrote about it, not only the one who tagged it.',
+        'about.how.step2.text.v2',
+        'You can look at everyone, whenever you want, in whatever order you like. More than twenty filters, plus free-text search that reads the prose in people’s bios.',
       ),
     },
     {
       icon: BookmarkIcon,
       title: t('about.how.step3.title', 'Save the search'),
       text: t(
-        'about.how.step3.text',
-        'Nobody fits today? Save it, and we email you the day someone who does joins — the block below shows exactly how that works.',
+        'about.how.step3.text.v2',
+        'Nobody fits today? Save it, and we email you the day someone who does joins. The block below shows you how that works.',
       ),
     },
     {
@@ -430,11 +452,15 @@ function HowItWorks() {
   ]
 
   return (
-    <div className={clsx(surface, 'p-6 sm:p-8')}>
+    // Unboxed: the numbered rungs and their connector line are already a strong enough figure to hold
+    // together without a border drawn around them, and four steps in a card read as a form to fill in.
+    <div>
       <div className="lg:flex lg:items-start lg:justify-between lg:gap-10">
         <div className="min-w-0">
-          <h3 className="font-heading font-bold text-ink-900 text-[clamp(20px,2.4vw,28px)] leading-[1.2] tracking-tight mt-0 mb-6 text-balance">
-            {t('about.how.title', 'Four steps, and you control all four.')}
+          <h3 className="font-heading font-bold text-ink-900 text-[24px] leading-[1.2] tracking-tight mt-0 mb-7 text-balance">
+            {/* Not "Four steps, and you control all four." — see the note on home's section heading:
+                the counted-promise headline was this page's default shape too. */}
+            {t('about.how.title.v2', 'What using Compass looks like.')}
           </h3>
           <ol className="max-w-2xl">
             {steps.map((s, i) => (
@@ -524,19 +550,31 @@ function WhosHere() {
   if (rows.length < 3) return null
 
   return (
-    <div className={clsx(surface, 'p-6 sm:p-8')}>
-      <h3 className="font-heading font-bold text-ink-900 text-[clamp(20px,2.4vw,28px)] leading-[1.2] tracking-tight mt-0 mb-4 text-balance">
-        {t('about.who.title', 'The membership, in public.')}
-      </h3>
-      <p className="text-base text-ink-600 leading-relaxed max-w-2xl">
-        {t(
-          'about.who.intro.v3',
-          'Members skew single, highly educated, secular, and more plant-based than average — spread across more than fifty countries, with no single hub.',
-        )}
-      </p>
-      <dl className="mt-6 max-w-xl divide-y divide-canvas-200">
+    // Unboxed and split in two. The claim and its evidence were stacked inside one card, so the whole
+    // section was a single tall rectangle of text-then-bars; side by side they read as an assertion and
+    // its receipt, and the section stops having the same silhouette as the step list above it. The
+    // divided rows are their own structure and never needed a border around them.
+    <div className="lg:flex lg:items-start lg:gap-14">
+      <div className="min-w-0 lg:w-[22rem] lg:flex-shrink-0">
+        <h3 className="font-heading font-bold text-ink-900 text-[24px] leading-[1.2] tracking-tight mt-0 mb-4 text-balance">
+          {t('about.who.title', 'Our members.')}
+        </h3>
+        <p className="text-base text-ink-600 leading-relaxed">
+          {t(
+            'about.who.intro.v4',
+            'Members skew single, highly educated, secular, and more plant-based than average. They are spread across more than fifty countries, with no single hub.',
+          )}
+        </p>
+        <Link
+          href="/stats"
+          className="mt-5 inline-flex w-fit items-center text-sm font-semibold text-primary-700 transition-colors hover:text-primary-800"
+        >
+          {t('about.who.link', 'Every distribution out here →')}
+        </Link>
+      </div>
+      <dl className="mt-8 min-w-0 flex-1 divide-y divide-canvas-200 lg:mt-0">
         {rows.map((r) => (
-          <div key={r.label} className="flex items-center gap-6 py-3">
+          <div key={r.label} className="flex items-center gap-6 py-3.5 first:pt-0">
             <dt className="w-24 flex-shrink-0 font-semibold text-ink-900 sm:w-32">
               {r.label}{' '}
               {/*<span className="font-normal text-ink-500">({r.base.toLocaleString()})</span>*/}
@@ -547,12 +585,6 @@ function WhosHere() {
           </div>
         ))}
       </dl>
-      <Link
-        href="/stats"
-        className="mt-5 inline-flex w-fit items-center text-sm font-semibold text-primary-700 transition-colors hover:text-primary-800"
-      >
-        {t('about.who.link', 'Every distribution out here →')}
-      </Link>
     </div>
   )
 }
@@ -680,7 +712,7 @@ function PlatformGlyphs() {
   ]
 
   return (
-    <div className="mt-8 flex flex-col gap-2 rounded-xl bg-canvas-100 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
+    <div className="mt-8 flex flex-col gap-2 rounded-xl bg-canvas-100 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
       {platforms.map((p) => (
         <div
           key={p.name}
@@ -712,8 +744,8 @@ function FounderPhoto() {
   if (!photoUrl) return null
 
   return (
-    <div className="relative mt-8 h-40 w-40 flex-shrink-0 overflow-hidden rounded-2xl ring-1 ring-canvas-200 lg:mt-0">
-      <Image src={photoUrl} alt="Martin Braquet" fill sizes="160px" className="object-cover" />
+    <div className="relative mt-8 h-60 w-60 flex-shrink-0 overflow-hidden rounded-2xl ring-1 ring-canvas-200 lg:mt-0">
+      <Image src={photoUrl} alt="Martin Braquet" fill sizes="240px" className="object-cover" />
     </div>
   )
 }
@@ -729,14 +761,10 @@ function FounderPhoto() {
  */
 function FeaturedHelpCard({icon, title, text, buttonLabel, buttonUrl, id}: HelpCardProps) {
   return (
-    <div
-      className={clsx(
-        surface,
-        surfaceHover,
-        'p-6 sm:p-8',
-        'flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-7',
-      )}
-    >
+    // Unframed like the three below it. It keeps its rank through the large icon chip and the outlined
+    // button — the only bordered control in the group — rather than through a container, which is what
+    // it was competing with the slab above on.
+    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-7">
       <IconChip icon={icon} large />
       <div className="min-w-0 flex-1">
         <h3 id={id} className="font-bold text-lg text-ink-900 mb-1.5">
@@ -762,8 +790,13 @@ function FeaturedHelpCard({icon, title, text, buttonLabel, buttonUrl, id}: HelpC
 
 function HelpCard({icon, title, text, buttonLabel, buttonUrl, id}: HelpCardProps) {
   return (
+    // Unframed, with a hairline rule on top — the same treatment the three `FeatureCard`s use, so the
+    // page's two "row of three supporting items" moments look like one idea rather than two. The box
+    // was also what created the dead space: `h-full` forced all three to the tallest card's height and
+    // `mt-auto` pushed the link to the bottom, so a card with two lines of copy carried ~90px of
+    // nothing. Without a frame there is no height to fill, so the rule stays and the hole goes.
     <div
-      className={clsx(surface, surfaceHover, 'flex h-full flex-col p-5 sm:p-6')}
+      className="flex h-full flex-col border-t border-canvas-200 pt-6"
       // NOTE: Abandoned the left accent bar due to a known Firefox rendering bug.
       // Firefox fails to correctly apply overflow-hidden on rounded containers with borders,
       // causing the absolute/flex-item to bleed past the corner radius.
@@ -777,8 +810,8 @@ function HelpCard({icon, title, text, buttonLabel, buttonUrl, id}: HelpCardProps
       </h3>
       <p className="text-sm text-ink-600 leading-relaxed mb-5">{text}</p>
       {/* A text link, not a boxed button: these three are the secondary asks, so their action is
-          deliberately lighter than the featured card's filled CTA. `mt-auto` pins it to the card's base
-          so the three links line up regardless of copy length. */}
+          deliberately lighter than the featured card's filled CTA. `mt-auto` pins it to the base so the
+          three links line up regardless of copy length. */}
       <Link
         href={buttonUrl}
         target={buttonUrl.startsWith('http') ? '_blank' : undefined}
@@ -904,10 +937,36 @@ function ShareStrip() {
   ]
 
   return (
-    <div className="relative overflow-hidden bg-canvas-950 rounded-3xl px-7 py-10 sm:px-12 sm:py-14">
+    // Was `bg-canvas-950` in both themes. That works in light — espresso 44 36 22 on a 237 232 224
+    // page is the strongest contrast on the page — and fails completely in dark, where canvas-950 is
+    // 15 13 10 against a 26 22 18 background: the section's one hero element sat eleven values *darker*
+    // than the page and had no visible edge at all. A dark theme separates a surface by lifting it
+    // toward the light, so in dark this becomes canvas-50, the same elevated token every card here
+    // uses. The primary ring and the amber radial are what then rank it above those cards — it stays
+    // the loudest block in the section without needing a value the dark ramp doesn't have. White text
+    // keeps full contrast either way: canvas-50 is 35 31 26.
+    <div
+      className={clsx(
+        'relative overflow-hidden rounded-3xl px-7 py-10 sm:px-12 sm:py-14',
+        'bg-canvas-950 dark:bg-canvas-50',
+        // Full-strength accent ring rather than /50. At canvas-50 this slab sits at exactly the value
+        // every card on the page uses, so luminance can no longer say "this is the closing block" —
+        // the accent has to. Raising the ring costs nothing in brightness and is what separates it
+        // from an ordinary card, which a half-opacity edge did not.
+        'dark:ring-1 dark:ring-primary-200',
+      )}
+    >
+      {/* Second radial, bottom-left. One glow in a single corner reads as a stray highlight at this
+          block's width; a pair on opposing corners reads as the surface being lit, which is the whole
+          job now that the background value is doing none of the work. Both are stronger in dark than
+          the /20 they carried when the slab was near-black and any warmth on it showed. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-32 -right-20 w-[440px] h-[440px] rounded-full bg-primary-500/20 blur-3xl"
+        className="pointer-events-none absolute -top-32 -right-20 w-[440px] h-[440px] rounded-full bg-primary-500/20 dark:bg-primary-500/[0.30] blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-40 -left-28 hidden h-[380px] w-[380px] rounded-full bg-primary-500/[0.14] blur-3xl dark:block"
       />
       <div className="relative">
         <div className="flex items-center gap-2.5 mb-5">
@@ -919,7 +978,7 @@ function ShareStrip() {
 
         <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-14">
           <div>
-            <h3 className="font-heading text-white text-[clamp(24px,2.6vw,34px)] font-bold leading-tight tracking-tight mb-4 text-balance">
+            <h3 className="font-heading text-white text-[24px] font-bold leading-tight tracking-tight mb-4 text-balance">
               {t(
                 'about.share.headline',
                 'Compass gets better for you with every person you bring.',
@@ -928,17 +987,21 @@ function ShareStrip() {
             {/* The reframe, condensed from the share-compass email: the friend you tell need not be who
                 you're looking for — they bring their world, and that is the reader's own upside. */}
             <p className="text-white/70 text-base leading-relaxed max-w-xl">
+              {/* The old close was "Sharing isn't just a favor to them. It's an investment in your own
+                  future connections." — the not-X-but-Y reframe, the single most over-used move in
+                  machine-written marketing copy. The claim survives; the construction doesn't. */}
               {t(
-                'about.share.reframe',
-                "Even if a friend isn't who you're looking for, they bring their world with them — their friends, their circles, the thoughtful people you'd never have met otherwise. Sharing isn't just a favor to them. It's an investment in your own future connections.",
+                'about.share.reframe.v2',
+                "Even if a friend isn't who you're looking for, they bring their world with them: their friends, their circles, the thoughtful people you'd never have met otherwise.",
               )}
             </p>
           </div>
 
-          {/* An inset panel rather than a bare list: a few short rows floating in a tall column read as
-              empty space. The panel gives the right side visual mass, stretches to the copy's height
-              (items-stretch on the grid), and centres the benefits within it. */}
-          <ul className="flex flex-col justify-center gap-6 rounded-2xl bg-white/[0.04] p-6 ring-1 ring-white/10 sm:p-8 lg:h-full">
+          {/* The inset panel is gone — a framed list inside a framed slab was the same box-in-a-box the
+              rest of the page just shed, and the panel was solving "these rows look thin" with a
+              container instead of with type. A rule down the left edge separates the column at a
+              fraction of the weight, and the extra room goes to the rows themselves. */}
+          <ul className="flex flex-col justify-center gap-7 lg:h-full lg:border-l lg:border-white/10 lg:pl-14 dark:lg:border-canvas-200">
             {benefits.map((b) => (
               <ShareBenefit key={b.title} icon={b.icon} title={b.title} text={b.text} />
             ))}
@@ -987,20 +1050,24 @@ export default function About() {
     {
       icon: GiftIcon,
       title: t('about.block.free.title', 'Completely Free'),
-      text: t('about.block.free.text', 'Subscription-free. Paywall-free. Ad-free.'),
-    },
-    {
-      icon: GlobeAltIcon,
-      // Its own keys. This card was borrowing `about.block.vision.*`, whose fr/de values are the longer
-      // Linux / Wikipedia / Firefox sentence — so French and German readers saw that sentence on a card
-      // whose English reads "Built by the people who use it". The vision line now has that key back, in
-      // the mission section where it belongs, and this card says only what it says.
-      title: t('about.block.public_good.title', 'Digital Public Good'),
+      // Three parallel "-free" fragments was the tightest instance of the page's triple-negative tic.
       text: t(
-        'about.block.public_good.text',
-        'Built by the people who use it, for the benefit of everyone.',
+        'about.block.free.text.v2',
+        'No subscription and no ads. There is no paid tier to upgrade to.',
       ),
     },
+    // {
+    //   icon: GlobeAltIcon,
+    //   // Its own keys. This card was borrowing `about.block.vision.*`, whose fr/de values are the longer
+    //   // Linux / Wikipedia / Firefox sentence — so French and German readers saw that sentence on a card
+    //   // whose English reads "Built by the people who use it". The vision line now has that key back, in
+    //   // the mission section where it belongs, and this card says only what it says.
+    //   title: t('about.block.public_good.title', 'Digital Public Good'),
+    //   text: t(
+    //     'about.block.public_good.text',
+    //     'Built by the people who use it, for the benefit of everyone.',
+    //   ),
+    // },
   ]
 
   // The "Democratic" card used to sit here. Its claim now opens the "How a decision gets made"
@@ -1016,9 +1083,10 @@ export default function About() {
       icon: LightBulbIcon,
       id: 'give-suggestions-or-contribute',
       title: t('about.suggestions.title', 'Give Suggestions or Contribute'),
+      // "Every idea matters." dropped: a reassurance cliché, and the sixth one-line closer on the page.
       text: t(
-        'about.suggestions.text',
-        'Give suggestions or let us know you want to help through this form. Every idea matters.',
+        'about.suggestions.text.v2',
+        'Give suggestions or let us know you want to help through this form.',
       ),
       buttonLabel: t('about.suggestions.button', 'Suggest Here →'),
       buttonUrl: formLink,
@@ -1087,9 +1155,12 @@ export default function About() {
             {t('about.title.v2', 'What Compass is, and how it works.')}
           </h1>
           <p className="text-lg sm:text-xl text-ink-700 max-w-2xl leading-relaxed">
+            {/* The second sentence was three parallel past participles ("Built by…, funded by…,
+                governed by…"), which is the most recognisable machine-written cadence there is. Same
+                three facts, as ordinary clauses with real subjects. */}
             {t(
-              'about.subtitle.v2',
-              'A free, public directory of people looking for depth — friends, partners, or collaborators. Built by volunteers, funded by donations, governed by its members.',
+              'about.subtitle.v3',
+              'A free, public directory of people looking for depth: friends, partners, or collaborators. Volunteers build it, donations pay for it, and its members decide where it goes.',
             )}
           </p>
         </div>
@@ -1129,7 +1200,10 @@ export default function About() {
             />
           </Reveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mt-4 sm:mt-5">
+          {/* Wider gutters and a much bigger gap above, now that the tiles have no borders: with the
+              frames gone it is the space that has to do the separating, and card-era gaps (16-20px)
+              would have let the three columns run together. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-10 mt-14">
             {searchFeatures.map((f, i) => (
               <Reveal key={f.title} delay={i * 70}>
                 <FeatureCard icon={f.icon} title={f.title} text={f.text} />
@@ -1165,30 +1239,33 @@ export default function About() {
             <ProseBlock
               icon={EyeIcon}
               label={t('about.public.eyebrow', 'Your profile')}
+              // "That's the point — and it's a switch." was a two-clause reversal ending on a
+              // one-word reveal. The heading now just says the thing; `VisibilityToggleMock` beside
+              // it is the switch, so the sentence does not have to perform it.
               title={t(
-                'about.public.title',
-                'Your profile is a web page. That’s the point — and it’s a switch.',
+                'about.public.title.v2',
+                'Your profile is a web page, and you can turn it off.',
               )}
               visual={<VisibilityToggleMock />}
             >
               <p>
                 {t(
                   'about.public.p1',
-                  'Compass is a directory, so by default your profile is a public page that anyone can read and search engines can index. That is the deal that makes searching work at all: everyone can be found, so you can find anyone.',
+                  'Compass is a directory, so by default your profile is a public page that anyone can read and search engines can index. More visibility means your people can find you.',
                 )}
               </p>
               <p>
                 {t(
-                  'about.public.p2',
-                  'If that isn’t what you want, one tap makes your profile members-only — logged-out visitors see nothing, and we tell search engines not to index it. You can switch back whenever you like.',
+                  'about.public.p2.v2',
+                  'If that isn’t what you want, one tap makes your profile members-only. Logged-out visitors see nothing, and we tell search engines not to index it. You can switch back whenever you like.',
                 )}
               </p>
-              <p>
-                {t(
-                  'about.public.p3',
-                  'The rest is yours too: hide profiles you’d rather not see, block someone outright, report them to moderators, download everything we hold about you, or delete your account and its data for good. Messages are encrypted at rest. Nothing you write is sold — there is nobody to sell it to.',
-                )}
-              </p>
+              {/*<p>*/}
+              {/*  {t(*/}
+              {/*    'about.public.p3',*/}
+              {/*    'The rest is yours too: hide profiles you’d rather not see, block someone outright, report them to moderators, download everything we hold about you, or delete your account and its data for good. Messages are encrypted at rest. Nothing you write is sold — there is nobody to sell it to.',*/}
+              {/*  )}*/}
+              {/*</p>*/}
             </ProseBlock>
           </Reveal>
         </Section>
@@ -1267,7 +1344,9 @@ export default function About() {
           {/*</p>*/}
 
           <Reveal>
-            <RepoActivity className="mt-4 sm:mt-5" />
+            {/* Same card-era gap as everywhere else on this page: 16-20px only separated these two
+                while each had a border and its own padding. Unframed they ran together as one block. */}
+            <RepoActivity className="mt-16 sm:mt-20" />
           </Reveal>
         </Section>
 
@@ -1275,7 +1354,10 @@ export default function About() {
         <Section>
           <SectionLabel>{t('about.who_runs.label', 'Who runs it')}</SectionLabel>
 
-          <div className="grid gap-4 sm:gap-5">
+          {/* Card-era gaps were 16-20px, which only worked because each block had a border and 32px of
+              its own padding holding it apart from the next. With the frames gone the gap *is* the
+              separation, so it grows to roughly what the padding and border used to add up to. */}
+          <div className="grid gap-16 sm:gap-20">
             <Reveal>
               <ProseBlock
                 icon={UserGroupIcon}
@@ -1287,10 +1369,10 @@ export default function About() {
                 <p>
                   {t(
                     'about.founder.p1',
-                    'Compass was started by Martin Braquet, an engineer from Belgium, after years of living across Europe, the U.S., India and Indonesia and finding that the connections that mattered most were the hardest to make on purpose. He still stewards and actively improves the project, but the constitution puts direction in the members’ hands.',
+                    "I'm Martin Braquet, an engineer and researcher from Belgium. I started Compass after years of living across Europe, the US, and India and finding that the connections that mattered most to me were the hardest to manifest in real life. I still steward and actively improve the project, but the constitution puts direction in the members’ hands.",
                   )}
                 </p>
-                <p>{t('about.founder.p2', 'Everyone who has built Compass is a volunteer.')}</p>
+                {/*<p>{t('about.founder.p2', 'Everyone who has built Compass is a volunteer.')}</p>*/}
               </ProseBlock>
             </Reveal>
 
@@ -1298,19 +1380,22 @@ export default function About() {
               <ProseBlock
                 icon={BanknotesIcon}
                 label={t('about.costs.eyebrow', 'What it costs')}
-                title={t('about.costs.title', 'The entire budget, in three numbers.')}
+                title={t('about.costs.title', 'Our entire budget.')}
                 links={[
                   {href: '/financials', label: t('about.costs.books', 'See the books →')},
                   {href: '/support', label: t('about.costs.donate', 'Donate →')},
                 ]}
                 visual={<CostsChart />}
+                // Middle of three: the artwork swaps to the left so the run alternates rather than
+                // repeating one silhouette three times.
+                flip
               >
                 {/* Figures come from `FINANCIALS` so this block, the home strip and /financials cannot
                     quote three different numbers for the one claim the page is staking itself on. */}
                 <p>
                   {t(
-                    'about.costs.p1',
-                    'Since launch, Compass has cost ${spent} to run — hosting, infrastructure, domains. Members have donated ${donated}. The remaining ${deficit} came out of the founder’s pocket. There are no salaries, no marketing budget and no private costs, and every line of it is published.',
+                    'about.costs.p1.v2',
+                    'Our expenses only come from hosting, infrastructure, and domains. We cover them with donations or the founder’s pocket. Nobody draws a salary and every line of it is published.',
                     {
                       spent: FINANCIALS.spent,
                       donated: FINANCIALS.donated,
@@ -1354,7 +1439,9 @@ export default function About() {
             logo aggregator or a Wikipedia fair-use scan. */}
         <Section>
           <SectionLabel>{t('about.press.label', 'Press')}</SectionLabel>
-          <div className={clsx(surface, 'p-6 sm:p-8')}>
+          {/* Unboxed — `PressLogos` renders four framed logo tiles, so the card around them was a
+              fifth frame containing four others. */}
+          <div>
             <p className="mb-6 max-w-2xl text-base leading-relaxed text-ink-600">
               {t(
                 'about.press.text',
@@ -1379,7 +1466,7 @@ export default function About() {
               Compass is growing, then invite the reader to add to it — the same order as the
               share-compass email, which opens with the member count before asking. The share block then
               closes the section on the action rather than on a passive chart. */}
-          <MemberGrowth />
+          {/*<MemberGrowth />*/}
 
           {/* ── Share strip ── */}
           <div className="mt-5">
@@ -1391,11 +1478,14 @@ export default function About() {
           {/* One primary ask leads, then the three lighter ones. "Give Suggestions or Contribute" is
               the contribution we most want, so it is the full-width featured card with the filled CTA;
               the rest sit below as a quieter row of three with text-link actions. */}
-          <Reveal className="mt-5">
+          {/* Card-era gaps throughout this run (16-20px) only held because each item had a border and
+              its own padding. With the frames gone the space does the separating: a big step down from
+              the slab to the featured ask, and wider gutters between the three below it. */}
+          <Reveal className="mt-16 sm:mt-20">
             <FeaturedHelpCard {...helpCards[0]} />
           </Reveal>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mt-4 sm:mt-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-10 gap-y-10 mt-14">
             {helpCards.slice(1).map((card, i) => (
               <Reveal key={card.id} delay={i * 70}>
                 <HelpCard {...card} />

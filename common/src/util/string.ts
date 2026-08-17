@@ -6,6 +6,15 @@ export function removeEmojis(str: string) {
   )
 }
 
+/** Capitalizes the first letter of each word, leaving words that already contain an
+ * uppercase letter alone so deliberate casing (iOS, AI, PhD) survives untouched. */
+export function capitalizeWords(s: string) {
+  return s
+    .split(/(\s+)/)
+    .map((word) => (/[A-Z]/.test(word) ? word : word.charAt(0).toUpperCase() + word.slice(1)))
+    .join('')
+}
+
 export function urlize(s: string) {
   if (s.startsWith('http://') || s.startsWith('https://')) return s
   return `https://${s}`

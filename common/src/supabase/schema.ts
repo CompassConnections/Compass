@@ -1307,6 +1307,7 @@ export type Database = {
           religious_beliefs: string | null
           search_text: string | null
           search_tsv: unknown
+          spotlight_consent: boolean
           university: string | null
           user_id: string
           visibility: Database['public']['Enums']['lover_visibility']
@@ -1393,6 +1394,7 @@ export type Database = {
           religious_beliefs?: string | null
           search_text?: string | null
           search_tsv?: unknown
+          spotlight_consent?: boolean
           university?: string | null
           user_id: string
           visibility?: Database['public']['Enums']['lover_visibility']
@@ -1479,6 +1481,7 @@ export type Database = {
           religious_beliefs?: string | null
           search_text?: string | null
           search_tsv?: unknown
+          spotlight_consent?: boolean
           university?: string | null
           user_id?: string
           visibility?: Database['public']['Enums']['lover_visibility']

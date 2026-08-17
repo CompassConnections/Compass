@@ -133,6 +133,10 @@ const optionalProfilesSchema = z.object({
   raised_in_radius: z.number().optional().nullable(),
   raised_in_region_code: z.string().optional().nullable(),
   relationship_status: z.array(z.string()).optional().nullable(),
+  // Standing consent for an admin to snapshot this profile into a home-page spotlight. Only ever
+  // half the gate — a snapshot still has to be built and set live by hand. See
+  // `common/profiles/spotlights.ts`.
+  spotlight_consent: zBoolean.optional(),
   gender_details: z.string().optional().nullable(),
   orientation: z.array(z.string()).optional().nullable(),
   orientation_details: z.string().optional().nullable(),

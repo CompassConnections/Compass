@@ -1,4 +1,9 @@
-import {ChatBubbleBottomCenterTextIcon, EnvelopeIcon, MapIcon} from '@heroicons/react/24/outline'
+import {
+  ChatBubbleBottomCenterTextIcon,
+  EnvelopeIcon,
+  MapIcon,
+  SparklesIcon,
+} from '@heroicons/react/24/outline'
 import {IS_LOCAL} from 'common/hosting/constants'
 import Link from 'next/link'
 import {ComponentType} from 'react'
@@ -35,6 +40,13 @@ const ADMIN_PAGES: {
     description:
       'Every testimonial in every state. The same approve and reject buttons also sit inline on /testimonials.',
     icon: ChatBubbleBottomCenterTextIcon,
+  },
+  {
+    href: '/admin/spotlights',
+    name: 'Spotlights',
+    description:
+      'Member cards on the logged-out home page. Members opt in; you write the card and set it live.',
+    icon: SparklesIcon,
   },
 ]
 

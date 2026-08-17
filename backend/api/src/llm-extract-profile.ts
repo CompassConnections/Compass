@@ -44,6 +44,11 @@ import {
   NotionRecordMap,
   notionRecordMapToJSONContent,
 } from 'shared/parse'
+import {
+  extractFireflyUsername,
+  FireflyProfile,
+  fireflyProfileToJSONContent,
+} from 'shared/parse-firefly'
 
 const MAX_CONTEXT_LENGTH = 7 * 10 * 30 * 50
 const USE_CACHE = true
@@ -62,10 +67,10 @@ interface ParsedBody {
   source?: ExtractSource
 }
 
-// Bump whenever the extraction prompt changes. The cache key is otherwise derived purely from the
-// request, so a prompt fix would keep returning the old answer for the 24h TTL — which looks exactly
-// like the fix not working.
-const PROMPT_VERSION = 3
+// Bump whenever the extraction prompt changes, or whenever we start reading a source differently.
+// The cache key is otherwise derived purely from the request, so a fix would keep returning the old
+// answer for the 24h TTL — which looks exactly like the fix not working.
+const PROMPT_VERSION = 4
 
 function getCacheKey(parsedBody: ParsedBody): string {
   if (!USE_CACHE) return ''
@@ -725,6 +730,58 @@ async function fetchNotionRecordMap(pageId: string): Promise<NotionRecordMap> {
 }
 
 /**
+ * datefirefly.com builds its profile pages in the browser, so a plain fetch of `/u/<username>` only
+ * ever gets placeholders. The page fills itself in from a public Supabase RPC — a function Firefly
+ * named `get_public_profile` and granted to the `anon` role — so we ask it directly, exactly as the
+ * visitor's browser does. `FIREFLY_ANON_KEY` is the site's public anon key, shipped verbatim in its
+ * client bundle; it identifies the project, not a user, and nothing here defeats a login, a rate
+ * limit or any other gate.
+ *
+ * Two limits are deliberate, and both are load-bearing rather than stylistic:
+ *
+ * 1. Only ever on behalf of someone importing their own profile — see `fetchOnlineProfile`'s
+ *    `userInitiated` option. Firefly's robots.txt disallows `/u/`, so we do not crawl these pages
+ *    of our own accord; we read one when its owner hands us the link. That also keeps the personal
+ *    data flowing from the data subject rather than being collected behind their back, which is
+ *    what makes a lawful basis available at all (and avoids the GDPR Art. 14 duty that attaches to
+ *    data obtained from anywhere else).
+ * 2. Only the fields the profile page itself displays, and never the quiz endpoint — see
+ *    `FireflyProfile`. Those answers are Art. 9 special-category data and are not needed here.
+ */
+const FIREFLY_RPC_URL = 'https://khzlfnfbpshvzkouzugj.supabase.co/rest/v1/rpc'
+const FIREFLY_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoemxmbmZicHNodnprb3V6dWdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDU4NTkzNjEsImV4cCI6MTk2MTQzNTM2MX0.F5kGAo0o9rjBeDN76QKkapl0d1sl3ZhFy7UX6GhE30w'
+
+async function fetchFireflyProfile(username: string): Promise<JSONContent> {
+  const response = await fetch(`${FIREFLY_RPC_URL}/get_public_profile`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apiKey: FIREFLY_ANON_KEY,
+      Authorization: `Bearer ${FIREFLY_ANON_KEY}`,
+    },
+    body: JSON.stringify({p_identifier: username}),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    log('Firefly API error', {username, status: response.status, error: errorText.slice(0, 500)})
+    throw new Error(`Failed to fetch Firefly profile: ${response.status} ${response.statusText}`)
+  }
+
+  const data = await response.json()
+  const profile: FireflyProfile | undefined = Array.isArray(data) ? data[0] : undefined
+
+  // The site itself redirects to /404 when the RPC comes back empty, so an unknown username is the
+  // likely cause rather than anything going wrong on our side.
+  if (!profile) {
+    throw APIErrors.badRequest(`No Firefly profile found at datefirefly.com/u/${username}.`)
+  }
+
+  return fireflyProfileToJSONContent(profile)
+}
+
+/**
  * Rejects URLs we know we cannot read, with a message that tells the user what to do instead. Kept
  * separate from `fetchOnlineProfile` so the endpoint can run it synchronously: extraction is
  * otherwise fire-and-forget, and an error raised in there only ever reaches the client as a generic
@@ -756,7 +813,21 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
       return notionRecordMapToJSONContent(recordMap, notionPageId)
     }
 
-    // 1b. Google Docs shortcut
+    // 1b. Firefly shortcut — same story as Notion: the page has no content until its JS runs. Read
+    // only for the person importing their own profile; see `fetchFireflyProfile` for why.
+    const fireflyUsername = extractFireflyUsername(url)
+    if (fireflyUsername) {
+      const parsed = await fetchFireflyProfile(fireflyUsername)
+      log('Fetched content from Firefly', {url, username: fireflyUsername})
+      if (!hasText(parsed)) {
+        throw APIErrors.badRequest(
+          `The Firefly profile at ${url} has no text to read. Please copy the text and paste it instead.`,
+        )
+      }
+      return parsed
+    }
+
+    // 1c. Google Docs shortcut
     const googleDocId = extractGoogleDocId(url)
     if (googleDocId) {
       url = `https://docs.google.com/document/d/${googleDocId}/export?format=html`

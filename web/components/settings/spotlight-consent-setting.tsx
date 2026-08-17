@@ -24,12 +24,20 @@ export function SpotlightConsentSetting() {
   const t = useT()
   const profile = useProfile()
 
-  const [consent, setConsent] = useState(profile?.spotlight_consent === true)
+  // `useProfile()` is undefined on the first render and filled in by a fetch in an effect, so seeding
+  // this with `useState(profile?.spotlight_consent === true)` froze the switch in the "off" position
+  // for a member who had in fact consented — the stored answer arrived a beat too late to be read.
+  // Derive from the profile instead, and only hold a local value once the member has flipped it
+  // themselves: the cached profile is not refetched after our write, so it would otherwise reassert
+  // the pre-write answer over the one they just gave.
+  const [pendingConsent, setPendingConsent] = useState<boolean | null>(null)
+  const consent = pendingConsent ?? profile?.spotlight_consent === true
   const [isUpdating, setIsUpdating] = useState(false)
   const [saved, setSaved] = useState<number | null>(null)
 
   const handleChange = async (checked: boolean) => {
-    setConsent(checked)
+    const previous = consent
+    setPendingConsent(checked)
     setIsUpdating(true)
     try {
       await updateProfile({spotlight_consent: checked})
@@ -38,7 +46,7 @@ export function SpotlightConsentSetting() {
     } catch (_error) {
       // Put the switch back where it was: leaving it showing the state the member asked for, after
       // the write that would have made it true failed, is the one outcome this setting must not have.
-      setConsent(!checked)
+      setPendingConsent(previous)
       toast.error(t('settings.spotlight.failed', 'Could not save that — try again?'))
     } finally {
       setIsUpdating(false)
@@ -64,7 +72,9 @@ export function SpotlightConsentSetting() {
           testId="settings-spotlight-consent-toggle"
           checked={consent}
           onChange={handleChange}
-          disabled={isUpdating}
+          // Also inert until the profile lands, so a click can't be made against a switch that is
+          // still showing the default rather than the member's stored answer.
+          disabled={isUpdating || profile === undefined}
           colorMode={'primary'}
         />
       </Row>

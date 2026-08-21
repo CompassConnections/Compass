@@ -45,7 +45,7 @@ export const SPOTLIGHT_STATUS_LABELS: Record<SpotlightStatus, string> = {
 export const MIN_SPOTLIGHT_QUOTE_LENGTH = 40
 export const MAX_SPOTLIGHT_QUOTE_LENGTH = 400
 export const MAX_SPOTLIGHT_QUOTE_CONTEXT_LENGTH = 80
-export const MAX_SPOTLIGHT_HEADLINE_LENGTH = 200
+export const MAX_SPOTLIGHT_HEADLINE_LENGTH = 500
 export const MAX_SPOTLIGHT_ADMIN_NOTE_LENGTH = 500
 
 /** Chips under the quote. Few and short, or the card stops being a person and becomes a CV. */

@@ -119,6 +119,13 @@ export type SpotlightCandidate = {
    * wherever it happens to be, and the good line is rarely the opening one.
    */
   bio: JSONContent | string | null
+  /**
+   * Whether they also said yes to being featured on Compass's own social accounts — the extra,
+   * nested consent behind the profile-scroll clips in `media-creator`. Shown here because it is the
+   * one thing about a candidate that cannot be inferred by reading their profile, and filming
+   * someone who only agreed to the home page is not a mistake that can be walked back.
+   */
+  socialConsent: boolean
 }
 
 export type SpotlightDraft = {

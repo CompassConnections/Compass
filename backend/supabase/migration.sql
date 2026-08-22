@@ -74,4 +74,6 @@ BEGIN;
 \i backend/supabase/migrations/20260809_add_vote_comment_edits.sql
 \i backend/supabase/migrations/20260812_add_birth_date_to_profiles.sql
 \i backend/supabase/migrations/20260812_add_profile_spotlights.sql
+\i backend/supabase/migrations/20260822_add_blog_posts.sql
+\i backend/supabase/migrations/20260822_add_social_media_consent.sql
 COMMIT;

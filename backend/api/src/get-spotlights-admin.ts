@@ -60,6 +60,7 @@ export const getSpotlightsAdmin: APIHandler<'get-spotlights-admin'> = async (_, 
         // The whole document, unsliced: the admin is reading for the one good sentence, and it is
         // rarely in the first paragraph. Capped instead by the candidate list's own `limit 200`.
         bio: row.bio,
+        socialConsent: row.social_media_consent,
       }),
     ),
   }

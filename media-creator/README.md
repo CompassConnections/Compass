@@ -138,6 +138,13 @@ Under a voice track this matters more than it would for a standalone video: unif
 nowhere to land, and a half-listening viewer takes away nothing. The glides between stops aren't filler —
 a bio streaming past too fast to read is still legibly _long_, which is the point being made.
 
+> **Check consent before you render one of these.** A member has to have ticked _both_ halves of "Let
+> Compass feature your profile" in their settings — the parent (`profiles.spotlight_consent`) and the
+> nested social-media toggle (`profiles.social_media_consent`). The admin spotlights page
+> (`/admin/spotlights`) flags the candidates who have, with a "Social media OK" line. Home-page consent
+> alone is not permission to post someone to Instagram: that one is revocable in a minute, this one
+> effectively is not.
+
 **Pointing it at a different member is one argument, not an edit.** The username is a prop, and every
 page-specific number the scene needs comes from `public/profile-<username>/manifest.json`, which the
 capture script writes by measuring the live DOM:

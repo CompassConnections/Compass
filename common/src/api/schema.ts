@@ -6,6 +6,20 @@ import {
   dateSchema,
   zBoolean,
 } from 'common/api/zod-types'
+import {
+  AdminBlogPost,
+  BLOG_POST_STATUSES,
+  BLOG_POSTS_PER_PAGE,
+  BLOG_SLUG_REGEX,
+  BlogPost,
+  BlogPostSummary,
+  MAX_BLOG_EXCERPT_LENGTH,
+  MAX_BLOG_NOTIFICATION_LENGTH,
+  MAX_BLOG_SLUG_LENGTH,
+  MAX_BLOG_TITLE_LENGTH,
+  MIN_BLOG_SLUG_LENGTH,
+  MIN_BLOG_TITLE_LENGTH,
+} from 'common/blog/blog'
 import {ChatMessage} from 'common/chat-message'
 import {COMMENT_TYPES} from 'common/comment'
 import {FeedItem, MAX_FEED_LIMIT} from 'common/feed/feed'
@@ -1734,6 +1748,115 @@ export const API = (_apiTypeCheck = {
     returns: {} as {spotlight: AdminSpotlight},
     summary: 'Edit, re-snapshot, publish or take down a spotlight. Admins only.',
     tag: 'Spotlights',
+  },
+  'get-blog-posts': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z
+      .object({
+        limit: z.coerce.number().int().min(1).max(BLOG_POSTS_PER_PAGE).optional(),
+        offset: z.coerce.number().int().min(0).optional(),
+      })
+      .strict(),
+    returns: {} as {posts: BlogPostSummary[]},
+    // The list is identical for everyone and changes only when an admin publishes, so it caches like
+    // the testimonials wall. Longer than that one, though: nothing here is consent-gated, so there is
+    // no revocation that has to take effect within the minute.
+    cache: 'public, max-age=300, stale-while-revalidate=3600',
+    summary: 'The published blog posts, newest first. Bodies are not included.',
+    tag: 'Blog',
+  },
+  'get-blog-post': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z
+      .object({
+        slug: z.string().max(MAX_BLOG_SLUG_LENGTH),
+      })
+      .strict(),
+    returns: {} as {post: BlogPost | null},
+    // `null` rather than a 404 for a slug that does not exist, so that the page can render its own
+    // not-found state and Next can still statically generate the route.
+    cache: 'public, max-age=300, stale-while-revalidate=3600',
+    summary: 'One published blog post by slug, body included. Null if there is no such post.',
+    tag: 'Blog',
+  },
+  'get-blog-posts-admin': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({}).strict(),
+    returns: {} as {posts: AdminBlogPost[]},
+    // Separate endpoint rather than a flag on `get-blog-posts`, for the same reason the testimonials
+    // and spotlights pairs are split: that one is CDN-cached under a public key, and an admin
+    // response landing in it would serve every unpublished draft to everyone.
+    summary: 'Every blog post in any state, bodies included. Admins only.',
+    tag: 'Blog',
+  },
+  'create-blog-post': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z
+      .object({
+        // Validated against the same regex as the CHECK constraint on the column. Refused rather
+        // than silently slugified: this is the post's permanent URL, and quietly rewriting what an
+        // admin typed is how you end up with a link in a notification that goes nowhere.
+        slug: z
+          .string()
+          .trim()
+          .min(MIN_BLOG_SLUG_LENGTH)
+          .max(MAX_BLOG_SLUG_LENGTH)
+          .regex(BLOG_SLUG_REGEX, 'Lowercase letters, digits and single dashes only'),
+        title: z.string().trim().min(MIN_BLOG_TITLE_LENGTH).max(MAX_BLOG_TITLE_LENGTH),
+        excerpt: z.string().trim().max(MAX_BLOG_EXCERPT_LENGTH).nullable().optional(),
+        content: contentSchema.optional(),
+        coverImageUrl: z.string().url().nullable().optional(),
+      })
+      .strict(),
+    returns: {} as {post: AdminBlogPost},
+    summary: 'Create a blog post as a draft. Admins only.',
+    tag: 'Blog',
+  },
+  'update-blog-post': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z
+      .object({
+        id: z.number().int(),
+        // Every field independently optional, the same contract as `update-spotlight`: the publish
+        // button sends only a status, the editor sends only the body. `undefined` leaves a column
+        // alone and `null` clears it.
+        slug: z
+          .string()
+          .trim()
+          .min(MIN_BLOG_SLUG_LENGTH)
+          .max(MAX_BLOG_SLUG_LENGTH)
+          .regex(BLOG_SLUG_REGEX, 'Lowercase letters, digits and single dashes only')
+          .optional(),
+        title: z.string().trim().min(MIN_BLOG_TITLE_LENGTH).max(MAX_BLOG_TITLE_LENGTH).optional(),
+        excerpt: z.string().trim().max(MAX_BLOG_EXCERPT_LENGTH).nullable().optional(),
+        content: contentSchema.optional(),
+        coverImageUrl: z.string().url().nullable().optional(),
+        status: z.enum(BLOG_POST_STATUSES).optional(),
+        /**
+         * The body of the in-app notification sent to every member. The title is the post's own
+         * title, so only the message is typed here.
+         *
+         * Sending is gated on three things at once in the handler: this being present, the post
+         * ending the update `published`, and no broadcast having gone out before. Passing it is
+         * therefore a request, not a command — the point being that "publish" and "tell 1,200
+         * people" are one action from the admin's side and must never be two by accident.
+         */
+        notificationText: z.string().trim().min(1).max(MAX_BLOG_NOTIFICATION_LENGTH).optional(),
+      })
+      .strict(),
+    returns: {} as {post: AdminBlogPost; notifiedCount: number},
+    summary: 'Edit, publish, notify about, or take down a blog post. Admins only.',
+    tag: 'Blog',
   },
 } as const)
 

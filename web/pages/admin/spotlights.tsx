@@ -179,6 +179,14 @@ function CandidateRow({
             {formatSpotlightLocation(c) ?? 'No location'}
             {c.headline ? ` · ${c.headline}` : ''}
           </div>
+          {/* Only the yes is worth a chip. Nobody should have to read the absence of a badge as a
+              prohibition, but the presence of one is what tells a video shoot which profiles it may
+              actually use — and that consent cannot be read off the profile page. */}
+          {c.socialConsent && (
+            <div className="text-primary-600 mt-1 text-xs font-medium">
+              Social media OK — may be filmed for Instagram/TikTok
+            </div>
+          )}
         </div>
         <Button color="gray-outline" size="xs" onClick={() => setOpen(!open)}>
           {open ? 'Cancel' : 'Write a card'}

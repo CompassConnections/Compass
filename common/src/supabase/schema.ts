@@ -1307,6 +1307,7 @@ export type Database = {
           religious_beliefs: string | null
           search_text: string | null
           search_tsv: unknown
+          social_media_consent: boolean
           spotlight_consent: boolean
           university: string | null
           user_id: string
@@ -1394,6 +1395,7 @@ export type Database = {
           religious_beliefs?: string | null
           search_text?: string | null
           search_tsv?: unknown
+          social_media_consent?: boolean
           spotlight_consent?: boolean
           university?: string | null
           user_id: string
@@ -1481,6 +1483,7 @@ export type Database = {
           religious_beliefs?: string | null
           search_text?: string | null
           search_tsv?: unknown
+          social_media_consent?: boolean
           spotlight_consent?: boolean
           university?: string | null
           user_id?: string

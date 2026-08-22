@@ -1,4 +1,5 @@
 import {withSentryConfig} from '@sentry/nextjs'
+import {EXTERNAL_REDIRECTS} from 'common/external-redirects'
 import {IS_LOCAL} from 'common/hosting/constants'
 import type {NextConfig} from 'next'
 
@@ -123,30 +124,14 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      {source: '/discord', destination: 'https://discord.gg/8Vd7jzqjun', permanent: false},
-      {source: '/patreon', destination: 'https://patreon.com/CompassMeet', permanent: false},
-      {source: '/x', destination: 'https://x.com/compassmeet', permanent: false},
-      {
-        source: '/paypal',
-        destination: 'https://www.paypal.com/paypalme/CompassConnections',
+      // The off-domain short links (/discord, /paypal, ...) live in `common` because the Android
+      // shell needs the same map: a static export runs none of these redirects, so it recognises
+      // the paths itself and hands them to the system browser.
+      ...Object.entries(EXTERNAL_REDIRECTS).map(([source, destination]) => ({
+        source,
+        destination,
         permanent: false,
-      },
-      {
-        source: '/instagram',
-        destination: 'https://www.instagram.com/compassmeet/',
-        permanent: false,
-      },
-      {source: '/kofi', destination: 'https://ko-fi.com/compassconnections', permanent: false},
-      {
-        source: '/github',
-        destination: 'https://github.com/CompassConnections/Compass',
-        permanent: false,
-      },
-      {
-        source: '/liberapay',
-        destination: 'https://liberapay.com/CompassConnections',
-        permanent: false,
-      },
+      })),
       {source: '/charts', destination: '/stats', permanent: true},
     ]
   },

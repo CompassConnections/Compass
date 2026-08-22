@@ -45,6 +45,7 @@ const ROUTES = [
   '/events',
   '/compatibility',
   '/testimonials',
+  '/blog',
   '/stats',
   '/news',
   '/press',
@@ -67,7 +68,13 @@ const ROUTES = [
 function pageFileFor(route) {
   const base = route === '/' ? 'index' : route.slice(1)
   return ['tsx', 'ts', 'jsx', 'js']
-    .map((ext) => join(WEB_DIR, 'pages', `${base}.${ext}`))
+    .flatMap((ext) => [
+      join(WEB_DIR, 'pages', `${base}.${ext}`),
+      // `/blog` is `pages/blog/index.tsx`. Individual posts are not listed: enumerating them needs a
+      // database read for the published set, which is worth doing as its own sitemap rather than
+      // guessing at here — same call as member profiles above.
+      join(WEB_DIR, 'pages', base, `index.${ext}`),
+    ])
     .find(existsSync)
 }
 

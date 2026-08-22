@@ -58,6 +58,7 @@ import {blockUser, unblockUser} from './block-user'
 import {cancelEvent} from './cancel-event'
 import {cancelRsvp} from './cancel-rsvp'
 import {getCompatibleProfilesHandler} from './compatible-profiles'
+import {createBlogPost} from './create-blog-post'
 import {createBookmarkedSearch} from './create-bookmarked-search'
 import {createComment} from './create-comment'
 import {createCompatibilityQuestion} from './create-compatibility-question'
@@ -71,6 +72,9 @@ import {createUserAndProfile} from './create-user-and-profile'
 import {deleteBookmarkedSearch} from './delete-bookmarked-search'
 import {deleteCompatibilityAnswer} from './delete-compatibility-answer'
 import {deleteMe} from './delete-me'
+import {getBlogPost} from './get-blog-post'
+import {getBlogPosts} from './get-blog-posts'
+import {getBlogPostsAdmin} from './get-blog-posts-admin'
 import {getCompatibilityQuestions} from './get-compatibililty-questions'
 import {getConnectionInterestsEndpoint} from './get-connection-interests'
 import {getCurrentPrivateUser} from './get-current-private-user'
@@ -115,6 +119,7 @@ import {starProfile} from './star-profile'
 import {stats} from './stats'
 import {transcribeAudio} from './transcribe-audio'
 import {unsubscribe} from './unsubscribe'
+import {updateBlogPost} from './update-blog-post'
 import {updateEvent} from './update-event'
 import {updateMe} from './update-me'
 import {updateNotifSettings} from './update-notif-setting'
@@ -591,6 +596,11 @@ Commit: ${git.revision} (${git.commitDate})`,
         'The public testimonials wall, plus the moderation endpoints that decide what appears on it',
     },
     {
+      name: 'Blog',
+      description:
+        'The Compass blog: the public index and post reads, plus the admin endpoints that write and publish them',
+    },
+    {
       name: 'Spotlights',
       description:
         'Member spotlights on the home page: consent-gated, admin-curated snapshots of real profiles',
@@ -659,6 +669,11 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-testimonials-mod': getTestimonialsMod,
   'create-testimonial': createTestimonial,
   'update-testimonial-status': updateTestimonialStatus,
+  'get-blog-posts': getBlogPosts,
+  'get-blog-post': getBlogPost,
+  'get-blog-posts-admin': getBlogPostsAdmin,
+  'create-blog-post': createBlogPost,
+  'update-blog-post': updateBlogPost,
   'get-spotlights': getSpotlights,
   'get-spotlights-admin': getSpotlightsAdmin,
   'create-spotlight': createSpotlight,

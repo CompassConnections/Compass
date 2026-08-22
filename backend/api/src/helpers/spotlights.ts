@@ -91,6 +91,7 @@ export type SpotlightSourceRow = {
   /** The TipTap document. `bio_text` is its flattened form, and reads like one when rendered. */
   bio: JSONContent | string | null
   spotlight_consent: boolean
+  social_media_consent: boolean
   visibility: string
 }
 
@@ -104,6 +105,7 @@ export const SPOTLIGHT_SOURCE_SELECT = `select p.user_id,
                                                p.headline,
                                                p.bio,
                                                p.spotlight_consent,
+                                               p.social_media_consent,
                                                p.visibility
                                         from profiles p
                                                  join users u on u.id = p.user_id`

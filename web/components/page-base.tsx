@@ -3,6 +3,7 @@ import {
   // ChatBubbleBottomCenterTextIcon, // re-add with the Testimonials nav item below
   HomeIcon,
   NewspaperIcon,
+  PencilSquareIcon,
   QuestionMarkCircleIcon,
   WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline'
@@ -191,6 +192,12 @@ const Contact = {
   href: '/contact',
   icon: FaEnvelope,
 }
+const Blog = {
+  key: 'nav.blog',
+  name: 'Blog',
+  href: '/blog',
+  icon: PencilSquareIcon,
+}
 const News = {
   key: 'nav.news',
   name: "What's new",
@@ -222,7 +229,7 @@ const MessagesIconComponent = (props: any) => <PrivateMessagesIcon solid {...pro
 
 // Testimonials belongs next to About because it answers the same question — "is this for me?" — with
 // the one kind of evidence we cannot write ourselves. Add it back here when unhiding it above.
-const base = [About, faq, Vote, Events, News, Social, Organization, Contact]
+const base = [About, faq, Blog, Vote, Events, News, Social, Organization, Contact]
 
 function getBottomNavigation(user: User, profile: Profile | null | undefined) {
   return buildArray(

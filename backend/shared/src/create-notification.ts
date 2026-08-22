@@ -258,3 +258,40 @@ export const createSpotlightInviteNotifications = async () => {
 
   return {templateId, count}
 }
+
+/**
+ * Announce a newly published blog post to every member.
+ *
+ * The title is the post's own title and the body is written by the admin at publish time — the two
+ * are not the same job. A title good enough to head an essay is rarely the sentence that tells
+ * somebody why to stop and read it today, and a generated "new post: <title>" line is exactly the
+ * kind of notification people learn to swipe away without looking.
+ *
+ * Called from `update-blog-post`, which owns the interlock that makes sure this happens at most once
+ * per post (`blog_posts.notified_time`). This function does not check anything: it is a broadcast to
+ * the entire membership, and the decision to make one belongs at the call site where the post's state
+ * is known.
+ */
+export const createBlogPostNotifications = async (post: {
+  slug: string
+  title: string
+  notificationText: string
+  coverImageUrl?: string | null
+}) => {
+  const {templateId, count} = await createBulkNotification({
+    sourceType: 'blog',
+    title: post.title,
+    sourceText: post.notificationText,
+    // What the row links to. `/blog/<slug>` rather than `/blog`, so the tap lands on the post itself
+    // — the slug is why `update-blog-post` refuses to change one after publication.
+    sourceSlug: `/blog/${post.slug}`,
+    // The cover when there is one: a notification carrying the post's own image reads as that post
+    // rather than as another site announcement. Falls back to the logo.
+    sourceUserAvatarUrl: post.coverImageUrl || COMPASS_LOGO_URL,
+    sourceUpdateType: 'created',
+  })
+
+  console.log(`Created blog notification template ${templateId} for ${count} users`)
+
+  return {templateId, count: count ?? 0}
+}

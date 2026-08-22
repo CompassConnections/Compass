@@ -137,6 +137,10 @@ const optionalProfilesSchema = z.object({
   // half the gate — a snapshot still has to be built and set live by hand. See
   // `common/profiles/spotlights.ts`.
   spotlight_consent: zBoolean.optional(),
+  // The narrower, nested half of that consent: may we also feature the profile on Compass's own
+  // social accounts (the Instagram scroll clip in `media-creator`)? Only meaningful while
+  // `spotlight_consent` is true, and unlike it, revoking cannot unpublish what is already posted.
+  social_media_consent: zBoolean.optional(),
   gender_details: z.string().optional().nullable(),
   orientation: z.array(z.string()).optional().nullable(),
   orientation_details: z.string().optional().nullable(),

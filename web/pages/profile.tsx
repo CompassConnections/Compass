@@ -16,6 +16,7 @@ import {RequiredProfileUserForm} from 'web/components/required-profile-form'
 import {SEO} from 'web/components/SEO'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {useProfileByUser} from 'web/hooks/use-profile'
+import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {useUser} from 'web/hooks/use-user'
 import {api, updateProfile, updateUser} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
@@ -25,11 +26,9 @@ export default function ProfilePage() {
   const {profile} = useProfileByUser(user ?? undefined)
   const [showLoading, setShowLoading] = useState(false)
 
-  useEffect(() => {
-    if (user === null || profile === null) {
-      Router.replace('/')
-    }
-  }, [user])
+  // Signed out goes to sign-in (and comes back here afterwards), same as `/settings`. A signed-in
+  // user with no profile row has nothing to edit, so that case still falls back to the home page.
+  useRedirectIfSignedOut()
 
   useEffect(() => {
     if (!user || !profile) {

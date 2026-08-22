@@ -3,6 +3,7 @@ import {BlogPost, formatBlogDate} from 'common/blog/blog'
 import {typedAPICall} from 'common/util/api'
 import {GetStaticPropsContext} from 'next'
 import Link from 'next/link'
+import {useRouter} from 'next/router'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {PageBase} from 'web/components/page-base'
@@ -24,12 +25,16 @@ import Custom404 from '../404'
  * without a deploy and without a build that grows with the blog.
  *
  * The client re-reads through `useAPIGetter` as well, which is what makes the page work at all in the
- * Android build — that is a static export, so nothing here ran at build time and `post` arrives
- * undefined.
+ * Android build. That build is a static export, which supports neither `fallback: 'blocking'` nor
+ * anything else that runs per request — so `scripts/build_web_view.sh` strips the two exports below
+ * for it, exactly as it does for `/[username]`, leaving a plain client-rendered page. Nothing here
+ * runs at build time there: both `slug` and `post` arrive undefined and come from the router and the
+ * API instead.
  */
 
 type Props = {
-  slug: string
+  /** Absent in the Android export, where nothing ran at build time to supply it. */
+  slug?: string
   /** Absent when the build could not reach the API, and always absent in the Android export. */
   post?: BlogPost | null
 }
@@ -60,9 +65,16 @@ export const getStaticPaths = () => {
   return {paths: [], fallback: 'blocking'}
 }
 
-export default function BlogPostPage({slug, post: initialPost}: Props) {
+export default function BlogPostPage({slug: staticSlug, post: initialPost}: Props) {
   const t = useT()
-  const {data} = useAPIGetter('get-blog-post', {slug})
+  const router = useRouter()
+
+  // The URL, not the prop, is the source of truth for which post this is: in the Android export
+  // there is no prop, and `router.query` is empty for one render either way before the router picks
+  // the path apart. `undefined` props hold the fetch until then rather than asking the API for a
+  // post called "undefined".
+  const slug = staticSlug ?? (router.query.slug as string | undefined)
+  const {data} = useAPIGetter('get-blog-post', slug ? {slug} : undefined)
 
   // `data ? data.post : initialPost`, not `data?.post ?? initialPost`. The client answer is allowed
   // to be `null` — that is the answer for a slug with no published post behind it — and `??` would

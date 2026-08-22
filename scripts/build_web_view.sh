@@ -36,29 +36,40 @@ export NEXT_PUBLIC_WEBVIEW=1
 rm -rf .next/* .next/.* 2>/dev/null || true
 
 # Hack to ignore getServerSideProps, getStaticProps and getStaticPaths for mobile webview build
-# as Next.js doesn't support SSG, SSR and ISR on mobile
-USERNAME_PAGE=pages/[username]/index.tsx
-HOME_PAGE=pages/index.tsx
+# as Next.js doesn't support SSG, SSR and ISR on mobile. A dynamic route is worse than unsupported:
+# `fallback: 'blocking'` fails the export outright ("Found pages with `fallback` enabled"), so every
+# page listed here has to be stripped or there is no APK at all. What is left is a plain
+# client-rendered page, which is what the app wants anyway — it reads the API at runtime.
+#
+# Add a page here whenever it grows a getStaticProps/getStaticPaths/getServerSideProps, and make sure
+# the page itself can render with none of those props (read the route from `router.query`).
+SSG_PAGES=(
+  "pages/[username]/index.tsx"
+  "pages/blog/[slug].tsx"
+  "pages/index.tsx"
+)
 
-# rename getStaticProps to _getStaticProps
-sed -i.bak 's/\bgetStaticProps\b/_getStaticProps/g' $USERNAME_PAGE
+# Put the sources back whatever happens — a failed build must not leave the working tree holding
+# `_getStaticProps` and no proxy.ts.
+restore_sources() {
+  for page in "${SSG_PAGES[@]}"; do
+    if [ -f "$page.bak" ]; then
+      mv -f "$page.bak" "$page"
+    fi
+  done
+  if [ -f _proxy.ts ]; then
+    mv -f _proxy.ts proxy.ts
+  fi
+}
+trap restore_sources EXIT
 
-# rename getStaticPaths to _getStaticPaths
-sed -i.bak 's/\bgetStaticPaths\b/_getStaticPaths/g' $USERNAME_PAGE
-
-# rename getServerSideProps to _getServerSideProps
-sed -i.bak 's/\bgetServerSideProps\b/_getServerSideProps/g' $HOME_PAGE
+# rename getStaticProps/getStaticPaths/getServerSideProps to _getStaticProps/... so Next.js doesn't
+# see them (the .bak each sed leaves behind is the pristine original, and is what restores it)
+for page in "${SSG_PAGES[@]}"; do
+  sed -i.bak 's/\bgetStaticProps\b/_getStaticProps/g; s/\bgetStaticPaths\b/_getStaticPaths/g; s/\bgetServerSideProps\b/_getServerSideProps/g' "$page"
+done
 
 # rename proxy to _proxy
 mv proxy.ts _proxy.ts
 
 yarn build
-
-sed -i.bak 's/\b_getStaticProps\b/getStaticProps/g' $USERNAME_PAGE
-sed -i.bak 's/\b_getStaticPaths\b/getStaticPaths/g' $USERNAME_PAGE
-sed -i.bak 's/\b_getServerSideProps\b/getServerSideProps/g' $HOME_PAGE
-
-mv _proxy.ts proxy.ts
-
-# Remove backup files
-rm -f "$USERNAME_PAGE.bak" "$HOME_PAGE.bak"

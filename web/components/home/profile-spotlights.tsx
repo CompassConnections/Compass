@@ -166,9 +166,16 @@ function SpotlightRail({
         aria-label={t('home.spotlights.label', 'In their own words')}
         className={clsx(
           'flex gap-4 overflow-x-auto sm:gap-5',
-          // Vertical breathing room inside the scroll box: `overflow-x: auto` clips the y axis too,
-          // and without this the hover lift and the card's drop shadow are shaved off.
-          '-my-3 py-3',
+          // The rail scrolls on one axis only. `overflow-x: auto` alone makes the y axis scrollable
+          // too, and the row then does scroll vertically: `Reveal` holds an un-revealed card 16px
+          // down (`translate-y-4`), and a card parked off the right edge never intersects, so it
+          // keeps that offset indefinitely. Pinning y closed leaves the row sized to the tallest
+          // card — nothing is cut that `overflow-x: auto` was not already clipping.
+          'overflow-y-hidden',
+          // Vertical breathing room inside the scroll box, since that clipping is on both axes:
+          // without it the hover lift and the card's drop shadow are shaved off. Sized to clear
+          // `Reveal`'s 16px offset as well, so the transform has nowhere to overflow to.
+          '-my-4 py-4',
           // Snap so a flick lands on a card rather than between two. Mandatory on touch, where the
           // gesture is a throw; proximity on desktop, where mandatory fights a trackpad that is
           // trying to nudge.

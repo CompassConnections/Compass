@@ -66,6 +66,12 @@ describe('createUserAndProfile', () => {
       getUser: jest.fn().mockResolvedValue({email: 'test@test.com'}),
     })
     ;(sharedUtils.getUserByUsername as jest.Mock).mockResolvedValue(false)
+    // `common/util/object` is auto-mocked, which leaves `removeUndefinedProps` returning `undefined`.
+    // It is a pure helper that always returns an object, so `undefined` is not a stand-in for
+    // anything the real one can do — it is a state the handler cannot reach in production, and a test
+    // that manufactures it only proves things about a function that does not exist. Default it to
+    // pass-through here; the tests that care what it returned still override it.
+    ;(objectUtils.removeUndefinedProps as jest.Mock).mockImplementation((o) => o)
   })
 
   afterEach(() => {

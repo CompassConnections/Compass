@@ -865,21 +865,39 @@ function ShareCTA() {
     ? `${DEPLOYED_WEB_URL}/?referrer=${user.username}`
     : DEPLOYED_WEB_URL
 
+  // A fragment, not a wrapper. The closing block already lays this row out — `flex-wrap items-center
+  // gap-x-5` — so returning the two controls as siblings puts the link beside the button on a wide
+  // screen and wraps it underneath on a narrow one, which a nested column of its own could not do
+  // without restating the parent's rules.
   return (
-    <ShareCTAButton
-      url={shareUrl}
-      shareTitle={t('about.share.title', 'Compass — Find your people')}
-      // Two paragraphs, and long for a share sheet, deliberately: this is the referral message a person
-      // sends their friends, so it carries the same three beats as the ShareStrip below — what Compass
-      // is, how it works, and why bringing someone is in the sharer's own interest, not a favour. The
-      // closing line is mutual on purpose: the receiver reads it, but the sender has to feel it too.
-      shareText={t(
-        'about.share.text',
-        "Hi! Reaching out about something I care about: Compass, a free directory for finding your people — fully searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm.\n\nIt gets better with every person who joins. Even if a friend isn't who you're looking for, they bring their world with them — their circles, the thoughtful people you'd never have met otherwise. So whether you join or simply pass it along, you're widening the circle for both of us.",
+    <>
+      <ShareCTAButton
+        url={shareUrl}
+        shareTitle={t('about.share.title', 'Compass — Find your people')}
+        // Two paragraphs, and long for a share sheet, deliberately: this is the referral message a person
+        // sends their friends, so it carries the same three beats as the ShareStrip below — what Compass
+        // is, how it works, and why bringing someone is in the sharer's own interest, not a favour. The
+        // closing line is mutual on purpose: the receiver reads it, but the sender has to feel it too.
+        shareText={t(
+          'about.share.text',
+          "Hi! Reaching out about something I care about: Compass, a free directory for finding your people — fully searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm.\n\nIt gets better with every person who joins. Even if a friend isn't who you're looking for, they bring their world with them — their circles, the thoughtful people you'd never have met otherwise. So whether you join or simply pass it along, you're widening the circle for both of us.",
+        )}
+        label={t('about.share.button_cta', 'Share Compass')}
+        copiedLabel={t('about.share.copied', 'Link copied!')}
+      />
+
+      {/* The return path. Everything above argues that sharing is in the reader's own interest; for a
+          member who has already done it, the proof of that argument is a page they may not know
+          exists. Signed-in only — there is nothing to show someone with no constellation yet. */}
+      {user && (
+        <Link
+          href="/constellation"
+          className="text-primary-500 hover:text-primary-400 text-sm underline underline-offset-4"
+        >
+          {t('about.share.see_yours', 'See who you’ve already brought')}
+        </Link>
       )}
-      label={t('about.share.button_cta', 'Share Compass')}
-      copiedLabel={t('about.share.copied', 'Link copied!')}
-    />
+    </>
   )
 }
 

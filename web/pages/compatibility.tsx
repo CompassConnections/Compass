@@ -27,12 +27,15 @@ import {
   useCompatibilityQuestionsWithAnswerCount,
   useUserCompatibilityAnswers,
 } from 'web/hooks/use-questions'
+import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {QuestionWithAnswer} from 'web/lib/supabase/questions'
 
 export default function CompatibilityPage() {
   const user = useUser()
+  // Signed out goes to sign-in (and comes back here afterwards), same as `/settings`.
+  useRedirectIfSignedOut()
   const isMobile = useIsMobile()
   const sep = isMobile ? '\n' : ''
   const [searchTerm, setSearchTerm] = useState('')
@@ -204,14 +207,10 @@ export default function CompatibilityPage() {
           />
         </Col>
       ) : (
-        <div className="flex h-full flex-col items-center justify-center">
-          <div className="text-xl">
-            {t(
-              'compatibility.sign_in_prompt',
-              'Please sign in to view your compatibility questions',
-            )}
-          </div>
-        </div>
+        // Either auth is still resolving or the redirect to sign-in is on its way out.
+        <Col className="items-center">
+          <CompassLoadingIndicator />
+        </Col>
       )}
     </PageBase>
   )

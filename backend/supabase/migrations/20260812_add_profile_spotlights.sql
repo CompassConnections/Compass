@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS profile_spotlights
     country       TEXT CHECK (country IS NULL OR char_length(country) <= 120),
     photo_url     TEXT,
     headline      TEXT CHECK (headline IS NULL OR char_length(headline) <= 500),
-/
+
     -- The editorial part, and the reason a human is in this loop at all: the passage from the member's
     -- own writing that an admin judged worth putting on the front page. Prefilled from the bio, then
     -- trimmed by hand — a good pull quote is almost never the first N characters of anything.

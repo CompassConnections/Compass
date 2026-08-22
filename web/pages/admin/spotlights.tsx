@@ -166,12 +166,7 @@ function CandidateRow({
           <div className="truncate font-semibold">
             {c.name}
             {c.age ? `, ${c.age}` : ''}{' '}
-            <a
-              className="text-primary-600 text-sm font-normal underline"
-              href={`/${c.username}`}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a className="text-primary-600 text-sm font-normal underline" href={`/${c.username}`}>
               @{c.username}
             </a>
           </div>

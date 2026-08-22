@@ -24,3 +24,7 @@ public/fonts/
 
 # Capture manifests, written beside the (gitignored) profile screenshots.
 public/profile*/manifest.json
+
+# Store screenshot working files — raw app captures and the intermediate HTML the
+# renderer writes next to them. Outputs live in out/, which is already ignored.
+public/store/

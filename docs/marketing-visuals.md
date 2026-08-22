@@ -783,3 +783,95 @@ Scripts that mutate backend state are run by the human:
 ./scripts/dev_db_seed.sh          # remote dev DB
 ./scripts/seed.sh                 # local supabase stack
 ```
+
+## Store listing screenshots (S1) — done
+
+Eight frames for Google Play and the App Store, plus the Play feature graphic. Same rule as everything else
+on this page — **captured, not mocked**: every phone screen is a real Playwright shot of the running app,
+and the surround is composited on afterwards.
+
+```bash
+cd media-creator
+npm run capture:store:login   # ONCE — headed, sign in, close the window
+npm run capture:store         # light-theme screens -> public/store/raw/light/
+npm run capture:store:dark    # dark-theme screens  -> public/store/raw/dark/
+npm run render:store          # -> out/store/{play,ios}/ + play/feature-graphic.png
+```
+
+Needs `yarn dev` up and `SHOWCASE=1 ./scripts/dev_db_seed.sh` applied.
+
+### Canvases
+
+| Target               | Size      | Notes                                                       |
+| -------------------- | --------- | ----------------------------------------------------------- |
+| Google Play phone    | 1080×1920 | 9:16; the listing takes 2–8, each side 320–3840px           |
+| App Store            | 1290×2796 | 6.9" iPhone, the one size Apple still requires; up to 10    |
+| Play feature graphic | 1024×500  | landscape, cropped and overlaid by Google in several places |
+
+One design across both. **Type is sized off the canvas width and layout off its height** — the only split
+that survives two aspect ratios this far apart (0.56 vs 0.46). Sizing everything off height blows the App
+Store headline up relative to its narrower column; sizing off width leaves the Play device nowhere to go.
+
+The header is **measured, not budgeted**. Headlines run two to five words and wrap differently at each
+width, so any fixed fraction of the canvas either clips the brand row off the longest or strands the
+shortest over a gap. The page lays the type out, `render-store.mjs` reads the height back, fits the device
+into the remainder, then stretches the header to whatever the width cap left over and re-centres the type
+inside it. The device bleeds 10% off the bottom edge — applied as a negative margin against a
+bottom-aligned stage, not baked into the height, so the crop is guaranteed even when the cap bites.
+
+### Things that bit
+
+- **The dark frames need dark captures.** A light screenshot inside an espresso surround is a white slab in
+  the middle of the composition and the single most obvious tell that the artwork was assembled. Hence
+  `--theme`, and `raw/<theme>/` — each frame in `FRAMES` names a theme and reads its screen from the
+  matching directory.
+- **The bezel has to be lighter on dark frames.** The near-black rail that reads as a device against cream
+  vanishes against espresso: the screen looks like a hole cut in the background rather than a phone in
+  front of it.
+- **No per-frame vertical crop.** The capture and the screen cutout share one aspect ratio, so any zoom
+  that trims the top trims the sides by the same factor — on the composer shot it ate the first letter of
+  every line. Cropping vertically alone would mean a shorter device for that one frame, and a stubby phone
+  in the middle of the set is a worse artefact than the sliver of dimmed backdrop above a modal sheet,
+  which is what the app actually looks like there.
+- **The watermark is drawn from `favicon.svg`'s outline path, not from `icons/icon-512x512.png`.** That PNG
+  has an opaque cream ground; at 5% over the gradient it is not a faint compass, it is a faint _square_
+  with a compass in it. It also has to be big enough to read as a compass — an early pass cropped it to a
+  corner sliver, which at that opacity was a smudge, and a smudge is worse than a clean gradient.
+- **Fonts and the icon go in as data URIs.** The page is opened over `file://`, where Chromium treats every
+  local file as its own opaque origin — a woff2 from a sibling directory is a cross-origin font request and
+  is refused _silently_, leaving the headline in a system serif close enough to Newsreader to ship.
+- **Consent is a cookie, not a click.** `analytics-consent` (`web/lib/consent.ts`) is set on the context, so
+  the banner never renders, on either origin. Clicking "No thanks" works but has to happen on every route
+  that mounts it and each click is a frame's worth of race. `denied`, because counting these runs as
+  feature usage would put noise in the numbers /stats publishes.
+
+### `/stats` comes from production
+
+Every other screen is a _layout_, and the dev DB is a fine stand-in for one. `/stats` is a set of published
+figures, and against dev those figures are wrong: 38 members, a gender split dominated by faker rows, ten
+countries with one member each. Shipping that would put invented numbers about a real community on a public
+store listing. The page needs no session, so this one shot points at `https://www.compassmeet.com`
+(`--stats-base` overrides). It renders a skeleton first, so the capture waits on a figure that only exists
+once the data lands rather than on a duration.
+
+### Showcase profiles only
+
+The dev DB holds the ten hand-authored personas _and_ a tail of faker accounts with lorem-ipsum bios and no
+photo. `assertShowcaseOnly` reads the names actually on screen after each list shot and fails the run
+against `SHOWCASE_NAMES` — the ordering is not trusted, because "newest first" is one sort change away from
+putting a default avatar in a store listing.
+
+### Two frames that needed the app to be in a particular state
+
+- **Filters.** The sheet opens with all nine sections collapsed, which is a screenshot of a table of
+  contents: it names the categories and shows not one actual filter, beside a caption claiming twenty of
+  them. The capture expands _Values & Beliefs_ and then the _Politics_ leaf under it, which is where the
+  selectable values live. Values & Beliefs specifically — the sheet is an accordion, so a second expansion
+  just closes the first, and Lifestyle puts Tobacco, Psychedelics and Cannabis at display size in a store
+  listing, which is a review conversation nobody needs to have over a filter category.
+- **Saved searches.** On an account that has never saved one, the Saved Searches modal is an empty state
+  telling you to press a button that is not on screen. Saving a real one first would leave a live
+  daily-email subscription behind on someone's account as a side effect of taking a picture. The capture
+  instead searches a term nobody has (`--empty-query`, default `astrophotography`) and shoots the
+  no-results state, which carries the same feature — the chips saying what was searched for, the CTA, the
+  promise under it — and is the honest moment for it besides. Nobody saves a search that already works.

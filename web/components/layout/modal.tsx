@@ -2,6 +2,7 @@ import {Dialog, Transition} from '@headlessui/react'
 import {XMarkIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {Fragment, ReactNode, useEffect, useRef} from 'react'
+import {useOutsideDismiss} from 'web/hooks/use-outside-dismiss'
 
 export const MODAL_CLASS =
   'items-center gap-4 rounded-xl bg-canvas-50 sm:px-8 px-4 pt-6 pb-2 text-ink-1000 h-[calc(100dvh-var(--hloss)-120px)] sm:h-[calc(95dvh-var(--hloss)-120px)] '
@@ -33,6 +34,8 @@ export function Modal(props: {
   }[position]
 
   const wasOpenRef = useRef(open)
+
+  const {panelRef, overlayProps} = useOutsideDismiss(setOpen && (() => setOpen(false)))
 
   useEffect(() => {
     if (wasOpenRef.current && !open && onClose) {
@@ -77,7 +80,7 @@ export function Modal(props: {
           leaveFrom="opacity-100 sm:scale-100"
           leaveTo="opacity-0 sm:scale-95"
         >
-          <div className="fixed inset-0 overflow-y-auto pt-20 sm:p-0">
+          <div className="fixed inset-0 overflow-y-auto pt-20 sm:p-0" {...overlayProps}>
             <div className={clsx('flex min-h-full items-end justify-center', positionClass)}>
               <div
                 className={clsx(
@@ -91,7 +94,7 @@ export function Modal(props: {
                 <div className="sr-only" tabIndex={0}>
                   focus trap
                 </div>
-                <Dialog.Panel>{children}</Dialog.Panel>
+                <Dialog.Panel ref={panelRef}>{children}</Dialog.Panel>
                 {setOpen && (
                   <button
                     onClick={() => setOpen(false)}

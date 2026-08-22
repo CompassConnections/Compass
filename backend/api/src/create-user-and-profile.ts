@@ -125,9 +125,18 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
 
     const profileData = removeUndefinedProps(profile)
 
+    // Resolve `?referrer=` to a member once, here, inside the same transaction that creates them.
+    // The raw name is kept as-is; the id is what the referral tree is walked over, and an id has to
+    // be pinned at signup to be worth anything — resolving it later reads a username that may since
+    // have moved to someone else, or to nobody. A name matching no member stays an honest NULL.
+    const referredByUserId = profileData.referred_by_username
+      ? ((await getReferrer(profileData.referred_by_username, tx))?.id ?? null)
+      : null
+
     const newProfileRow = await insert(tx, 'profiles', {
       user_id: auth.uid,
       ...profileData,
+      referred_by_user_id: referredByUserId,
     })
 
     const profileId = newProfileRow.id

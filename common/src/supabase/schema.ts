@@ -8,6 +8,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_posts: {
+        Row: {
+          author_id: string | null
+          content: Json
+          content_text: string
+          cover_image_url: string | null
+          created_time: string
+          excerpt: string | null
+          id: number
+          notified_time: string | null
+          published_time: string | null
+          slug: string
+          status: string
+          title: string
+          updated_time: string
+        }
+        Insert: {
+          author_id?: string | null
+          content?: Json
+          content_text?: string
+          cover_image_url?: string | null
+          created_time?: string
+          excerpt?: string | null
+          id?: never
+          notified_time?: string | null
+          published_time?: string | null
+          slug: string
+          status?: string
+          title: string
+          updated_time?: string
+        }
+        Update: {
+          author_id?: string | null
+          content?: Json
+          content_text?: string
+          cover_image_url?: string | null
+          created_time?: string
+          excerpt?: string | null
+          id?: never
+          notified_time?: string | null
+          published_time?: string | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'blog_posts_author_id_fkey'
+            columns: ['author_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       bookmarked_searches: {
         Row: {
           created_time: string
@@ -1156,6 +1212,87 @@ export type Database = {
           },
         ]
       }
+      profile_spotlights: {
+        Row: {
+          admin_id: string | null
+          admin_note: string | null
+          age: number | null
+          captured_time: string
+          city: string | null
+          country: string | null
+          created_time: string
+          featured_rank: number | null
+          headline: string | null
+          id: number
+          name: string
+          photo_url: string | null
+          quote: string
+          quote_context: string | null
+          status: string
+          tags: string[]
+          updated_time: string
+          user_id: string | null
+          username: string | null
+        }
+        Insert: {
+          admin_id?: string | null
+          admin_note?: string | null
+          age?: number | null
+          captured_time?: string
+          city?: string | null
+          country?: string | null
+          created_time?: string
+          featured_rank?: number | null
+          headline?: string | null
+          id?: never
+          name: string
+          photo_url?: string | null
+          quote: string
+          quote_context?: string | null
+          status?: string
+          tags?: string[]
+          updated_time?: string
+          user_id?: string | null
+          username?: string | null
+        }
+        Update: {
+          admin_id?: string | null
+          admin_note?: string | null
+          age?: number | null
+          captured_time?: string
+          city?: string | null
+          country?: string | null
+          created_time?: string
+          featured_rank?: number | null
+          headline?: string | null
+          id?: never
+          name?: string
+          photo_url?: string | null
+          quote?: string
+          quote_context?: string | null
+          status?: string
+          tags?: string[]
+          updated_time?: string
+          user_id?: string | null
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'profile_spotlights_admin_id_fkey'
+            columns: ['admin_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'profile_spotlights_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       profile_stars: {
         Row: {
           created_time: string
@@ -1240,6 +1377,7 @@ export type Database = {
           bio_length: number | null
           bio_text: string | null
           bio_tsv: unknown
+          birth_date: string | null
           born_in_location: string | null
           cannabis: string | null
           cannabis_intention: string[] | null
@@ -1299,6 +1437,7 @@ export type Database = {
           raised_in_lon: number | null
           raised_in_radius: number | null
           raised_in_region_code: string | null
+          referred_by_user_id: string | null
           referred_by_username: string | null
           region_code: string | null
           relationship_status: string[] | null
@@ -1328,6 +1467,7 @@ export type Database = {
           bio_length?: number | null
           bio_text?: string | null
           bio_tsv?: unknown
+          birth_date?: string | null
           born_in_location?: string | null
           cannabis?: string | null
           cannabis_intention?: string[] | null
@@ -1387,6 +1527,7 @@ export type Database = {
           raised_in_lon?: number | null
           raised_in_radius?: number | null
           raised_in_region_code?: string | null
+          referred_by_user_id?: string | null
           referred_by_username?: string | null
           region_code?: string | null
           relationship_status?: string[] | null
@@ -1416,6 +1557,7 @@ export type Database = {
           bio_length?: number | null
           bio_text?: string | null
           bio_tsv?: unknown
+          birth_date?: string | null
           born_in_location?: string | null
           cannabis?: string | null
           cannabis_intention?: string[] | null
@@ -1475,6 +1617,7 @@ export type Database = {
           raised_in_lon?: number | null
           raised_in_radius?: number | null
           raised_in_region_code?: string | null
+          referred_by_user_id?: string | null
           referred_by_username?: string | null
           region_code?: string | null
           relationship_status?: string[] | null
@@ -1491,6 +1634,13 @@ export type Database = {
           wants_kids_strength?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: 'profiles_referred_by_user_id_fkey'
+            columns: ['referred_by_user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'profiles_user_id_fkey'
             columns: ['user_id']
@@ -1924,7 +2074,7 @@ export type Database = {
           id?: never
           reply_to_comment_id?: number | null
           stance?: string | null
-          user_avatar_url?: string
+          user_avatar_url?: string | null
           user_id?: string
           user_name?: string
           user_username?: string
@@ -2179,6 +2329,7 @@ export type Database = {
           bio_length: number | null
           bio_text: string | null
           bio_tsv: unknown
+          birth_date: string | null
           born_in_location: string | null
           cannabis: string | null
           cannabis_intention: string[] | null
@@ -2238,6 +2389,7 @@ export type Database = {
           raised_in_lon: number | null
           raised_in_radius: number | null
           raised_in_region_code: string | null
+          referred_by_user_id: string | null
           referred_by_username: string | null
           region_code: string | null
           relationship_status: string[] | null
@@ -2246,6 +2398,8 @@ export type Database = {
           religious_beliefs: string | null
           search_text: string | null
           search_tsv: unknown
+          social_media_consent: boolean
+          spotlight_consent: boolean
           university: string | null
           user_id: string
           visibility: Database['public']['Enums']['lover_visibility']
@@ -2311,11 +2465,13 @@ export type Database = {
         Returns: string
       }
       millis_to_ts: {Args: {millis: number}; Returns: string}
+      profile_age: {Args: {birth_date: string}; Returns: number}
       random_alphanumeric: {Args: {length: number}; Returns: string}
       rebuild_profile_search: {
         Args: {profile_id_param: number}
         Returns: undefined
       }
+      refresh_profile_ages: {Args: never; Returns: number}
       show_limit: {Args: never; Returns: number}
       show_trgm: {Args: {'': string}; Returns: string[]}
       to_jsonb: {Args: {'': Json}; Returns: Json}

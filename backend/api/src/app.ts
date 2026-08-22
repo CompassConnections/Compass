@@ -81,6 +81,7 @@ import {getCurrentPrivateUser} from './get-current-private-user'
 import {getEvents} from './get-events'
 import {getLikesAndShips} from './get-likes-and-ships'
 import {getMe} from './get-me'
+import {getMyReferralCount} from './get-my-referral-count'
 import {getMyReferrals} from './get-my-referrals'
 import {getNotifications} from './get-notifications'
 import {getOutreachQueue} from './get-outreach-queue'
@@ -88,6 +89,7 @@ import {getOutreachStats} from './get-outreach-stats'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfileFeed} from './get-profile-feed'
 import {getProfiles} from './get-profiles'
+import {getReferralTreeHandler} from './get-referral-tree'
 import {getSearchAlert} from './get-search-alert'
 import {getSpotlights} from './get-spotlights'
 import {getSpotlightsAdmin} from './get-spotlights-admin'
@@ -662,6 +664,8 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-outreach-queue': getOutreachQueue,
   'get-outreach-stats': getOutreachStats,
   'get-my-referrals': getMyReferrals,
+  'get-my-referral-count': getMyReferralCount,
+  'get-referral-tree': getReferralTreeHandler,
   'update-outreach-contact': updateOutreachContact,
   'create-outreach-search': createOutreachSearch,
   'get-search-alert': getSearchAlert,

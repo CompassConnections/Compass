@@ -48,6 +48,7 @@ import {
   SPOTLIGHT_STATUSES,
   SpotlightCandidate,
 } from 'common/profiles/spotlights'
+import {ReferralCount, ReferralTree} from 'common/referrals'
 import {RepoStats, Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
@@ -1525,6 +1526,29 @@ export const API = (_apiTypeCheck = {
       }[]
     },
     summary: 'The members who joined from your referral link.',
+    tag: 'Users',
+  },
+  'get-my-referral-count': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({}).strict(),
+    returns: {} as ReferralCount,
+    // Private and short. The sidebar badge asks for this on every page, and the in-memory cache only
+    // stops the *flicker* — it still re-fetches on each navigation. Sixty seconds of browser cache
+    // makes moving around the site cost nothing, and is short enough that a count which changed
+    // while you were reading catches up on its own.
+    cache: 'private, max-age=60',
+    summary: 'How many people are on Compass because of you.',
+    tag: 'Users',
+  },
+  'get-referral-tree': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({}).strict(),
+    returns: {} as ReferralTree,
+    summary: 'Everyone who is on Compass because of you, recursively.',
     tag: 'Users',
   },
   'update-outreach-contact': {

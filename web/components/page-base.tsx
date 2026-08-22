@@ -13,6 +13,7 @@ import {
   HomeIcon as SolidHomeIcon,
   LinkIcon,
   QuestionMarkCircleIcon as SolidQuestionIcon,
+  SparklesIcon,
   UserCircleIcon,
   UsersIcon,
 } from '@heroicons/react/24/solid'
@@ -29,6 +30,7 @@ import {MdThumbUp} from 'react-icons/md'
 import {Col} from 'web/components/layout/col'
 import {PrivateMessagesIcon} from 'web/components/messaging/messages-icon'
 import {BottomNavBar} from 'web/components/nav/bottom-nav-bar'
+import {InviteNavLabel} from 'web/components/nav/invite-nav-label'
 import {SkipLink} from 'web/components/skip-link'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {useOnline} from 'web/hooks/use-online'
@@ -231,6 +233,22 @@ const MessagesIconComponent = (props: any) => <PrivateMessagesIcon solid {...pro
 // the one kind of evidence we cannot write ourselves. Add it back here when unhiding it above.
 const base = [About, faq, Blog, Vote, Events, News, Social, Organization, Contact]
 
+/**
+ * The one nav entry that exists to be *noticed* rather than navigated to.
+ *
+ * Sits with the personal items above the reference links, because it is about this member and not
+ * about the site. Points at `/referrals` rather than `/constellation`: the link is a standing
+ * invitation to do something, and the page it opens should be the one with the thing to do on it —
+ * the constellation is one click further, behind its own much louder button.
+ */
+const Invite = {
+  key: 'nav.invite',
+  name: 'Invite',
+  href: '/referrals',
+  icon: SparklesIcon,
+  children: <InviteNavLabel />,
+}
+
 function getBottomNavigation(user: User, profile: Profile | null | undefined) {
   return buildArray(
     Profiles,
@@ -263,6 +281,7 @@ const getDesktopNavigation = (user: User | null | undefined) => {
         href: '/messages',
         icon: MessagesIconComponent,
       },
+      Invite,
       Settings,
       ...base,
       isAdminId(user.id) && Admin,
@@ -272,7 +291,7 @@ const getDesktopNavigation = (user: User | null | undefined) => {
 }
 
 const getMobileSidebar = (user: User | null | undefined, _toggleModal: () => void) => {
-  if (user) return buildArray(Settings, ...base, isAdminId(user.id) && Admin)
+  if (user) return buildArray(Invite, Settings, ...base, isAdminId(user.id) && Admin)
 
   return buildArray(...base)
 }

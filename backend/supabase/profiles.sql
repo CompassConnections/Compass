@@ -60,6 +60,10 @@ CREATE TABLE IF NOT EXISTS profiles
     raised_in_radius          INTEGER,
     raised_in_region_code     TEXT,
     referred_by_username      TEXT,
+    -- Resolved from referred_by_username once at signup; NULL when the name matched no member.
+    -- This is the column the referral tree is walked over — an id survives a rename, a username
+    -- does not, and a rename mid-tree would otherwise sever every descendant below it.
+    referred_by_user_id       TEXT,
     region_code               TEXT,
     relationship_status       TEXT[],
     religion                  TEXT[],
@@ -79,6 +83,14 @@ ALTER TABLE profiles
             REFERENCES users (id)
             ON DELETE CASCADE;
 
+-- SET NULL, not CASCADE: deleting a member must not delete the people they brought. The
+-- introduction still happened; only the pointer back to someone no longer here is lost.
+ALTER TABLE profiles
+    ADD CONSTRAINT profiles_referred_by_user_id_fkey
+        FOREIGN KEY (referred_by_user_id)
+            REFERENCES users (id)
+            ON DELETE SET NULL;
+
 -- Row Level Security
 ALTER TABLE profiles
     ENABLE ROW LEVEL SECURITY;
@@ -87,6 +99,12 @@ ALTER TABLE profiles
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS profiles_user_id_idx ON public.profiles USING btree (user_id);
+
+-- Partial, and on the referrer rather than the referee: the only question asked of this column is
+-- "who did X bring?", asked once per generation by the recursive walk behind /referrals.
+CREATE INDEX IF NOT EXISTS idx_profiles_referred_by_user_id
+    ON profiles (referred_by_user_id)
+    WHERE referred_by_user_id IS NOT NULL;
 
 CREATE UNIQUE INDEX IF NOT EXISTS unique_user_id ON public.profiles USING btree (user_id);
 

@@ -33,7 +33,8 @@ const BASE_URL = 'https://www.compassmeet.com'
  * Every page we want crawled and indexed, as a route.
  *
  * Add a new public page here when you add one. Anything behind sign-in (`/settings`,
- * `/notifications`, `/messages`, `/onboarding`, `/profile`, `/referrals`), anything transient
+ * `/notifications`, `/messages`, `/onboarding`, `/profile`, `/referrals`, `/constellation`),
+ * anything transient
  * (`/loading`, `/404`), internal tooling (`/admin`, already `Disallow`ed in robots.txt) and the
  * auth flow itself (`/signin`, `/signup`, `/register`) are all deliberately absent — a sitemap is a
  * statement that a URL is worth indexing, not an inventory of what exists.

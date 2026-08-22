@@ -91,10 +91,11 @@ export default function ReferralsPage() {
             />
           </div>
 
-          {/* The QR is for handing your phone to someone standing in front of you. Kept small and
-              captioned: at the 200px it used to be, it outweighed everything else on the page. */}
+          {/* The QR is for handing your phone to someone standing in front of you. Kept modest and
+              captioned: at the 200px it used to be, it outweighed everything else on the page — but it
+              still has to be comfortably scannable from across a table. */}
           <Row className="mt-7 items-center gap-4">
-            <QRCode url={url} width={104} height={104} className="rounded-lg" />
+            <QRCode url={url} width={144} height={144} className="rounded-lg" />
             <span className="text-ink-500 max-w-[14rem] text-sm">
               {t(
                 'referrals.qr_caption',

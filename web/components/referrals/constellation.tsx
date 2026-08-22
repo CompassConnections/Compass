@@ -161,7 +161,11 @@ export function ReferralConstellation(props: {
   const svgRef = useRef<SVGSVGElement | null>(null)
   const skyRef = useRef<HTMLDivElement | null>(null)
   const pointers = useRef(new Map<number, {x: number; y: number}>())
-  const pinch = useRef<{dist: number; scale: number} | null>(null)
+  // A pinch is remembered as the gesture's *starting* state plus the point of the drawing that was
+  // under the midpoint of the two fingers when it began. Holding that point still under the moving
+  // midpoint is what makes a pinch zoom where the fingers are — and, as a free consequence, lets two
+  // fingers pan by sliding, the same way the wheel keeps whatever is under the cursor under it.
+  const pinch = useRef<{dist: number; scale: number; px: number; py: number} | null>(null)
   const pressOrigin = useRef<{x: number; y: number; moved: boolean} | null>(null)
 
   // The viewBox is matched to the container's own proportions rather than fixed square. Two reasons,
@@ -305,13 +309,24 @@ export function ReferralConstellation(props: {
 
     if (pts.length >= 2) {
       const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y)
-      if (!pinch.current) pinch.current = {dist, scale: view.scale}
-      else {
-        const ratio = dist / (pinch.current.dist || 1)
-        setView((v) => ({
-          ...v,
-          scale: Math.min(MAX_SCALE, Math.max(MIN_SCALE, (pinch.current?.scale ?? 1) * ratio)),
-        }))
+      const mid = toLocal((pts[0].x + pts[1].x) / 2, (pts[0].y + pts[1].y) / 2)
+      // Two fingers down is never a tap, however little they moved.
+      if (pressOrigin.current) pressOrigin.current.moved = true
+      if (!pinch.current) {
+        // The midpoint carried back through the current transform: which bit of the drawing the
+        // fingers are holding on to.
+        pinch.current = {
+          dist,
+          scale: view.scale,
+          px: (mid.x - view.tx) / view.scale,
+          py: (mid.y - view.ty) / view.scale,
+        }
+      } else {
+        const start = pinch.current
+        const ratio = dist / (start.dist || 1)
+        const scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, start.scale * ratio))
+        // Put that same bit of the drawing back under wherever the fingers are now.
+        setView({scale, tx: mid.x - start.px * scale, ty: mid.y - start.py * scale})
       }
       return
     }

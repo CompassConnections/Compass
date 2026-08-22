@@ -9,6 +9,7 @@ import * as Sentry from '@sentry/node'
 import clsx from 'clsx'
 import {OG_DESCRIPTION} from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
+import {getExternalRedirect} from 'common/external-redirects'
 import {IS_VERCEL, OG_CARD} from 'common/hosting/constants'
 import {debug} from 'common/logger'
 import {isUrl} from 'common/parsing'
@@ -227,7 +228,19 @@ function MyApp(props: AppProps<PageProps>) {
     const handleAppLink = (payload: any) => {
       debug('handleAppLink', payload)
       const {endpoint} = payload
-      if (endpoint && endpoint !== window.location.pathname) {
+      if (!endpoint) return
+      // `/discord`, `/paypal` and friends are redirects to other sites, served by next.config.ts —
+      // which the app never runs, being a static export. Android hands us the path anyway (an email
+      // link to compassmeet.com/discord opens the app, not the browser), and routing it in-app would
+      // land on the [username] catch-all and look up a profile called "discord". Send it out of the
+      // WebView instead: Capacitor turns a navigation off our origin into a system-browser intent.
+      const externalUrl = getExternalRedirect(endpoint)
+      if (externalUrl) {
+        debug('handleAppLink: external redirect', externalUrl)
+        window.location.href = externalUrl
+        return
+      }
+      if (endpoint !== window.location.pathname) {
         router.push(endpoint)
       }
     }

@@ -1,13 +1,13 @@
 import {ShareIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {ENV_CONFIG} from 'common/envs/constants'
-import {ColorType} from 'web/components/buttons/button'
+import {getLinkedInShareProfileUrl, getXShareProfileUrl} from 'common/socials'
 import {
-  CopyLinkOrShareButton,
   ShareProfileOnLinkedinButton,
   ShareProfileOnXButton,
 } from 'web/components/buttons/copy-link-button'
 import {Row} from 'web/components/layout/row'
+import {SharePanel} from 'web/components/widgets/share-panel'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 
@@ -25,24 +25,24 @@ export const useProfileShareUrl = (username: string) => {
 export const ShareProfileButton = (props: {
   username: string
   className?: string
-  color?: ColorType
+  /** Set false where X/LinkedIn already have their own buttons alongside, so the panel doesn't repeat them. */
+  showSocials?: boolean
 }) => {
-  const {username, className, color} = props
+  const {username, className, showSocials = true} = props
   const t = useT()
   const shareUrl = useProfileShareUrl(username)
 
   return (
-    <CopyLinkOrShareButton
-      className={clsx(
+    <SharePanel
+      triggerClassName={clsx(
         className,
-        'border-canvas-300 flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm text-ink-500 transition-colors hover:border-primary-400 hover:bg-primary-50',
+        'border-canvas-300 text-ink-500 hover:border-primary-400 hover:bg-primary-50 flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors',
       )}
       url={shareUrl}
+      xShareUrl={showSocials ? getXShareProfileUrl(t, username, shareUrl) : undefined}
+      linkedinUrl={showSocials ? getLinkedInShareProfileUrl(t, username, shareUrl) : undefined}
       eventTrackingName="shareprofile"
-      color={color}
-      size="sm"
-      icon={ShareIcon}
-      iconClassName={'hidden sm:inline'}
+      trackingProps={{username}}
       // Same three-beat framing as the /about "Share Compass" message, trimmed to one line for a
       // single-profile share: what Compass is, and why this profile is worth a look.
       shareData={{
@@ -53,8 +53,9 @@ export const ShareProfileButton = (props: {
         ),
       }}
     >
+      <ShareIcon strokeWidth={'2.5'} className="hidden h-[1.1rem] sm:inline" aria-hidden="true" />
       <div className="text-sm">{t('button.share.label', 'Share')}</div>
-    </CopyLinkOrShareButton>
+    </SharePanel>
   )
 }
 
@@ -70,7 +71,7 @@ export const ShareProfileButtons = (props: {
     <Row className={clsx('gap-4', className)}>
       <ShareProfileOnXButton username={username} className={buttonClassName} />
       <ShareProfileOnLinkedinButton username={username} className={buttonClassName} />
-      <ShareProfileButton username={username} color={'gray-outline'} className={buttonClassName} />
+      <ShareProfileButton username={username} showSocials={false} className={buttonClassName} />
     </Row>
   )
 }

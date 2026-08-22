@@ -1,7 +1,7 @@
 import {CheckIcon, ClipboardIcon, DocumentDuplicateIcon} from '@heroicons/react/24/outline'
 import {LinkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
-import {getXShareProfileUrl} from 'common/socials'
+import {getLinkedInShareProfileUrl, getXShareProfileUrl} from 'common/socials'
 import {ComponentProps, ComponentType, SVGProps, useState} from 'react'
 import toast from 'react-hot-toast'
 import {Button, ColorType, IconButton, SizeType} from 'web/components/buttons/button'
@@ -100,8 +100,10 @@ export const CopyLinkRow = (props: {
   eventTrackingName: string
   linkBoxClassName?: string
   linkButtonClassName?: string
+  /** Fired after a successful copy — for tracking, or for closing whatever surface holds this row. */
+  onCopied?: () => void
 }) => {
-  const {url, linkBoxClassName, linkButtonClassName} = props
+  const {url, linkBoxClassName, linkButtonClassName, onCopied} = props
 
   // "copied" success state animations
   const [bgPressed, setBgPressed] = useState(false)
@@ -117,6 +119,7 @@ export const CopyLinkRow = (props: {
     setTimeout(() => setIconPressed(false), 1000)
     copyToClipboard(url)
     toast.success(t('copy_link_button.link_copied', 'Link copied!'))
+    onCopied?.()
   }
 
   // remove any http:// prefix
@@ -193,11 +196,9 @@ export const share = async (url: string) => {
 export const shareOnX = (shareUrl: string) => {
   window.open(shareUrl, '_blank', 'noopener,noreferrer')
 }
-export const shareOnLinkedIn = (profileUrl: string) => {
-  const encodedUrl = encodeURIComponent(profileUrl)
-
-  const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`
-
+// Takes a finished intent URL, same as shareOnX — building it lives in common/socials next to the
+// copy it carries, so the message and the endpoint that can actually carry it stay together.
+export const shareOnLinkedIn = (shareUrl: string) => {
   window.open(shareUrl, '_blank', 'noopener,noreferrer')
 }
 
@@ -219,7 +220,7 @@ export const ShareProfileOnLinkedinButton = (props: {username: string; className
   return (
     <Button
       className={className}
-      onClick={() => shareOnLinkedIn(`https://compassmeet.com/${username}`)}
+      onClick={() => shareOnLinkedIn(getLinkedInShareProfileUrl(t, username))}
     >
       {t('share_profile.on_linkedin', 'Share on LinkedIn')}
     </Button>

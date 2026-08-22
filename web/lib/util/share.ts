@@ -38,3 +38,16 @@ export async function nativeShare(data: {title?: string; text?: string; url: str
     return false
   }
 }
+
+/**
+ * Whether an OS share sheet is reachable at all — i.e. whether `nativeShare` has any chance of
+ * returning `true`.
+ *
+ * Only safe to call on the client: `navigator` is absent during SSR, and the Capacitor bridge is only
+ * wired up once the WebView has booted. Use `useCanNativeShare` from a component rather than branching
+ * render output on this directly, or the server and the first client render will disagree.
+ */
+export function canNativeShare() {
+  if (isAndroidApp()) return true
+  return typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+}

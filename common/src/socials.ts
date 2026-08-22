@@ -153,17 +153,55 @@ export const PLATFORM_LABELS: {[key in Site]: string} = {
   connectiondoc: 'Connection Doc',
 }
 
-export function getXShareProfileUrl(
-  t: (key: string, fallback: string, vars?: Record<string, string | number>) => string,
-  username?: string,
-) {
-  const encodedText = encodeURIComponent(
-    t(
-      'share_profile.x_share_profile',
-      "There's a free, open-source alternative to dating and networking apps.\nNo swipes. No ads. No algorithms. Just search for people who share your values.",
-    ) + '\n@compassmeet',
+type Translate = (key: string, fallback: string, vars?: Record<string, string | number>) => string
+
+/**
+ * The blurb a *public post* about a profile carries, on X or LinkedIn.
+ *
+ * Deliberately a near-verbatim echo of the OS share sheet's copy in `ShareProfileButton` — same three
+ * beats, what Compass is and why this profile is worth a look — with only the framing changed: the
+ * sheet is addressed to one person you picked ("thought you might want to see this"), a post is
+ * addressed to a timeline. Keeping one string for both networks is what stops them drifting apart
+ * again, which is how X ended up pitching "open-source alternative to dating apps" while the share
+ * sheet pitched a searchable directory.
+ */
+export function getShareProfilePostText(t: Translate) {
+  return t(
+    'share_profile.post.text',
+    'A profile worth seeing on Compass — a free directory for finding your people, searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm.',
   )
-  const encodedUrl = encodeURIComponent(`${DEPLOYED_WEB_URL}/${username || ''}`)
+}
+
+export function getXShareProfileUrl(
+  t: Translate,
+  username?: string,
+  /** Overrides the bare profile URL — pass the referrer-tagged link so an X share is credited too. */
+  url?: string,
+) {
+  // X counts every link as 23 characters regardless of length, so the blurb plus the handle plus the
+  // link sits around 210 of the 280 — room left for whatever the sharer types in front of it.
+  const encodedText = encodeURIComponent(getShareProfilePostText(t) + '\n\n@compassmeet')
+  const encodedUrl = encodeURIComponent(url ?? `${DEPLOYED_WEB_URL}/${username || ''}`)
 
   return `https://x.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`
+}
+
+/**
+ * LinkedIn's post composer, pre-filled with the same blurb X gets.
+ *
+ * Goes through `/feed/?shareActive=true` rather than the older `/sharing/share-offsite/?url=`: that
+ * endpoint takes a URL and nothing else — it silently drops any text you hand it (the `title` and
+ * `summary` params it used to honour were removed years ago), which is why a LinkedIn share had no
+ * message at all while the OS sheet and X both had one.
+ */
+export function getLinkedInShareProfileUrl(
+  t: Translate,
+  username?: string,
+  /** Overrides the bare profile URL — pass the referrer-tagged link so the share is credited. */
+  url?: string,
+) {
+  const encodedText = encodeURIComponent(getShareProfilePostText(t))
+  const encodedUrl = encodeURIComponent(url ?? `${DEPLOYED_WEB_URL}/${username || ''}`)
+
+  return `https://www.linkedin.com/feed/?shareActive=true&text=${encodedText}&shareUrl=${encodedUrl}`
 }

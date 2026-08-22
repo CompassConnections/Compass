@@ -10,7 +10,7 @@ platonic, romantic, or collaborative.
 **[Open the app](https://compassmeet.com)** · [About](https://www.compassmeet.com/about) ·
 [FAQ](https://www.compassmeet.com/faq) · [Chat with us on Discord](https://discord.gg/8Vd7jzqjun)
 
-[![Users](https://img.shields.io/badge/Users-700%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
+[![Users](https://img.shields.io/badge/Users-800%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
 
 [![Demo](https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/demo.png)](https://youtu.be/KxMK0tkhrts)
 
@@ -25,7 +25,8 @@ decides who you are allowed to meet, and the app earns more when you keep scroll
 
 Compass works the other way around. You write a genuinely detailed profile — what you believe, what you are curious
 about, how you spend your time, what you are looking for. Then you _search_, the way you would search a library
-catalog. Every profile is visible to everyone, so finding the handful of people you would truly click with is a matter of
+catalog. Every profile is visible to everyone, so finding the handful of people you would truly click with is a matter
+of
 asking the right question, not waiting to be served.
 
 ## How it works
@@ -125,9 +126,9 @@ contributors.
 - [ ] Add profile fields: timezone
 - [ ] Add translations: Italian, Dutch, Hindi, Chinese, etc.
 - [x] Add filters to search through remaining profile fields (politics, religion, education level, etc.)
-- [ ] Make the app more user-friendly and appealing (UI/UX)
-- [ ] Clean up terms and conditions (convert to Markdown)
-- [ ] Clean up privacy notice (convert to Markdown)
+- [x] Make the app more user-friendly and appealing (UI/UX)
+- [x] Clean up terms and conditions (convert to Markdown)
+- [x] Clean up privacy notice (convert to Markdown)
 - [ ] Add other authentication methods (GitHub, Facebook, Apple, phone, etc.)
 - [x] Add email verification
 - [x] Add password reset

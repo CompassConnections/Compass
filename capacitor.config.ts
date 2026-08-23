@@ -11,6 +11,12 @@ import type {CapacitorConfig} from '@capacitor/cli'
 const WEBVIEW_DEV_PHONE = process.env.NEXT_PUBLIC_WEBVIEW_DEV_PHONE === '1'
 const LOCAL_ANDROID = WEBVIEW_DEV_PHONE || process.env.NEXT_PUBLIC_LOCAL_ANDROID === '1'
 const LOCAL_IOS = process.env.NEXT_PUBLIC_LOCAL_IOS === '1'
+// Makes the WKWebView inspectable from Safari / ios-webkit-debug-proxy in a *Release* build, which is
+// what TestFlight ships. Capacitor only enables this under `#if DEBUG` otherwise, so a TestFlight
+// build exposes no inspectable page at all and the proxy's device listing comes back empty — which
+// looks like a broken proxy rather than a deliberately locked-down WebView. Off by default: leaving
+// it on in a store build would let anyone with the device open a console on the app.
+const IOS_WEB_DEBUG = process.env.IOS_WEB_DEBUG === '1'
 const LAN_IP = process.env.NEXT_PUBLIC_DEV_LAN_IP || '192.168.1.3'
 const LOCAL_URL = WEBVIEW_DEV_PHONE ? LAN_IP : LOCAL_IOS ? 'localhost' : '10.0.2.2'
 console.log('CapacitorConfig', {LOCAL_ANDROID, LOCAL_IOS, WEBVIEW_DEV_PHONE})
@@ -24,6 +30,7 @@ const config: CapacitorConfig = {
     // WKWebView otherwise applies its own safe-area inset on top of the `env(safe-area-inset-*)`
     // padding in web/styles/globals.css, and everything under the notch ends up doubly indented.
     contentInset: 'always',
+    ...(IOS_WEB_DEBUG ? {webContentsDebuggingEnabled: true} : {}),
     // Deliberately NOT overriding `scheme`. The app is served from the default `capacitor://localhost`,
     // which WebKit treats as a secure origin — that is what `getUserMedia` (voice auto-fill) and
     // `crypto.subtle` (the Sign-in-with-Apple nonce) need. Renaming the scheme buys nothing and risks

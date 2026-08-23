@@ -83,6 +83,10 @@ remains is console configuration and the first build, not values to paste into t
 - [x] Review prep that is pure web work (§8): demo account seeded, explicit ToS checkbox at
       `/register`, block/delete pointers in `web/public/md/terms.md` and `web/pages/help.tsx` fixed.
 - [ ] Age rating decision (18+ — see [app-store-listing.md](app-store-listing.md)).
+- [ ] **Set `IOS_WEB_DEBUG` back to `''` in `.github/workflows/cd-ios.yml` before submitting.** It is
+      `'1'` while the WebView layer is being debugged, which makes the shipped WKWebView inspectable —
+      fine for TestFlight, not for a build anyone can install. Nothing fails if it is left on, which is
+      exactly why it needs to be on a checklist.
 
 ### To do — needs the Apple consoles, a Mac, or the phone
 

@@ -14,6 +14,19 @@ on:
   # Lets a failed upload be retried without another version bump.
   workflow_dispatch:
 
+# ⚠️ TEMPORARY — set to '' before the App Store submission (tracked in docs/ios.md §0).
+#
+# TestFlight ships a Release build, where Capacitor leaves `webView.isInspectable` false: the device
+# then advertises no inspectable page, ios-webkit-debug-proxy's listing comes back empty, and there is
+# no way to see the JS console for the build people are actually testing. While the WebView layer is
+# being debugged every build is inspectable.
+#
+# It is a workflow-level constant rather than a `workflow_dispatch` input because the input would only
+# apply to manual runs: a push that bumps CURRENT_PROJECT_VERSION already triggers a build, so a
+# manual run afterwards would reuse that build number and Apple rejects the duplicate on upload.
+env:
+  IOS_WEB_DEBUG: '1'
+
 jobs:
   check-version:
     runs-on: ubuntu-latest
@@ -77,6 +90,7 @@ jobs:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
           MEDIA_SOURCE_BASE_URL: ${{ vars.MEDIA_SOURCE_BASE_URL }}
+          IOS_WEB_DEBUG: ${{ env.IOS_WEB_DEBUG }}
         run: yarn build-sync-ios
 
       - name: Write Firebase config

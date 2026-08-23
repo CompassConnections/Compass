@@ -8,7 +8,7 @@ cd "$(dirname "$0")"/..
 # NEXT_PUBLIC_LOCAL_IOS=1     → iOS Simulator, which reaches the host on plain localhost
 # NEXT_PUBLIC_WEBVIEW_DEV_PHONE=1 → a real iPhone over the LAN (see NEXT_PUBLIC_DEV_LAN_IP)
 # Set only the iOS one — capacitor.config.ts has a single server.url shared by both platforms.
-export $(grep -E '^NEXT_PUBLIC_(LOCAL_IOS|WEBVIEW_DEV_PHONE|DEV_LAN_IP)=' .env || true)
+export $(grep -E '^(NEXT_PUBLIC_(LOCAL_IOS|WEBVIEW_DEV_PHONE|DEV_LAN_IP)|IOS_WEB_DEBUG)=' .env || true)
 
 npx cap sync ios
 

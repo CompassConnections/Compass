@@ -206,6 +206,23 @@ ios_webkit_debug_proxy -f chrome-devtools://devtools/bundled/inspector.html
 # open http://localhost:9221 and attach DevTools to the WKWebView
 ```
 
+**A TestFlight build is not inspectable by default.** Capacitor sets `webView.isInspectable` only
+under `#if DEBUG`, and TestFlight ships Release — so the device advertises no inspectable page and the
+proxy's listing (`http://localhost:9222`) comes back empty, which reads as a broken proxy rather than a
+locked-down WebView. If you then run JS in that empty listing page's console you are talking to the
+proxy's own HTTP server, and every `fetch` 404s.
+
+`cd-ios.yml` currently sets `IOS_WEB_DEBUG: '1'` at the workflow level, so **every** build is
+inspectable; `capacitor.config.ts` turns that into `ios.webContentsDebuggingEnabled`. Locally, put
+`IOS_WEB_DEBUG=1` in the repo-root `.env` before `yarn sync-ios`.
+
+It is a constant rather than a `workflow_dispatch` input on purpose: a push that bumps
+`CURRENT_PROJECT_VERSION` already triggers a build, so a manual run afterwards would reuse that build
+number and Apple rejects the duplicate on upload. One build per number, one setting for both paths.
+
+**Set it back to `''` before submitting** — it lets anyone holding the device open a console on the
+app, and nothing fails if it is left on. Tracked in [`../docs/ios.md`](../docs/ios.md) §0.
+
 **`ios-webkit-debug-proxy` is not in the Ubuntu archive** (`E: Unable to locate package`) — it has to be
 built from source. The build tools are the usual ones; the two libraries are not installed by default:
 

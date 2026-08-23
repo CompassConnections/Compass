@@ -32,6 +32,12 @@ export function DeleteAccountSurveyModal() {
   const [testimonialOptedOut, setTestimonialOptedOut] = useState(false)
   const t = useT()
 
+  /**
+   * Deliberately short. A leaving screen is not a research survey: fourteen options made the page a
+   * wall of text at the exact moment someone has already decided, and the long tail of them
+   * (privacy, bugs, "prefer simpler apps", ...) each drew a handful of clicks that the mandatory
+   * details box captures better as prose. Six buckets, each one distinguishable at a glance.
+   */
   const reasonsMap: Record<string, string> = {
     found_connection_on_compass: t(
       'delete_survey.reasons.found_connection_on_compass',
@@ -53,46 +59,9 @@ export function DeleteAccountSurveyModal() {
       'Conversations didn’t turn into real connections',
     ),
 
-    low_response_rate: t(
-      'delete_survey.reasons.low_response_rate',
-      'Messages often went unanswered',
-    ),
-
-    platform_not_active_enough: t(
-      'delete_survey.reasons.platform_not_active_enough',
-      'The community didn’t feel active enough',
-    ),
-
-    not_meeting_depth_expectations: t(
-      'delete_survey.reasons.not_meeting_depth_expectations',
-      'Interactions felt more surface-level than expected',
-    ),
-
-    too_much_time_or_effort: t(
-      'delete_survey.reasons.too_much_time_or_effort',
-      'Using the platform required more time or effort than I can give',
-    ),
-
-    prefer_simpler_apps: t(
-      'delete_survey.reasons.prefer_simpler_apps',
-      'I prefer simpler or faster apps',
-    ),
-
-    privacy_concerns: t(
-      'delete_survey.reasons.privacy_concerns',
-      'Concerns about privacy or profile visibility',
-    ),
-
-    technical_issues: t('delete_survey.reasons.technical_issues', 'Technical issues or bugs'),
-
     taking_a_break: t(
       'delete_survey.reasons.taking_a_break',
       'I’m taking a break from meeting apps',
-    ),
-
-    life_circumstances_changed: t(
-      'delete_survey.reasons.life_circumstances_changed',
-      'My life circumstances changed',
     ),
 
     other: t('delete_survey.reasons.other', 'Other'),

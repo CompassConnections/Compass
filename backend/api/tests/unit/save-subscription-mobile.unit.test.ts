@@ -35,6 +35,27 @@ describe('saveSubscriptionMobile', () => {
         [mockBody.token, 'android', mockAuth.uid],
       )
     })
+
+    // The platform used to be hardcoded to 'android', so an iPhone's token was filed as Android.
+    // Push still worked — both platforms go through FCM — but every per-platform query was wrong.
+    it('records the platform the client reports', async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      ;(mockPg.none as jest.Mock).mockResolvedValue(null)
+
+      await saveSubscriptionMobile({token: 'iosToken', platform: 'ios'}, mockAuth, {} as any)
+
+      expect(mockPg.none).toBeCalledWith(expect.anything(), ['iosToken', 'ios', mockAuth.uid])
+    })
+
+    // Android builds shipped before iOS existed send only a token.
+    it('defaults to android when the client does not say, for builds that predate the field', async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      ;(mockPg.none as jest.Mock).mockResolvedValue(null)
+
+      await saveSubscriptionMobile({token: 'oldToken'}, mockAuth, {} as any)
+
+      expect(mockPg.none).toBeCalledWith(expect.anything(), ['oldToken', 'android', mockAuth.uid])
+    })
   })
   describe('when an error occurs', () => {
     it('should throw if token is invalid', async () => {

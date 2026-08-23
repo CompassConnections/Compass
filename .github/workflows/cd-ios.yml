@@ -108,7 +108,7 @@ jobs:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '120'
-        run: bundle exec fastlane beta
+        run: echo skip # bundle exec fastlane beta
 
       - name: Upload dSYMs
         # Needed to symbolicate crash reports pulled off a device from Linux with

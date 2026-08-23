@@ -12,7 +12,7 @@ import {SEO} from 'web/components/SEO'
 import {Input} from 'web/components/widgets/input'
 import {QRCode} from 'web/components/widgets/qr-code'
 import {Reveal} from 'web/components/widgets/reveal'
-import {ShareCTAButton} from 'web/components/widgets/share-cta-button'
+import {ShareCompassButton} from 'web/components/widgets/share-compass-button'
 import {eyebrow} from 'web/components/widgets/surface'
 import {UserAvatarAndBadge} from 'web/components/widgets/user-link'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
@@ -75,15 +75,8 @@ export default function ReferralsPage() {
             />
             {/* Same share control and copy as the /about closing block — only the URL differs, carrying
                 this user's ?referrer= tag so the share is credited to them. */}
-            <ShareCTAButton
+            <ShareCompassButton
               url={url}
-              shareTitle={t('about.share.title', 'Compass — Find your people')}
-              shareText={t(
-                'about.share.text',
-                "Hi! Reaching out about something I care about: Compass, a free directory for finding your people — fully searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm.\n\nIt gets better with every person who joins. Even if a friend isn't who you're looking for, they bring their world with them — their circles, the thoughtful people you'd never have met otherwise. So whether you join or simply pass it along, you're widening the circle for both of us.",
-              )}
-              label={t('about.share.button_cta', 'Share Compass')}
-              copiedLabel={t('about.share.copied', 'Link copied!')}
               // `self-start`: the row stacks on mobile, and a flex column stretches its children
               // to full width by default — which turned the share button into a full-bleed bar wider
               // than the heading above it. It should be the size of its own label.

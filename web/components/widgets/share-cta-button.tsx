@@ -5,6 +5,18 @@ import {copyToClipboard} from 'web/lib/util/copy'
 import {nativeShare} from 'web/lib/util/share'
 
 /**
+ * The filled amber CTA look, shared with `ShareCompassButton` — which wears it on a Headless UI
+ * `PopoverButton` rather than a bare `<button>`, so the two must read as the same control without being
+ * the same element.
+ */
+export const SHARE_CTA_BUTTON_CLASS = clsx(
+  'inline-flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold',
+  'transition-all duration-200 ease-out',
+  'bg-cta text-white border-cta hover:bg-cta-hover',
+  'shadow-[0_6px_20px_-6px_rgba(193,127,62,0.6)]',
+)
+
+/**
  * Primary-CTA share button, shared between the /about closing block and anywhere else a share action
  * should read as the loudest thing on screen rather than a secondary icon button.
  *
@@ -36,17 +48,7 @@ export function ShareCTAButton(props: {
   }
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={clsx(
-        'inline-flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold',
-        'transition-all duration-200 ease-out',
-        'bg-cta text-white border-cta hover:bg-cta-hover',
-        'shadow-[0_6px_20px_-6px_rgba(193,127,62,0.6)]',
-        className,
-      )}
-    >
+    <button type="button" onClick={onClick} className={clsx(SHARE_CTA_BUTTON_CLASS, className)}>
       {copied ? (
         <CheckIcon className="h-[1.05rem] w-[1.05rem]" strokeWidth={2.5} aria-hidden="true" />
       ) : (

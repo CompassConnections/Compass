@@ -48,7 +48,7 @@ import {
   useHasTestimonials,
 } from 'web/components/testimonials/testimonials-teaser'
 import {Reveal} from 'web/components/widgets/reveal'
-import {ShareCTAButton} from 'web/components/widgets/share-cta-button'
+import {ShareCompassButton} from 'web/components/widgets/share-compass-button'
 import {DistRow, labelFor} from 'web/components/widgets/stat-distribution'
 import {eyebrow, Section, surface} from 'web/components/widgets/surface'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
@@ -849,8 +849,8 @@ function ShareBenefit({icon: Icon, title, text}: {icon: IconType; title: string;
  * The share control on the closing block.
  *
  * Universal, not mobile-only: the block's whole argument is that sharing is easy and in the reader's
- * interest, so a desktop with no button would undercut it. Uses the shared `ShareCTAButton` (mobile share
- * sheet, desktop copy-and-confirm fallback).
+ * interest, so a desktop with no button would undercut it. Uses the shared `ShareCompassButton`, whose
+ * panel offers the bare link, the ready-made message, and the OS sheet or the two networks.
  *
  * When the sharer is signed in the link carries their `?referrer=` tag, the same attribution the
  * /referrals page and users.ts already speak — so the shares this block is arguing for actually get
@@ -871,20 +871,7 @@ function ShareCTA() {
   // without restating the parent's rules.
   return (
     <>
-      <ShareCTAButton
-        url={shareUrl}
-        shareTitle={t('about.share.title', 'Compass — Find your people')}
-        // Two paragraphs, and long for a share sheet, deliberately: this is the referral message a person
-        // sends their friends, so it carries the same three beats as the ShareStrip below — what Compass
-        // is, how it works, and why bringing someone is in the sharer's own interest, not a favour. The
-        // closing line is mutual on purpose: the receiver reads it, but the sender has to feel it too.
-        shareText={t(
-          'about.share.text',
-          "Hi! Reaching out about something I care about: Compass, a free directory for finding your people — fully searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm.\n\nIt gets better with every person who joins. Even if a friend isn't who you're looking for, they bring their world with them — their circles, the thoughtful people you'd never have met otherwise. So whether you join or simply pass it along, you're widening the circle for both of us.",
-        )}
-        label={t('about.share.button_cta', 'Share Compass')}
-        copiedLabel={t('about.share.copied', 'Link copied!')}
-      />
+      <ShareCompassButton url={shareUrl} />
 
       {/* The return path. Everything above argues that sharing is in the reader's own interest; for a
           member who has already done it, the proof of that argument is a page they may not know

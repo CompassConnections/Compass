@@ -18,6 +18,15 @@ is in the [root CLAUDE.md](../CLAUDE.md).
 
 ## Things that are easy to get wrong
 
+- **The root view controller is `NextExportViewController`, not `CAPBridgeViewController`.** It exists
+  solely to install `NextExportRouter`. Capacitor's stock router maps every extension-less path to
+  `index.html`, so a hard navigation to `/someone` or `/blog/a-post` silently served the home page
+  while `next/link` navigation worked — which looks like a crash, not a routing bug. Our export emits
+  `[username].html`, `blog/[slug].html`, `vote/[id].html`, `alerts/[id].html` and
+  `messages/[channelId].html`, and the router resolves onto those. Android is unaffected: its
+  `WebViewLocalServer` already resolves `.html` itself. If you add a dynamic route, no change is
+  needed — the router finds the bracketed file by scanning the directory.
+
 - **`packageClassList` must be in `App/App/capacitor.config.json`**, and `npx cap sync ios` does not
   put it there. `CapacitorBridge.registerPlugins()` decodes that file into a struct whose
   `packageClassList` is non-optional, so an absent key makes the decode throw, the bridge registers

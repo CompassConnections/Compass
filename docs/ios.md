@@ -132,10 +132,6 @@ Neither blocks TestFlight, both should land before a public release:
 - [ ] **Filter blocked users' existing comments.** `blockedUserIdSet` (`web/hooks/use-user.ts`) exists
       and is unused; the thread builders in `profile-comments.tsx` and `vote-comments.tsx` still render
       them. This is the last place the block toast's promise is not kept — see §8.4.
-- [ ] **Account linking for `auth/account-exists-with-different-credential`.** Someone who signed up
-      with Google and later taps Sign in with Apple on the same address gets a raw Firebase error;
-      nothing calls `linkWithCredential`. Separately, anyone choosing Apple's **Hide My Email** gets a
-      relay address and therefore a silent duplicate account, which no linking flow can detect.
 - [ ] **No workflow invokes the `symbolicate` lane.** `Fastfile:105` says to run it on the CI runner,
       but `cd-ios.yml`'s `workflow_dispatch` runs `beta`. The dSYMs are archived (`cd-ios.yml:113`);
       there is just no way to reach a Mac to use them.

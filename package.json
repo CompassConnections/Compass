@@ -95,6 +95,7 @@
     "react-is": "^19.0.0",
     "zod": "^3.25"
   },
+  "dependencies": {},
   "devDependencies": {
     "@eslint/js": "^9.39.0",
     "@faker-js/faker": "10.1.0",

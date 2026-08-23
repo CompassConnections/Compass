@@ -23,6 +23,8 @@ test.describe('delete account', () => {
     // Cannot sign in programmatically with Google
     const deleteAccount = testAccounts.faker_account()
     await app.home.goToRegisterPage()
+    // The consent checkbox gates the social buttons too, not just the email form.
+    await app.auth.acceptTerms()
     await app.auth.signInToGoogleAccount(
       deleteAccount.email,
       deleteAccount.display_name,

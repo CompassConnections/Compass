@@ -241,6 +241,7 @@ function RegisterComponent() {
                 <input
                   type="checkbox"
                   name="terms"
+                  data-testid="register-terms"
                   checked={agreedToTerms}
                   onChange={(e) => {
                     setAgreedToTerms(e.target.checked)

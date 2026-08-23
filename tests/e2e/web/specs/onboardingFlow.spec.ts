@@ -220,6 +220,8 @@ test.describe('when given valid input', () => {
   }) => {
     test.skip(headless, 'Google popup auth test requires headed mode')
     await app.home.goToRegisterPage()
+    // The consent checkbox gates the social buttons too, not just the email form.
+    await app.auth.acceptTerms()
     await app.auth.signInToGoogleAccount(
       googleAccountOne.email,
       googleAccountOne.display_name,

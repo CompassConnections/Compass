@@ -78,6 +78,7 @@ export class App {
     await this.home.goToRegisterPage()
     await this.auth.fillEmailField(account.email)
     await this.auth.fillPasswordField(account.password)
+    await this.auth.acceptTerms()
     await this.auth.clickSignUpWithEmailButton()
   }
 

@@ -9,10 +9,10 @@ import {BiRepost} from 'react-icons/bi'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useEvent} from 'web/hooks/use-event'
 import {useUser} from 'web/hooks/use-user'
-import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
+import {promptSignIn} from 'web/lib/util/signup'
 
 import {linkifyUrls} from '../editor/autolink'
 import {Row} from '../layout/row'
@@ -62,7 +62,7 @@ export function CommentInput(props: {
     setIsSubmitting(true)
     if (!user) {
       track('sign in to comment')
-      await firebaseLogin()
+      await promptSignIn()
       setIsSubmitting(false)
       return
     }

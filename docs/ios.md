@@ -1,7 +1,7 @@
 # Implementing the iOS app
 
-Implementation notes for shipping Compass on iOS. Nothing here is built yet — this is the plan, written
-against what the Android app ([`android/README.md`](../android/README.md),
+Implementation notes for shipping Compass on iOS, written against what the Android app ([
+`android/README.md`](../android/README.md),
 [`android/CLAUDE.md`](../android/CLAUDE.md)) already does, so the work is framed as "what carries over"
 vs. "what has no iOS equivalent yet".
 
@@ -10,32 +10,226 @@ React Native, no second UI codebase. `web/` stays the single source of the produ
 
 ---
 
+## 0. Status
+
+Everything that is code — the web-side platform branching, the backend payload, the Xcode project, the
+release pipeline — is written and in the repo, and the whole Linux-side setup is done. The Apple
+Developer Program membership is **active** (team `HFZVH8XR59`), so the console work is unblocked. What
+is left is that console work, one Mac session, and the on-device checklist.
+
+Operational detail for all of it is in [`../ios/README.md`](../ios/README.md).
+
+### Done (in the repo)
+
+- [x] `isAndroidApp()` → `isNativeApp()`, with `isIosApp()` / `isAndroidApp()` / `nativePlatform()`
+      for the places that genuinely diverge (`web/lib/util/webview.ts`).
+- [x] `android-push.ts` → `web/lib/service/native-push.ts`, `AndroidPush` → `NativePush`.
+- [x] Notification taps moved onto the cross-platform `pushNotificationActionPerformed` listener.
+- [x] Deep links moved onto `@capacitor/app`'s `appUrlOpen` + `getLaunchUrl()` (`web/pages/_app.tsx`).
+      The Android `AndroidBridge` path is still there alongside it — see §4.1 for why it stays.
+- [x] `apns` block in `sendPushToToken` (`backend/shared/src/mobile.ts`), with `apns-collapse-id`
+      mirroring Android's `collapseKey`.
+- [x] Data export on iOS: `web/lib/util/download.ts` writes to Documents and opens the share sheet
+      (`@capacitor/filesystem` + `@capacitor/share`) instead of the Android bridge.
+- [x] `npx cap add ios` — `ios/App/…` scaffolded, `@capacitor/ios` added to `web/package.json`.
+- [x] `capacitor.config.ts`: `ios.contentInset`, and a dev-server URL that resolves per platform.
+- [x] `Info.plist`: microphone/camera/photo usage strings, `NSAllowsLocalNetworking`,
+      `remote-notification` background mode, Google URL scheme, `ITSAppUsesNonExemptEncryption`.
+- [x] `App.entitlements`: `aps-environment`, `applinks:` for both hosts, Sign in with Apple.
+- [x] `AppDelegate.swift`: Firebase init + the APNs→FCM token bridge (see §6 — this is required, not
+      optional, and the earlier draft of this doc was wrong to imply otherwise).
+- [x] `FirebaseMessaging` pod; iOS deployment target raised to 14.0 (what Capacitor 7 requires).
+- [x] Sign in with Apple end to end on the web side: `appleNativeLogin()` in
+      `web/lib/firebase/users.ts`, `AppleButton`, wired into `/signin` and `/register`, gated on
+      `isIosApp()`. Handles the nonce and the name-only-on-first-authorization quirk.
+- [x] `web/public/.well-known/apple-app-site-association` + a `headers()` rule in `web/next.config.ts`
+      serving it as `application/json`.
+- [x] `yarn build-sync-ios` / `yarn sync-ios`, mirroring the Android scripts — verified end to end on
+      Linux (`pod install` and `xcodebuild` no-op, everything else runs).
+- [x] fastlane (`ios/fastlane/`) and [`.github/workflows/cd-ios.yml`](../.github/workflows/cd-ios.yml),
+      triggered by a `CURRENT_PROJECT_VERSION` bump exactly as Android's is by `versionCode`.
+- [x] Google iOS OAuth client created; `IOS_GOOGLE_CLIENT_ID` (`common/src/constants.ts`) and its
+      reversed twin in `Info.plist` both filled in.
+- [x] Firebase iOS app registered; `GoogleService-Info.plist` in `ios/App/App/` (gitignored).
+- [x] Capawesome live updates removed outright — the plugin was being synced into the iOS shell, and a
+      remote-bundle mechanism is an extra thing to justify under App Review for a feature we disabled in
+      early 2026. See [`../android/README.md`](../android/README.md#live-updates-removed).
+- [x] App Store screenshots rendered at 1290×2796 (`media-creator/out/store/ios/`, eight frames);
+      `MARKETING_VERSION` in step with Android's `versionName`.
+- [x] Apple Developer Program membership active — team id `HFZVH8XR59`, filled into
+      `web/public/.well-known/apple-app-site-association` (both `appIDs` and `webcredentials`) and into
+      the repo-root `.env` for local fastlane runs.
+- [x] Sign in with Apple in the browser: `appleWebLogin()` / `appleLogin()` in
+      `web/lib/firebase/users.ts`, both entry points routed through the dispatcher (§5.3).
+- [x] The six inline "sign in to continue" prompts (comment boxes, message buttons) now call
+      `promptSignIn()` → `/signin?redirect=…` instead of `firebaseLogin()`, which was Google-only on
+      every platform and would have stranded Apple-only accounts.
+
+### Placeholders
+
+None left. `IOS_GOOGLE_CLIENT_ID`, `APPLE_TEAM_ID` (`HFZVH8XR59`) and `APPLE_SERVICES_ID`
+(`com.compassconnections.web`) are all filled in, and `GoogleService-Info.plist` is in place. What
+remains is console configuration and the first build, not values to paste into the repo.
+
+### To do — no Apple account needed
+
+- [ ] `match` certificate repo: empty private GitHub repo, a passphrase, and a fine-grained PAT →
+      `MATCH_GIT_URL`, `MATCH_PASSWORD`, `MATCH_GIT_BASIC_AUTHORIZATION` ([`../ios/README.md`](../ios/README.md) §4).
+- [x] `IOS_GOOGLE_SERVICES_PLIST` secret from the local `GoogleService-Info.plist`.
+- [x] Device toolchain on the Linux box — `libimobiledevice-utils`, `ideviceinstaller`, and
+      `ios-webkit-debug-proxy` built from source ([`../ios/README.md`](../ios/README.md) §5).
+- [x] Review prep that is pure web work (§8): demo account seeded, explicit ToS checkbox at
+      `/register`, block/delete pointers in `web/public/md/terms.md` and `web/pages/help.tsx` fixed.
+- [ ] Age rating decision (18+ — see [app-store-listing.md](app-store-listing.md)).
+
+### To do — needs the Apple consoles, a Mac, or the phone
+
+- [ ] Register the App ID `com.compassconnections.app` with Push Notifications, Associated Domains and
+      Sign in with Apple enabled, and create the app record in App Store Connect.
+- [ ] Firebase console → upload the APNs `.p8` auth key with Team ID and Key ID.
+- [ ] Apple portal → create the Services ID `com.compassconnections.web` and configure it against
+      Firebase's `__/auth/handler` (§5.3), then paste it into Firebase. The repo side is already done —
+      `APPLE_SERVICES_ID` is set, so the browser Apple button goes live with the next deploy and will
+      dead-end until Firebase agrees.
+- [ ] Firebase console → Authentication → enable the Apple provider and fill the OAuth code flow
+      configuration (Team ID, Key ID, Sign in with Apple `.p8`) — §5.2, needed for §8.3's revocation.
+- [x] Revoke the Apple refresh token from the client before calling `me/delete` (§8.3). The console
+      half (OAuth code flow config) must still be done **before anyone signs in with Apple**, since
+      Firebase can only revoke a token it captured.
+- [ ] Set the eight GitHub secrets ([`../ios/README.md`](../ios/README.md) §4), then seed the
+      certificate repo by running the **`iOS Certificates (one-off)`** workflow from the Actions tab.
+      It runs the `certs` lane on a `macos-15` runner. Creating certificates needs macOS — on Linux
+      `match` dies installing the profile _after_ Apple has issued the certificate, stranding it in a
+      slot with a lost private key (README §4 has the detail). Verify the certs repo has commits on
+      `master` afterwards.
+- [ ] First build: run `cd-ios.yml` from the Actions tab. `workflow_dispatch` skips the version gate
+      (`cd-ios.yml:47`), so the first build needs no `CURRENT_PROJECT_VERSION` bump — it stays at 1,
+      with `MARKETING_VERSION` 1.42.0 matching the App Store Connect version record. Expect a failure
+      or two on provisioning specifics; retrying costs no version bump.
+- [ ] Work through [On-device verification](#on-device-verification-first-testflight-build) below.
+      Internal TestFlight needs no Beta App Review, so builds are installable minutes after processing.
+- [x] App Store Connect app record and listing metadata — everything but the build.
+- [ ] Once live: put the real App Store id in `IOS_APP_URL` (`common/src/constants.ts`) and add the
+      App Store row next to "Get it on Google Play" in `web/components/nav/sidebar.tsx`.
+
+Everything left is a web console or a GitHub Actions run. **The EC2 Mac day described in §2.1 is no
+longer on the critical path**: certificate seeding moved to the `iOS Certificates (one-off)` workflow,
+the archive is `cd-ios.yml`, and the App ID capability toggles are portal pages rather than Xcode. Rent
+a Mac only if something needs interactive Xcode debugging.
+
+### Still open in the codebase
+
+Neither blocks TestFlight, both should land before a public release:
+
+- [ ] **Filter blocked users' existing comments.** `blockedUserIdSet` (`web/hooks/use-user.ts`) exists
+      and is unused; the thread builders in `profile-comments.tsx` and `vote-comments.tsx` still render
+      them. This is the last place the block toast's promise is not kept — see §8.4.
+- [ ] **Account linking for `auth/account-exists-with-different-credential`.** Someone who signed up
+      with Google and later taps Sign in with Apple on the same address gets a raw Firebase error;
+      nothing calls `linkWithCredential`. Separately, anyone choosing Apple's **Hide My Email** gets a
+      relay address and therefore a silent duplicate account, which no linking flow can detect.
+- [ ] **No workflow invokes the `symbolicate` lane.** `Fastfile:105` says to run it on the CI runner,
+      but `cd-ios.yml`'s `workflow_dispatch` runs `beta`. The dSYMs are archived (`cd-ios.yml:113`);
+      there is just no way to reach a Mac to use them.
+
+### On-device verification (first TestFlight build)
+
+The Simulator cannot do most of this — no APNs token, no real Universal Link handling — so it waits for
+hardware. With the phone on USB, `idevicesyslog | grep -i compass` gives the native side and
+`ios_webkit_debug_proxy` gives the JS console (§5 of the README); between them almost everything below
+is diagnosable from Linux.
+
+**Shell and layout**
+
+- [ ] App launches and renders the bundled build. In airplane mode the shell must still appear — if it
+      does not, it is loading a remote URL, which is both a §8.1 rejection risk and a bug.
+- [ ] Safe areas: nothing under the notch or the home indicator, and nothing _double_-padded.
+      `ios.contentInset: 'always'` plus `env(safe-area-inset-*)` in `globals.css` can compound.
+- [ ] Keyboard show/hide does not leave the composer stranded; status-bar colour follows the theme.
+
+**Push (the one that cannot be faked)**
+
+- [ ] Permission prompt appears, and `save-subscription-mobile` records a token. It must be an **FCM**
+      token, not a raw APNs one — `AppDelegate.swift` does that bridging (§6). A raw APNs token makes
+      every send fail with `messaging/invalid-argument`, and `sendPushToToken` then deletes the
+      subscription, so the symptom is "notifications stopped" rather than an error.
+- [ ] A real push arrives **and displays**. Silent delivery means the `apns` block in
+      `backend/shared/src/mobile.ts` is not being applied.
+- [ ] If nothing ever arrives with no error anywhere, suspect `aps-environment`: a TestFlight build must
+      carry `production`, which the `beta` lane rewrites in place (§7). A `development` value registers
+      against sandbox APNs and fails silently.
+- [ ] Tapping a notification opens the right screen — `pushNotificationActionPerformed`, not the
+      Android bridge.
+
+**Links**
+
+- [ ] Universal Links: tap a `compassmeet.com` link **from Messages or Notes**, not by typing it into
+      Safari's address bar — typed URLs deliberately do not trigger Universal Links, which is the most
+      common false negative here.
+- [ ] Both hosts in `App.entitlements` resolve, and `/api/*` and `/.well-known/*` still open in the
+      browser rather than the app (the `exclude` rules in the AASA file).
+- [ ] iOS caches the AASA aggressively; if a link opens in Safari, reinstall before assuming the file
+      is wrong.
+- [ ] Cold start and warm start both route: `getLaunchUrl()` covers the first, `appUrlOpen` the second.
+
+**Auth**
+
+- [ ] Google sign-in completes and returns to the app — the return leg is the reversed client id URL
+      scheme in `Info.plist`, so a mismatch shows up as "consent succeeded, nothing happened".
+- [ ] Apple sign-in completes (guideline 4.8 depends on it).
+- [ ] Try Apple with an address that already has a Google account. It will fail until the linking item
+      above is built; confirm the failure is at least legible.
+
+**Product surfaces that differ on iOS**
+
+- [ ] Data export writes to Documents and opens the share sheet (`@capacitor/filesystem` +
+      `@capacitor/share`), not the Android bridge.
+- [ ] Voice auto-fill: the microphone prompt appears — a missing usage string kills the app outright
+      rather than erroring — and `getUserMedia` works, which needs the default `capacitor://localhost`
+      origin to stay a secure context.
+- [ ] Native share sheet from a profile.
+- [ ] Blocking: the profile leaves the grid, the existing conversation becomes read-only but stays
+      readable, and the Message button disappears from that profile.
+
+**Review-critical**
+
+- [ ] Account deletion end to end, in-app (guideline 5.1.1(v)). Expect an **extra Apple sheet** during
+      deletion for an Apple-linked account — `revokeAppleToken()` re-authenticates before revoking.
+- [ ] Report and block are both reachable from the ⋮ menu on a profile, and report from inside a
+      conversation.
+- [ ] Sign in as the demo account exactly as a reviewer would, and confirm messaging works — it is
+      gated on `emailVerified` in every shipped build (`dev-flags.ts:16`).
+
+---
+
 ## 1. What already works, unchanged
 
 These are not iOS work items — they're already platform-agnostic and will light up as soon as an iOS
 target exists:
 
-| Piece                                            | Where                                               |
-| ------------------------------------------------ | --------------------------------------------------- |
-| The whole UI                                     | `web/` — same static export as Android              |
-| Static-export build (strips SSR/ISR/SSG)         | `scripts/build_web_view.sh`                         |
-| Native-platform detection                        | `web/lib/util/webview.ts` (`isAndroidApp` — rename) |
-| Safe-area insets (notch / home indicator)        | `web/styles/globals.css` `env(safe-area-inset-*)`   |
-| Status-bar theming                               | `web/hooks/use-theme.ts` (`updateStatusBar`)        |
-| Keyboard show/hide handling                      | `web/pages/_app.tsx` (`@capacitor/keyboard`)        |
-| Native share sheet                               | `web/lib/util/share.ts` (`@capacitor/share`)        |
-| Push registration + token save                   | `web/lib/service/android-push.ts` (rename)          |
-| `save-subscription-mobile` endpoint + FCM tokens | `backend/api/src/save-subscription-mobile.ts`       |
+| Piece                                            | Where                                             |
+| ------------------------------------------------ | ------------------------------------------------- |
+| The whole UI                                     | `web/` — same static export as Android            |
+| Static-export build (strips SSR/ISR/SSG)         | `scripts/build_web_view.sh`                       |
+| Native-platform detection                        | `web/lib/util/webview.ts` (`isNativeApp`)         |
+| Safe-area insets (notch / home indicator)        | `web/styles/globals.css` `env(safe-area-inset-*)` |
+| Status-bar theming                               | `web/hooks/use-theme.ts` (`updateStatusBar`)      |
+| Keyboard show/hide handling                      | `web/pages/_app.tsx` (`@capacitor/keyboard`)      |
+| Native share sheet                               | `web/lib/util/share.ts` (`@capacitor/share`)      |
+| Push registration + token save                   | `web/lib/service/native-push.ts`                  |
+| `save-subscription-mobile` endpoint + FCM tokens | `backend/api/src/save-subscription-mobile.ts`     |
 
 The Capacitor plugins we already depend on (`@capacitor/app`, `keyboard`, `push-notifications`, `share`,
 `status-bar`, `@capgo/capacitor-social-login`) all support iOS. Nothing needs replacing.
 
-### Naming cleanup to do first
+### Naming cleanup (done)
 
-`isAndroidApp()`, `AndroidPush`, `android-push.ts` are all misnomers the moment iOS exists — they already
-mean "native app". Rename to `isNativeApp()` / `NativePush` / `native-push.ts` before adding the platform,
-and use `Capacitor.getPlatform()` (`'ios' | 'android' | 'web'`) wherever behaviour genuinely diverges.
-`isNativeMobile()` in `web/lib/util/webview.ts` is already the right name and can stay.
+`isAndroidApp()`, `AndroidPush`, `android-push.ts` were all misnomers the moment iOS existed — they
+already meant "native app". They are now `isNativeApp()` / `NativePush` / `native-push.ts`.
+`web/lib/util/webview.ts` additionally exports `nativePlatform()` (`'ios' | 'android' | 'web'`) and
+`isIosApp()` / `isAndroidApp()` on top of it, for the handful of places where behaviour genuinely
+diverges — App Store rules, the Android-only `AndroidBridge`, the data export. `isNativeApp()` stays the
+default: the product is meant to look the same on both. `isNativeMobile()` was already right and stays.
 
 ---
 
@@ -66,6 +260,9 @@ no Dynamic Island, no particular chip. Two things about the device do matter:
   (`web/styles/globals.css`, `bottom-nav-bar.tsx`, `filters.tsx`, `search.tsx`, `media-modal.tsx`). A
   device without one gives a bottom inset of `0px` and never surfaces those bugs.
 - **It must run a current iOS**, so the permission dialogs and APNs behaviour match what users see.
+
+**We test on an iPhone 11.** It has a notch and runs a current iOS, which is the whole requirement — the
+recommendation below is what to buy if a second device is ever needed.
 
 **Recommendation: a refurbished iPhone 12 or 13, ~$150–250.** Notch, current iOS, cheap. That's the whole
 requirement.
@@ -112,20 +309,64 @@ and can be picky about iOS/tool version pairings, so budget some setup time.
 **What still needs a real interactive macOS session:**
 
 - First-time Apple Developer setup done through Xcode's UI — Associated Domains (§4.1), Sign in with Apple
-  (§5), push entitlement (§6), `fastlane match init`. All scriptable/hand-editable, but error-prone blind;
+  (§5), push entitlement (§6). All scriptable/hand-editable, but error-prone blind;
   expect to burn CI cycles on provisioning-profile mismatches Xcode would have shown visually.
 - The first App Store Connect submission and its metadata (§7).
 - **Crash symbolication** — turning a `.ips` from `idevicecrashreport` into a readable stack trace needs the
   `.dSYM` and Xcode's `symbolicatecrash`. Do it on the CI runner as a step, or on a rented Mac.
 
-**Getting that macOS time.** AWS EC2 Mac (`mac2.metal`) gives a full GUI machine but bills a **24-hour
-minimum dedicated-host allocation** — wrong shape for a 20-minute Xcode session. A monthly Mac mini rental
-(MacStadium, Scaleway, ~$25–50/mo) is the better fit for occasional interactive use. Recommendation: CI for
-the pipeline, a short rental for the one-time setup and submission, cable + `iwdp` for day-to-day.
+**Getting that macOS time — AWS EC2 Mac.** This is what we use for the one-time setup. Be aware of the
+shape of the bill before starting: EC2 Mac runs on **dedicated hosts with a 24-hour minimum allocation**,
+so the smallest possible session costs a full day (`mac2.metal`, Apple silicon, ~$0.65/hr on-demand ≈ **$16
+for that minimum**), and the host keeps billing until it is _released_, not merely until the instance is
+stopped. Releasing is also rate-limited by the same 24-hour floor. Budget one day, do all of §4.1, §5, §6,
+§7 in it, then release the host.
+
+Setup, from Linux:
+
+```bash
+# 1. Allocate the dedicated host (a region that has mac2 capacity; us-east-1 is safest)
+aws ec2 allocate-hosts --instance-type mac2.metal --availability-zone us-east-1a \
+    --auto-placement host --quantity 1
+
+# 2. Launch onto it. Pick the newest macOS AMI so Xcode is current:
+aws ec2 describe-images --owners amazon \
+    --filters "Name=name,Values=amzn-ec2-macos-15*" \
+    --query 'sort_by(Images,&CreationDate)[-1].[ImageId,Name]' --output text
+
+aws ec2 run-instances --instance-type mac2.metal --image-id <ami> \
+    --placement "HostId=<host-id>" --key-name <your-key> \
+    --block-device-mappings 'DeviceName=/dev/sda1,Ebs={VolumeSize=200}'
+
+# 3. SSH in, then grow the APFS container to the EBS volume — the AMI ships a 100 GB filesystem
+#    on whatever disk you asked for, and Xcode alone needs ~40 GB.
+ssh ec2-user@<ip>
+PDISK=$(diskutil list physical external | head -n1 | cut -d" " -f1)
+APFSCONT=$(diskutil list | grep "Apple_APFS" | tr -s " " | cut -d" " -f8)
+sudo diskutil repairDisk $PDISK
+sudo diskutil apfs resizeContainer $APFSCONT 0
+
+# 4. Xcode + tooling
+sudo softwareupdate --install-rosetta --agree-to-license   # some pods still need it
+xcode-select --install
+# Xcode itself: `xcodes` is far less painful than the App Store on a headless box
+brew install xcodesorg/made/xcodes && xcodes install --latest --experimental-unxip
+sudo xcodebuild -license accept
+sudo gem install cocoapods
+```
+
+For the GUI parts (capability toggles, App Store Connect), enable Screen Sharing and tunnel VNC over
+SSH — `ssh -L 5900:localhost:5900 ec2-user@<ip>` — rather than exposing 5900.
+
+Recommendation: EC2 Mac for the one-time setup and first submission, CI (`macos-15` runner) for every
+build after that, cable + `ios-webkit-debug-proxy` for day-to-day debugging.
 
 ---
 
-## 3. Scaffolding the platform
+## 3. Scaffolding the platform — **done**
+
+Already run; `ios/` is in the repo and `capacitor.config.ts` carries the `ios` block. Kept here as the
+record of what was done and why.
 
 ```bash
 yarn --cwd=web add -D @capacitor/ios
@@ -140,10 +381,15 @@ npx cap open ios         # opens ios/App/App.xcworkspace in Xcode
 
 ```ts
 ios: {
-  contentInset: 'always',        // avoids WKWebView double-insetting under the notch
-  scheme: 'Compass',             // app is served from capacitor://; see §6 on cookies/CORS
-},
+    contentInset: 'always',        // avoids WKWebView double-insetting under the notch
+}
+,
 ```
+
+`scheme` was deliberately **not** overridden. The app is served from the default `capacitor://localhost`,
+which WebKit treats as a secure origin — and two things we ship need that: `getUserMedia` for voice
+auto-fill, and `crypto.subtle` for the Sign-in-with-Apple nonce. Renaming the scheme buys nothing and
+risks both.
 
 The dev-server override (`server: {url: 'http://10.0.2.2:3000', cleartext: true}`) is Android-specific:
 `10.0.2.2` is the Android emulator's alias for the host. The iOS Simulator shares the host's network, so it
@@ -171,14 +417,18 @@ Android stashes the launch `Intent` URL in `pendingDeepLink`, exposes it over a
 `evaluateJavascript("handleAppLink(...)")` from `onNewIntent`. `web/pages/_app.tsx:198-209` consumes both
 paths.
 
-On iOS **don't reimplement the bridge** — `@capacitor/app` already gives you this cross-platform:
+On iOS **don't reimplement the bridge** — `@capacitor/app` already gives you this cross-platform, and
+this is now what `web/pages/_app.tsx` does:
 
 ```ts
 App.addListener('appUrlOpen', ({url}) => handleAppLink({endpoint: new URL(url).pathname}))
 const launch = await App.getLaunchUrl() // replaces getPendingDeepLink()
 ```
 
-Ideally migrate Android onto the same listener afterwards and delete the `AndroidBridge` deep-link half.
+The `AndroidBridge` half is still there alongside it rather than deleted: Android's `MainActivity` also
+pushes _notification_ endpoints in through `handleAppLink` directly, and both paths are harmless together
+because `handleAppLink` no-ops when the endpoint already matches the current path. Deleting it is a
+separate Android change, worth doing once iOS is shipping and the Capacitor path is proven on hardware.
 
 Universal Links (the iOS equivalent of the `autoVerify` intent filter for `compassmeet.com`) need:
 
@@ -189,12 +439,14 @@ Universal Links (the iOS equivalent of the `autoVerify` intent filter for `compa
 
 ### 4.2 `downloadFile` (data export)
 
-`web/components/settings/general-settings.tsx:353` calls `window.AndroidBridge.downloadFile(...)` because
-Android's WebView won't honour a blob download. WKWebView on iOS 14+ _does_ handle
-`<a download>` / blob URLs and hands off to the share sheet. Simplest path: keep the `AndroidBridge`
-branch for Android, and on iOS fall through to `@capacitor/share` or `@capacitor/filesystem`
-(`Directory.Documents` + `Share.share({url})`). Don't write a Swift `WKScriptMessageHandler` unless that
-fails in testing.
+`web/components/settings/general-settings.tsx` called `window.AndroidBridge.downloadFile(...)` because
+Android's WebView won't honour a blob download. The three cases now live behind one helper,
+`downloadTextFile` in `web/lib/util/download.ts`: `AndroidBridge` on Android, `@capacitor/filesystem`
+(`Directory.Documents`) + `Share.share({url})` on iOS, plain blob URL in the browser.
+
+The iOS branch does not rely on WKWebView honouring `<a download>`: Capacitor doesn't wire up
+`WKDownloadDelegate`, and there is no Downloads folder to write to anyway — handing the file to the share
+sheet is how iOS expects a file to leave an app. No Swift `WKScriptMessageHandler` needed.
 
 ### 4.3 In-app update prompt
 
@@ -209,14 +461,17 @@ The `GoogleProvider.REQUEST_AUTHORIZE_GOOGLE_*` handling in `MainActivity` and t
 `ModifiedMainActivityForSocialLoginPlugin` interface are the Android-specific half of
 `@capgo/capacitor-social-login`. On iOS the plugin needs instead:
 
-- an **iOS OAuth client ID** in Google Cloud Console (we currently only have
-  `WEB_GOOGLE_CLIENT_ID` in `common/src/constants.ts:48`; the commented-out `ANDROID_GOOGLE_CLIENT_ID`
-  shows the shape),
-- the reversed client ID registered as a `CFBundleURLSchemes` entry in `Info.plist`,
-- `SocialLogin.initialize({google: {webClientId, iOSClientId}})` in
-  `web/lib/firebase/users.ts:93`.
+- an **iOS OAuth client ID** in Google Cloud Console — `IOS_GOOGLE_CLIENT_ID` in
+  `common/src/constants.ts` is the slot, currently a placeholder,
+- the _reversed_ form of the same id as a `CFBundleURLSchemes` entry in `ios/App/App/Info.plist`, also
+  currently a placeholder. **Both must be filled in together**,
+- `SocialLogin.initialize({google: {webClientId, iOSClientId}})` — done, and `iOSClientId` is omitted
+  while the placeholder is in place so a half-configured build fails at the Google SDK rather than
+  silently signing in wrong.
 
-The rest of `googleNativeLogin()` (exchange `idToken` → `signInWithCredential`) is unchanged.
+The rest of `googleNativeLogin()` (exchange `idToken` → `signInWithCredential`) is unchanged — Firebase
+verifies the token against the _web_ client on both platforms, which is why `webClientId` still has to be
+passed.
 
 ---
 
@@ -227,32 +482,126 @@ login — which we do. This is not optional and is a common first-submission rej
 
 Work involved:
 
-1. Enable the **Sign in with Apple** capability in Xcode and on the App ID.
-2. Enable the Apple provider in Firebase Console → Authentication, register the Services ID and key.
-3. Add an Apple button to the login UI, gated on `Capacitor.getPlatform() === 'ios'`.
-4. `@capgo/capacitor-social-login` supports `provider: 'apple'` — reuse the `googleNativeLogin` shape and
-   `signInWithCredential(auth, OAuthProvider('apple.com').credential({idToken, rawNonce}))`.
+1. Enable the **Sign in with Apple** capability in Xcode and on the App ID. _(The entitlement is in
+   `App.entitlements`; the App ID toggle is still to do.)_
+2. Enable the Apple provider in Firebase Console → Authentication, and fill in **both** halves:
+   - the **Services ID** — see §5.3. An earlier draft of this doc said to leave it blank, on the
+     reasoning that the native flow does not use it. That was right about the native flow and wrong
+     about the product: without it there is no browser flow, and an account created with Apple in the
+     iOS app is locked to that app forever.
+   - the collapsed **OAuth code flow configuration** (Team ID, Key ID, Sign in with Apple `.p8`),
+     without which the token revocation in §8.3 is impossible.
+
+   _(Both to do — they need the membership.)_
+
+3. **Done** — `AppleButton` in `web/components/buttons/sign-up-button.tsx`, wired into `/signin` and
+   `/register`, gated on `canAppleLogin()`. The gate is resolved in an effect rather than during render:
+   the Capacitor bridge doesn't exist on the server or in the first client render, so branching the
+   markup on it directly would be a hydration mismatch.
+4. **Done** — `appleNativeLogin()` in `web/lib/firebase/users.ts`, same shape as `googleNativeLogin`.
+
+   The nonce is the fiddly part. Apple embeds whatever nonce the request carries _verbatim_ into the
+   identity token, and Firebase compares that claim against `SHA256(rawNonce)` — so the request gets the
+   hash and Firebase gets the raw value. `@capgo/capacitor-social-login` passes `options.nonce` straight
+   through to `ASAuthorizationAppleIDRequest.nonce` without hashing, so the hashing is ours to do. If
+   `crypto.subtle` is unavailable (it needs a secure context, which the cleartext dev-server mode is not)
+   we sign in with no nonce at all, which both Apple and Firebase accept.
+
 5. Apple's **private relay emails** (`…@privaterelay.appleid.com`) are real and deliverable but forwarded.
-   Check that onboarding, `backend/email/` sends, and any email-uniqueness logic tolerate them, and that
-   we handle the "name is only returned on the very first authorization" quirk — if we drop it, the user
-   has no name and Apple will never send it again.
+   Still to verify on-device that onboarding, `backend/email/` sends, and any email-uniqueness logic
+   tolerate them.
+
+   The "name is only returned on the very first authorization" quirk **is** handled: `appleNativeLogin`
+   writes `givenName familyName` onto the Firebase user with `updateProfile` as soon as it sees them,
+   because `web/pages/signup.tsx` reads `auth.currentUser?.displayName` when seeding the profile and Apple
+   will never send the name again. On the web path Firebase populates `displayName` itself, so there is
+   nothing to persist by hand.
+
+### 5.3 Sign in with Apple in the browser
+
+Guideline 4.8 only asks for Apple sign-in _inside the app_, so it is tempting to stop there. The reason
+not to is ours, not Apple's: a user who signs up with Apple on iOS ends up with `apple.com` as their only
+Firebase provider and, more often than not, a `@privaterelay.appleid.com` address. On desktop they would
+see no Apple button, have no password to reset, and creating a Google account would give them a _different_
+account. That is a permanent lockout, and it starts the day the iOS app ships.
+
+**Code — done.** `appleWebLogin()` in `web/lib/firebase/users.ts` runs
+`signInWithPopup(auth, new OAuthProvider('apple.com'))`; `appleLogin()` dispatches to it or to
+`appleNativeLogin()` on `isIosApp()`, and both `/signin` and `/register` call the dispatcher.
+
+**Console — to do, needs the membership.** In the Apple Developer portal:
+
+1. Create a **Services ID** (Identifiers → `+` → Services IDs), e.g. `com.compassconnections.web`. It is a
+   separate identifier from the App ID — the App ID authorises the native flow, the Services ID authorises
+   the web one. Enable Sign in with Apple on it and click Configure.
+2. Set the primary App ID to `com.compassconnections.app`, add `compass-130ba.firebaseapp.com` under
+   Domains and Subdomains, and `https://compass-130ba.firebaseapp.com/__/auth/handler` as the Return URL —
+   the callback Firebase shows on its own Apple provider screen. If Apple asks you to verify the domain,
+   it hands you an `apple-developer-domain-association.txt` to serve from `/.well-known/` on that host;
+   that is Firebase's domain, not ours, so it should not come up unless we move to a custom auth domain.
+3. Paste the Services ID into Firebase Console → Authentication → Apple → **Services ID**, and into
+   `APPLE_SERVICES_ID` in `common/src/constants.ts`.
+
+Firebase labels that field "Services ID (not required for Apple)", which is true only of the native iOS
+flow — the moment you fill in the OAuth code flow configuration that §5.2 and §8.3 need, Firebase
+requires a Services ID too. So the browser flow and the revocation requirement land on the same
+prerequisite; there is no version of this where the field stays empty.
+
+The constant is a **gate, not a credential** — it is never sent anywhere, and the real value lives in
+Firebase. A mismatch between the two would not break sign-in, only the documentation, but keep them in
+step anyway.
+
+That last paste is the switch. `canAppleLogin()` returns `HAS_APPLE_SERVICES_ID` in a browser, so the
+button stays hidden until the constant is real — rendering it earlier would offer a route that dead-ends
+in `auth/operation-not-allowed`.
+
+**Android is still a gap.** Apple refuses to render its authorization page inside an embedded WebView, so
+`signInWithPopup` cannot work in the Android shell and `canAppleLogin()` returns false there. Closing it
+means the native plugin path with the same Services ID plus an Android redirect. Not urgent — nobody can
+have an Apple-only account until the iOS app ships — but it is the same lockout one platform over.
 
 ---
 
 ## 6. Push notifications (APNs)
 
-`@capacitor/push-notifications` is already wired in `web/lib/service/android-push.ts` and works on iOS, but
-the transport underneath is different and the **backend payload is currently Android-only**.
+`@capacitor/push-notifications` is already wired in `web/lib/service/native-push.ts` and works on iOS, but
+the transport underneath is different and the backend payload was Android-only.
 
 Setup:
 
-1. Push Notifications capability + `aps-environment` entitlement in Xcode.
+1. Push Notifications capability + `aps-environment` entitlement — in `ios/App/App/App.entitlements`,
+   and toggled on the App ID in the developer portal.
 2. Create an APNs **auth key** (`.p8`, preferred over certs — doesn't expire) in the Apple Developer
    portal, upload it to Firebase Console → Project Settings → Cloud Messaging, with Team ID and Key ID.
-   Then FCM tokens keep working and no backend token-storage change is needed
-   (`push_subscriptions_mobile` stays as-is).
+
+   The key's Configure screen has two settings Apple will not let you change afterwards, and the wrong
+   answer to the first one fails silently:
+   - **Environment → `Sandbox & Production`**, never `Sandbox` alone. The `beta` lane rewrites
+     `aps-environment` to `production` before archiving (§7), so every TestFlight and App Store build
+     registers against production APNs. A sandbox-only key cannot reach those devices and reports no
+     error — the pushes simply never arrive, and the search starts in `AppDelegate.swift` instead of in
+     a dropdown.
+   - **Key Restriction → `Team Scoped (All Topics)`**. Works for any bundle id in the team, which is
+     what Firebase expects; Topic Specific pins the key to named bundle ids for no benefit here.
+
+   Download the `.p8` at once — Apple allows exactly one download, and a lost key means creating another.
+   Keys land in [`../ios/private/`](../ios/private/README.md), which is gitignored (plus a global `*.p8`
+   rule): unlike `GoogleService-Info.plist`, these are bearer credentials. Nothing in the build reads the
+   APNs key — it is uploaded to Firebase through the browser, and the Key ID goes in the same form.
+
 3. Add the iOS app (bundle ID `com.compassconnections.app`) to the Firebase project and drop
-   `GoogleService-Info.plist` into `ios/App/App/`.
+   `GoogleService-Info.plist` into `ios/App/App/` (gitignored; CI writes it from
+   `IOS_GOOGLE_SERVICES_PLIST`).
+
+**Correction to an earlier draft of this doc:** step 2 does _not_ by itself mean "FCM tokens keep
+working". `@capacitor/push-notifications` on iOS reports the raw **APNs** device token, which
+`admin.messaging().send({token})` cannot address — every send would fail with
+`messaging/invalid-argument`, and `sendPushToToken` would then helpfully delete the subscription. Making
+the token an FCM one is native work, now done in `ios/App/App/AppDelegate.swift`: hand the APNs token to
+`Messaging.messaging().apnsToken`, ask for `Messaging.messaging().token`, and post _that_ on
+`.capacitorDidRegisterForRemoteNotifications` — the plugin accepts either a `Data` (APNs) or a `String`
+(already resolved) there. With that in place `push_subscriptions_mobile` really does stay as-is, because
+both platforms now save the same kind of token.
 
 **Backend change required.** `sendPushToToken` in `backend/shared/src/mobile.ts:96` builds a `TokenMessage`
 with an `android.notification` block and a bare `data: {endpoint}`. Sent to an iOS token as-is, that is a
@@ -260,9 +609,22 @@ _data-only_ push: it will not display anything and is delivered at low priority 
 
 ```ts
 apns: {
-  payload: {aps: {alert: {title: payload.title, body: payload.body}, sound: 'default', badge: …}},
-  fcmOptions: payload.imageUrl ? {imageUrl: payload.imageUrl} : undefined,
-},
+    payload: {
+        aps: {
+            alert: {
+                title: payload.title, body
+            :
+                payload.body
+            }
+        ,
+            sound: 'default', badge
+        : …
+        }
+    }
+,
+    fcmOptions: payload.imageUrl ? {imageUrl: payload.imageUrl} : undefined,
+}
+,
 ```
 
 Notes:
@@ -295,7 +657,9 @@ From Linux/Windows there is no local archive step — push and let the `macos-la
 ([§2.1](#21-working-without-a-mac)). Everything up to `npx cap sync ios` still runs fine locally; it's only
 `xcodebuild`/Archive that needs macOS.
 
-Add `yarn build-sync-ios` mirroring `scripts/build_sync_android.sh`.
+`yarn build-sync-ios` (mirroring `scripts/build_sync_android.sh`) does the first two, plus
+`npx capacitor-assets generate --ios` — the generated icons are gitignored, exactly as on Android, so they
+have to be regenerated on every build including CI.
 
 Versioning: `CFBundleShortVersionString` (user-visible, ≈ `versionName`) and `CFBundleVersion`
 (build number, ≈ `versionCode`, must strictly increase per upload). Keep them in step with
@@ -303,16 +667,34 @@ Versioning: `CFBundleShortVersionString` (user-visible, ≈ `versionName`) and `
 
 Signing and CI: the Android release path is
 [`.github/workflows/cd-android.yml`](../.github/workflows/cd-android.yml) — bump `versionCode` on `main`,
-Action builds a signed AAB and uploads to Play. The iOS analogue is a `macos-latest` job using **fastlane**
-(`match` for certificate/profile management, `pilot` for TestFlight upload) with an **App Store Connect API
-key** in GitHub Secrets. New secrets needed, alongside the existing `ANDROID_*` / `PLAY_SERVICE_ACCOUNT_JSON`:
+Action builds a signed AAB and uploads to Play. The iOS analogue is
+[`.github/workflows/cd-ios.yml`](../.github/workflows/cd-ios.yml): bump `CURRENT_PROJECT_VERSION` in
+`ios/App/App.xcodeproj/project.pbxproj` on `main`, and a `macos-15` job runs **fastlane**
+(`match` for certificate/profile management, `pilot` for TestFlight upload) authenticating with an **App
+Store Connect API key**. It also accepts `workflow_dispatch`, so a failed upload can be retried without
+another version bump — macOS minutes bill at 10× Linux, hence the version gate rather than building every
+push.
+
+Why `match` rather than `xcodebuild -allowProvisioningUpdates` with the API key: the latter can _create_ a
+distribution certificate but cannot persist its private key, so every CI run would burn one of the three an
+account is allowed. `match` keeps one in an encrypted git repo and reuses it forever.
+
+The secrets, alongside the existing `ANDROID_*` / `PLAY_SERVICE_ACCOUNT_JSON`, are listed with where each
+comes from in [`../ios/README.md`](../ios/README.md) §4:
 
 ```
+APPLE_TEAM_ID
 APP_STORE_CONNECT_KEY_ID
 APP_STORE_CONNECT_ISSUER_ID
 APP_STORE_CONNECT_KEY_P8
-MATCH_PASSWORD / MATCH_GIT_URL   (or a manually managed .p12 + provisioning profile)
+MATCH_GIT_URL / MATCH_PASSWORD / MATCH_GIT_BASIC_AUTHORIZATION
+IOS_GOOGLE_SERVICES_PLIST
 ```
+
+One thing the lane does that is easy to miss: it rewrites `aps-environment` from `development` to
+`production` in `App.entitlements` before archiving. A TestFlight or App Store build carrying
+`development` registers against the _sandbox_ APNs environment, and pushes then silently never arrive —
+there is no error anywhere to notice.
 
 Do the first submission by hand from Xcode to shake out the metadata, then automate. This is the step worth
 renting a Mac for — App Store Connect metadata, screenshots and capability toggles are fiddly enough that
@@ -330,11 +712,44 @@ Ordered by how likely they are to cost us a rejection round:
    integration (push, native share, native Google/Apple sign-in, deep links). Do **not** ship the
    remote-URL mode.
 2. **Guideline 4.8 — Sign in with Apple.** See §5. Blocking.
-3. **Guideline 5.1.1(v) — account deletion.** Apple requires in-app account deletion for any app with
-   account creation, reachable without contacting support. Verify the settings flow does this on-device.
+3. **Guideline 5.1.1(v) — account deletion, and Apple token revocation.** Apple requires in-app account
+   deletion for any app with account creation, reachable without contacting support. Verify the settings
+   flow does this on-device — it is `general-settings.tsx` → `DeleteAccountSurveyModal` → `me/delete`.
+
+   The second half — an app offering Sign in with Apple must also **revoke the Apple refresh token**
+   when the account is deleted, not merely delete its own rows — is now handled on the client:
+   `revokeAppleToken()` in `web/lib/firebase/users.ts`, called from `deleteAccount()` immediately
+   before `me/delete`. It no-ops for users with no `apple.com` provider. Two constraints shaped it:
+   - Firebase can only revoke a refresh token it captured, and it captures one only if the **OAuth code
+     flow configuration** (Team ID, Key ID, Sign in with Apple `.p8`) was filled in _before_ that user
+     signed in — see §5.2. A user who signs in while it is blank can never have their token revoked, so
+     that console step must be done before the first TestFlight build, not before submission.
+   - `revokeAccessToken()` needs a freshly re-authenticated credential, so `revokeAppleToken()`
+     re-authenticates first — one more Apple sheet on the way out, which is Apple's design. That also
+     forces it client-side: `backend/api/src/delete-me.ts` has no way to do it.
+
+   **Failure is swallowed, deliberately.** 5.1.1(v) requires that deleting an account actually works,
+   so an unreachable Apple must not trap someone in an undeletable account. The outcome is logged and
+   tracked (`delete account apple revocation`) rather than thrown.
+
 4. **Guideline 1.2 / 1.1.6 — UGC on a dating-adjacent app.** Expect scrutiny: they will want a report
    mechanism, a block mechanism, a published moderation policy, and a terms-of-service acceptance at
-   signup. Have the moderation story documented before submitting.
+   signup. All four exist: report and block on the ⋮ menu of any profile (report also inside a
+   conversation), "Community standards" and "Safety tools, moderation, and holds" in
+   `web/public/md/terms.md`, and an explicit consent checkbox at `/register`.
+
+   Blocking was, until recently, mostly cosmetic — it refused _new_ message channels and profile
+   comments and nothing else, while the toast promised "You'll no longer see content from this user".
+   It now also refuses messages in channels that already exist (the case blocking is actually for),
+   removes the profile from search in both directions, and turns an existing conversation read-only
+   while leaving it readable so it can still be reported. Enforcement is symmetric and server-side in
+   `backend/api/src/helpers/blocks.ts`; the client half is `isBlocked` in `web/hooks/use-user.ts`.
+
+   **One gap remains:** comments already posted by a blocked user still render, in both profile and
+   proposal threads. `blockedUserIdSet` exists for it and is not yet wired in — a reviewer who blocks
+   someone and then finds their comments still on a profile has found the same broken-promise problem
+   the toast used to have.
+
 5. **Age rating.** A connections app rates 17+/18+; set it honestly or risk removal.
 6. **Guideline 3.1.1 — in-app purchase.** If anything paid is ever added, iOS must route it through IAP
    (30%/15%). Not an issue today; a reason not to add web-only checkout links to the iOS build later.
@@ -343,25 +758,32 @@ Ordered by how likely they are to cost us a rejection round:
 
 ---
 
-## 9. Suggested order of work
+## 9. Order of work
 
-1. Rename `isAndroidApp` → `isNativeApp`, `android-push.ts` → `native-push.ts`; branch on
-   `Capacitor.getPlatform()`.
-2. Move deep-link handling and notification-tap handling off `AndroidBridge`/intent extras onto
-   `@capacitor/app` + `pushNotificationActionPerformed` (works on both platforms).
-3. Add the `apns` block to `sendPushToToken` — harmless on Android, prerequisite for iOS.
-4. `npx cap add ios`, get it running in the Simulator against the static export.
-5. Firebase iOS app + APNs key; verify push end-to-end on the **physical device** from §2 — the Simulator
-   has no APNs token, so this step cannot be faked.
-6. Google Sign-In (iOS client ID) then Sign in with Apple.
-7. Universal Links + `apple-app-site-association`.
-8. Manual TestFlight build; internal testing.
-9. fastlane + GitHub Action; first App Store submission.
+Steps 1–4, 7 and the code half of 6 and 9 are done — see [§0](#0-status). What remains, in order:
 
-Without a Mac ([§2.1](#21-working-without-a-mac)), reorder slightly: stand the CI job (step 9's fastlane
-half) up right after step 4, since it replaces the Simulator as the way to get a build onto the phone, and do
-steps 5–8 against TestFlight builds with `ios-webkit-debug-proxy` attached over cable. Batch the
-Xcode-GUI-only work — capabilities for §4.1, §5 and §6 — into one rented-Mac session before step 5.
+1. ~~Rename `isAndroidApp` → `isNativeApp`, `android-push.ts` → `native-push.ts`; branch on
+   `Capacitor.getPlatform()`.~~ Done.
+2. ~~Move deep-link and notification-tap handling onto `@capacitor/app` +
+   `pushNotificationActionPerformed`.~~ Done.
+3. ~~Add the `apns` block to `sendPushToToken`.~~ Done — harmless on Android, prerequisite for iOS.
+4. ~~`npx cap add ios`.~~ Done. Getting it running in the Simulator needs the Mac session.
+5. Apple Developer Program, App ID with the three capabilities, App Store Connect app record.
+6. ~~Firebase iOS app; Google iOS OAuth client.~~ Done. Left: the APNs `.p8` key and the Apple provider
+   in Firebase Auth (§5.2), both of which need the membership from step 5.
+7. ~~Universal Links file + `headers()` rule.~~ Done — only `APPLE_TEAM_ID` (the last placeholder,
+   §0) and the Associated Domains toggle on the App ID are left.
+8. GitHub secrets, then the `iOS Certificates (one-off)` workflow to seed the match repo, then the
+   first TestFlight build; internal testing on the iPhone 11.
+9. Verify push end-to-end on the **physical device** — the Simulator has no APNs token, so this step
+   cannot be faked — then the rest of the on-device checklist in [§0](#to-do--needs-an-apple-account-a-mac-or-the-phone).
+10. App Store Connect metadata and first submission.
+
+Since we develop on Linux ([§2.1](#21-working-without-a-mac)), CI replaces the Simulator as the way to get a
+build onto the phone: get the fastlane half of step 8 standing early, then do 9 against TestFlight builds
+with `ios-webkit-debug-proxy` attached over cable. Batch every Xcode-GUI-only item — the capability toggles
+for §4.1, §5 and §6 — into the one EC2 Mac day. Seeding the match repo is no longer among them: the
+`iOS Certificates (one-off)` workflow does it on a GitHub `macos-15` runner.
 
 ---
 

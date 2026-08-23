@@ -55,47 +55,78 @@ export default function ReferralsPage() {
     <PageBase trackPageView={'referrals'} className="col-span-10">
       <SEO title="Compass" description={title} />
 
-      <Col className="w-full px-4 pb-20 sm:px-6">
+      {/* `max-w-6xl mx-auto` — the container `/about` and `/download` use. Added when the QR moved
+          into a right-hand column: unconstrained, on a wide screen it drifted to the far edge of the
+          viewport with a screen's width of nothing between it and the link it belongs to. Nothing on
+          this page was full-bleed, so the cap costs nothing elsewhere. */}
+      <Col className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6">
         {user && <ConstellationHero />}
 
         <Section label={t('referrals.invite.label', 'Bring someone')} first={!user} title={title}>
-          <p className="text-ink-600 mt-3 max-w-xl text-base leading-relaxed">
-            {t(
-              'referrals.invite.body',
-              'Anyone who opens this link is credited to you for good — whether they join today or in a year.',
-            )}
-          </p>
+          {/* Two columns from lg up — link on the left, QR on the right — the shape `/download`'s
+              hero uses for the same pair of things. Stacked, the QR sat under a `max-w-2xl` input
+              row with the whole right half of the section empty beside it; moving it there fills
+              that space with the one element that was already competing for the reader's attention
+              from below. Below lg it goes back to sitting under the link, which is the only
+              sensible order on a narrow screen. */}
+          <div className="lg:flex lg:items-start lg:justify-between lg:gap-12">
+            <div className="min-w-0 lg:flex-1">
+              <p className="text-ink-600 mt-3 max-w-xl text-base leading-relaxed">
+                {t(
+                  'referrals.invite.body',
+                  'Anyone who opens this link is credited to you for good — whether they join today or in a year.',
+                )}
+              </p>
 
-          <div className="mt-6 flex max-w-2xl flex-col gap-3 sm:flex-row sm:items-center">
-            <Input
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className="min-w-0 flex-1"
-              aria-label={t('referrals.link_label', 'Your referral link')}
-            />
-            {/* Same share control and copy as the /about closing block — only the URL differs, carrying
-                this user's ?referrer= tag so the share is credited to them. */}
-            <ShareCompassButton
-              url={url}
-              // `self-start`: the row stacks on mobile, and a flex column stretches its children
-              // to full width by default — which turned the share button into a full-bleed bar wider
-              // than the heading above it. It should be the size of its own label.
-              className="shrink-0 self-start sm:self-center"
-            />
+              <div className="mt-6 flex max-w-2xl flex-col gap-3 sm:flex-row sm:items-center">
+                <Input
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="min-w-0 flex-1"
+                  aria-label={t('referrals.link_label', 'Your referral link')}
+                />
+                {/* Same share control and copy as the /about closing block — only the URL differs, carrying
+                    this user's ?referrer= tag so the share is credited to them. */}
+                <ShareCompassButton
+                  url={url}
+                  // `self-start`: the row stacks on mobile, and a flex column stretches its children
+                  // to full width by default — which turned the share button into a full-bleed bar wider
+                  // than the heading above it. It should be the size of its own label.
+                  className="shrink-0 self-start sm:self-center"
+                />
+              </div>
+            </div>
+
+            {/* The QR is for handing your phone to someone standing in front of you. Kept modest and
+                captioned: at the 200px it used to be, it outweighed everything else on the page — but it
+                still has to be comfortably scannable from across a table.
+
+                Unframed, unlike `/download`'s equivalent panel. That page frames things; this one
+                deliberately doesn't (see the "No cards" note at the top of this file), and a
+                `surface` around a QR — which is already a white plate — would be a frame inside a
+                frame either way. */}
+            <div className="mt-7 flex flex-col items-start gap-4 lg:mt-0 lg:w-56 lg:flex-shrink-0 lg:items-center lg:gap-0 lg:text-center">
+              {/* Sized in CSS, not by the `width` prop, because the two contexts want different
+                  things. On a phone this is the working end of the page — you hold the screen up
+                  for someone to scan across a table — so it gets 250px, and the caption sits under
+                  it rather than stealing half the row. In the desktop column it is a secondary
+                  option beside the link, so 160px. The props stay as the intrinsic size for a
+                  no-CSS render; `max-w-full` keeps it from overflowing a sub-282px viewport, which
+                  degrades better than a horizontal scrollbar. */}
+              <QRCode
+                url={url}
+                width={250}
+                height={250}
+                className="h-auto w-[250px] max-w-full rounded-lg lg:w-40"
+              />
+              <span className="text-ink-500 max-w-sm text-sm lg:mt-4 lg:max-w-[14rem]">
+                {t(
+                  'referrals.qr_caption',
+                  'Or let someone scan this, if they’re standing next to you.',
+                )}
+              </span>
+            </div>
           </div>
-
-          {/* The QR is for handing your phone to someone standing in front of you. Kept modest and
-              captioned: at the 200px it used to be, it outweighed everything else on the page — but it
-              still has to be comfortably scannable from across a table. */}
-          <Row className="mt-7 items-center gap-4">
-            <QRCode url={url} width={144} height={144} className="rounded-lg" />
-            <span className="text-ink-500 max-w-[14rem] text-sm">
-              {t(
-                'referrals.qr_caption',
-                'Or let someone scan this, if they’re standing next to you.',
-              )}
-            </span>
-          </Row>
         </Section>
 
         {user && <InvitedList />}

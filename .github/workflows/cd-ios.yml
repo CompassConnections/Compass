@@ -1,0 +1,121 @@
+name: iOS Release
+
+# Same trigger shape as cd-android.yml: a push to main that raises the build number ships a build.
+# On iOS the build number lives in the Xcode project as CURRENT_PROJECT_VERSION (the analogue of
+# versionCode); MARKETING_VERSION is the user-visible one and should be kept in step with
+# android/app/build.gradle's versionName so a release is one version across both stores.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'ios/App/App.xcodeproj/project.pbxproj'
+      - '.github/workflows/cd-ios.yml'
+  # Lets a failed upload be retried without another version bump.
+  workflow_dispatch:
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.version_check.outputs.should_build }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      # Debug and Release carry the same value, so the first match is the build number.
+      - name: Get previous CURRENT_PROJECT_VERSION
+        id: prev_version
+        run: |
+          git checkout HEAD^
+          PREV=$(grep -m1 'CURRENT_PROJECT_VERSION = ' ios/App/App.xcodeproj/project.pbxproj | sed 's/[^0-9]//g')
+          echo "prev_version=$PREV" >> $GITHUB_OUTPUT
+          git checkout -
+
+      - name: Get current CURRENT_PROJECT_VERSION
+        id: curr_version
+        run: |
+          CURR=$(grep -m1 'CURRENT_PROJECT_VERSION = ' ios/App/App.xcodeproj/project.pbxproj | sed 's/[^0-9]//g')
+          echo "curr_version=$CURR" >> $GITHUB_OUTPUT
+
+      - name: Compare build numbers
+        id: version_check
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual run. Building."
+            echo "should_build=true" >> $GITHUB_OUTPUT
+          elif [ "${{ steps.curr_version.outputs.curr_version }}" -gt "${{ steps.prev_version.outputs.prev_version }}" ]; then
+            echo "should_build=true" >> $GITHUB_OUTPUT
+          else
+            echo "CURRENT_PROJECT_VERSION not increased. Skipping build."
+            echo "should_build=false" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-release:
+    # macOS minutes bill at 10x Linux, hence the version gate above rather than building every push.
+    runs-on: macos-15
+    needs: check-version
+    if: needs.check-version.outputs.should_build == 'true'
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Select Xcode
+        # The runner image ships several Xcodes and its default is not always the newest; App Store
+        # Connect rejects uploads built with an SDK it considers too old, so pin to latest-stable.
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Compile Web App into iOS assets
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_KEY }}
+          MEDIA_SOURCE_BASE_URL: ${{ vars.MEDIA_SOURCE_BASE_URL }}
+        run: yarn build-sync-ios
+
+      - name: Write Firebase config
+        # Mirrors the google-services.json step in cd-android.yml. Without it AppDelegate skips
+        # FirebaseApp.configure() and devices register with a raw APNs token the backend can't use.
+        run: echo "${{ secrets.IOS_GOOGLE_SERVICES_PLIST }}" | base64 -d > ios/App/App/GoogleService-Info.plist
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane and CocoaPods
+        working-directory: ios
+        run: bundle install
+
+      - name: Install pods
+        working-directory: ios/App
+        run: bundle exec pod install
+
+      - name: Build and upload to TestFlight
+        working-directory: ios
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '120'
+        run: bundle exec fastlane beta
+
+      - name: Upload dSYMs
+        # Needed to symbolicate crash reports pulled off a device from Linux with
+        # idevicecrashreport — see the `symbolicate` lane in ios/fastlane/Fastfile.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-dsyms
+          path: ios/App/output/**/*.dSYM.zip
+          if-no-files-found: ignore

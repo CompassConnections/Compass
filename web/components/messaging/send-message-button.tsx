@@ -16,15 +16,18 @@ import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
 import {usePrivateMessageMembershipsContext} from 'web/components/messaging/private-message-memberships-context'
-import {AccountOnHoldNotice, isAutoBanUnderReviewError,} from 'web/components/moderation/account-on-hold'
+import {
+  AccountOnHoldNotice,
+  isAutoBanUnderReviewError,
+} from 'web/components/moderation/account-on-hold'
 import {useTextEditor} from 'web/components/widgets/editor'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
-import {usePrivateUser, useUser} from 'web/hooks/use-user'
+import {isBlocked, usePrivateUser, useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {skipEmailVerification} from 'web/lib/dev-flags'
-import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
+import {promptSignIn} from 'web/lib/util/signup'
 
 export const SendMessageButton = (props: {
   toUser: User
@@ -78,7 +81,7 @@ export const SendMessageButton = (props: {
 
   const messageButtonClicked = async () => {
     if (disabled) return
-    if (!currentUser) return firebaseLogin()
+    if (!currentUser) return promptSignIn()
     if (previousChannelId) router.push(`/messages/${previousChannelId}`)
     else setOpenComposeModal(true)
   }
@@ -197,7 +200,9 @@ export const SendMessageButton = (props: {
   // green is the brand sage rather than the design's raw oklch, so it stays on-palette.
   const barColor = isReady ? '#6B8F71' : '#C17F3E'
 
-  if (privateUser?.blockedByUserIds.includes(toUser.id)) return null
+  // Symmetric: previously this only checked `blockedByUserIds`, so after *you* blocked someone their
+  // profile still offered a Message button that then 403'd from the server.
+  if (isBlocked(privateUser, toUser.id)) return null
 
   return (
     <>

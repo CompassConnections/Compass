@@ -40,9 +40,9 @@ import {DAYJS_LOCALE_IMPORTS, registerDatePickerLocale} from 'web/lib/dayjs'
 import {I18nContext} from 'web/lib/locale'
 import {getLocale, resetCachedLocale, setLocaleCookie} from 'web/lib/locale-cookie'
 import {initTracking, trackPageView} from 'web/lib/service/analytics'
-import AndroidPush from 'web/lib/service/android-push'
+import NativePush from 'web/lib/service/native-push'
 import WebPush from 'web/lib/service/web-push'
-import {isAndroidApp} from 'web/lib/util/webview'
+import {isNativeApp, nativePlatform} from 'web/lib/util/webview'
 
 if (Capacitor.isNativePlatform()) {
   // Only runs on iOS/Android native
@@ -55,25 +55,6 @@ if (Capacitor.isNativePlatform()) {
   App.addListener('backButton', () => {
     window.dispatchEvent(new CustomEvent('appBackButton'))
   })
-
-  // Remove live update as the free plan is very limited (100 live updates per year). Do releases on Play Store instead.
-  // App.addListener("resume", async () => {
-  //   const newChannelName = 'default'
-  //   try {
-  //     await LiveUpdate.setChannel({channel: newChannelName})
-  //     console.log(`Device channel set to: ${newChannelName}`)
-  //   } catch (error) {
-  //     console.error('Failed to set channel', error)
-  //   }
-  //   const {nextBundleId} = await LiveUpdate.sync()
-  //   if (nextBundleId) {
-  //     // Ask the user if they want to apply the update immediately
-  //     const shouldReload = confirm("A new update is available. Would you like to install it?")
-  //     if (shouldReload) {
-  //       await LiveUpdate.reload()
-  //     }
-  //   }
-  // })
 }
 
 // See https://nextjs.org/docs/basic-features/font-optimization#google-fonts
@@ -142,7 +123,7 @@ function MyApp(props: AppProps<PageProps>) {
   }
 
   useEffect(() => {
-    debug('isAndroidWebView app:', isAndroidApp())
+    debug('native app:', isNativeApp(), nativePlatform())
     const onShow = () => document.body.classList.add('keyboard-open')
     const onHide = () => document.body.classList.remove('keyboard-open')
 
@@ -246,20 +227,37 @@ function MyApp(props: AppProps<PageProps>) {
     }
     ;(window as any).handleAppLink = handleAppLink
 
-    const link = window.AndroidBridge?.getPendingDeepLink?.()
-    if (link) {
+    const openLink = (link: string | null | undefined) => {
+      if (!link) return
       handleAppLink({endpoint: isUrl(link) ? new URL(link).pathname : link})
+    }
+
+    // Cross-platform deep links: Universal Links on iOS, App Links on Android. `getLaunchUrl` covers
+    // the cold-start case, the listener covers a link arriving while the app is already running.
+    // Android additionally still has the hand-written `AndroidBridge` path below — MainActivity
+    // pushes notification endpoints in through `handleAppLink` directly, and the two are harmless
+    // together because handleAppLink no-ops when the endpoint is already the current path.
+    const listener = App.addListener('appUrlOpen', ({url}) => openLink(url))
+    App.getLaunchUrl()
+      .then((res) => openLink(res?.url))
+      .catch((e) => debug('No launch url', e))
+
+    openLink(window.AndroidBridge?.getPendingDeepLink?.())
+
+    return () => {
+      listener.then((l) => l.remove()).catch(() => {})
     }
   }, [])
 
   useEffect(() => {
     const fetchAppInfo = async () => {
       if (!Capacitor.isNativePlatform()) return
-      const appInfo = await App.getInfo().catch((e) => debug('Could not load Android app info:', e))
+      const appInfo = await App.getInfo().catch((e) => debug('Could not load native app info:', e))
       const appVersion = appInfo?.version
       if (appVersion) {
-        Sentry.setTag('androidApp.version', appVersion)
-        Sentry.setTag('androidApp.buildNumber', appInfo?.build)
+        Sentry.setTag('nativeApp.platform', nativePlatform())
+        Sentry.setTag('nativeApp.version', appVersion)
+        Sentry.setTag('nativeApp.buildNumber', appInfo?.build)
       }
     }
     fetchAppInfo()
@@ -338,7 +336,7 @@ function MyApp(props: AppProps<PageProps>) {
                             <PrivateMessageMembershipsProvider>
                               <ConsentBanner />
                               <WebPush />
-                              <AndroidPush />
+                              <NativePush />
                               <Component {...pageProps} />
                             </PrivateMessageMembershipsProvider>
                           </UnseenMessageChannelsProvider>

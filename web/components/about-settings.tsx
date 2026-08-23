@@ -18,17 +18,9 @@ export type WebBuild = {
   environment?: string
 }
 
-export type LiveUpdateInfo = {
-  bundleId?: string | null
-  commitSha?: string
-  commitMessage?: string
-  commitDate?: string
-}
-
 export type Android = {
   appVersion?: string
   buildNumber?: string
-  liveUpdate?: LiveUpdateInfo
 }
 
 export type Backend = {
@@ -71,19 +63,9 @@ function useDiagnostics() {
 
       if (Capacitor.isNativePlatform()) {
         const appInfo = await App.getInfo()
-        // const bundle = await LiveUpdate.getCurrentBundle().catch(() => {
-        //   return {bundleId: null}
-        // })
-        // const buildInfo = await getLiveUpdateInfo().catch(() => null)
         diagnostics.android = {
           appVersion: appInfo.version,
           buildNumber: appInfo.build,
-          // liveUpdate: {
-          //   bundleId: bundle?.bundleId,
-          //   commitSha: buildInfo?.commitSha,
-          //   commitMessage: buildInfo?.commitMessage,
-          //   commitDate: buildInfo?.commitDate
-          // }
         }
       }
 
@@ -216,23 +198,11 @@ const WebBuildInfo = (props: {info?: WebBuild}) => {
 const AndroidInfo = (props: {info?: Android}) => {
   const {info} = props
   if (!info) return
-  const sha = info.liveUpdate?.commitSha
-  const url = `${githubRepo}/commit/${sha}`
   return (
     <Col className={'custom-link'}>
       <h3>Android (Capacitor)</h3>
       <p>App version (Android): {info.appVersion}</p>
       <p>Native build number (Android): {info.buildNumber}</p>
-      {info.liveUpdate && (
-        <>
-          <p>Live update build ID (Capawesome): {info.liveUpdate?.bundleId}</p>
-          <p>
-            Live update commit SHA (Capawesome): <CustomLink href={url}>{sha}</CustomLink>
-          </p>
-          <p>Live update commit message (Capawesome): {info.liveUpdate?.commitMessage}</p>
-          <p>Live update commit date (Capawesome): {info.liveUpdate?.commitDate}</p>
-        </>
-      )}
     </Col>
   )
 }

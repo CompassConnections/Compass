@@ -917,6 +917,22 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
        )`,
         {userId},
       ),
+
+    // Exclude blocked profiles, in both directions. Hiding is a one-way "not interested" and lives in
+    // its own table; blocking is mutual removal and lives on `private_users.data`, so it needs its own
+    // clause rather than an entry in `hidden_profiles`. Both sides are checked here because a block
+    // the other person initiated should take them out of your grid too — otherwise the person who did
+    // the blocking keeps seeing the profile of someone who wanted nothing to do with them.
+    userId &&
+      where(
+        `NOT EXISTS (
+         SELECT 1 FROM private_users pu
+         WHERE pu.id = $(userId)
+           AND (pu.data->'blockedUserIds' @> to_jsonb(profiles.user_id)
+             OR pu.data->'blockedByUserIds' @> to_jsonb(profiles.user_id))
+       )`,
+        {userId},
+      ),
   ]
 
   const profileCols =

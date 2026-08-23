@@ -9,13 +9,24 @@ import * as helpersPrivateMessagesModules from 'api/helpers/private-messages'
 import * as supabaseInit from 'shared/supabase/init'
 import * as sharedUtils from 'shared/utils'
 
+const OTHER_USER_ID = '111'
+
 describe('createPrivateUserMessage', () => {
   beforeEach(() => {
     jest.resetAllMocks()
 
-    const mockPg = {} as any
+    // The handler now looks up the channel's other members to enforce blocks, so the fake client
+    // needs `manyOrNone`. Default: a single other member who has not blocked anyone.
+    const mockPg = {
+      manyOrNone: jest.fn().mockResolvedValue([{user_id: OTHER_USER_ID}]),
+    } as any
 
     ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
+    ;(sharedUtils.getPrivateUser as jest.Mock).mockResolvedValue({
+      id: OTHER_USER_ID,
+      blockedUserIds: [],
+      blockedByUserIds: [],
+    })
   })
 
   afterEach(() => {
@@ -31,6 +42,7 @@ describe('createPrivateUserMessage', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
       const mockCreator = {
+        id: mockAuth.uid,
         is_banned_from_posting: false,
       }
 
@@ -95,6 +107,38 @@ describe('createPrivateUserMessage', () => {
       expect(createPrivateUserMessage(mockBody, mockAuth, mockReq)).rejects.toThrowError(
         `You are banned`,
       )
+    })
+
+    // The channel-creation guard only runs once. Before this, blocking someone you had already
+    // spoken to left the existing channel fully writable — the case blocking exists for.
+    it('should throw if the sender has blocked the other member', async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue({id: mockAuth.uid})
+      ;(sharedUtils.getPrivateUser as jest.Mock).mockImplementation(async (id: string) =>
+        id === mockAuth.uid
+          ? {id, blockedUserIds: [OTHER_USER_ID], blockedByUserIds: []}
+          : {id, blockedUserIds: [], blockedByUserIds: []},
+      )
+
+      await expect(
+        createPrivateUserMessage({content: {a: 'b'}, channelId: 123}, mockAuth, {} as any),
+      ).rejects.toThrowError('You can no longer interact with this person')
+      expect(helpersPrivateMessagesModules.createPrivateUserMessageMain).not.toBeCalled()
+    })
+
+    it('should throw if the other member has blocked the sender', async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue({id: mockAuth.uid})
+      ;(sharedUtils.getPrivateUser as jest.Mock).mockImplementation(async (id: string) =>
+        id === mockAuth.uid
+          ? {id, blockedUserIds: [], blockedByUserIds: []}
+          : {id, blockedUserIds: [mockAuth.uid], blockedByUserIds: []},
+      )
+
+      await expect(
+        createPrivateUserMessage({content: {a: 'b'}, channelId: 123}, mockAuth, {} as any),
+      ).rejects.toThrowError('You can no longer interact with this person')
+      expect(helpersPrivateMessagesModules.createPrivateUserMessageMain).not.toBeCalled()
     })
   })
 })

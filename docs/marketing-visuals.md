@@ -264,7 +264,8 @@ narrower measure — checked at the `lg` boundary itself, which is the tightest 
 Vertical spacing belongs to the grid's `gap`, not to the clip component, since it is a grid cell on wide
 screens and a stacked block on narrow ones.
 
-**Embed** — `web/components/home/search-demo.tsx`, mounted inside the hero section in `home.tsx`. The poster is a plain `next/image` with `priority`, so the LCP element is always the static
+**Embed** — `web/components/home/search-demo.tsx`, mounted inside the hero section in `home.tsx`. The poster is a plain
+`next/image` with `priority`, so the LCP element is always the static
 image and never the video. The `<video>` mounts only after `window.load`, so 1.5 MB never competes with
 the hero copy on a cold visit. `prefers-reduced-motion: reduce` keeps the poster and mounts no video at
 all — so those visitors see the opening listing rather than the payoff, the cost of having the poster
@@ -342,7 +343,7 @@ The icon tiles do the job actually needed here, which is rhythm and scannability
 
 ### H3 — Replace the fabricated avatars — **done (option 2)**
 
-`SocialProof` (`home.tsx`) rendered four gradient circles lettered S/R/T/L next to "700+ **real** people
+`SocialProof` (`home.tsx`) rendered four gradient circles lettered S/R/T/L next to "800+ **real** people
 worldwide". Fabricated avatars next to the word _real_, on a platform selling radical transparency, was the
 one visual on the page that actively cost trust.
 
@@ -378,7 +379,7 @@ The one used — "Require email verification before interacting with other peopl
 1 Against, `Implemented ✔️` — satisfies all three, and is verifiable by a reader: the shipped behaviour is
 enforced in `backend/api/src/create-private-user-message-channel.ts`.
 
-**Turnout is the honest tension.** Twelve voters is a small number to place near "700+ members". It is not
+**Turnout is the honest tension.** Twelve voters is a small number to place near "800+ members". It is not
 a reason to fake anything; it is a reason to keep the tally off any screen that also shows the member
 count, which is why this lives on the about page and not the home page.
 
@@ -723,7 +724,8 @@ filters, or a profile page looks like a real product with real people in it.
   Firebase account had, login failed with `EMAIL_NOT_FOUND`, and the next seed tried to insert a second
   row with the same username — a unique-constraint failure. A uid derived from the slug is stable across
   restarts, so re-seeding always converges. The viewer row is rebuilt every run (`users` cascades), so
-  edits to the persona actually take effect instead of being skipped as "already exists". Search, filters and the profile grid
+  edits to the persona actually take effect instead of being skipped as "already exists". Search, filters and the
+  profile grid
   only render for a signed-in user — `pages/index.tsx` shows `LoggedOutHome` otherwise — so signed-in
   captures need a session. Doing that by hand (the `.auth-profile` route `capture-profile.mjs` uses) goes
   stale on every reseed and can't run unattended. Its DB id is the Firebase uid, not the slug hash, because

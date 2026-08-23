@@ -7,6 +7,7 @@ export const sendDiscordMessage = async (content: string, channel: string) => {
     health: process.env.DISCORD_WEBHOOK_HEALTH,
     reports: process.env.DISCORD_WEBHOOK_REPORTS,
     contact: process.env.DISCORD_WEBHOOK_CONTACT,
+    suggestions: process.env.DISCORD_WEBHOOK_SUGGESTIONS,
   }[channel]
 
   if (IS_DEV) webhookUrl = process.env.DISCORD_WEBHOOK_DEV

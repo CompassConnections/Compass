@@ -1,3 +1,4 @@
+import {IOS_APP_ID} from 'common/constants'
 import {DEPLOYED_WEB_URL, endTitle} from 'common/envs/constants'
 import {removeUndefinedProps} from 'common/util/object'
 import {buildOgUrl} from 'common/util/og'
@@ -38,10 +39,14 @@ export function SEO<P extends Record<string, string | undefined>>(props: {
 
       <meta name="description" content={description} key="description" />
       {url && <link rel="canonical" href={absUrl} key="canonical" />}
-      {url && (
+      {/* Smart App Banner. Gated on the id actually being ours: this used to be hardcoded to
+          6444136749, which is Manifold's — inherited from the fork — so every page in iOS Safari was
+          advertising a different company's app. Derived from `IOS_APP_URL` now, and renders nothing
+          at all until App Store Connect has assigned us one. */}
+      {url && IOS_APP_ID && (
         <meta
           name="apple-itunes-app"
-          content={'app-id=6444136749, app-argument=' + absUrl}
+          content={`app-id=${IOS_APP_ID}, app-argument=${absUrl}`}
           key="apple-itunes-app"
         />
       )}

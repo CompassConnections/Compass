@@ -82,7 +82,7 @@ export default function HelpPage() {
             <li>
               {t(
                 'help.account.delete_instructions',
-                "Want to delete your account? Go to profile settings, click the three-dot menu at the top-right, then select 'Delete account'",
+                "Want to delete your account? Go to Settings → General and click 'Delete account' at the bottom. You can also go straight to /delete-account.",
               )}
             </li>
           </ul>

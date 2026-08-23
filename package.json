@@ -11,8 +11,8 @@
     "web"
   ],
   "scripts": {
-    "android-live-update": "./scripts/android_live_update.sh",
     "build-sync-android": "./scripts/build_sync_android.sh",
+    "build-sync-ios": "./scripts/build_sync_ios.sh",
     "build-web-view": "./scripts/build_web_view.sh",
     "clean-install": "./scripts/install.sh",
     "dev": "./scripts/run_local.sh dev",
@@ -32,6 +32,7 @@
     "prettier:check": "prettier --check .",
     "prod": "./scripts/run_local.sh prod",
     "sync-android": "./scripts/sync_android.sh",
+    "sync-ios": "./scripts/sync_ios.sh",
     "test": "yarn workspaces run test",
     "test:coverage": "yarn workspaces run test --coverage",
     "test:db:migrate": "./scripts/test_db_migration.sh",

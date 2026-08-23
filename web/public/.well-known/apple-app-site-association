@@ -1,0 +1,28 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["HFZVH8XR59.com.compassconnections.app"],
+        "components": [
+          {
+            "/": "/api/*",
+            "exclude": true,
+            "comment": "API routes are fetched by the app, never opened as a page."
+          },
+          {
+            "/": "/.well-known/*",
+            "exclude": true,
+            "comment": "This file and friends must stay fetchable by the OS."
+          },
+          {
+            "/": "/*",
+            "comment": "Every other compassmeet.com link opens in the app. The off-domain short links (/discord, /paypal, ...) are recognised in JS by handleAppLink in web/pages/_app.tsx and pushed back out to the system browser."
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["HFZVH8XR59.com.compassconnections.app"]
+  }
+}

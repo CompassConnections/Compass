@@ -1,5 +1,5 @@
 import {Share} from '@capacitor/share'
-import {isAndroidApp} from 'web/lib/util/webview'
+import {isNativeApp} from 'web/lib/util/webview'
 
 /**
  * Open the OS share sheet, returning whether it actually opened.
@@ -17,7 +17,7 @@ import {isAndroidApp} from 'web/lib/util/webview'
 export async function nativeShare(data: {title?: string; text?: string; url: string}) {
   const {title, text, url} = data
 
-  if (isAndroidApp()) {
+  if (isNativeApp()) {
     console.log('Native share', {title, text, url})
     try {
       await Share.share({title, text, url})
@@ -48,6 +48,6 @@ export async function nativeShare(data: {title?: string; text?: string; url: str
  * render output on this directly, or the server and the first client render will disagree.
  */
 export function canNativeShare() {
-  if (isAndroidApp()) return true
+  if (isNativeApp()) return true
   return typeof navigator !== 'undefined' && typeof navigator.share === 'function'
 }

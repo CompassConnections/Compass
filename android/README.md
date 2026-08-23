@@ -51,10 +51,12 @@ Loading from a **remote URL** (e.g. `https://compassmeet.com`) is **less common*
 - Compliance with **Google Play policies** (they may reject apps that are “just a webview of a website” unless there’s
   meaningful native integration).
 
-**A middle ground we use:**
+**What we actually do:**
 
-- The app ships with **local assets** for core functionality.
-- The app **fetches remote content or updates** (e.g., via Capacitor Live Updates, Ionic Appflow).
+- The app ships with **local assets** — the whole static export, loaded from `assets/`. Dynamic data comes
+  from the API at runtime, but the bundle itself only changes with a store release.
+- We briefly used remote bundle updates (Capawesome) on top of that; see [Live Updates](#live-updates-removed)
+  for why they are gone.
 
 ## 2. Prerequisites
 
@@ -306,39 +308,33 @@ But prefer using the GitHub Action, see `Deploy to Play Store`.
 
 ---
 
-## Live Updates
+## Versioning
 
-Note: As of early 2026, we don't use the live update anymore because the free plan is too limited for our use case. To
-update the android app, we need to stick to the normal release process on the app stores.
+`versionName` moves in step with `MARKETING_VERSION` in `ios/App/App.xcodeproj/project.pbxproj` and
+`version` in the repo-root `package.json` — one number across web, Play and the App Store. `versionCode`
+is a Play-only upload counter and stays independent. See [`../docs/releases.md`](../docs/releases.md).
 
-To avoid releasing to the app stores after every code update in the web pages, we build the new bundle and store it in
-Capawesome Cloud (an alternative to Ionic). To add a new update, increment the version number
-in [capawesome.json](capawesome.json) and push to main (or make a PR to main). A GitHub Action will automatically build
-the new bundle and push it to Capawesome.
+---
 
-You can also do so locally if you have admin access. First, you need to do this one-time setup:
+## Live Updates (removed)
 
-```
-npm install -g @capawesome/cli@latest
-npx @capawesome/cli login
-```
+We used [Capawesome Cloud](https://cloud.capawesome.io/) to push new web bundles to installed apps without
+going through the stores. It was disabled in early 2026 — the free tier caps at 100 monthly active users
+and the next tier ($9/mo, 1000 MAU) was not worth it — and **removed entirely in August 2026**.
 
-Then, run this to build your local assets and push them to Capawesome. Once done, each mobile app user will receive a
-notice that there is a new update available, which they can approve to download.
+Gone with it: the `@capawesome/capacitor-live-update` dependency, the `LiveUpdate` block in
+`capacitor.config.ts`, `android/capawesome.json`, `scripts/android_live_update.sh`, the
+`yarn android-live-update` script, `web/lib/live-update.ts` and
+`.github/workflows/cd-android-live-update.yml`.
 
-```
-yarn android:live-update
-```
+The trigger for removing it rather than leaving it dormant was iOS: `npx cap sync ios` was pulling the
+plugin into the new WKWebView shell, and a mechanism for replacing the JS bundle out-of-band is an extra
+thing to explain under App Review for no benefit we were using.
 
-That's all. So you should run the lines above every time you want your web updates pushed to main (which essentially
-updates the web app) to update the mobile app as well.
-There is a limit of 100 monthly active user per month, though. So we may need to pay or create our custom limit as we
-scale. Next plan is $9 / month and allows 1000 MAUs.
-
-- ∞ Live Updates
-- 100 Monthly Active Users
-- 500 MB of Storage (around 10 MB per update, but we just delete the previous ones)
-- 5 GB of Bandwidth
+**Web changes now ship through the normal store release for both platforms** — bump `versionCode` in
+`app/build.gradle` for Play, `CURRENT_PROJECT_VERSION` in `ios/App/App.xcodeproj/project.pbxproj` for
+TestFlight. To resurrect any of this, `git log --diff-filter=D -- scripts/android_live_update.sh` finds the
+commit that deleted it.
 
 ---
 

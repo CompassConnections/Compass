@@ -10,8 +10,7 @@ import {
   Section,
   Text,
 } from '@react-email/components'
-import {ANDROID_APP_URL} from 'common/constants'
-import {DOMAIN} from 'common/envs/constants'
+import {DEPLOYED_WEB_URL, DOMAIN} from 'common/envs/constants'
 import {type ProfileRow} from 'common/profiles/profile'
 import {type User} from 'common/user'
 import {container, content, DARK_MODE_CSS, Footer, main} from 'email/utils'
@@ -303,12 +302,18 @@ export const NewMessageEmail = ({
                 "To avoid overloading your inbox, you'll receive at most one email per day per conversation. If {creatorName} sends more messages today, you won't be notified by email.",
                 {creatorName},
               )}{' '}
+              {/* A new key rather than a reword: the fr/de files already translate the old one as
+                  "the Compass app for Android", and those resolve ahead of this fallback — so
+                  reusing it would leave two of three languages saying Android-only. */}
               {t(
-                'email.new_message.app_prompt',
-                'Want real-time notifications? Download the Compass app for Android:',
+                'email.new_message.app_prompt.v2',
+                'Want real-time notifications? Get the Compass app:',
               )}{' '}
+              {/* Our own /download rather than a store link. Mail is the one place where the
+                  device that opens it is genuinely unknowable — the same message gets read on a
+                  laptop and on the phone it is about. */}
               <Link
-                href={ANDROID_APP_URL}
+                href={`${DEPLOYED_WEB_URL}/download`}
                 style={{
                   color: '#c17f3e',
                   textDecoration: 'none',

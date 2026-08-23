@@ -1,0 +1,64 @@
+name: iOS Certificates (one-off)
+
+# Seeds the `match` certificate repo. This is deliberately NOT part of cd-ios.yml: it *creates* an
+# Apple distribution certificate, and an account only gets three. Every normal release run has
+# `readonly` forced on by `ios/fastlane/Matchfile` and merely decrypts what this produced.
+#
+# Why it lives here rather than on a laptop: `match` creating certificates needs macOS. It runs on
+# Linux right up to "Installing provisioning profile...", where fastlane calls into Xcode with no
+# OS guard (unlike the certificate steps, which it skips cleanly) and dies with "Unable to locate
+# Xcode" — *after* Apple has already issued the certificate but *before* anything is pushed to git.
+# That leaves a certificate burning a slot with a private key that exists nowhere. A macOS runner
+# costs a few minutes and avoids the whole problem.
+#
+# Before running, confirm the certs repo is genuinely empty. If a previous attempt half-succeeded,
+# revoke the orphaned certificate on developer.apple.com first — otherwise this creates another one.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "create-certificates" to confirm. This consumes one of three Apple certificate slots.'
+        required: true
+        type: string
+
+jobs:
+  certs:
+    runs-on: macos-15
+    timeout-minutes: 20
+
+    steps:
+      - name: Guard against an accidental run
+        if: inputs.confirm != 'create-certificates'
+        run: |
+          echo "::error::Confirmation string did not match. Nothing was created."
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Set up Ruby and fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: ios
+
+      - name: Seed the certificate repo
+        working-directory: ios
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_P8: ${{ secrets.APP_STORE_CONNECT_KEY_P8 }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          # NOTE: the runner sets CI=true itself, which makes `Matchfile`'s
+          # `readonly(ENV["CI"] == "true")` true. The `certs` lane passes `readonly: false`
+          # explicitly to override it — that override is what makes this workflow able to create.
+        run: bundle exec fastlane certs

@@ -1,18 +1,17 @@
 import {ArrowLeftOnRectangleIcon, ArrowRightOnRectangleIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
-import {ANDROID_APP_URL} from 'common/constants'
 import {buildArray} from 'common/util/array'
 import Router, {useRouter} from 'next/router'
-import {FaGooglePlay} from 'react-icons/fa'
 import {Button, ColorType, SizeType} from 'web/components/buttons/button'
 import {LanguagePicker} from 'web/components/language/language-picker'
+import {useAppDownload} from 'web/hooks/use-app-download'
 import {useProfile} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
 import {firebaseLogout} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {withTracking} from 'web/lib/service/analytics'
 import {startSignup} from 'web/lib/util/signup'
-import {isAndroidApp} from 'web/lib/util/webview'
+import {isNativeApp} from 'web/lib/util/webview'
 
 import SiteLogo from '../site-logo'
 import {ProfileSummary} from './profile-summary'
@@ -37,7 +36,12 @@ export default function Sidebar(props: {
   const t = useT()
   const bottomNavOptions = bottomNav(!!user)
 
-  const isAndroid = isAndroidApp()
+  const isApp = isNativeApp()
+
+  // Resolved per device, so an iPhone gets the App Store and a Pixel gets Play without a
+  // disambiguation page in between. Falls back to /download — which asks the question properly —
+  // on desktop, before hydration, and while the iOS listing is still a placeholder.
+  const appDownload = useAppDownload()
 
   return (
     <nav
@@ -82,13 +86,15 @@ export default function Sidebar(props: {
       </div>
       <div className="mb-[12px] mt-auto flex flex-col gap-1">
         <div className="h-px bg-white/[0.06]" />
-        {!isAndroid && (
+        {/* Hidden inside the shell for the obvious reason, and because an "install the app" row in
+            the app is the kind of thing App Review notices. */}
+        {!isApp && (
           <SidebarItem
             item={{
-              key: 'nav.android_app',
-              name: 'Get it on Google Play',
-              icon: FaGooglePlay,
-              href: ANDROID_APP_URL,
+              key: appDownload.key,
+              name: appDownload.label,
+              icon: appDownload.icon,
+              href: appDownload.href,
             }}
             currentPage={currentPage}
           />

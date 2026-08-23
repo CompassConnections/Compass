@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- APNs. `development` here is what a debug/TestFlight-from-Xcode build wants; the App Store
+	     distribution build is rewritten to `production` at export time (see ios/fastlane/Fastfile).
+	     Firebase forwards to whichever environment the token was minted in, so a mismatch shows up
+	     as "no push arrives" and nothing else. -->
+	<key>aps-environment</key>
+	<string>development</string>
+	<!-- Universal Links: the iOS counterpart of Android's autoVerify intent filter. Requires
+	     https://compassmeet.com/.well-known/apple-app-site-association to be served as JSON with no
+	     redirect — see web/public/.well-known/apple-app-site-association. -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:compassmeet.com</string>
+		<string>applinks:www.compassmeet.com</string>
+	</array>
+	<!-- App Store guideline 4.8. Unavailable on a free Apple Developer account. -->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+</dict>
+</plist>

@@ -146,6 +146,7 @@ contributors.
 [![CD](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml)
 [![CD API](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml)
 [![CD Android](https://github.com/CompassConnections/Compass/actions/workflows/cd-android.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-android.yml)
+[![CD iOS](https://github.com/CompassConnections/Compass/actions/workflows/cd-ios.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-ios.yml)
 [![CI](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml)
 [![CI E2E](https://github.com/CompassConnections/Compass/actions/workflows/ci-e2e.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci-e2e.yml)
 [![codecov](https://codecov.io/gh/CompassConnections/Compass/branch/main/graph/badge.svg)](https://codecov.io/gh/CompassConnections/Compass)
@@ -336,6 +337,7 @@ There is a lot of documentation in the [docs](docs) folder and across the repo, 
 - [web](web) for the web.
 - [backend/api](backend/api) for the backend API.
 - [android](android) for the Android app.
+- [ios](ios) for the iOS app.
 
 There are a lot of useful scripts you can use in the [scripts](scripts) folder.
 

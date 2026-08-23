@@ -24,11 +24,12 @@ import {useEvent} from 'web/hooks/use-event'
 import {useProfileByUserId} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {firebaseLogin, User} from 'web/lib/firebase/users'
+import {User} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
 import {scrollIntoViewCentered} from 'web/lib/util/scroll'
+import {promptSignIn} from 'web/lib/util/signup'
 
 export function ProfileProfileCommentThread(props: {
   onUser: User
@@ -356,7 +357,7 @@ export function ProfileCommentInput(props: {
   const onSubmitComment = useEvent(async (editor: Editor) => {
     if (!user) {
       track('sign in to comment')
-      await firebaseLogin()
+      await promptSignIn()
       return
     }
     await api('create-comment', {

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CFBundleDevelopmentRegion</key>
+        <string>en</string>
+        <key>CFBundleDisplayName</key>
+        <string>Compass</string>
+        <key>CFBundleExecutable</key>
+        <string>$(EXECUTABLE_NAME)</string>
+        <key>CFBundleIdentifier</key>
+        <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+        <key>CFBundleInfoDictionaryVersion</key>
+        <string>6.0</string>
+        <key>CFBundleName</key>
+        <string>$(PRODUCT_NAME)</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>CFBundleShortVersionString</key>
+        <string>$(MARKETING_VERSION)</string>
+        <key>CFBundleVersion</key>
+        <string>$(CURRENT_PROJECT_VERSION)</string>
+        <!-- US export-compliance (EAR) declaration. Without this key App Store Connect asks the question
+             interactively on *every* upload and parks the build in "Missing Compliance", where testers
+             cannot see it — which would put a manual gate in front of an otherwise automated pipeline.
+             `false` = no non-exempt encryption: the app uses only HTTPS/TLS for transport and standard
+             platform crypto (`crypto.subtle.digest` for the Sign-in-with-Apple nonce is SHA-256, i.e.
+             hashing, not encryption), both of which are exempt. Revisit if we ever add cryptography of
+             our own — end-to-end encrypted messaging, say. -->
+        <key>ITSAppUsesNonExemptEncryption</key>
+        <false/>
+        <!-- The reversed iOS OAuth client id, which is how Google's SDK gets the browser callback back
+             into the app. Must be the exact reverse of IOS_GOOGLE_CLIENT_ID in common/src/constants.ts:
+             `com.googleusercontent.apps.<the part before .apps.googleusercontent.com>`. Placeholder until
+             the iOS client exists — see docs/ios.md §4.4. -->
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>com.googleusercontent.apps.253367029065-0mkes046pjqfn3l5o3lpap1jd3jigmea</string>
+                </array>
+            </dict>
+        </array>
+        <key>LSRequiresIPhoneOS</key>
+        <true/>
+        <!-- Voice auto-fill on the profile form records audio; iOS kills the app outright if the
+             permission is requested without a usage string. Photo library is the profile-picture picker
+             (WKWebView's <input type="file" accept="image/*">). -->
+        <key>NSMicrophoneUsageDescription</key>
+        <string>Compass uses your microphone so you can speak your profile answers instead of typing them.</string>
+        <key>NSCameraUsageDescription</key>
+        <string>Compass uses your camera so you can take a photo for your profile.</string>
+        <key>NSPhotoLibraryUsageDescription</key>
+        <string>Compass needs access to your photos so you can choose a picture for your profile.</string>
+        <key>NSPhotoLibraryAddUsageDescription</key>
+        <string>Compass saves your data export to your photo library when you ask for it.</string>
+        <!-- Dev-mode only: the app loads the cleartext dev server at http://<lan-ip>:3000 (see
+             capacitor.config.ts). NSAllowsLocalNetworking permits exactly that — private-network HTTP —
+             without the blanket NSAllowsArbitraryLoads that App Review rejects. Release builds load the
+             bundled assets and never use it. -->
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <key>NSAllowsLocalNetworking</key>
+            <true/>
+        </dict>
+        <key>UILaunchStoryboardName</key>
+        <string>LaunchScreen</string>
+        <key>UIMainStoryboardFile</key>
+        <string>Main</string>
+        <key>UIRequiredDeviceCapabilities</key>
+        <array>
+            <string>armv7</string>
+        </array>
+        <!-- Push notifications delivered while the app is backgrounded. -->
+        <key>UIBackgroundModes</key>
+        <array>
+            <string>remote-notification</string>
+        </array>
+        <key>UISupportedInterfaceOrientations</key>
+        <array>
+            <string>UIInterfaceOrientationPortrait</string>
+            <string>UIInterfaceOrientationLandscapeLeft</string>
+            <string>UIInterfaceOrientationLandscapeRight</string>
+        </array>
+        <key>UISupportedInterfaceOrientations~ipad</key>
+        <array>
+            <string>UIInterfaceOrientationPortrait</string>
+            <string>UIInterfaceOrientationPortraitUpsideDown</string>
+            <string>UIInterfaceOrientationLandscapeLeft</string>
+            <string>UIInterfaceOrientationLandscapeRight</string>
+        </array>
+        <key>UIViewControllerBasedStatusBarAppearance</key>
+        <true/>
+    </dict>
+</plist>

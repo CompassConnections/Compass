@@ -1,0 +1,10 @@
+app_identifier("com.compassconnections.app")
+
+# Team id comes from the environment so nothing account-specific is committed. In CI it is the
+# APPLE_TEAM_ID secret. Locally it lives in the repo-root .env — which fastlane does NOT load itself
+# (its dotenv only reads fastlane/.env and ios/.env), so source it first:
+#   set -a; source ../.env; set +a
+team_id(ENV["APPLE_TEAM_ID"])
+
+# Apple ID / itc_team_id are deliberately unset: everything authenticates with the App Store Connect
+# API key (see the Fastfile), which needs no interactive login and no 2FA session.

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {ReactNode} from 'react'
+import {ComponentType, ReactNode, SVGProps} from 'react'
 
 /**
  * The shared surface vocabulary for the marketing pages (`/about`, `/home`).
@@ -58,4 +58,30 @@ export const eyebrow = 'text-[11px] font-bold uppercase tracking-[1.2px]'
  */
 export function Section({children, className}: {children: ReactNode; className?: string}) {
   return <section className={clsx('py-14 sm:py-20 first:pt-0', className)}>{children}</section>
+}
+
+/**
+ * The amber tile a section icon sits in.
+ *
+ * Lived in `/about` and was re-typed inline by every page that wanted the same thing — which is how
+ * three slightly different chips end up on three pages. Same reasoning as `eyebrow` above: if two
+ * pages must agree on a token, the token has to have one home.
+ */
+export function IconChip({
+  icon: Icon,
+  large,
+}: {
+  icon: ComponentType<SVGProps<SVGSVGElement>>
+  large?: boolean
+}) {
+  return (
+    <div
+      className={clsx(
+        'rounded-xl bg-primary-100 ring-1 ring-primary-200 flex items-center justify-center flex-shrink-0',
+        large ? 'w-14 h-14' : 'w-11 h-11',
+      )}
+    >
+      <Icon className={clsx('text-primary-600', large ? 'w-7 h-7' : 'w-5 h-5')} strokeWidth={1.8} />
+    </div>
+  )
 }

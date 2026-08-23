@@ -15,7 +15,10 @@ module.exports = {
     '^email/(.*)$': '<rootDir>/../email/emails/$1',
   },
 
-  moduleFileExtensions: ['ts', 'js', 'json'],
+  // 'tsx' so a test can import a component directly — `tests/unit/qr-code.test.ts` renders one to
+  // assert the geometry its scannability depends on. testMatch is still *.test.ts, so this only
+  // widens resolution, it does not pick up new test files.
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
   clearMocks: true,
 
   transform: {

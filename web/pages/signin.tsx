@@ -16,13 +16,13 @@ import {
   AuthShell,
   AuthSubmitButton,
 } from 'web/components/auth/auth-form'
-import {GoogleButton} from 'web/components/buttons/sign-up-button'
+import {AppleButton, GoogleButton} from 'web/components/buttons/sign-up-button'
 import {InfoIcon} from 'web/components/icons'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {useUser} from 'web/hooks/use-user'
 import {sendPasswordReset} from 'web/lib/firebase/password'
-import {auth, firebaseLogin} from 'web/lib/firebase/users'
+import {appleLogin, auth, canAppleLogin, googleLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {signinSignupRedirect} from 'web/lib/util/signup'
 
@@ -42,6 +42,10 @@ function RegisterComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const [_, setIsLoadingGoogle] = useState(false)
   const user = useUser()
+  // Resolved after mount: `canAppleLogin` reads the Capacitor bridge, which the server and the
+  // first client render do not have — deciding during render would be a hydration mismatch.
+  const [showApple, setShowApple] = useState(false)
+  useEffect(() => setShowApple(canAppleLogin()), [])
 
   useEffect(() => {
     const error = searchParams.get('error')
@@ -70,11 +74,11 @@ function RegisterComponent() {
     checkAndRedirect(user?.id)
   }, [user])
 
-  const handleGoogleSignIn = async () => {
+  const handleSocialSignIn = async (login: () => Promise<any>, provider: string) => {
     setIsLoadingGoogle(true)
     setError(null)
     try {
-      const creds = await firebaseLogin()
+      const creds = await login()
       debug('creds', creds)
       if (creds) {
         setIsLoading(true)
@@ -83,12 +87,14 @@ function RegisterComponent() {
       }
     } catch (error) {
       console.error('Error signing in:', error)
-      const message = 'Failed to sign in with Google'
-      setError(message)
+      setError(`Failed to sign in with ${provider}`)
       setIsLoading(false)
       setIsLoadingGoogle(false)
     }
   }
+
+  const handleGoogleSignIn = () => handleSocialSignIn(googleLogin, 'Google')
+  const handleAppleSignIn = () => handleSocialSignIn(appleLogin, 'Apple')
 
   const handleEmailPasswordSignIn = async (email: string, password: string) => {
     try {
@@ -211,6 +217,10 @@ function RegisterComponent() {
             </AuthSubmitButton>
             <AuthDivider label={t('signin.continue', 'Or continue with')} />
             <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading} />
+            {/* App Store guideline 4.8: an app offering third-party social login must also offer
+                Sign in with Apple. Shown in the iOS app (native flow) and in browsers once the
+                Services ID is configured, so an account created on iOS is not locked to it. */}
+            {showApple && <AppleButton onClick={handleAppleSignIn} isLoading={isLoading} />}
           </div>
         </AuthForm>
         <AuthFooter>

@@ -1,0 +1,43 @@
+# ios
+
+Capacitor wrapper that loads the Next.js build into a WKWebView. Swift shell; the actual app is the
+`web` build, synced in via `npx cap sync ios`.
+
+See [README.md](README.md) for build, signing, TestFlight and debugging, and
+[`../docs/ios.md`](../docs/ios.md) for the plan and the remaining manual steps. Cross-package context
+is in the [root CLAUDE.md](../CLAUDE.md).
+
+## What's here vs not here
+
+- Native scaffolding (`App/`, `Podfile`, `Info.plist`, `App.entitlements`, `AppDelegate.swift`).
+- The web bundle lives in `/web` — to refresh it:
+  ```bash
+  yarn build-sync-ios          # build-web-view + cap sync ios + icon generation
+  ```
+- `ios/App/App/public`, `GoogleService-Info.plist`, `Pods/` and every generated PNG are gitignored.
+
+## Things that are easy to get wrong
+
+- **Push is FCM, not raw APNs.** `AppDelegate.swift` hands the APNs token to FirebaseMessaging and
+  posts the *FCM* token back on `.capacitorDidRegisterForRemoteNotifications`. Without that the JS
+  side would save an APNs token that `sendPushToToken` (backend/shared/src/mobile.ts) cannot address.
+- **The `apns` block in `sendPushToToken` is load-bearing.** Without it an iOS push is data-only:
+  nothing is displayed and delivery is best-effort.
+- **Versioning**: `CURRENT_PROJECT_VERSION` (= `versionCode`) must strictly increase per upload;
+  `MARKETING_VERSION` (= `versionName`) should match `android/app/build.gradle`. Both live in
+  `App/App.xcodeproj/project.pbxproj`, and bumping the first is what triggers the release workflow.
+- **Placeholders that must be filled before shipping**: `IOS_GOOGLE_CLIENT_ID` in
+  `common/src/constants.ts` plus its reversed twin in `Info.plist`, and `APPLE_TEAM_ID` in
+  `web/public/.well-known/apple-app-site-association`.
+- **Don't add a custom `scheme`** in `capacitor.config.ts`. The default `capacitor://localhost` is a
+  secure origin, which `getUserMedia` (voice auto-fill) and `crypto.subtle` (the Sign-in-with-Apple
+  nonce) both need.
+- **Platform branching in web code** goes through `isIosApp()` / `isAndroidApp()` /
+  `isNativeApp()` in `web/lib/util/webview.ts`. `isNativeApp()` is the default — the product is meant
+  to look the same on both.
+
+## Editing the Xcode project without Xcode
+
+`project.pbxproj`, `Info.plist` and `*.entitlements` are all text and are fine to edit directly.
+`npx cap sync ios` rewrites the `capacitor_pods` block of the `Podfile` and the `public/` folder, and
+leaves everything else alone — hand-added pods below `capacitor_pods` survive.

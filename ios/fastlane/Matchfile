@@ -1,0 +1,12 @@
+# fastlane match keeps the distribution certificate and provisioning profiles in a private git repo,
+# encrypted with MATCH_PASSWORD. That repo is the reason CI can sign without a Mac in the loop: a
+# fresh runner clones it, decrypts, and installs into a temporary keychain.
+#
+# Why not `-allowProvisioningUpdates` with the API key instead: it can *create* a distribution
+# certificate but cannot persist its private key, so every CI run would burn one of the three
+# certificates an account is allowed. match reuses the same one forever.
+git_url(ENV["MATCH_GIT_URL"])
+storage_mode("git")
+type("appstore")
+app_identifier(["com.compassconnections.app"])
+readonly(ENV["CI"] == "true")

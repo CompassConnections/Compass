@@ -16,6 +16,7 @@ Compass (compassmeet.com) is a transparent dating platform for forming deep, aut
 /common               # Shared types and utilities between frontend/backend
 /supabase             # Database schema and migrations
 /android              # Android mobile app
+/ios                  # iOS mobile app
 ```
 
 ## Key Conventions

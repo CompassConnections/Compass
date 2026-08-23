@@ -20,7 +20,7 @@ import {
   savePendingRecording,
   savePendingTranscript,
 } from 'web/lib/util/recording-store'
-import {isAndroidApp} from 'web/lib/util/webview'
+import {isNativeApp} from 'web/lib/util/webview'
 
 function formatTime(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60)
@@ -120,9 +120,9 @@ export function VoiceAutofillSection(props: {
 
   const errorMessage =
     recorder.error === 'permission'
-      ? // In the Android app there is no browser to change a setting in: the prompt is Android's, and
-        // once denied it can only be undone from the app's own permission screen.
-        isAndroidApp()
+      ? // In the native app there is no browser to change a setting in: the prompt is the OS's, and
+        // once denied it can only be undone from the app's own permission screen in system settings.
+        isNativeApp()
         ? t(
             'profile.voice.error.permission_app',
             'We could not access your microphone. Allow the Microphone permission for Compass in your device settings, then try again.',

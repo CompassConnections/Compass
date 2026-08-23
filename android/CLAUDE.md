@@ -3,7 +3,7 @@
 Capacitor wrapper that loads the Next.js build into an Android WebView. Java/Kotlin shell; the actual app
 is the `web` build, synced in via `npx cap sync android`.
 
-See [README.md](README.md) for the full build, signing, Firebase, Play Store, and live-update flow.
+See [README.md](README.md) for the full build, signing, Firebase and Play Store flow.
 Cross-package context is in the [root CLAUDE.md](../CLAUDE.md).
 
 ## What's here vs not here
@@ -51,10 +51,17 @@ Push to `main` with a bumped `versionCode` in `app/build.gradle` triggers
 uploads to Play Console. Manual release: build a signed AAB in Android Studio and upload yourself. See
 [README.md](README.md) for keystore + Play API setup.
 
-## Live updates
+## Live updates (removed)
 
-Disabled as of early 2026 — free Capawesome plan capped at 100 MAU, no longer enough. Web changes ship via
-the normal Play Store release. The `capawesome.json` and GitHub Action are still wired up if we re-enable.
+Capawesome live updates were disabled in early 2026 (free plan capped at 100 MAU) and **removed entirely in
+August 2026** — the plugin, `capawesome.json`, `scripts/android_live_update.sh` and the GitHub Action are
+all gone. Web changes ship via the normal Play Store / App Store release.
+
+Removed rather than left dormant because the dependency was still being synced into both native shells,
+including the new iOS one, where a remote-bundle mechanism is an extra thing to justify under App Review.
+Re-enabling means re-adding `@capawesome/capacitor-live-update` to `web/package.json`, the `LiveUpdate`
+block and `includePlugins` entry in `capacitor.config.ts`, and restoring the deleted files from git
+history.
 
 ## Caveats
 

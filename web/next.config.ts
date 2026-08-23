@@ -122,6 +122,22 @@ const nextConfig: NextConfig = {
     // sit under /api to be a real request handler rather than a prerendered page.
     return [{source: '/feed.xml', destination: '/api/feed.xml'}]
   },
+  async headers() {
+    // Static export: no server to set headers, and the app doesn't serve this file anyway.
+    if (isAppBuild) {
+      return []
+    }
+    return [
+      {
+        // Universal Links: iOS refuses to associate the app with the domain unless this file comes
+        // back as JSON, and it has no extension for the static handler to infer that from. It must
+        // also be served with no redirect — a 301 from apex to www, or the other way, breaks the
+        // association silently.
+        source: '/.well-known/apple-app-site-association',
+        headers: [{key: 'Content-Type', value: 'application/json'}],
+      },
+    ]
+  },
   async redirects() {
     return [
       // The off-domain short links (/discord, /paypal, ...) live in `common` because the Android

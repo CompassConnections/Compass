@@ -1,3 +1,4 @@
+import {assertNotBlocked} from 'api/helpers/blocks'
 import {validateCommentAuthor} from 'api/helpers/comment'
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {MAX_VOTE_COMMENT_LENGTH} from 'common/comment'
@@ -54,6 +55,12 @@ export const createVoteComment: APIHandler<'create-vote-comment'> = async (
       [Number(replyToCommentId), voteId],
     )
     if (!parent) throw APIErrors.notFound('Comment replied to was not found')
+
+    // A proposal has no owner to have blocked you, so unlike `create-comment.ts` there is nothing to
+    // guard at the top level — a block should not silence someone in a public governance thread. What
+    // it does cover is directing a reply *at* a specific person.
+    await assertNotBlocked(auth.uid, [parent.user_id])
+
     parentId = parent.reply_to_comment_id ?? parent.id
   }
 

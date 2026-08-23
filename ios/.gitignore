@@ -1,0 +1,35 @@
+App/build
+App/Pods
+App/output
+App/App/public
+DerivedData
+xcuserdata
+
+# Cordova plugins for Capacitor
+capacitor-cordova-ios-plugins
+
+# Generated Config files
+App/App/capacitor.config.json
+App/App/config.xml
+
+# Firebase config — mirrors android/app/.gitignore. Written from the IOS_GOOGLE_SERVICES_PLIST
+# secret in CI; download it from the Firebase console for a local build.
+App/App/GoogleService-Info.plist
+
+# Bundler installs project-local (`bundle config set --local path vendor/bundle`) so fastlane's gems
+# never need root and cannot collide with system Ruby.
+vendor/bundle
+.bundle
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/README.md
+*.ipa
+*.dSYM.zip
+
+# Claude Code session worktrees — local scratch, never                 
+  shared.
+.claude/worktrees/

@@ -22,11 +22,11 @@ import {
 import {GlobeAltIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {
-  ANDROID_APP_URL,
   discordLink,
   FINANCIALS,
   formLink,
   githubRepo,
+  IS_IOS_APP_PUBLISHED,
   OG_DESCRIPTION,
 } from 'common/constants'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
@@ -50,7 +50,7 @@ import {
 import {Reveal} from 'web/components/widgets/reveal'
 import {ShareCompassButton} from 'web/components/widgets/share-compass-button'
 import {DistRow, labelFor} from 'web/components/widgets/stat-distribution'
-import {eyebrow, Section, surface} from 'web/components/widgets/surface'
+import {eyebrow, IconChip as SharedIconChip, Section, surface} from 'web/components/widgets/surface'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
@@ -83,18 +83,9 @@ interface HelpCardProps {
  * Ten identically-sized chips down the page was a large part of why nothing read as more important than
  * anything else.
  */
-function IconChip({icon: Icon, large}: {icon: IconType; large?: boolean}) {
-  return (
-    <div
-      className={clsx(
-        'rounded-xl bg-primary-100 ring-1 ring-primary-200 flex items-center justify-center flex-shrink-0',
-        large ? 'w-14 h-14' : 'w-11 h-11',
-      )}
-    >
-      <Icon className={clsx('text-primary-600', large ? 'w-7 h-7' : 'w-5 h-5')} strokeWidth={1.8} />
-    </div>
-  )
-}
+// Moved to `web/components/widgets/surface.tsx` — `/download` needs the same chip, and two copies
+// of a design token is how they drift. Re-exported here so the rest of this file reads unchanged.
+const IconChip = SharedIconChip
 
 // ─── Feature Card ─────────────────────────────────────────────────────────────
 
@@ -686,7 +677,7 @@ function VisibilityToggleMock() {
  */
 
 /**
- * The visual beside "Browser, Android, and a home-screen app on iPhone." — the three platforms named as
+ * The visual beside "Browser, Android, and iPhone." — the three platforms named as
  * rows instead of left as a sentence to parse. Static: this is where the product runs, not a number, so
  * nothing here is fetched.
  */
@@ -707,7 +698,10 @@ function PlatformGlyphs() {
     {
       icon: FaApple,
       name: t('about.platforms.mock.iphone', 'iPhone'),
-      sub: t('about.platforms.mock.iphone_sub', 'Add to Home Screen'),
+      // Same branch, same reason as the paragraph beside it.
+      sub: IS_IOS_APP_PUBLISHED
+        ? t('about.platforms.mock.iphone_sub.v2', 'App Store')
+        : t('about.platforms.mock.iphone_sub.pending', 'App Store · in review'),
     },
   ]
 
@@ -1415,21 +1409,31 @@ export default function About() {
               <ProseBlock
                 icon={DevicePhoneMobileIcon}
                 label={t('about.platforms.eyebrow', 'Where it runs')}
-                title={t('about.platforms.title', 'Browser, Android, and iPhone.')}
+                title={t('about.platforms.title.v2', 'Browser, Android, and iPhone.')}
                 links={[
                   {
-                    href: ANDROID_APP_URL,
-                    label: t('about.platforms.android', 'Android app →'),
-                    external: true,
+                    href: '/download',
+                    label: t('about.platforms.get', 'Get the app →'),
                   },
                 ]}
                 visual={<PlatformGlyphs />}
               >
+                {/* Two keys, picked at render, rather than one hedged sentence. The iOS half of
+                    this paragraph stops being true the moment the App Store listing goes live, and
+                    a marketing page that quietly keeps telling iPhone users to bookmark Safari
+                    afterwards is worse than the branch. Both are new keys: the fr/de files already
+                    translate `about.platforms.p1` as Android-only, and those win over the English
+                    fallback. */}
                 <p>
-                  {t(
-                    'about.platforms.p1',
-                    'The web app works in any browser. There’s an Android app on Google Play. On iPhone, add Compass to your home screen from Safari and it behaves like an app. The interface is in English, French and German, and there is a public API.',
-                  )}
+                  {IS_IOS_APP_PUBLISHED
+                    ? t(
+                        'about.platforms.p1.v3',
+                        'The web app works in any browser, and there are native apps for Android and iPhone — both wrapping this same site, both in the same public repository. The interface is in English, French and German, and there is a public API.',
+                      )
+                    : t(
+                        'about.platforms.p1.v3_pending',
+                        'The web app works in any browser. There’s an Android app on Google Play, and the iPhone app is with Apple for review — until it clears, add Compass to your home screen from Safari and it behaves like an app. The interface is in English, French and German, and there is a public API.',
+                      )}
                 </p>
               </ProseBlock>
             </Reveal>

@@ -22,6 +22,7 @@ packages. Backed by Supabase (Postgres), Firebase (auth + media), Vercel (web), 
 | `common/`           | Types + pure utils shared by web and backend    | [`common/CLAUDE.md`](common/CLAUDE.md)                     |
 | `supabase/`         | Active migrations + local-stack config          | [`supabase/CLAUDE.md`](supabase/CLAUDE.md)                 |
 | `android/`          | Capacitor WebView wrapper around the web build  | [`android/CLAUDE.md`](android/CLAUDE.md)                   |
+| `ios/`              | Capacitor WKWebView wrapper around the same     | [`ios/CLAUDE.md`](ios/CLAUDE.md)                           |
 
 ### Import boundaries (load-bearing)
 
@@ -111,9 +112,12 @@ Frontend: [`docs/next-js.md`](docs/next-js.md), [`docs/react.md`](docs/react.md)
 Database: [`docs/database-schema.md`](docs/database-schema.md),
 [`docs/database-connection-pooling.md`](docs/database-connection-pooling.md),
 [`docs/performance-optimization.md`](docs/performance-optimization.md).
+Releases: [`docs/releases.md`](docs/releases.md) — web, Android and iOS share one version number
+(root `package.json` `version`, `versionName`, `MARKETING_VERSION`); the per-store build counters do not.
 Cross-cutting: [`docs/feed.md`](docs/feed.md),
 [`docs/internationalization.md`](docs/internationalization.md),
 [`docs/profile-fields.md`](docs/profile-fields.md), [`docs/testing.md`](docs/testing.md),
 [`docs/logging-monitoring.md`](docs/logging-monitoring.md),
 [`docs/troubleshooting.md`](docs/troubleshooting.md).
-Mobile: [`android/README.md`](android/README.md), [`docs/ios.md`](docs/ios.md) (iOS plan, not built yet).
+Mobile: [`android/README.md`](android/README.md), [`ios/README.md`](ios/README.md),
+[`docs/ios.md`](docs/ios.md) (iOS plan and remaining manual steps).

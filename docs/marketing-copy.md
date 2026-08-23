@@ -21,7 +21,7 @@ persuasive than anything currently on the page. Three specific problems drove th
    educated, globally scattered, EA/rationalist-adjacent, a third vegetarian — and it is described nowhere.
    "Find people who share your values, ideas, and intentions" describes every social product ever built.
 3. **The logged-out page is less honest than the logged-in one.** Members see "Compass is in its early
-   growth phase — 700+ members and ~100 new people joining every month" (`profiles-home.tsx:337`).
+   growth phase — 800+ members and ~100 new people joining every month" (`profiles-home.tsx:337`).
    Visitors see a finished product. The gap between what the page implies and what a new member finds in
    their city is the biggest churn driver available, and it is fixable in copy alone.
 

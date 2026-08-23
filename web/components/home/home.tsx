@@ -76,7 +76,7 @@ function SocialAvatar({letter, gradient}: SocialAvatarProps) {
 /**
  * The line under the hero CTAs.
  *
- * It used to read "Joined by 700+ real people worldwide" — a *size* claim, in the one place on the site
+ * It used to read "Joined by X real people worldwide" — a *size* claim, in the one place on the site
  * where a visitor is reflexively comparing Compass to apps with millions of users, which is the comparison
  * it loses. It now reports activity instead: conversations and messages answer the question actually being
  * asked this early ("is anyone here, does anyone reply?") without stating how small the pool is. The

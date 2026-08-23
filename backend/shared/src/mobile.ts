@@ -114,6 +114,28 @@ export async function sendPushToToken(
         tag: payload.collapseKey,
       },
     },
+    // Without this block an iOS token gets a *data-only* push: nothing is displayed and APNs is
+    // free to delay or drop it. The alert has to be spelled out here — the `android` block above is
+    // ignored on iOS, and there is no cross-platform `notification` field we could share, because
+    // that one would then also apply on Android and duplicate the tray entry.
+    apns: {
+      headers: {
+        // 10 = deliver now and wake the app; the default (5) lets iOS sit on it for power saving.
+        'apns-priority': '10',
+        // The APNs analogue of collapseKey: a later notification replaces the earlier one carrying
+        // the same id, so a conversation occupies one slot rather than stacking.
+        ...(payload.collapseKey ? {'apns-collapse-id': payload.collapseKey} : {}),
+      },
+      payload: {
+        aps: {
+          alert: {title: payload.title, body: payload.body},
+          sound: 'default',
+        },
+      },
+      // Rich images additionally need a Notification Service Extension target to download and
+      // attach them; until that exists this is a no-op and the plain alert still shows.
+      fcmOptions: payload.imageUrl ? {imageUrl: payload.imageUrl} : undefined,
+    },
     data: {
       endpoint: payload.url,
     },

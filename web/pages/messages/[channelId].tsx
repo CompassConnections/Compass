@@ -39,15 +39,15 @@ import {
   useSortedPrivateMessageMemberships,
 } from 'web/hooks/use-private-messages'
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
-import {useUser} from 'web/hooks/use-user'
+import {isBlocked, usePrivateUser, useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {useVisualViewportHeight} from 'web/hooks/use-visual-viewport-height'
 import {api} from 'web/lib/api'
-import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {useGroupedMessages, usePaginatedScrollingMessages} from 'web/lib/supabase/chat-messages'
 import {copyToClipboard} from 'web/lib/util/copy'
+import {promptSignIn} from 'web/lib/util/signup'
 
 export default function PrivateMessagesPage() {
   const router = useRouter()
@@ -226,6 +226,13 @@ export const PrivateChat = (props: {
   )
   // They left the chat but their account is still around, so we can name them.
   const leftMembers = members.filter((member) => leftMemberIds.includes(member.id))
+
+  // Blocking leaves the thread readable but not writable. Hiding it outright would destroy the
+  // evidence someone needs to file a report right after blocking, so the history stays and only the
+  // composer is replaced. The server refuses the send either way — see
+  // `backend/api/src/create-private-user-message.ts`.
+  const privateUser = usePrivateUser()
+  const blockedInChannel = (otherUsers ?? []).some((member) => isBlocked(privateUser, member.id))
   const router = useRouter()
 
   // Check ban status for messaging restrictions
@@ -279,7 +286,7 @@ export const PrivateChat = (props: {
     async (_type?: 'comment' | 'repost') => {
       if (!user) {
         track('sign in to comment')
-        return await firebaseLogin()
+        return await promptSignIn()
       }
       if (!editor || editor.isEmpty || isSubmitting || !channelId) return
       setIsSubmitting(true)
@@ -622,6 +629,15 @@ export const PrivateChat = (props: {
           </div>
         ) : user.isBannedFromPosting ? (
           <AccountOnHoldNotice reason={user.banReason} className="m-2" compact />
+        ) : blockedInChannel ? (
+          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
+            <span className="text-ink-500 text-sm">
+              {t(
+                'messages.cannot_message_blocked',
+                "This conversation is blocked, so you can't reply. You can still read it and report it.",
+              )}
+            </span>
+          </div>
         ) : noOtherUser ? (
           <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
             <span className="text-ink-500 text-sm">

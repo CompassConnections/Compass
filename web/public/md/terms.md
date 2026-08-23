@@ -105,8 +105,9 @@ granularity you choose.
 
 ## Safety tools, moderation, and holds
 
-You can [block](/settings) a member, hide a profile, report a person or a piece of content, and leave any
-conversation. Reports go to human moderators.
+You can block a member, hide a profile, report a person or a piece of content, and leave any
+conversation — block and report are both in the ⋮ menu at the top of someone's profile, and a
+conversation can also be reported from inside it. Reports go to human moderators.
 
 Some limits are enforced automatically:
 

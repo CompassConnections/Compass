@@ -1,0 +1,35 @@
+require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
+
+platform :ios, '14.0'
+use_frameworks!
+
+# workaround to avoid Xcode caching of Pods that requires
+# Product -> Clean Build Folder after new Cordova plugins installed
+# Requires CocoaPods 1.6 or newer
+install! 'cocoapods', :disable_input_output_paths => true
+
+def capacitor_pods
+  pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
+  pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
+  pod 'CapacitorApp', :path => '../../node_modules/@capacitor/app'
+  pod 'CapacitorFilesystem', :path => '../../node_modules/@capacitor/filesystem'
+  pod 'CapacitorKeyboard', :path => '../../node_modules/@capacitor/keyboard'
+  pod 'CapacitorPushNotifications', :path => '../../node_modules/@capacitor/push-notifications'
+  pod 'CapacitorShare', :path => '../../node_modules/@capacitor/share'
+  pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
+  pod 'CapgoCapacitorSocialLogin', :path => '../../node_modules/@capgo/capacitor-social-login'
+end
+
+target 'App' do
+  capacitor_pods
+  # Add your Pods here
+
+  # Push goes through FCM on both platforms so the backend has one kind of token to address
+  # (see AppDelegate.swift). Pinned to the 11.x line, which still supports iOS 14 — 12.x raises the
+  # floor to iOS 15. Bump both together if we ever drop iOS 14.
+  pod 'FirebaseMessaging', '~> 11.15'
+end
+
+post_install do |installer|
+  assertDeploymentTarget(installer)
+end

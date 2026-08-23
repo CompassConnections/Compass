@@ -89,12 +89,23 @@ export const useWebsocketPrivateUser = (userId: string | undefined) => {
   return privateUser
 }
 
-// export const isBlocked = (
-//   privateUser: PrivateUser | null | undefined,
-//   otherUserId: string
-// ) => {
-//   return (
-//     privateUser?.blockedUserIds.includes(otherUserId) ||
-//     privateUser?.blockedByUserIds.includes(otherUserId)
-//   )
-// }
+/**
+ * Whether `otherUserId` is blocked, in either direction — you blocked them, or they blocked you.
+ *
+ * Symmetric on purpose. A one-directional check would let the person who did the blocking carry on
+ * seeing and contacting the person they blocked, which is not what the button promises ("You'll no
+ * longer see content from this user"), and would leave the blocked party visible to their blocker
+ * while the reverse was hidden.
+ *
+ * This is the display-layer check only. The authoritative enforcement is server-side — see
+ * `backend/api/src/helpers/blocks.ts` — because `blockedByUserIds` is a denormalised mirror and a
+ * client can simply not call this.
+ */
+export const isBlocked = (privateUser: PrivateUser | null | undefined, otherUserId: string) =>
+  !!privateUser &&
+  ((privateUser.blockedUserIds ?? []).includes(otherUserId) ||
+    (privateUser.blockedByUserIds ?? []).includes(otherUserId))
+
+/** The full set of ids to hide from lists, for filtering comments and other embedded user content. */
+export const blockedUserIdSet = (privateUser: PrivateUser | null | undefined) =>
+  new Set([...(privateUser?.blockedUserIds ?? []), ...(privateUser?.blockedByUserIds ?? [])])

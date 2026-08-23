@@ -551,7 +551,7 @@
   "font.atkinson": "Atkinson Hyperlegible",
   "font.classic-serif": "Serif classique",
   "font.system-sans": "Sans-serif système",
-  "help.account.delete_instructions": "Vous voulez supprimer votre compte ? Allez dans les paramètres de votre profil, cliquez sur le menu à trois points en haut à droite, puis sélectionnez « Supprimer le compte »",
+  "help.account.delete_instructions": "Vous voulez supprimer votre compte ? Allez dans Paramètres → Général et cliquez sur « Supprimer le compte » en bas. Vous pouvez aussi aller directement sur /delete-account.",
   "help.account.login_issue": "Impossible de se connecter ? Essayez de vous déconnecter puis de vous reconnecter, ou actualisez la page et réessayez.",
   "help.account.profile_update": "Les mises à jour du profil n'apparaissent pas ? Patientez quelques secondes et actualisez. Si le problème persiste, signalez-le via le formulaire de contact.",
   "help.account.title": "Problèmes de compte et de profil",
@@ -608,7 +608,7 @@
   "home.cta.primary": "Commencer — gratuit",
   "home.cta.secondary": "Découvre comment ça fonctionne",
   "home.proof.prefix": "Rejoint par ",
-  "home.proof.count": "700+",
+  "home.proof.count": "800+",
   "home.proof.suffix": " personnes réelles dans le monde entier",
   "home.features.label": "Pourquoi Compass",
   "home.features.title": "Différent. Intentionnellement.",
@@ -1432,7 +1432,7 @@
   "profile_grid.undo": "Annuler",
   "profile_grid.unhide_profile": "Afficher à nouveau dans les résultats de recherche",
   "profiles.dismiss": "Fermer",
-  "profiles.early_growth": "Compass est dans sa phase de croissance initiale — 700+ membres et ~100 nouvelles personnes chaque mois. Construisez un profil solide maintenant et soyez visible alors que la communauté grandit.",
+  "profiles.early_growth": "Compass est dans sa phase de croissance initiale — 800+ membres et ~100 nouvelles personnes chaque mois. Construisez un profil solide maintenant et soyez visible alors que la communauté grandit.",
   "profiles.filter_guide": "Filtrez ci-dessous par intention, âge, lieu et plus encore",
   "profiles.hidden_success": "Profil masqué. Vous ne verrez plus cette personne dans les résultats de recherche.",
   "profiles.interactive_profiles": "Les profils sont interactifs — cliquez sur n'importe quelle carte pour en savoir plus et entrer en contact.",
@@ -1480,6 +1480,7 @@
   "constellation.hint": "Touchez une étoile pour savoir qui elle est. Faites défiler ou pincez pour zoomer, glissez pour vous déplacer.",
   "register.agreement.and": " et ",
   "register.agreement.prefix": "En vous inscrivant, j'accepte les ",
+  "register.agreement.checkbox_prefix": "J'accepte les ",
   "register.agreement.suffix": ".",
   "register.already_account": "Vous avez déjà un compte ?",
   "register.back_to_login": "Retour à la connexion",
@@ -2201,5 +2202,6 @@
   "blog.back": "← Tous les articles",
   "nav.blog": "Blog",
   "nav.invite": "Inviter",
-  "about.share.see_yours": "Voyez qui vous avez déjà amené"
+  "about.share.see_yours": "Voyez qui vous avez déjà amené",
+  "register.error.terms_required": "Veuillez accepter les Conditions générales et la Politique de confidentialité pour continuer."
 }

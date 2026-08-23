@@ -4,7 +4,7 @@ import {debug} from 'common/logger'
 import {createUserWithEmailAndPassword} from 'firebase/auth'
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
-import React, {Suspense, useState} from 'react'
+import React, {Suspense, useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
 import {
   AuthDivider,
@@ -17,13 +17,18 @@ import {
   AuthShell,
   AuthSubmitButton,
 } from 'web/components/auth/auth-form'
-import {GoogleButton} from 'web/components/buttons/sign-up-button'
+import {AppleButton, GoogleButton} from 'web/components/buttons/sign-up-button'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {NewTabLink} from 'web/components/widgets/new-tab-link'
-import {auth} from 'web/lib/firebase/users'
+import {auth, canAppleLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
-import {googleSigninSignup, setOnboardingFlag, signinSignupRedirect} from 'web/lib/util/signup'
+import {
+  appleSigninSignup,
+  googleSigninSignup,
+  setOnboardingFlag,
+  signinSignupRedirect,
+} from 'web/lib/util/signup'
 
 export default function RegisterPage() {
   return (
@@ -42,6 +47,27 @@ function RegisterComponent() {
   const [isLoading, setIsLoading] = useState(false)
   const [registrationSuccess, setRegistrationSuccess] = useState(false)
   const [registeredEmail, _] = useState('')
+  // Resolved after mount: `canAppleLogin` reads the Capacitor bridge, which the server and the
+  // first client render do not have — deciding during render would be a hydration mismatch.
+  const [showApple, setShowApple] = useState(false)
+  useEffect(() => setShowApple(canAppleLogin()), [])
+  // Explicit rather than implied consent. App Store Review reads Guideline 1.2 strictly for
+  // UGC/dating-adjacent apps and expects an affirmative act, not a "by signing up you agree" line.
+  // It gates every route into an account — email, Google and Apple — because all three create one.
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
+
+  const requireAgreement = (signUp: () => void) => () => {
+    if (!agreedToTerms) {
+      setError(
+        t(
+          'register.error.terms_required',
+          'Please accept the Terms and Conditions and Privacy Policy to continue.',
+        ),
+      )
+      return
+    }
+    signUp()
+  }
 
   // function redirect() {
   //   // Redirect to complete profile page
@@ -92,6 +118,17 @@ function RegisterComponent() {
       // Basic validation
       if (!email || !password) {
         handleError(t('register.error.all_fields_required', 'All fields are required'))
+        setIsLoading(false)
+        return
+      }
+
+      if (!agreedToTerms) {
+        handleError(
+          t(
+            'register.error.terms_required',
+            'Please accept the Terms and Conditions and Privacy Policy to continue.',
+          ),
+        )
         setIsLoading(false)
         return
       }
@@ -200,13 +237,27 @@ function RegisterComponent() {
                 />
               </AuthFieldGroup>
 
-              <p className="text-sm mt-2 text-center text-ink-600 custom-link">
-                {t('register.agreement.prefix', 'By signing up, I agree to the ')}
-                <NewTabLink href="/terms">{t('register.terms', 'Terms and Conditions')}</NewTabLink>
-                {t('register.agreement.and', ' and ')}
-                <NewTabLink href="/privacy">{t('register.privacy', 'Privacy Policy')}</NewTabLink>
-                {t('register.agreement.suffix', '.')}
-              </p>
+              <label className="mt-2 flex items-start gap-2 text-sm text-ink-600 custom-link cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="terms"
+                  checked={agreedToTerms}
+                  onChange={(e) => {
+                    setAgreedToTerms(e.target.checked)
+                    if (e.target.checked) setError(null)
+                  }}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-ink-300 text-primary-500 focus:ring-primary-500"
+                />
+                <span>
+                  {t('register.agreement.checkbox_prefix', 'I agree to the ')}
+                  <NewTabLink href="/terms">
+                    {t('register.terms', 'Terms and Conditions')}
+                  </NewTabLink>
+                  {t('register.agreement.and', ' and ')}
+                  <NewTabLink href="/privacy">{t('register.privacy', 'Privacy Policy')}</NewTabLink>
+                  {t('register.agreement.suffix', '.')}
+                </span>
+              </label>
 
               <AuthError>{error}</AuthError>
 
@@ -217,7 +268,17 @@ function RegisterComponent() {
                     : t('register.button.email', 'Sign up with Email')}
                 </AuthSubmitButton>
                 <AuthDivider label={t('register.or_sign_up_with', 'Or sign up with')} />
-                <GoogleButton onClick={googleSigninSignup} isLoading={isLoading} />
+                <GoogleButton
+                  onClick={requireAgreement(googleSigninSignup)}
+                  isLoading={isLoading}
+                />
+                {/* App Store guideline 4.8 — see the same block in signin.tsx. */}
+                {showApple && (
+                  <AppleButton
+                    onClick={requireAgreement(appleSigninSignup)}
+                    isLoading={isLoading}
+                  />
+                )}
               </div>
             </AuthForm>
             <AuthFooter>

@@ -172,6 +172,10 @@ export function getShareProfilePostText(t: Translate) {
   )
 }
 
+/** X's composer, pre-filled. Split out so the profile and the whole-site shares can't drift apart. */
+const getXIntentUrl = (text: string, url: string) =>
+  `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+
 export function getXShareProfileUrl(
   t: Translate,
   username?: string,
@@ -180,10 +184,10 @@ export function getXShareProfileUrl(
 ) {
   // X counts every link as 23 characters regardless of length, so the blurb plus the handle plus the
   // link sits around 210 of the 280 — room left for whatever the sharer types in front of it.
-  const encodedText = encodeURIComponent(getShareProfilePostText(t) + '\n\n@compassmeet')
-  const encodedUrl = encodeURIComponent(url ?? `${DEPLOYED_WEB_URL}/${username || ''}`)
-
-  return `https://x.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`
+  return getXIntentUrl(
+    getShareProfilePostText(t) + '\n\n@compassmeet',
+    url ?? `${DEPLOYED_WEB_URL}/${username || ''}`,
+  )
 }
 
 /**
@@ -200,8 +204,41 @@ export function getLinkedInShareProfileUrl(
   /** Overrides the bare profile URL — pass the referrer-tagged link so the share is credited. */
   url?: string,
 ) {
-  const encodedText = encodeURIComponent(getShareProfilePostText(t))
-  const encodedUrl = encodeURIComponent(url ?? `${DEPLOYED_WEB_URL}/${username || ''}`)
+  return getLinkedInShareUrl(
+    getShareProfilePostText(t),
+    url ?? `${DEPLOYED_WEB_URL}/${username || ''}`,
+  )
+}
 
-  return `https://www.linkedin.com/feed/?shareActive=true&text=${encodedText}&shareUrl=${encodedUrl}`
+/** Same endpoint, same reason as `getXIntentUrl` — see the note above on why it isn't `share-offsite`. */
+const getLinkedInShareUrl = (text: string, url: string) =>
+  `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(
+    text,
+  )}&shareUrl=${encodeURIComponent(url)}`
+
+/**
+ * The blurb a public post about *Compass itself* carries — the /about and /referrals "Share Compass"
+ * shares, as opposed to a share of one profile.
+ *
+ * Not `about.share.text`: that one is the message you send a friend directly, opening "Hi! Reaching out
+ * about something I care about" and running two paragraphs. A timeline is not a friend, so this keeps
+ * the same beats — what Compass is, and that it improves as people join — in one post-shaped sentence.
+ */
+export function getShareCompassPostText(t: Translate) {
+  return t(
+    'about.share.post_text',
+    'Compass is a free directory for finding your people — searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm. It gets better with every person who joins.',
+  )
+}
+
+export function getXShareCompassUrl(
+  t: Translate,
+  /** The link to post — pass the referrer-tagged one so the share is credited to the sharer. */
+  url?: string,
+) {
+  return getXIntentUrl(getShareCompassPostText(t) + '\n\n@compassmeet', url ?? DEPLOYED_WEB_URL)
+}
+
+export function getLinkedInShareCompassUrl(t: Translate, url?: string) {
+  return getLinkedInShareUrl(getShareCompassPostText(t), url ?? DEPLOYED_WEB_URL)
 }

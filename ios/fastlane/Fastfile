@@ -1,0 +1,111 @@
+# Release pipeline for the iOS app. Mirrors what `.github/workflows/cd-android.yml` does for Play:
+# build the already-synced web export into a signed binary and hand it to the store's beta track.
+#
+# Run from `ios/`:
+#   bundle exec fastlane beta        # build + upload to TestFlight
+#
+# Everything authenticates with an App Store Connect API key (.p8) rather than an Apple ID, so there
+# is no 2FA session to keep alive. See docs/ios.md §7 for the secrets this needs.
+
+default_platform(:ios)
+
+APP_IDENTIFIER = "com.compassconnections.app"
+XCODE_WORKSPACE = "App/App.xcworkspace"
+ENTITLEMENTS = "App/App/App.entitlements"
+
+# Shared by every lane that talks to Apple. Authenticating with an App Store Connect API key rather
+# than an Apple ID is what keeps CI unattended — there is no 2FA prompt to answer.
+def asc_api_key
+  app_store_connect_api_key(
+    key_id: ENV.fetch("APP_STORE_CONNECT_KEY_ID"),
+    issuer_id: ENV.fetch("APP_STORE_CONNECT_ISSUER_ID"),
+    key_content: ENV.fetch("APP_STORE_CONNECT_KEY_P8"),
+    is_key_content_base64: true,
+  )
+end
+
+platform :ios do
+  desc "Seed the match certificate repo. Run this ONCE, ever, from a trusted machine."
+  desc "Usage: set -a; source ../.env; set +a; bundle exec fastlane certs"
+  lane :certs do
+    # Do NOT run `fastlane match appstore` from the command line instead of this lane. That invokes
+    # the match *action* directly, which never loads this file, so it gets no API key and falls back
+    # to prompting for an Apple ID and 2FA code — the thing the API key exists to avoid.
+    #
+    # This lane exists to *create*, so it overrides the `readonly(ENV["CI"] == "true")` in `Matchfile`
+    # explicitly. GitHub runners export CI=true, which would otherwise force readonly on and make the
+    # lane a no-op on the one platform where it can actually work.
+    #
+    # It generates a distribution certificate (consuming one of the three Apple allows the team) and
+    # an App Store provisioning profile, then encrypts both into the certs repo with MATCH_PASSWORD.
+    # Every later CI run only decrypts. Re-running this where it cannot see the existing certificate
+    # is how an account burns through its certificate slots.
+    #
+    # `setup_ci` makes a temporary keychain; on a runner the login keychain cannot be unlocked. It is
+    # a no-op-ish safeguard locally, hence `force` only when CI is set.
+    setup_ci if ENV["CI"]
+
+    match(type: "appstore", api_key: asc_api_key, readonly: false)
+  end
+
+  desc "Build a signed App Store binary and upload it to TestFlight"
+  lane :beta do
+    api_key = asc_api_key
+
+    # Creates a temporary keychain and unlocks it. Without this, `match` installs the certificate
+    # into a login keychain that codesign cannot open on a headless runner.
+    setup_ci if ENV["CI"]
+
+    match(type: "appstore", api_key: api_key)
+
+    # The scaffolded entitlements say `development` so a debug build off a Mac works out of the box.
+    # An App Store / TestFlight build has to carry `production` or the device registers against the
+    # sandbox APNs environment and nothing we send ever arrives. Rewritten in place — CI's checkout
+    # is throwaway, and the local case is covered by the `git checkout` at the end.
+    set_info_plist_value(path: ENTITLEMENTS, key: "aps-environment", value: "production")
+
+    update_code_signing_settings(
+      path: "App/App.xcodeproj",
+      use_automatic_signing: false,
+      team_id: ENV.fetch("APPLE_TEAM_ID"),
+      code_sign_identity: "Apple Distribution",
+      profile_name: ENV["sigh_#{APP_IDENTIFIER}_appstore_profile-name"],
+      targets: ["App"],
+    )
+
+    build_app(
+      workspace: XCODE_WORKSPACE,
+      scheme: "App",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "App/output",
+      export_options: {
+        provisioningProfiles: {
+          APP_IDENTIFIER => ENV["sigh_#{APP_IDENTIFIER}_appstore_profile-name"],
+        },
+      },
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      # Waiting for Apple to finish processing can take 20+ minutes and tells us nothing we can act
+      # on from CI; the build shows up in TestFlight either way.
+      skip_waiting_for_build_processing: true,
+    )
+  end
+
+  desc "Undo the in-place edits `beta` makes (entitlements + pinned signing settings)"
+  desc "CI checkouts are throwaway; run this after a local `beta` before committing anything."
+  lane :restore do
+    sh("git checkout -- ../App/App/App.entitlements ../App/App.xcodeproj/project.pbxproj")
+  end
+
+  desc "Symbolicate a .ips crash report pulled off a device with idevicecrashreport"
+  desc "Usage: bundle exec fastlane symbolicate report:/path/to/crash.ips dsym:/path/to/App.app.dSYM"
+  lane :symbolicate do |options|
+    # The one step that genuinely needs a Mac: symbolicatecrash ships inside Xcode. Run it here on
+    # the CI runner (workflow_dispatch) rather than renting a machine for it.
+    sh("/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash",
+       options[:report], options[:dsym])
+  end
+end

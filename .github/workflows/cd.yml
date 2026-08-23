@@ -40,8 +40,10 @@ jobs:
   # Called directly rather than left to the `release: published` event, which GitHub does not emit for
   # releases created with the default GITHUB_TOKEN. Gated on `released` so a re-run that finds the tag
   # already present does not announce the same version twice.
-  announce:
-    name: Announce
+  #
+  # One job per destination, so a Mastodon outage still gets the release into Discord and vice versa.
+  announce-mastodon:
+    name: Announce on Mastodon
     needs: release
     if: needs.release.outputs.released == 'true'
     uses: ./.github/workflows/cd-mastodon.yml
@@ -50,3 +52,14 @@ jobs:
       dry_run: false
     secrets:
       MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+
+  announce-discord:
+    name: Announce on Discord
+    needs: release
+    if: needs.release.outputs.released == 'true'
+    uses: ./.github/workflows/cd-discord.yml
+    with:
+      tag: ${{ needs.release.outputs.tag }}
+      dry_run: false
+    secrets:
+      DISCORD_WEBHOOK_ANNOUNCEMENTS: ${{ secrets.DISCORD_WEBHOOK_ANNOUNCEMENTS }}

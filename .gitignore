@@ -86,6 +86,13 @@ email-preview
 *.rar
 /favicon_color.ico
 /backend/shared/src/googleApplicationCredentials-dev.json
+
+# Apple signing / service keys. Apple names every one of these `AuthKey_<KEYID>.p8`, and any of them
+# leaking is a real compromise — unlike GoogleService-Info.plist, these are bearer credentials.
+# The directory rule keeps `ios/private/README.md` tracked; the glob catches strays anywhere else.
+*.p8
+/ios/private/*
+!/ios/private/README.md
 *.tfstate
 *.tfstate.backup
 *.terraform
@@ -111,3 +118,5 @@ test-results
 *.back
 
 scripts/audit/
+
+.claude/worktrees

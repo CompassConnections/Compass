@@ -28,12 +28,12 @@ import {useAdmin} from 'web/hooks/use-admin'
 import {useEvent} from 'web/hooks/use-event'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {firebaseLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
 import {db} from 'web/lib/supabase/db'
 import {safeLocalStorage} from 'web/lib/util/local'
 import {scrollIntoViewCentered} from 'web/lib/util/scroll'
+import {promptSignIn} from 'web/lib/util/signup'
 
 // Same ramps as the vote buttons, so an "argument against" chip and the red Against button read as
 // the same side of the same question without anyone having to learn a second colour language.
@@ -817,7 +817,7 @@ export function VoteCommentInput(props: {
   const submit = useEvent(async (editor: Editor) => {
     if (!user) {
       track('sign in to comment')
-      await firebaseLogin()
+      await promptSignIn()
       return
     }
     await api('create-vote-comment', {

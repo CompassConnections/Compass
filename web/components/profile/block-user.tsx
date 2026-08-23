@@ -23,7 +23,10 @@ export const BlockUser = (props: {
   const onBlock = async () => {
     await toast.promise(api('user/by-id/:id/block', {id: user.id}), {
       loading: t('block_user.toast.loading', 'Blocking...'),
-      success: t('block_user.toast.success', "You'll no longer see content from this user"),
+      success: t(
+        'block_user.toast.success',
+        "Blocked. They're hidden from your search results and neither of you can message the other.",
+      ),
       error: t('block_user.toast.error', 'Error blocking user'),
     })
   }

@@ -18,3 +18,4 @@ See those other useful documents as well:
 - [profile-fields.md](profile-fields.md) for adding new profile fields
 - [internationalization.md](internationalization.md) for adding new languages
 - [ios.md](ios.md) for the plan to ship the iOS app (not built yet)
+- [releases.md](releases.md) for versioning across web/Android/iOS and how a release is cut

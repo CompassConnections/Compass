@@ -34,7 +34,7 @@ import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {sendPasswordReset} from 'web/lib/firebase/password'
 import {useT} from 'web/lib/locale'
-import {isNativeMobile} from 'web/lib/util/webview'
+import {downloadTextFile} from 'web/lib/util/download'
 
 export const GeneralSettings = () => (
   <WithPrivateUser>{(user) => <LoadedGeneralSettings privateUser={user} />}</WithPrivateUser>
@@ -354,19 +354,7 @@ const DataPrivacySettings = () => {
       const data = await api('me/data', {})
       const jsonString = JSON.stringify(data, null, 2)
       const filename = `compass-data-export${user?.username ? `-${user.username}` : ''}.json`
-      if (isNativeMobile() && window.AndroidBridge && window.AndroidBridge.downloadFile) {
-        window.AndroidBridge.downloadFile(filename, jsonString)
-      } else {
-        const blob = new Blob([jsonString], {type: 'application/json'})
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = filename
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        URL.revokeObjectURL(url)
-      }
+      await downloadTextFile(filename, jsonString, 'application/json')
       toast.success(
         t('settings.data_privacy.download.success', 'Your data export has been downloaded.'),
       )

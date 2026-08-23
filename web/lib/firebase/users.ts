@@ -1,6 +1,11 @@
 import {Capacitor} from '@capacitor/core'
 import {SocialLogin} from '@capgo/capacitor-social-login'
-import {GOOGLE_CLIENT_ID} from 'common/constants'
+import {
+  GOOGLE_CLIENT_ID,
+  HAS_APPLE_SERVICES_ID,
+  HAS_IOS_GOOGLE_CLIENT_ID,
+  IOS_GOOGLE_CLIENT_ID,
+} from 'common/constants'
 import {IS_FIREBASE_EMULATOR} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {type User} from 'common/user'
@@ -10,10 +15,15 @@ import {
   connectAuthEmulator,
   getAuth,
   GoogleAuthProvider,
+  OAuthProvider,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,
+  revokeAccessToken,
   signInWithCredential,
   signInWithPopup,
+  updateProfile,
 } from 'firebase/auth'
-import {isAndroidApp} from 'web/lib/util/webview'
+import {isIosApp, isNativeApp} from 'web/lib/util/webview'
 
 import {safeLocalStorage} from '../util/local'
 import {app} from './init'
@@ -90,7 +100,15 @@ export async function googleNativeLogin() {
   debug('Platform:', Capacitor.getPlatform())
   debug('URL origin:', window.location.origin)
 
-  await SocialLogin.initialize({google: {webClientId: GOOGLE_CLIENT_ID}})
+  await SocialLogin.initialize({
+    google: {
+      // Firebase verifies the resulting idToken against the *web* client, on both platforms, so
+      // webClientId is what makes signInWithCredential accept it. iOSClientId is the separate
+      // native client the iOS Google SDK signs in with — required on iOS, ignored on Android.
+      webClientId: GOOGLE_CLIENT_ID,
+      ...(HAS_IOS_GOOGLE_CLIENT_ID ? {iOSClientId: IOS_GOOGLE_CLIENT_ID} : {}),
+    },
+  })
 
   // Run the native Google OAuth
   const {result}: any = await SocialLogin.login({
@@ -119,9 +137,126 @@ export async function googleNativeLogin() {
   return userCredential
 }
 
-export async function firebaseLogin() {
-  if (isAndroidApp()) {
-    debug('Running in APK')
+/**
+ * Random string used as the Sign-in-with-Apple nonce, plus its SHA-256.
+ *
+ * Apple embeds whatever nonce the request carries verbatim into the identity token, and Firebase
+ * compares that claim against `SHA256(rawNonce)` — so the request has to get the *hash* and Firebase
+ * the *raw* value. `crypto.subtle` needs a secure context, which `capacitor://localhost` is but the
+ * cleartext dev-server mode is not; when it is unavailable we sign in without a nonce at all, which
+ * Apple and Firebase both accept (the token then simply carries no nonce claim to bind).
+ */
+async function appleNonce() {
+  const raw = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+  const subtle = globalThis.crypto?.subtle
+  if (!subtle) {
+    debug('No crypto.subtle — Apple sign-in without a nonce')
+    return {raw: undefined, hashed: undefined}
+  }
+  const digest = await subtle.digest('SHA-256', new TextEncoder().encode(raw))
+  const hashed = Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+  return {raw, hashed}
+}
+
+/**
+ * Native Sign in with Apple, required by App Store guideline 4.8 for any app offering third-party
+ * social login. iOS only — on Android and the web, Google is the only social provider.
+ *
+ * Apple returns the user's name *only on the very first authorization*, and never again, so it has
+ * to be persisted onto the Firebase user right here; `web/pages/signup.tsx` reads `displayName` when
+ * seeding the profile. Emails may be `…@privaterelay.appleid.com` — real, forwarding addresses that
+ * must be treated like any other.
+ */
+export async function appleNativeLogin() {
+  debug('Platform:', Capacitor.getPlatform())
+
+  await SocialLogin.initialize({apple: {redirectUrl: ''}})
+
+  const {raw, hashed} = await appleNonce()
+
+  const {result}: any = await SocialLogin.login({
+    provider: 'apple',
+    options: {scopes: ['name', 'email'], ...(hashed ? {nonce: hashed} : {})},
+  })
+
+  const idToken = result?.idToken
+  if (!idToken) {
+    throw new Error('No idToken returned from Apple login')
+  }
+
+  const credential = new OAuthProvider('apple.com').credential({
+    idToken,
+    ...(raw ? {rawNonce: raw} : {}),
+  })
+
+  const userCredential = await signInWithCredential(auth, credential)
+
+  const {givenName, familyName} = result?.profile ?? {}
+  const fullName = [givenName, familyName].filter(Boolean).join(' ')
+  if (fullName && !userCredential.user.displayName) {
+    await updateProfile(userCredential.user, {displayName: fullName}).catch((e) =>
+      console.error('Failed saving Apple display name', e),
+    )
+  }
+
+  debug('Firebase user:', userCredential.user)
+
+  return userCredential
+}
+
+/** Whether the Apple button should be offered — iOS app only. */
+/**
+ * Sign in with Apple in a browser, via Firebase's OAuth handler rather than the native SDK.
+ *
+ * This exists so that an account created with Apple inside the iOS app is not locked to that app.
+ * Such a user has `apple.com` as their only provider and often a private-relay address, so without
+ * this they could never sign in on desktop and password reset could not help them.
+ *
+ * Requires the Apple **Services ID** to be configured in Firebase (see `APPLE_SERVICES_ID`) — the
+ * App ID that the native flow uses is not enough. Until then `canAppleLogin()` keeps the button
+ * hidden in browsers.
+ *
+ * The name-on-first-authorization quirk applies here exactly as in `appleNativeLogin`, but Firebase
+ * populates `displayName` from Apple's response itself on the web, so there is nothing to persist by
+ * hand — `web/pages/signup.tsx` reads `auth.currentUser?.displayName` and finds it already set.
+ */
+export async function appleWebLogin() {
+  const provider = new OAuthProvider('apple.com')
+  provider.addScope('email')
+  provider.addScope('name')
+
+  const userCredential = await signInWithPopup(auth, provider)
+  debug('Firebase user:', userCredential.user)
+  return userCredential
+}
+
+/** Native flow inside the iOS app, popup flow everywhere else. */
+export async function appleLogin() {
+  return isIosApp() ? appleNativeLogin() : appleWebLogin()
+}
+
+/**
+ * Whether the Apple button should be offered.
+ *
+ * - iOS app: always. Guideline 4.8 requires it, and the native SDK is available.
+ * - Browser: only once the Services ID is configured, otherwise the popup dead-ends in
+ *   `auth/operation-not-allowed`.
+ * - Android app: not yet. Apple blocks its authorization page inside an embedded WebView, so this
+ *   needs the native plugin path rather than `signInWithPopup` — see `docs/ios.md` §5.3.
+ */
+export function canAppleLogin() {
+  if (isIosApp()) return true
+  if (isNativeApp()) return false
+  return HAS_APPLE_SERVICES_ID
+}
+
+export async function googleLogin() {
+  if (isNativeApp()) {
+    debug('Running in the native app')
     return await googleNativeLogin()
   }
   debug('Running in web')
@@ -131,19 +266,72 @@ export async function firebaseLogin() {
   })
 }
 
-// export async function loginWithApple() {
-//   const provider = new OAuthProvider('apple.com')
-//   provider.addScope('email')
-//   provider.addScope('name')
-//
-//   return signInWithPopup(auth, provider)
-//     .then((result) => {
-//       return result
-//     })
-//     .catch((error) => {
-//       console.error(error)
-//     })
-// }
+export const APPLE_PROVIDER_ID = 'apple.com'
+
+/** Whether the signed-in user can authenticate with Apple, i.e. whether there is a token to revoke. */
+export function hasAppleProvider() {
+  return auth.currentUser?.providerData.some((p) => p.providerId === APPLE_PROVIDER_ID) ?? false
+}
+
+/**
+ * Revoke the user's Apple refresh token. Called immediately before `me/delete`.
+ *
+ * Apple requires an app offering Sign in with Apple to revoke the token when the account is deleted,
+ * not merely to delete its own rows — it is checked under the same 5.1.1(v) review as the deletion
+ * flow itself. Firebase can only revoke a token it captured, which is why the **OAuth code flow
+ * configuration** (Team ID, Key ID, Sign in with Apple `.p8`) has to be filled in before anyone signs
+ * in; see `docs/ios.md` §5.2.
+ *
+ * `revokeAccessToken` needs a *fresh* credential, so this re-authenticates first — the person sees one
+ * more Apple sheet on the way out. That is Apple's design, not ours.
+ *
+ * **Best-effort by design.** A failure here is logged and swallowed rather than aborting the
+ * deletion: 5.1.1(v) requires that deleting the account actually works, so trapping someone in an
+ * undeletable account because Apple was unreachable would break the more important half of the same
+ * guideline.
+ */
+export async function revokeAppleToken(): Promise<'revoked' | 'not-applicable' | 'failed'> {
+  const user = auth.currentUser
+  if (!user || !hasAppleProvider()) return 'not-applicable'
+
+  try {
+    let accessToken: string | null | undefined
+
+    if (isIosApp()) {
+      await SocialLogin.initialize({apple: {redirectUrl: ''}})
+      const {raw, hashed} = await appleNonce()
+      const {result}: any = await SocialLogin.login({
+        provider: 'apple',
+        options: {scopes: ['name', 'email'], ...(hashed ? {nonce: hashed} : {})},
+      })
+      if (!result?.idToken) return 'failed'
+      const credential = new OAuthProvider(APPLE_PROVIDER_ID).credential({
+        idToken: result.idToken,
+        ...(raw ? {rawNonce: raw} : {}),
+      })
+      const reauthed = await reauthenticateWithCredential(user, credential)
+      accessToken = OAuthProvider.credentialFromResult(reauthed)?.accessToken
+    } else {
+      const provider = new OAuthProvider(APPLE_PROVIDER_ID)
+      provider.addScope('email')
+      provider.addScope('name')
+      const reauthed = await reauthenticateWithPopup(user, provider)
+      accessToken = OAuthProvider.credentialFromResult(reauthed)?.accessToken
+    }
+
+    if (!accessToken) {
+      debug('Apple re-auth returned no access token; nothing to revoke')
+      return 'failed'
+    }
+
+    await revokeAccessToken(auth, accessToken)
+    debug('Revoked Apple token')
+    return 'revoked'
+  } catch (e) {
+    console.error('Failed to revoke Apple token before deletion', e)
+    return 'failed'
+  }
+}
 
 export async function firebaseLogout() {
   await auth.signOut()

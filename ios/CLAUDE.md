@@ -18,6 +18,14 @@ is in the [root CLAUDE.md](../CLAUDE.md).
 
 ## Things that are easy to get wrong
 
+- **`packageClassList` must be in `App/App/capacitor.config.json`**, and `npx cap sync ios` does not
+  put it there. `CapacitorBridge.registerPlugins()` decodes that file into a struct whose
+  `packageClassList` is non-optional, so an absent key makes the decode throw, the bridge registers
+  only its four built-ins, and *every* plugin call fails with `"X" plugin is not implemented on ios`
+  — while the app still launches and renders normally. `scripts/ios_plugin_classlist.mjs` writes it
+  and both sync scripts call it; it exits non-zero on an empty list rather than shipping a build
+  where nothing native works.
+
 - **Push is FCM, not raw APNs.** `AppDelegate.swift` hands the APNs token to FirebaseMessaging and
   posts the *FCM* token back on `.capacitorDidRegisterForRemoteNotifications`. Without that the JS
   side would save an APNs token that `sendPushToToken` (backend/shared/src/mobile.ts) cannot address.

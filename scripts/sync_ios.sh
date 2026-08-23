@@ -11,3 +11,8 @@ cd "$(dirname "$0")"/..
 export $(grep -E '^NEXT_PUBLIC_(LOCAL_IOS|WEBVIEW_DEV_PHONE|DEV_LAN_IP)=' .env || true)
 
 npx cap sync ios
+
+# `cap sync` does not leave `packageClassList` in ios/App/App/capacitor.config.json, without which
+# the native bridge registers no plugins at all and every Capacitor call fails at runtime with
+# "<X> plugin is not implemented on ios". See the script header.
+node scripts/ios_plugin_classlist.mjs

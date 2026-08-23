@@ -10,6 +10,11 @@ source web/.env
 
 npx cap sync ios
 
+# `cap sync` does not leave `packageClassList` in ios/App/App/capacitor.config.json, without which
+# the native bridge registers no plugins at all and every Capacitor call fails at runtime with
+# "<X> plugin is not implemented on ios". See the script header.
+node scripts/ios_plugin_classlist.mjs
+
 # Icons and splash screens, regenerated from assets/icon.png — the generated PNGs are gitignored
 # (see the *.png rule in the root .gitignore), so this has to run on every build, CI included.
 npx capacitor-assets generate --ios

@@ -38,7 +38,9 @@ Operational detail for all of it is in [`../ios/README.md`](../ios/README.md).
 - [x] `App.entitlements`: `aps-environment`, `applinks:` for both hosts, Sign in with Apple.
 - [x] `AppDelegate.swift`: Firebase init + the APNs→FCM token bridge (see §6 — this is required, not
       optional, and the earlier draft of this doc was wrong to imply otherwise).
-- [x] `FirebaseMessaging` pod; iOS deployment target raised to 14.0 (what Capacitor 7 requires).
+- [x] `FirebaseMessaging` pod; iOS deployment target **15.0** (Capacitor 7 needs 14.0, but Apple's
+      ITMS-90068 warning requires 15.0+ for uploads from spring 2027, and iOS 15 reaches back to the
+      iPhone 6s, so the dropped-device cost is negligible).
 - [x] Sign in with Apple end to end on the web side: `appleNativeLogin()` in
       `web/lib/firebase/users.ts`, `AppleButton`, wired into `/signin` and `/register`, gated on
       `isIosApp()`. Handles the nonce and the name-only-on-first-authorization quirk.
@@ -73,7 +75,7 @@ remains is console configuration and the first build, not values to paste into t
 
 ### To do — no Apple account needed
 
-- [ ] `match` certificate repo: empty private GitHub repo, a passphrase, and a fine-grained PAT →
+- [x] `match` certificate repo: empty private GitHub repo, a passphrase, and a fine-grained PAT →
       `MATCH_GIT_URL`, `MATCH_PASSWORD`, `MATCH_GIT_BASIC_AUTHORIZATION` ([`../ios/README.md`](../ios/README.md) §4).
 - [x] `IOS_GOOGLE_SERVICES_PLIST` secret from the local `GoogleService-Info.plist`.
 - [x] Device toolchain on the Linux box — `libimobiledevice-utils`, `ideviceinstaller`, and
@@ -84,28 +86,34 @@ remains is console configuration and the first build, not values to paste into t
 
 ### To do — needs the Apple consoles, a Mac, or the phone
 
-- [ ] Register the App ID `com.compassconnections.app` with Push Notifications, Associated Domains and
+- [x] Register the App ID `com.compassconnections.app` with Push Notifications, Associated Domains and
       Sign in with Apple enabled, and create the app record in App Store Connect.
-- [ ] Firebase console → upload the APNs `.p8` auth key with Team ID and Key ID.
-- [ ] Apple portal → create the Services ID `com.compassconnections.web` and configure it against
+- [x] Firebase console → upload the APNs `.p8` auth key with Team ID and Key ID.
+- [x] Apple portal → create the Services ID `com.compassconnections.web` and configure it against
       Firebase's `__/auth/handler` (§5.3), then paste it into Firebase. The repo side is already done —
       `APPLE_SERVICES_ID` is set, so the browser Apple button goes live with the next deploy and will
       dead-end until Firebase agrees.
-- [ ] Firebase console → Authentication → enable the Apple provider and fill the OAuth code flow
+- [x] Firebase console → Authentication → enable the Apple provider and fill the OAuth code flow
       configuration (Team ID, Key ID, Sign in with Apple `.p8`) — §5.2, needed for §8.3's revocation.
 - [x] Revoke the Apple refresh token from the client before calling `me/delete` (§8.3). The console
       half (OAuth code flow config) must still be done **before anyone signs in with Apple**, since
       Firebase can only revoke a token it captured.
-- [ ] Set the eight GitHub secrets ([`../ios/README.md`](../ios/README.md) §4), then seed the
+- [x] Set the eight GitHub secrets ([`../ios/README.md`](../ios/README.md) §4), then seed the
       certificate repo by running the **`iOS Certificates (one-off)`** workflow from the Actions tab.
       It runs the `certs` lane on a `macos-15` runner. Creating certificates needs macOS — on Linux
       `match` dies installing the profile _after_ Apple has issued the certificate, stranding it in a
       slot with a lost private key (README §4 has the detail). Verify the certs repo has commits on
       `master` afterwards.
-- [ ] First build: run `cd-ios.yml` from the Actions tab. `workflow_dispatch` skips the version gate
-      (`cd-ios.yml:47`), so the first build needs no `CURRENT_PROJECT_VERSION` bump — it stays at 1,
-      with `MARKETING_VERSION` 1.42.0 matching the App Store Connect version record. Expect a failure
-      or two on provisioning specifics; retrying costs no version bump.
+- [x] First build reached TestFlight (App ID `6804429364`), built by `cd-ios.yml` on `macos-15`:
+      `match` readonly, `aps-environment` rewritten to `production`, manual signing with
+      `Apple Distribution: Martin Braquet`, 31 dSYMs archived. Build 1 was then **rejected by App
+      Store Connect processing** with `ITMS-90129` (see §8.8); build 2 carries the fix.
+
+      `CURRENT_PROJECT_VERSION` must be bumped in **both** places in `project.pbxproj` (Debug and
+      Release) for every upload. Apple burns the build number on *receipt*, not on acceptance — a
+      rejected build still consumes it, and `cd-ios.yml:32` reads only the first match when deciding
+      whether to build.
+
 - [ ] Work through [On-device verification](#on-device-verification-first-testflight-build) below.
       Internal TestFlight needs no Beta App Review, so builds are installable minutes after processing.
 - [x] App Store Connect app record and listing metadata — everything but the build.
@@ -751,10 +759,27 @@ Ordered by how likely they are to cost us a rejection round:
    the toast used to have.
 
 5. **Age rating.** A connections app rates 17+/18+; set it honestly or risk removal.
+
+   Related, and easy to get wrong on the privacy form: `@capgo/capacitor-social-login` declares
+   `FBSDKCoreKit` and `FBSDKLoginKit` as hard pod dependencies, so **the Facebook SDK is compiled into
+   the binary** even though we never call Facebook login (`SocialLogin.initialize` only ever configures
+   `google` and `apple`). It is inert at runtime without a Facebook App ID, but it is present, it
+   carries its own privacy manifest, and the App Privacy answers should be checked against what is
+   actually in the bundle rather than what the app calls.
+
 6. **Guideline 3.1.1 — in-app purchase.** If anything paid is ever added, iOS must route it through IAP
    (30%/15%). Not an issue today; a reason not to add web-only checkout links to the iOS build later.
 7. **Demo account.** Review needs working credentials in App Review notes, since the app is gated behind
    login. Prepare a seeded account with a populated profile.
+8. **ITMS-90129 — bundle display name already taken.** Hit on build 1. `CFBundleDisplayName` was
+   `Compass`, which another App Store app already owns; App Store Connect rejects the _upload_, well
+   before any human review, and the mail arrives minutes after a run that fastlane reported as a
+   success. It is now `Compass Meet`, matching `compassmeet.com`.
+
+   Worth knowing what this check does and does not cover: the **App Store name**
+   ("Compass: Social Connections") was accepted when the app record was created, and the **bundle id**
+   is unrelated. Only the home-screen label collided. Android's `app_name` stays `Compass` — Play has
+   no such constraint, and renaming it would rename the app for existing installs for no benefit.
 
 ---
 
@@ -776,7 +801,8 @@ Steps 1–4, 7 and the code half of 6 and 9 are done — see [§0](#0-status). W
 8. GitHub secrets, then the `iOS Certificates (one-off)` workflow to seed the match repo, then the
    first TestFlight build; internal testing on the iPhone 11.
 9. Verify push end-to-end on the **physical device** — the Simulator has no APNs token, so this step
-   cannot be faked — then the rest of the on-device checklist in [§0](#to-do--needs-an-apple-account-a-mac-or-the-phone).
+   cannot be faked — then the rest of the on-device checklist
+   in [§0](#to-do--needs-an-apple-account-a-mac-or-the-phone).
 10. App Store Connect metadata and first submission.
 
 Since we develop on Linux ([§2.1](#21-working-without-a-mac)), CI replaces the Simulator as the way to get a

@@ -4,8 +4,12 @@
     <dict>
         <key>CFBundleDevelopmentRegion</key>
         <string>en</string>
+        <!-- Home-screen label, distinct from the App Store name ("Compass: Social Connections") and
+             from Android's `app_name`, which stays "Compass". Plain "Compass" is already taken by
+             another App Store app and is rejected at upload with ITMS-90129; "Compass Meet" matches
+             compassmeet.com and is short enough not to truncate under the icon. -->
         <key>CFBundleDisplayName</key>
-        <string>Compass</string>
+        <string>Compass Meet</string>
         <key>CFBundleExecutable</key>
         <string>$(EXECUTABLE_NAME)</string>
         <key>CFBundleIdentifier</key>

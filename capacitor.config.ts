@@ -27,9 +27,15 @@ const config: CapacitorConfig = {
   webDir: 'web/out',
   server: LOCAL_ANDROID || LOCAL_IOS ? {url: `http://${LOCAL_URL}:3000`, cleartext: true} : {},
   ios: {
-    // WKWebView otherwise applies its own safe-area inset on top of the `env(safe-area-inset-*)`
-    // padding in web/styles/globals.css, and everything under the notch ends up doubly indented.
-    contentInset: 'always',
+    // `never`, so `env(safe-area-inset-*)` in web/styles/globals.css is the *single* source of truth
+    // for safe areas — the same model Android and the web already use.
+    //
+    // With `always`, WKWebView shrinks the viewport by the bottom inset as the scroll reaches the end
+    // (measured on an iPhone: `innerHeight` 848 at the top, 814 at the bottom) while the CSS keeps
+    // adding its own 34px. The bottom nav then sat 68px above the screen edge with only 34px of
+    // filler behind it, leaving an uncovered strip over the home indicator — but *only* once you
+    // scrolled to the bottom, which is what made it look intermittent.
+    contentInset: 'never',
     ...(IOS_WEB_DEBUG ? {webContentsDebuggingEnabled: true} : {}),
     // Deliberately NOT overriding `scheme`. The app is served from the default `capacitor://localhost`,
     // which WebKit treats as a secure origin — that is what `getUserMedia` (voice auto-fill) and

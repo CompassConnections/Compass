@@ -7,7 +7,7 @@
  * each for the cookie round-trip and the purge, and no more.
  */
 
-import {getConsent, recordConsent} from 'web/lib/consent'
+import {clearLocalStoragePreservingConsent, getConsent, recordConsent} from 'web/lib/consent'
 
 const cookies = new Map<string, string>()
 
@@ -74,6 +74,28 @@ describe('analytics consent', () => {
 
     recordConsent('denied')
     expect(getConsent()).toBe('denied')
+  })
+
+  /**
+   * WKWebView does not persist `document.cookie` for a custom scheme, so in the iOS shell
+   * (`capacitor://localhost`) the cookie is gone by the next launch. Without the mirror the banner
+   * asks again on every app start.
+   */
+  it('still remembers the answer when the cookie did not survive, as on iOS', () => {
+    recordConsent('denied')
+    cookies.clear() // the app restarts; WKWebView kept nothing
+
+    expect(document.cookie).toBe('')
+    expect(getConsent()).toBe('denied')
+  })
+
+  it('carries consent across the localStorage wipe that sign-out and deletion perform', () => {
+    recordConsent('granted')
+    cookies.clear()
+
+    clearLocalStoragePreservingConsent()
+
+    expect(getConsent()).toBe('granted')
   })
 
   it('ignores a cookie value that is neither answer', () => {

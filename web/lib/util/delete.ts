@@ -1,6 +1,7 @@
 import posthog from 'posthog-js'
 import {clearUserCookie} from 'web/components/auth-context'
 import {api} from 'web/lib/api'
+import {clearLocalStoragePreservingConsent} from 'web/lib/consent'
 import {firebaseLogout, revokeAppleToken} from 'web/lib/firebase/users'
 import {track} from 'web/lib/service/analytics'
 
@@ -29,7 +30,7 @@ export async function deleteAccount(reasons?: {
   await api('me/delete', reasons || {})
   await firebaseLogout()
   clearUserCookie()
-  localStorage.clear()
+  clearLocalStoragePreservingConsent()
   sessionStorage.clear()
   posthog.reset()
 }

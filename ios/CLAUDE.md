@@ -27,6 +27,13 @@ is in the [root CLAUDE.md](../CLAUDE.md).
   `WebViewLocalServer` already resolves `.html` itself. If you add a dynamic route, no change is
   needed — the router finds the bracketed file by scanning the directory.
 
+- **`ios.contentInset` is `never`, and must stay that way.** Safe areas are handled once, in CSS, by
+  `env(safe-area-inset-*)` — the same model Android and the web use. With `always`, WKWebView shrinks
+  the viewport by the bottom inset only as the scroll reaches the end (`innerHeight` 848 at the top of
+  a page, 814 at the bottom on an iPhone) while the CSS keeps adding its own 34px, so the bottom nav
+  lifted 68px off the screen edge with 34px of filler behind it and left a strip uncovered over the
+  home indicator. It looked intermittent because it only appeared at the bottom of a scroll.
+
 - **Firebase Auth must be created with `initializeAuth`, not `getAuth`, inside the native shells.**
   `getAuth` installs the default popup/redirect resolver, which loads `apis.google.com/js/api.js` and
   builds a gapi iframe at startup. gapi cannot parse a non-http origin, so on `capacitor://localhost`

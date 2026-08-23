@@ -9,6 +9,7 @@ import {useEffectCheckEquality} from 'web/hooks/use-effect-check-equality'
 import {useStateCheckEquality} from 'web/hooks/use-state-check-equality'
 import {useWebsocketPrivateUser, useWebsocketUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
+import {clearLocalStoragePreservingConsent} from 'web/lib/consent'
 import {auth} from 'web/lib/firebase/users'
 import {getLocale} from 'web/lib/locale-cookie'
 import {identifyUser, setUserProperty} from 'web/lib/service/analytics'
@@ -195,7 +196,7 @@ export function AuthProvider(props: {children: ReactNode; serverUser?: AuthUser}
     setUser(null)
     setPrivateUser(undefined)
     // Clear local storage only if we were signed in, otherwise we'll clear referral info
-    if (safeLocalStorage?.getItem(CACHED_USER_KEY)) localStorage.clear()
+    if (safeLocalStorage?.getItem(CACHED_USER_KEY)) clearLocalStoragePreservingConsent()
   }
 
   useEffect(() => {

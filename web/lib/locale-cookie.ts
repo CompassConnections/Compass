@@ -6,6 +6,27 @@ let cachedLocale: string | null | undefined = null
 const ONE_YEAR_SECS = 60 * 60 * 24 * 365
 
 /**
+ * The chosen language, mirrored into `localStorage` for the native shells.
+ *
+ * WKWebView gives a custom-scheme origin no working cookie jar at all — on `capacitor://localhost`
+ * a `document.cookie` write is not even readable back in the same session, let alone after a restart.
+ * Without this the iOS language switcher appeared to do nothing that survived: `getLocale()` fell
+ * through to `getBrowserLocale()` on every launch, so a French user got French only when their phone
+ * was already French.
+ *
+ * The cookie stays authoritative on the web, where it is also what a server render would read.
+ */
+const LOCALE_KEY = 'lang'
+
+const readStoredLocale = (): string | undefined => {
+  try {
+    return localStorage.getItem(LOCALE_KEY) ?? undefined
+  } catch {
+    return undefined
+  }
+}
+
+/**
  * Writes the `lang` cookie that `getLocale` below reads back.
  *
  * Lives here rather than inline in `_app` so the write and the read stay in one file, and so the
@@ -17,6 +38,12 @@ const ONE_YEAR_SECS = 60 * 60 * 24 * 365
  * silently, which would leave the language switcher doing nothing with no error to explain it.
  */
 export function setLocaleCookie(locale: string) {
+  try {
+    localStorage.setItem(LOCALE_KEY, locale)
+  } catch {
+    // Unavailable in incognito or a locked-down webview; the cookie below still gets written.
+  }
+
   setCookie('lang', locale, [
     ['path', '/'],
     ['max-age', ONE_YEAR_SECS.toString()],
@@ -53,6 +80,12 @@ export function getLocale(): string {
       ?.split(' ')[0]
       ?.replace(';', '')
     // console.log('Locale cookie', cachedLocale)
+  }
+
+  // Before the browser's own preference: an explicit choice the cookie could not keep still beats
+  // guessing from `navigator.languages`.
+  if (!cachedLocale) {
+    cachedLocale = readStoredLocale()
   }
 
   if (!cachedLocale) {

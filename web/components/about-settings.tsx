@@ -10,6 +10,7 @@ import {CustomLink} from 'web/components/links'
 import {WithPrivateUser} from 'web/components/user/with-user'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+import {nativePlatform} from 'web/lib/util/webview'
 
 export type WebBuild = {
   gitSha?: string
@@ -18,7 +19,9 @@ export type WebBuild = {
   environment?: string
 }
 
-export type Android = {
+export type NativeApp = {
+  /** 'ios' | 'android' — which shell this is, so the labels can say so. */
+  platform: string
   appVersion?: string
   buildNumber?: string
 }
@@ -36,7 +39,7 @@ export type Runtime = {
 
 export type Diagnostics = {
   web?: WebBuild
-  android?: Android
+  native?: NativeApp
   backend?: Backend
   runtime: Runtime
 }
@@ -48,7 +51,11 @@ function useDiagnostics() {
     const load = async () => {
       const diagnostics: Diagnostics = {
         runtime: {
-          platform: IS_VERCEL ? 'web' : Capacitor.isNativePlatform() ? 'android' : HOSTING_ENV,
+          platform: IS_VERCEL
+            ? 'web'
+            : Capacitor.isNativePlatform()
+              ? nativePlatform()
+              : HOSTING_ENV,
         },
       }
 
@@ -63,7 +70,8 @@ function useDiagnostics() {
 
       if (Capacitor.isNativePlatform()) {
         const appInfo = await App.getInfo()
-        diagnostics.android = {
+        diagnostics.native = {
+          platform: nativePlatform(),
           appVersion: appInfo.version,
           buildNumber: appInfo.build,
         }
@@ -165,7 +173,7 @@ const LoadedAboutSettings = (_props: {privateUser: PrivateUser}) => {
       </div>
       <RuntimeInfo info={diagnostics.runtime} />
       <WebBuildInfo info={diagnostics.web} />
-      <AndroidInfo info={diagnostics.android} />
+      <NativeAppInfo info={diagnostics.native} />
       <BackendInfo info={diagnostics.backend} />
       <Button onClick={handleCopy} className="w-fit mt-4">
         {copyFeedback || t('about.settings.copy_info', 'Copy Info')}
@@ -195,14 +203,20 @@ const WebBuildInfo = (props: {info?: WebBuild}) => {
   )
 }
 
-const AndroidInfo = (props: {info?: Android}) => {
+const NativeAppInfo = (props: {info?: NativeApp}) => {
   const {info} = props
   if (!info) return
+  // The same shell ships on both stores, so the label follows the device rather than being baked in.
+  const name = info.platform === 'ios' ? 'iOS' : 'Android'
   return (
     <Col className={'custom-link'}>
-      <h3>Android (Capacitor)</h3>
-      <p>App version (Android): {info.appVersion}</p>
-      <p>Native build number (Android): {info.buildNumber}</p>
+      <h3>{name} (Capacitor)</h3>
+      <p>
+        App version ({name}): {info.appVersion}
+      </p>
+      <p>
+        Native build number ({name}): {info.buildNumber}
+      </p>
     </Col>
   )
 }

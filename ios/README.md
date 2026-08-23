@@ -202,9 +202,20 @@ For the JS console, DOM and network — which is most of what matters in a WebVi
 Settings → Safari → Advanced → Web Inspector on the phone, then:
 
 ```bash
-ios_webkit_debug_proxy -f chrome-devtools://devtools/bundled/inspector.html
-# open http://localhost:9221 and attach DevTools to the WKWebView
+ios_webkit_debug_proxy                       # then, in another terminal:
+node ios/scripts/webview-eval.mjs "location.href"
+node ios/scripts/webview-eval.mjs "Object.keys(Capacitor.Plugins).join(',')"
 ```
+
+`webview-eval.mjs` runs JavaScript in the WebView straight from the shell, which on Linux is far less
+trouble than the DevTools UI: the documented route is a `chrome-devtools://` URL, and current Chrome
+refuses to open that scheme from a link *or* the omnibox (it searches Google for it instead), while
+Firefox cannot open it at all. The script header documents the two protocol quirks it works around —
+commands must be wrapped in `Target.sendMessageToTarget`, and `awaitPromise` is unsupported, so use
+synchronous `XMLHttpRequest` or stash a result on `window` and read it back.
+
+If you do want the full UI: open `http://localhost:9222` in **Chrome**, right-click the
+`capacitor://localhost` entry, Copy Link Address, and paste it into the address bar.
 
 **A TestFlight build is not inspectable by default.** Capacitor sets `webView.isInspectable` only
 under `#if DEBUG`, and TestFlight ships Release — so the device advertises no inspectable page and the

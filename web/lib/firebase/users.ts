@@ -15,6 +15,8 @@ import {
   connectAuthEmulator,
   getAuth,
   GoogleAuthProvider,
+  indexedDBLocalPersistence,
+  initializeAuth,
   OAuthProvider,
   reauthenticateWithCredential,
   reauthenticateWithPopup,
@@ -32,7 +34,25 @@ dayjs.extend(utc)
 
 export type {User}
 
-export const auth = getAuth(app)
+/**
+ * `getAuth()` installs Firebase's default popup/redirect resolver, which loads
+ * `apis.google.com/js/api.js` and builds a gapi iframe as soon as auth initialises. gapi cannot parse
+ * a non-http origin, so inside the iOS shell — served from `capacitor://localhost` — it throws
+ * `undefined is not an object (evaluating 'gapi.iframes.getContext')` and takes auth initialisation
+ * down with it. `onIdTokenChanged` then never fires, `useUser()` stays `undefined` forever, and
+ * `pages/index.tsx` renders its loading animation for good. Nothing logs a failure the app can see.
+ *
+ * `initializeAuth` with no `popupRedirectResolver` skips that machinery entirely. The native shells
+ * never need it: Google and Apple sign-in both go through `@capgo/capacitor-social-login` and
+ * `signInWithCredential`. The browser keeps `getAuth`, where `signInWithPopup` is the whole point.
+ *
+ * Android happens to work either way — Capacitor serves it from `https://localhost`, which gapi
+ * accepts. iOS cannot copy that: the scheme has to stay `capacitor://` for `getUserMedia` (voice
+ * auto-fill) and `crypto.subtle` (the Sign-in-with-Apple nonce) to see a secure context.
+ */
+export const auth = isNativeApp()
+  ? initializeAuth(app, {persistence: indexedDBLocalPersistence})
+  : getAuth(app)
 
 if (IS_FIREBASE_EMULATOR) {
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', {disableWarnings: true})

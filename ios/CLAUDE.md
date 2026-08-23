@@ -27,6 +27,15 @@ is in the [root CLAUDE.md](../CLAUDE.md).
   `WebViewLocalServer` already resolves `.html` itself. If you add a dynamic route, no change is
   needed — the router finds the bracketed file by scanning the directory.
 
+- **Firebase Auth must be created with `initializeAuth`, not `getAuth`, inside the native shells.**
+  `getAuth` installs the default popup/redirect resolver, which loads `apis.google.com/js/api.js` and
+  builds a gapi iframe at startup. gapi cannot parse a non-http origin, so on `capacitor://localhost`
+  it throws `evaluating 'gapi.iframes.getContext'` and auth never initialises — `onIdTokenChanged`
+  never fires, `useUser()` stays `undefined`, and `pages/index.tsx` shows its loading animation
+  forever with no visible error. See `web/lib/firebase/users.ts`. Android is unaffected only because
+  Capacitor serves it from `https://localhost`; iOS cannot copy that, since the `capacitor://` scheme
+  is what makes the origin secure for `getUserMedia` and `crypto.subtle`.
+
 - **The iOS web build runs on macOS, so `scripts/build_web_view.sh` must stay BSD-tool-safe.** It
   strips `getStaticProps`/`getStaticPaths` from the pages in `SSG_PAGES` so dynamic routes export as
   plain `[username].html` / `blog/[slug].html` templates. That rename used GNU sed's `\b`, which BSD
@@ -60,6 +69,12 @@ is in the [root CLAUDE.md](../CLAUDE.md).
 - **Platform branching in web code** goes through `isIosApp()` / `isAndroidApp()` /
   `isNativeApp()` in `web/lib/util/webview.ts`. `isNativeApp()` is the default — the product is meant
   to look the same on both.
+
+## Debugging the WebView from Linux
+
+`ios/scripts/webview-eval.mjs` evaluates JS in the phone's WebView over `ios_webkit_debug_proxy`,
+without a browser — the fastest way to answer "what is the app actually seeing". Needs a build made
+with `IOS_WEB_DEBUG=1`; a stock Release build is never inspectable. See [README.md](README.md) §5.
 
 ## Editing the Xcode project without Xcode
 

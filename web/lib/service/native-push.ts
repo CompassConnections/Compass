@@ -4,7 +4,7 @@ import {useEffect} from 'react'
 import toast from 'react-hot-toast'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
-import {isNativeApp} from 'web/lib/util/webview'
+import {isNativeApp, nativePlatform} from 'web/lib/util/webview'
 
 /**
  * Registers the device for push and keeps its token in `push_subscriptions_mobile`.
@@ -38,6 +38,7 @@ export default function NativePush() {
       try {
         const {data} = await api('save-subscription-mobile', {
           token: token.value,
+          platform: nativePlatform() === 'ios' ? 'ios' : 'android',
         })
         debug('Mobile subscription saved:', data)
       } catch (err) {

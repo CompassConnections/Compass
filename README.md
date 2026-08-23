@@ -107,7 +107,7 @@ just ask us on [Discord](https://discord.gg/8Vd7jzqjun).
 - [x] Set up domain name (compassmeet.com)
 - [ ] Cover more than 90% with tests (unit, integration, e2e)
 - [x] Add Android mobile app
-- [ ] Add iOS mobile app
+- [x] Add iOS mobile app
 - [x] Add better onboarding (tooltips, modals, etc.)
 - [ ] Add modules to learn more about each other (personality test, conflict style, love languages, etc.)
 - [ ] Add modules to improve interpersonal skills (active listening, nonviolent communication, etc.)
@@ -129,7 +129,7 @@ contributors.
 - [x] Make the app more user-friendly and appealing (UI/UX)
 - [x] Clean up terms and conditions (convert to Markdown)
 - [x] Clean up privacy notice (convert to Markdown)
-- [ ] Add other authentication methods (GitHub, Facebook, Apple, phone, etc.)
+- [ ] Add other authentication methods (GitHub, Facebook, phone, etc.)
 - [x] Add email verification
 - [x] Add password reset
 - [x] Add automated welcome email

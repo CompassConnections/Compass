@@ -19,7 +19,13 @@ runs:
         # whose exact version another workspace already pins leaves yarn.lock byte-identical, and
         # keying on the lockfile alone would then restore a node_modules that never installed it.
         # node_modules doesn't exist yet at this point, but exclude it so that stays true.
-        key: node-modules-${{ hashFiles('**/yarn.lock', '**/package.json', '!**/node_modules/**') }}
+        #
+        # `runner.os`/`runner.arch` are load-bearing. GitHub does not namespace caches by runner, so
+        # without them the Linux jobs' node_modules is restored onto the macOS runner in cd-ios.yml —
+        # bringing Linux-only native binaries with it. The visible symptom is `capacitor-assets`
+        # dying on `Cannot find module '../build/Release/sharp-darwin-arm64v8.node'`, since sharp
+        # fetches its prebuilt binary in a postinstall that a cache hit skips entirely.
+        key: node-modules-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/yarn.lock', '**/package.json', '!**/node_modules/**') }}
 
     - name: Setup Node.js
       uses: actions/setup-node@v4

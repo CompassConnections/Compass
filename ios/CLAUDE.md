@@ -27,6 +27,14 @@ is in the [root CLAUDE.md](../CLAUDE.md).
   `WebViewLocalServer` already resolves `.html` itself. If you add a dynamic route, no change is
   needed — the router finds the bracketed file by scanning the directory.
 
+- **The iOS web build runs on macOS, so `scripts/build_web_view.sh` must stay BSD-tool-safe.** It
+  strips `getStaticProps`/`getStaticPaths` from the pages in `SSG_PAGES` so dynamic routes export as
+  plain `[username].html` / `blog/[slug].html` templates. That rename used GNU sed's `\b`, which BSD
+  sed on the `macos-15` runner ignores while exiting 0 — so on iOS only, Next kept treating those two
+  as SSG routes and emitted no template, and every profile and blog link fell back to the home page.
+  It now uses `perl` and asserts both that the rename took and that the templates exist. Android never
+  saw it: that build runs on Ubuntu.
+
 - **`packageClassList` must be in `App/App/capacitor.config.json`**, and `npx cap sync ios` does not
   put it there. `CapacitorBridge.registerPlugins()` decodes that file into a struct whose
   `packageClassList` is non-optional, so an absent key makes the decode throw, the bridge registers

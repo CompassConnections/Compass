@@ -64,12 +64,37 @@ restore_sources() {
 trap restore_sources EXIT
 
 # rename getStaticProps/getStaticPaths/getServerSideProps to _getStaticProps/... so Next.js doesn't
-# see them (the .bak each sed leaves behind is the pristine original, and is what restores it)
+# see them (the .bak each command leaves behind is the pristine original, and is what restores it)
+#
+# perl, not sed: `\b` is a GNU extension. BSD sed on the macOS runner that builds iOS matched nothing
+# and exited 0, so the rename silently no-oped, Next built `/[username]` and `/blog/[slug]` as real
+# SSG routes, and emitted no `[username].html` / `blog/[slug].html` template at all — leaving the app
+# to fall back to the home page on every profile and blog link. Android never saw it: it builds on
+# Ubuntu, where GNU sed honours `\b`.
 for page in "${SSG_PAGES[@]}"; do
-  sed -i.bak 's/\bgetStaticProps\b/_getStaticProps/g; s/\bgetStaticPaths\b/_getStaticPaths/g; s/\bgetServerSideProps\b/_getServerSideProps/g' "$page"
+  perl -pi.bak -e 's/\bgetStaticProps\b/_getStaticProps/g; s/\bgetStaticPaths\b/_getStaticPaths/g; s/\bgetServerSideProps\b/_getServerSideProps/g' "$page"
+
+  # A silent no-op here costs a whole build+upload+install cycle to discover, so check rather than trust.
+  if grep -qE '\bexport (const|async function) (getStaticProps|getStaticPaths|getServerSideProps)\b' "$page"; then
+    echo "build_web_view: failed to strip data-fetching exports from $page" >&2
+    exit 1
+  fi
 done
 
 # rename proxy to _proxy
 mv proxy.ts _proxy.ts
 
 yarn build
+
+# The dynamic-route templates are what the native shells resolve extension-less URLs onto (see
+# NextExportRouter in ios/, and Capacitor's WebViewLocalServer on Android). If a page in SSG_PAGES
+# still had getStaticPaths at build time, Next silently emits no template for it and every link to
+# that route lands on the home page instead — with no error anywhere.
+for page in "${SSG_PAGES[@]}"; do
+  case "$page" in *'['*) ;; *) continue ;; esac
+  template="out/$(echo "$page" | sed -e 's|^pages/||' -e 's|/index\.tsx$|.html|' -e 's|\.tsx$|.html|')"
+  if [ ! -f "$template" ]; then
+    echo "build_web_view: expected dynamic-route template $template was not generated" >&2
+    exit 1
+  fi
+done

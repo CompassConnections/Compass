@@ -1293,6 +1293,9 @@ export const API = (_apiTypeCheck = {
     returns: {} as any,
     props: z.object({
       token: z.string(),
+      // Optional because Android builds already in the wild do not send it; the handler defaults to
+      // 'android', which is what those clients are. New clients send it explicitly.
+      platform: z.enum(['ios', 'android']).optional(),
     }),
     summary: 'Save a mobile push subscription for the user',
     tag: 'Notifications',

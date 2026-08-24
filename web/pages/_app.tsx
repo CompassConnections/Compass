@@ -27,6 +27,7 @@ import {LiveRegionProvider} from 'web/components/live-region'
 import {UnseenMessageChannelsProvider} from 'web/components/messaging/messages-icon'
 import {PrivateMessageMembershipsProvider} from 'web/components/messaging/private-message-memberships-context'
 import {ReviewPrompts} from 'web/components/review-prompts'
+import {SaveReferral} from 'web/components/save-referral'
 import {ChoicesProvider} from 'web/hooks/use-choices'
 import {useFontPreferenceManager} from 'web/hooks/use-font-preference'
 import {useHasLoaded} from 'web/hooks/use-has-loaded'
@@ -342,6 +343,7 @@ function MyApp(props: AppProps<PageProps>) {
                               <WebPush />
                               <NativePush />
                               <ReviewPrompts />
+                              <SaveReferral />
                               <Component {...pageProps} />
                             </PrivateMessageMembershipsProvider>
                           </UnseenMessageChannelsProvider>

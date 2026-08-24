@@ -13,9 +13,13 @@ export const useSaveReferral = (
   const {searchParams} = useDefinedSearchParams()
 
   useEffect(() => {
+    // Null on the first render of a statically-optimized page — the query is only readable once the
+    // router is ready, which re-runs this effect. Don't blow up in between.
+    if (!searchParams) return
+
     const referrer = searchParams.get('r')
       ? decodeBase64(searchParams.get('r') as string)
-      : (searchParams.get('referrer') as string)
+      : (searchParams.get('referrer') ?? undefined)
 
     const referrerOrDefault = referrer || options?.defaultReferrerUsername
 

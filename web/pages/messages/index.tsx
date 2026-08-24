@@ -22,6 +22,7 @@ import {
   useUnseenPrivateMessageChannels,
 } from 'web/hooks/use-private-messages'
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
+import {useReviewPromptMoment} from 'web/hooks/use-review-prompt'
 import {useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {useT} from 'web/lib/locale'
@@ -57,6 +58,11 @@ export function MessagesContent(props: {currentUser: User}) {
     useSortedPrivateMessageMemberships(currentUser.id)
   const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(true)
   const lastMessages = useLastPrivateMessages(currentUser.id)
+
+  // The best moment Compass has to ask for a store review: someone wrote back, and they have just
+  // stepped out of the thread. Whether the exchange is two-way enough to count is the server's call
+  // — all this says is that there is an inbox with something in it. Never inside the open thread.
+  useReviewPromptMoment('inbox', !!channels?.length)
 
   return (
     <>

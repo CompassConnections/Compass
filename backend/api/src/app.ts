@@ -110,6 +110,7 @@ import {markAllNotifsRead} from './mark-all-notifications-read'
 import {removePinnedPhoto} from './remove-pinned-photo'
 import {repoStats} from './repo-stats'
 import {report} from './report'
+import {requestReviewPrompt} from './request-review-prompt'
 import {rsvpEvent} from './rsvp-event'
 import {searchLocationEndpoint} from './search-location'
 import {searchNearCity} from './search-near-city'
@@ -608,6 +609,11 @@ Commit: ${git.revision} (${git.commitDate})`,
         'Member spotlights on the home page: consent-gated, admin-curated snapshots of real profiles',
     },
     {
+      name: 'Reviews',
+      description:
+        'Deciding when to show the native App Store / Play Store review card — see docs/app-store-reviews.md',
+    },
+    {
       name: 'Moderation',
       description: 'Report system and user moderation',
     },
@@ -678,6 +684,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-blog-posts-admin': getBlogPostsAdmin,
   'create-blog-post': createBlogPost,
   'update-blog-post': updateBlogPost,
+  'request-review-prompt': requestReviewPrompt,
   'get-spotlights': getSpotlights,
   'get-spotlights-admin': getSpotlightsAdmin,
   'create-spotlight': createSpotlight,

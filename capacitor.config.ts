@@ -43,6 +43,7 @@ const config: CapacitorConfig = {
     // that, so it stays at the default.
   },
   includePlugins: [
+    '@capacitor-community/in-app-review',
     '@capacitor/app',
     '@capacitor/core',
     '@capacitor/filesystem',

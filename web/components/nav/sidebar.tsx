@@ -1,4 +1,5 @@
 import {ArrowLeftOnRectangleIcon, ArrowRightOnRectangleIcon} from '@heroicons/react/24/outline'
+import {StarIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {buildArray} from 'common/util/array'
 import Router, {useRouter} from 'next/router'
@@ -6,6 +7,7 @@ import {Button, ColorType, SizeType} from 'web/components/buttons/button'
 import {LanguagePicker} from 'web/components/language/language-picker'
 import {useAppDownload} from 'web/hooks/use-app-download'
 import {useProfile} from 'web/hooks/use-profile'
+import {useStoreReviewUrl} from 'web/hooks/use-review-prompt'
 import {useUser} from 'web/hooks/use-user'
 import {firebaseLogout} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
@@ -42,6 +44,11 @@ export default function Sidebar(props: {
   // disambiguation page in between. Falls back to /download — which asks the question properly —
   // on desktop, before hydration, and while the iOS listing is still a placeholder.
   const appDownload = useAppDownload()
+
+  // The counterpart inside the app, and the only place linking out to a store listing is right: it is
+  // member-initiated. On iOS it is also the only *permitted* mechanism for a button — Apple's HIG
+  // forbids calling requestReview from a tap. Null until the App Store listing exists.
+  const reviewUrl = useStoreReviewUrl()
 
   return (
     <nav
@@ -95,6 +102,20 @@ export default function Sidebar(props: {
               name: appDownload.label,
               icon: appDownload.icon,
               href: appDownload.href,
+            }}
+            currentPage={currentPage}
+          />
+        )}
+        {/* Shown only inside the app, where the row can actually reach a store. It earns its place
+            because of the quota: a member who wants to say something after their three system
+            prompts are spent has no other route. See docs/app-store-reviews.md §7. */}
+        {isApp && reviewUrl && (
+          <SidebarItem
+            item={{
+              key: 'nav.rate_app',
+              name: 'Rate Compass',
+              icon: StarIcon,
+              href: reviewUrl,
             }}
             currentPage={currentPage}
           />

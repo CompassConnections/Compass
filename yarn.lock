@@ -1333,6 +1333,11 @@
   dependencies:
     css-tree "^3.0.0"
 
+"@capacitor-community/in-app-review@7.1.0":
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/@capacitor-community/in-app-review/-/in-app-review-7.1.0.tgz#d2b8589c52ba3021bab2ad68d2ebf3fd99dcbd5f"
+  integrity sha512-qB0Q+qvPxF03UWoryZubyMkOCRqJF5xEILjt+VC4768yyilyss4k6qDjT6x9x7T4T8o8kmGgbPBJgwf1fsLa1A==
+
 "@capacitor/android@7.4.4":
   version "7.4.4"
   resolved "https://registry.yarnpkg.com/@capacitor/android/-/android-7.4.4.tgz#a14a1e844bd5079982427e247fdd17555b5fbedd"

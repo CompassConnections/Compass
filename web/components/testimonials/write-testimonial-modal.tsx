@@ -1,6 +1,7 @@
 import {CheckCircleIcon} from '@heroicons/react/24/solid'
 import {APIError} from 'common/api/utils'
 import {useState} from 'react'
+import {requestReviewPrompt} from 'web/hooks/use-review-prompt'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
@@ -112,7 +113,15 @@ export function WriteTestimonialModal({
   const close = () => {
     setOpen(false)
     // Reset only after a success, so a failed send does not silently discard what they wrote.
-    if (submitted) setSubmitted(false)
+    if (submitted) {
+      setSubmitted(false)
+      // On close rather than on submit: the modal stays open on its success state, and a store card
+      // cannot be asked for over the top of an open dialog. The delay clears the leave transition.
+      //
+      // Keyed on having submitted at all, never on the rating — routing only the happy answers to a
+      // store card is review gating, which both stores prohibit. See docs/app-store-reviews.md §3.
+      requestReviewPrompt('testimonial-submitted', 800)
+    }
   }
 
   return (

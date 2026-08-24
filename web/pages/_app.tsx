@@ -26,12 +26,14 @@ import {ErrorBoundary} from 'web/components/error-boundary'
 import {LiveRegionProvider} from 'web/components/live-region'
 import {UnseenMessageChannelsProvider} from 'web/components/messaging/messages-icon'
 import {PrivateMessageMembershipsProvider} from 'web/components/messaging/private-message-memberships-context'
+import {ReviewPrompts} from 'web/components/review-prompts'
 import {ChoicesProvider} from 'web/hooks/use-choices'
 import {useFontPreferenceManager} from 'web/hooks/use-font-preference'
 import {useHasLoaded} from 'web/hooks/use-has-loaded'
 import {HiddenProfilesProvider} from 'web/hooks/use-hidden-profiles'
 import {PinnedQuestionIdsProvider} from 'web/hooks/use-pinned-question-ids'
 import {ProfileProvider} from 'web/hooks/use-profile'
+import {markNotificationOpened} from 'web/hooks/use-review-prompt'
 import {markBackNavigation, useScrollRestoration} from 'web/hooks/use-scroll-restoration'
 import {updateStatusBar} from 'web/hooks/use-theme'
 import {updateBackendLocale} from 'web/lib/api'
@@ -210,6 +212,10 @@ function MyApp(props: AppProps<PageProps>) {
       debug('handleAppLink', payload)
       const {endpoint} = payload
       if (!endpoint) return
+      // Every notification tap on either platform arrives here — push, email link, universal/app
+      // link — which makes this the one place that can tell a profile view that was opened from a
+      // notification apart from one they navigated to. See web/hooks/use-review-prompt.ts.
+      markNotificationOpened()
       // `/discord`, `/paypal` and friends are redirects to other sites, served by next.config.ts —
       // which the app never runs, being a static export. Android hands us the path anyway (an email
       // link to compassmeet.com/discord opens the app, not the browser), and routing it in-app would
@@ -335,6 +341,7 @@ function MyApp(props: AppProps<PageProps>) {
                               <ConsentBanner />
                               <WebPush />
                               <NativePush />
+                              <ReviewPrompts />
                               <Component {...pageProps} />
                             </PrivateMessageMembershipsProvider>
                           </UnseenMessageChannelsProvider>

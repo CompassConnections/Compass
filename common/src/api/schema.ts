@@ -49,6 +49,7 @@ import {
   SpotlightCandidate,
 } from 'common/profiles/spotlights'
 import {ReferralCount, ReferralTree} from 'common/referrals'
+import {REVIEW_MOMENTS, ReviewTrigger} from 'common/reviews/prompt'
 import {RepoStats, Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
@@ -1884,6 +1885,24 @@ export const API = (_apiTypeCheck = {
     returns: {} as {post: AdminBlogPost; notifiedCount: number},
     summary: 'Edit, publish, notify about, or take down a blog post. Admins only.',
     tag: 'Blog',
+  },
+  'request-review-prompt': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        /** Where the app is, not what it thinks it has earned — the server decides that. */
+        moment: z.enum(REVIEW_MOMENTS),
+        platform: z.enum(['ios', 'android']),
+      })
+      .strict(),
+    // A POST that reads, because it also writes: saying yes and recording the attempt have to be the
+    // same act. The store API tells us nothing afterwards, so an attempt recorded any later than this
+    // is an attempt that can be lost, and two moments a second apart would both be told yes.
+    returns: {} as {trigger: ReviewTrigger | null},
+    summary: 'Decide whether to show the native store review card now, recording the ask if so.',
+    tag: 'Reviews',
   },
 } as const)
 

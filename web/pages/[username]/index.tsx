@@ -18,6 +18,7 @@ import {ProfileInfo, ProfileInfoSkeleton} from 'web/components/profile/profile-i
 import {SEO} from 'web/components/SEO'
 import {useAdminOrMod} from 'web/hooks/use-admin'
 import {useProfileByUser} from 'web/hooks/use-profile'
+import {cameFromNotification, useReviewPromptMoment} from 'web/hooks/use-review-prompt'
 import {useSaveReferral} from 'web/hooks/use-save-referral'
 import {useTracking} from 'web/hooks/use-tracking'
 import {useUser} from 'web/hooks/use-user'
@@ -221,6 +222,14 @@ export default function UserPage(props: UserPageProps) {
       null,
       2,
     ),
+  )
+
+  // Read once, on mount: the tap that brought them here happened before this page existed, and the
+  // answer must not change under the effect while the profile is still loading.
+  const [fromNotification] = useState(cameFromNotification)
+  useReviewPromptMoment(
+    'profile-from-notification',
+    fromNotification && !loading && !!fetchedProps.profile,
   )
 
   if (loading) {

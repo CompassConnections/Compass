@@ -120,4 +120,5 @@ Cross-cutting: [`docs/feed.md`](docs/feed.md),
 [`docs/logging-monitoring.md`](docs/logging-monitoring.md),
 [`docs/troubleshooting.md`](docs/troubleshooting.md).
 Mobile: [`android/README.md`](android/README.md), [`ios/README.md`](ios/README.md),
-[`docs/ios.md`](docs/ios.md) (iOS plan and remaining manual steps).
+[`docs/ios.md`](docs/ios.md) (iOS plan and remaining manual steps),
+[`docs/app-store-reviews.md`](docs/app-store-reviews.md) (when to ask for a store review).

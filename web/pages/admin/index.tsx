@@ -8,6 +8,7 @@ import {
 import {IS_LOCAL} from 'common/hosting/constants'
 import Link from 'next/link'
 import {ComponentType} from 'react'
+import {ReviewCardTester} from 'web/components/admin/review-card-tester'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {NoSEO} from 'web/components/NoSEO'
@@ -86,6 +87,13 @@ export default function AdminHome() {
             </Link>
           ))}
         </div>
+
+        {/* A control rather than a page: it does one thing on the device you are holding, and a
+            whole route for one button would be harder to find than the button. */}
+        <Col className={'gap-1'}>
+          <div className={'text-ink-500 text-sm'}>Diagnostics</div>
+          <ReviewCardTester />
+        </Col>
       </Col>
     </PageBase>
   )

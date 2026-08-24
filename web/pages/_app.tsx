@@ -234,15 +234,13 @@ function MyApp(props: AppProps<PageProps>) {
 
     // Cross-platform deep links: Universal Links on iOS, App Links on Android. `getLaunchUrl` covers
     // the cold-start case, the listener covers a link arriving while the app is already running.
-    // Android additionally still has the hand-written `AndroidBridge` path below — MainActivity
-    // pushes notification endpoints in through `handleAppLink` directly, and the two are harmless
-    // together because handleAppLink no-ops when the endpoint is already the current path.
+    // This is the only path on either platform — Android's MainActivity used to push the same links
+    // in through a hand-written `AndroidBridge`, which was redundant with these two and, running
+    // from `onCreate`, fired before `handleAppLink` was even defined on `window`.
     const listener = App.addListener('appUrlOpen', ({url}) => openLink(url))
     App.getLaunchUrl()
       .then((res) => openLink(res?.url))
       .catch((e) => debug('No launch url', e))
-
-    openLink(window.AndroidBridge?.getPendingDeepLink?.())
 
     return () => {
       listener.then((l) => l.remove()).catch(() => {})

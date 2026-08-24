@@ -1,11 +1,9 @@
 package com.compassconnections.app;
 
-import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -18,14 +16,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
 
-import com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin;
 import com.getcapacitor.BridgeActivity;
-import com.getcapacitor.BridgeWebViewClient;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginHandle;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
@@ -35,58 +28,41 @@ import com.google.android.play.core.appupdate.AppUpdateOptions;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import ee.forgr.capacitor.social.login.GoogleProvider;
 import ee.forgr.capacitor.social.login.ModifiedMainActivityForSocialLoginPlugin;
 import ee.forgr.capacitor.social.login.SocialLoginPlugin;
 
+/**
+ * Deliberately thin. Three things that used to live here are now handled on the JS side, where they
+ * also work on iOS and — unlike native code running inside {@code onCreate} — can be sure the WebView
+ * has actually loaded:
+ *
+ * <ul>
+ *   <li><b>Deep links</b> — {@code App.getLaunchUrl()} / the {@code appUrlOpen} listener in
+ *       {@code web/pages/_app.tsx}. Capacitor stashes the launch intent's Uri itself.</li>
+ *   <li><b>Notification taps</b> — {@code pushNotificationActionPerformed} in
+ *       {@code web/lib/service/native-push.ts}. Capacitor retains the event until a listener
+ *       consumes it, so a cold-start tap is not lost.</li>
+ *   <li><b>POST_NOTIFICATIONS</b> — {@code PushNotifications.requestPermissions()}, which asks at
+ *       login rather than at first launch.</li>
+ * </ul>
+ *
+ * What is left is what Capacitor has no plugin for: the Downloads-folder writer and the in-app
+ * update prompt.
+ */
 public class MainActivity extends BridgeActivity implements ModifiedMainActivityForSocialLoginPlugin {
-
-    private String pendingDeepLink = null;
-
-    // Declare this at class level
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    Log.i("CompassApp", "Permission granted");
-                    // Permission granted – you can show notifications
-                } else {
-                    Log.i("CompassApp", "Permission denied");
-                    // Permission denied – handle gracefully
-                }
-            });
-
-    private void askNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // API 33
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                // Permission not yet granted; request it
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-            }
-        }
-    }
 
     public class WebAppInterface {
         private final Context context;
 
         public WebAppInterface(Context context) {
             this.context = context;
-        }
-
-        @JavascriptInterface
-        public String getPendingDeepLink() {
-            String link = pendingDeepLink;
-            pendingDeepLink = null; // consume it
-            return link;
         }
 
         @JavascriptInterface
@@ -184,37 +160,11 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
 
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        String endpoint = intent.getStringExtra("endpoint");
-        Log.i("CompassApp", "onNewIntent called with endpoint: " + endpoint);
-        if (endpoint != null) {
-            Log.i("CompassApp", "redirecting to endpoint: " + endpoint);
-            try {
-                String payload = new JSONObject().put("endpoint", endpoint).toString();
-                Log.i("CompassApp", "Handling notif click: " + payload);
-                bridge.getWebView().post(() -> bridge.getWebView().evaluateJavascript("handleAppLink(" + payload + ");", null));
-            } catch (JSONException e) {
-                Log.i("CompassApp", "Failed to encode JSON payload", e);
-            }
-        } else {
-            Uri data = intent.getData();
-            if (data != null) {
-                handleDeepLink(data.toString());
-            } else {
-                Log.i("CompassApp", "No relevant data");
-            }
-        }
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i("CompassApp", "onCreate called");
         super.onCreate(savedInstanceState);
 
         WebView webView = this.bridge.getWebView();
-        webView.setWebViewClient(new BridgeWebViewClient(this.bridge));
 
        if (BuildConfig.ENABLE_WEBVIEW_DEBUG) {
             WebView.setWebContentsDebuggingEnabled(true);
@@ -223,42 +173,15 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
         WebSettings settings = webView.getSettings();
         settings.setUserAgentString(settings.getUserAgentString() + " CompassAppWebView");
 
-        settings.setJavaScriptEnabled(true);
         webView.addJavascriptInterface(new WebAppInterface(this), "AndroidBridge");
 
-        registerPlugin(PushNotificationsPlugin.class);
         // Initialize the Bridge with Push Notifications plugin
 //       this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
 //           add(com.getcapacitor.plugin.PushNotifications.class);
 //       }});
 
-        askNotificationPermission();
-
         appUpdateManager = AppUpdateManagerFactory.create(this);
         checkForUpdates();
-
-        Uri data = getIntent().getData();
-        if (data != null) {
-            pendingDeepLink = data.toString();
-        } else {
-            // Check for notification endpoint when app is opened from cold start via notification click
-            String endpoint = getIntent().getStringExtra("endpoint");
-            if (endpoint != null) {
-                Log.i("CompassApp", "onCreate found endpoint from notification: " + endpoint);
-                pendingDeepLink = endpoint;
-            }
-        }
-    }
-
-    private void handleDeepLink(String url) {
-        try {
-            String path = new URL(url).getPath();
-            String payload = new JSONObject().put("url", url).put("endpoint", path).toString();
-            Log.i("CompassApp", "Handling deep link: " + url);
-            bridge.getWebView().post(() -> bridge.getWebView().evaluateJavascript("handleAppLink(" + payload + ");", null));
-        } catch (Exception e) {
-            Log.e("CompassApp", "Failed to handle deep link for " + url, e);
-        }
     }
 
     @Override
@@ -342,12 +265,6 @@ public class MainActivity extends BridgeActivity implements ModifiedMainActivity
                 startImmediateUpdate(appUpdateInfo);
             }
         });
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        appUpdateManager = null;
     }
 }
 

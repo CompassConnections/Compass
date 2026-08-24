@@ -121,8 +121,10 @@ remains is console configuration and the first build, not values to paste into t
 - [ ] Work through [On-device verification](#on-device-verification-first-testflight-build) below.
       Internal TestFlight needs no Beta App Review, so builds are installable minutes after processing.
 - [x] App Store Connect app record and listing metadata — everything but the build.
-- [ ] Once live: put the real App Store id in `IOS_APP_URL` (`common/src/constants.ts`) and add the
-      App Store row next to "Get it on Google Play" in `web/components/nav/sidebar.tsx`.
+- [x] Live: `IOS_APP_URL` (`common/src/constants.ts`) carries the real App Store id `6804429364`,
+      which flips `IS_IOS_APP_PUBLISHED` and with it the /download badge, the about-page copy and the
+      Smart App Banner. The sidebar needs no separate App Store row — it resolves per device through
+      `useAppDownload`.
 
 Everything left is a web console or a GitHub Actions run. **The EC2 Mac day described in §2.1 is no
 longer on the critical path**: certificate seeding moved to the `iOS Certificates (one-off)` workflow,

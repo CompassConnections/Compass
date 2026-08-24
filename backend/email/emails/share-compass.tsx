@@ -1,10 +1,23 @@
-import {Body, Container, Head, Html, Link, Preview, Section, Text} from '@react-email/components'
+import {Button, Link, Section, Text} from '@react-email/components'
 import {DEPLOYED_WEB_URL, ENV_CONFIG} from 'common/envs/constants'
 import {formatDistance, kmToMiles} from 'common/measurement-utils'
 import {getXShareProfileUrl} from 'common/socials'
 import {type User} from 'common/user'
 import {UNSUBSCRIBE_URL} from 'common/user-notification-preferences'
-import {container, content, Footer, main, paragraph} from 'email/utils'
+import {
+  Actions,
+  CTAButton,
+  Divider,
+  EmailShell,
+  fonts,
+  Heading,
+  link,
+  Muted,
+  palette,
+  Paragraph,
+  Quote,
+  Signature,
+} from 'email/utils'
 import React from 'react'
 import {createT} from 'shared/locale'
 
@@ -72,10 +85,9 @@ export const ShareCompassEmail = ({
     `https://${ENV_CONFIG.domain}/${username}?referrer=${toUser.username}`
 
   return (
-    <Html>
-      <Head />
-      <Preview>
-        {personalised
+    <EmailShell
+      preview={
+        personalised
           ? t('email.share.preview_nearby', '{count} people near {city} are already on Compass', {
               count: String(nearbyCount),
               city: city as string,
@@ -83,157 +95,163 @@ export const ShareCompassEmail = ({
           : t(
               'email.share.preview',
               "700 people in 6 months — here's how you help write what's next",
+            )
+      }
+      unsubscribeUrl={unsubscribeUrl}
+      email={email ?? name}
+      locale={locale}
+    >
+      <Heading align="left" style={{fontSize: '26px'}}>
+        {t('email.share.greeting', 'Hi {name},', {name})}
+      </Heading>
+
+      <Paragraph>
+        {t(
+          'email.share.opening',
+          'I started Compass because I believe human connection can be so much more than swipes and small talk. You joined because you believe that too — and that means a lot to me.',
+        )}
+      </Paragraph>
+
+      {personalised ? (
+        <>
+          <Paragraph>
+            {t(
+              'email.share.growth_nearby',
+              'Right now, {count} members are within {radius} of {city}. People in reach of you, who chose depth over algorithms and values over vanity metrics.',
+              {
+                count: String(nearbyCount),
+                radius,
+                city: city as string,
+              },
             )}
-      </Preview>
-      <Body style={main}>
-        <Container style={container}>
-          <Section style={content}>
-            <Text style={paragraph}>{t('email.share.greeting', 'Hi {name},', {name})}</Text>
+          </Paragraph>
 
-            <Text style={paragraph}>
-              {t(
-                'email.share.opening',
-                'I started Compass because I believe human connection can be so much more than swipes and small talk. You joined because you believe that too — and that means a lot to me.',
-              )}
-            </Text>
+          {/*<Text style={paragraph}>*/}
+          {/*  {t(*/}
+          {/*    'email.share.growth_nearby_context',*/}
+          {/*    "That's what 6 months and 700 members across the platform look like where you live. It's a real signal — and it's only the beginning.",*/}
+          {/*  )}*/}
+          {/*</Text>*/}
+        </>
+      ) : (
+        <Paragraph>
+          {t(
+            'email.share.growth',
+            "In just 6 months, over 700 people have found their way here. That's 700 people who chose depth over algorithms, values over vanity metrics. It's a real signal — and it's only the beginning.",
+          )}
+        </Paragraph>
+      )}
 
-            {personalised ? (
-              <>
-                <Text style={paragraph}>
-                  {t(
-                    'email.share.growth_nearby',
-                    'Right now, {count} members are within {radius} of {city}. People in reach of you, who chose depth over algorithms and values over vanity metrics.',
-                    {
-                      count: String(nearbyCount),
-                      radius,
-                      city: city as string,
-                    },
-                  )}
-                </Text>
+      <Paragraph>
+        {t(
+          'email.share.network_effect',
+          'But Compass only becomes truly powerful when more people who share your values are on it. Every new member means more kindred spirits to discover, richer events, a stronger community, and more contributors keeping it free and ad-free.',
+        )}
+      </Paragraph>
 
-                {/*<Text style={paragraph}>*/}
-                {/*  {t(*/}
-                {/*    'email.share.growth_nearby_context',*/}
-                {/*    "That's what 6 months and 700 members across the platform look like where you live. It's a real signal — and it's only the beginning.",*/}
-                {/*  )}*/}
-                {/*</Text>*/}
-              </>
-            ) : (
-              <Text style={paragraph}>
-                {t(
-                  'email.share.growth',
-                  "In just 6 months, over 700 people have found their way here. That's 700 people who chose depth over algorithms, values over vanity metrics. It's a real signal — and it's only the beginning.",
-                )}
-              </Text>
+      {/* The objection is the reader's voice, not ours — so it gets the same rule-and-indent treatment
+          every other quoted passage in this package gets, instead of an italic grey paragraph that just
+          looked like de-emphasised body copy. */}
+      <Quote>
+        {t('email.share.objection', '"But my friends aren\'t really my type on here…"')}
+      </Quote>
+
+      <Paragraph>
+        {t(
+          'email.share.reframe',
+          "Fair. Maybe the person you tell isn't someone you'd personally connect with on Compass. But think one step further: they bring their world with them — their friends, their colleagues, the thoughtful people in their circles. People you've never met, who might be exactly who you're looking for. Sharing with one friend isn't just a favour to them. It's an investment in your own future connections.",
+        )}
+      </Paragraph>
+
+      {!!nearbyProfiles?.length && (
+        <Section style={{margin: '24px 0 0 0'}}>
+          <Paragraph>
+            {t(
+              'email.share.link_profiles',
+              'The easiest version: just link a few profiles you found interesting and let people read them. Here are three near you to start with:',
             )}
-
-            <Text style={paragraph}>
-              {t(
-                'email.share.network_effect',
-                'But Compass only becomes truly powerful when more people who share your values are on it. Every new member means more kindred spirits to discover, richer events, a stronger community, and more contributors keeping it free and ad-free.',
-              )}
-            </Text>
-
-            <Text style={{...paragraph, fontStyle: 'italic', color: '#555'}}>
-              {t('email.share.objection', '"But my friends aren\'t really my type on here…"')}
-            </Text>
-
-            <Text style={paragraph}>
-              {t(
-                'email.share.reframe',
-                "Fair. Maybe the person you tell isn't someone you'd personally connect with on Compass. But think one step further: they bring their world with them — their friends, their colleagues, the thoughtful people in their circles. People you've never met, who might be exactly who you're looking for. Sharing with one friend isn't just a favour to them. It's an investment in your own future connections.",
-              )}
-            </Text>
-
-            {!!nearbyProfiles?.length && (
-              <Section style={{marginTop: '24px'}}>
-                <Text style={paragraph}>
-                  {t(
-                    'email.share.link_profiles',
-                    'The easiest version: just link a few profiles you found interesting and let people read them. Here are three near you to start with:',
-                  )}
-                </Text>
-                {nearbyProfiles.map((p) => (
-                  <Text key={p.username} style={{...paragraph, margin: '4px 0'}}>
-                    <Link href={profileUrl(p.username)}>
-                      {p.name} — compassmeet.com/{p.username}
-                    </Link>
-                  </Text>
-                ))}
-              </Section>
-            )}
-
-            <Text style={{...paragraph, fontWeight: 'bold', fontSize: '16px'}}>
-              {t('email.share.cta_heading', 'How to share:')}
-            </Text>
-
-            <Section style={{marginBottom: '20px', textAlign: 'center'}}>
-              <Text style={{...paragraph, marginBottom: '8px'}}>
-                {t(
-                  'email.share.cta_profile',
-                  "Post your profile on X (or anywhere you're active):",
-                )}
-              </Text>
-              <Link
-                href={profileShareUrl}
-                style={{
-                  display: 'inline-block',
-                  backgroundColor: '#000000',
-                  color: '#ffffff',
-                  padding: '12px 20px',
-                  borderRadius: '6px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold',
-                }}
-              >
-                {t('email.share.post_on_x', '𝕏  Post my profile')}
+          </Paragraph>
+          {nearbyProfiles.map((p) => (
+            <Text key={p.username} style={{...listItem}}>
+              <Link href={profileUrl(p.username)} style={link}>
+                {p.name} — compassmeet.com/{p.username}
               </Link>
-            </Section>
-
-            <Section style={{textAlign: 'center', marginTop: '10px'}}>
-              <Text style={{...paragraph, marginBottom: '12px'}}>
-                {t('email.share.cta_link', 'Or simply share the link to Compass:')}
-              </Text>
-              <Link
-                href={DEPLOYED_WEB_URL}
-                style={{
-                  display: 'inline-block',
-                  backgroundColor: '#2563eb',
-                  color: '#ffffff',
-                  padding: '12px 20px',
-                  borderRadius: '6px',
-                  textDecoration: 'none',
-                  fontWeight: 'bold',
-                }}
-              >
-                {t('email.share.share_compass', 'Share Compass')}
-              </Link>
-            </Section>
-
-            <Text style={{marginTop: '40px', fontSize: '12px', color: '#555'}}>
-              {t(
-                'email.share.community_note',
-                "One share. One person. That's how communities like this are built — not by ads, but by people who believe in something ethical.",
-              )}
             </Text>
+          ))}
+        </Section>
+      )}
 
-            <Text style={paragraph}>
-              {t('email.share.signature_thanks', 'Thank you for being part of it.')}
-            </Text>
+      <Divider />
 
-            <Text style={{...paragraph, marginTop: '8px'}}>
-              Martin Braquet
-              <br />
-              <span style={{fontSize: '12px', color: '#888'}}>
-                {t('email.share.signature_title', 'Founder, Compass')}
-              </span>
-            </Text>
-          </Section>
-          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} locale={locale} />
-        </Container>
-      </Body>
-    </Html>
+      <Text
+        className="cm-name"
+        style={{
+          fontFamily: fonts.heading,
+          fontSize: '20px',
+          fontWeight: 600,
+          color: palette.ink900,
+          margin: '0 0 4px 0',
+          textAlign: 'center' as const,
+        }}
+      >
+        {t('email.share.cta_heading', 'How to share:')}
+      </Text>
+
+      <Actions style={{margin: '18px 0 0 0'}}>
+        <Muted style={{marginBottom: '10px'}}>
+          {t('email.share.cta_profile', "Post your profile on X (or anywhere you're active):")}
+        </Muted>
+        {/* X keeps its own black — a share button that doesn't look like the platform it posts to reads
+            as a generic link. Everything else about it (radius, type, padding) is our button. */}
+        <Button
+          href={profileShareUrl}
+          className="cm-cta"
+          style={{
+            display: 'inline-block',
+            backgroundColor: '#000000',
+            color: '#ffffff',
+            padding: '12px 26px',
+            borderRadius: '12px',
+            textDecoration: 'none',
+            fontFamily: fonts.body,
+            fontSize: '15px',
+            fontWeight: 700,
+          }}
+        >
+          {t('email.share.post_on_x', '𝕏  Post my profile')}
+        </Button>
+      </Actions>
+
+      <Actions style={{margin: '24px 0 0 0'}}>
+        <Muted style={{marginBottom: '10px'}}>
+          {t('email.share.cta_link', 'Or simply share the link to Compass:')}
+        </Muted>
+        <CTAButton href={DEPLOYED_WEB_URL}>
+          {t('email.share.share_compass', 'Share Compass')}
+        </CTAButton>
+      </Actions>
+
+      <Muted style={{marginTop: '32px'}}>
+        {t(
+          'email.share.community_note',
+          "One share. One person. That's how communities like this are built — not by ads, but by people who believe in something ethical.",
+        )}
+      </Muted>
+
+      <Paragraph style={{marginTop: '28px'}}>
+        {t('email.share.signature_thanks', 'Thank you for being part of it.')}
+      </Paragraph>
+
+      <Signature title={t('email.share.signature_title', 'Founder, Compass')} />
+    </EmailShell>
   )
+}
+
+const listItem = {
+  fontFamily: fonts.body,
+  fontSize: '15px',
+  lineHeight: '1.7',
+  margin: '4px 0',
 }
 
 ShareCompassEmail.PreviewProps = {

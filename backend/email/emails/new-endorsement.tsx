@@ -1,7 +1,7 @@
-import {Body, Button, Container, Head, Html, Preview, Section, Text} from '@react-email/components'
+import {Section} from '@react-email/components'
 import {DOMAIN} from 'common/envs/constants'
 import {type User} from 'common/user'
-import {container, content, Footer, main} from 'email/utils'
+import {Actions, CTAButton, EmailShell, Eyebrow, Heading, Lead, Quote} from 'email/utils'
 import React from 'react'
 import {createT} from 'shared/locale'
 
@@ -30,118 +30,38 @@ export const NewEndorsementEmail = ({
   const endorsementUrl = `https://${DOMAIN}/${onUser.username}`
 
   return (
-    <Html>
-      <Head />
-      <Preview>
-        {t('email.new_endorsement.preview', 'New endorsement from {fromUserName}', {
+    <EmailShell
+      preview={t('email.new_endorsement.preview', 'New endorsement from {fromUserName}', {
+        fromUserName: fromUser.name,
+      })}
+      unsubscribeUrl={unsubscribeUrl}
+      email={email ?? name}
+      locale={locale}
+    >
+      <Section style={{textAlign: 'center'}}>
+        <Eyebrow>{t('email.new_endorsement.badge', 'New endorsement')}</Eyebrow>
+      </Section>
+
+      <Heading style={{margin: '18px 0 12px 0'}}>
+        {t('email.new_endorsement.greeting', 'Hi {name},', {name})}
+      </Heading>
+
+      <Lead>
+        {t('email.new_endorsement.message', '{fromUserName} endorsed you!', {
           fromUserName: fromUser.name,
         })}
-      </Preview>
-      <Body style={main}>
-        <Container style={container}>
-          {/*<Section style={logoContainer}>*/}
-          {/*  <Img*/}
-          {/*    src="..."*/}
-          {/*    width="550"*/}
-          {/*    height="auto"*/}
-          {/*    alt="compassmeet.com"*/}
-          {/*  />*/}
-          {/*</Section>*/}
+      </Lead>
 
-          <Section style={content}>
-            <div
-              style={{
-                textAlign: 'center',
-                marginBottom: '32px',
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: '28px',
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontWeight: '500',
-                  color: '#1e1a14',
-                  marginBottom: '8px',
-                  letterSpacing: '-0.01em',
-                  lineHeight: '1.1',
-                }}
-              >
-                {t('email.new_endorsement.greeting', 'Hi {name},', {name})}
-              </Text>
-            </div>
+      {/* Was a bordered quote box inside a bordered card. The endorsement is the only thing on this
+          page that is somebody else's voice, and a rule says that more quietly than two rectangles do. */}
+      <Quote>“{endorsementText}”</Quote>
 
-            <Text
-              style={{
-                fontSize: '18px',
-                fontFamily: "'Cormorant Garamond', serif",
-                fontWeight: '500',
-                color: '#1e1a14',
-                marginBottom: '24px',
-                letterSpacing: '0.01em',
-                lineHeight: '1.3',
-                textAlign: 'center',
-              }}
-            >
-              {t('email.new_endorsement.message', '{fromUserName} endorsed you!', {
-                fromUserName: fromUser.name,
-              })}
-            </Text>
-
-            <div
-              style={{
-                backgroundColor: '#f7f4ef',
-                border: '1px solid #dee5b2',
-                borderRadius: '14px',
-                padding: '24px',
-                margin: '24px 0',
-                textAlign: 'center',
-              }}
-            >
-              <div
-                style={{
-                  backgroundColor: '#faf3e9',
-                  border: '1px solid #e8c99e',
-                  borderRadius: '12px',
-                  padding: '20px',
-                  marginBottom: '20px',
-                  fontStyle: 'italic',
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: '17px',
-                  lineHeight: '1.65',
-                  color: '#1e1a14',
-                  position: 'relative',
-                }}
-              >
-                "{endorsementText}"
-              </div>
-
-              <Button
-                href={endorsementUrl}
-                style={{
-                  backgroundColor: '#c17f3e',
-                  borderRadius: '10px',
-                  color: '#ffffff',
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '15px',
-                  fontWeight: '600',
-                  textDecoration: 'none',
-                  textAlign: 'center' as const,
-                  display: 'inline-block',
-                  padding: '14px 32px',
-                  margin: '0',
-                  border: '1px solid #a6682e',
-                  transition: 'all 0.12s ease',
-                }}
-              >
-                {t('email.new_endorsement.viewButton', 'View endorsement')}
-              </Button>
-            </div>
-          </Section>
-
-          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} locale={locale} />
-        </Container>
-      </Body>
-    </Html>
+      <Actions>
+        <CTAButton href={endorsementUrl}>
+          {t('email.new_endorsement.viewButton', 'View endorsement')}
+        </CTAButton>
+      </Actions>
+    </EmailShell>
   )
 }
 

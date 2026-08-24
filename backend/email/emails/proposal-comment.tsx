@@ -1,7 +1,7 @@
-import {Body, Button, Container, Head, Html, Preview, Section, Text} from '@react-email/components'
+import {Section} from '@react-email/components'
 import {DOMAIN} from 'common/envs/constants'
 import {type User} from 'common/user'
-import {container, content, Footer, main} from 'email/utils'
+import {Actions, CTAButton, EmailShell, Eyebrow, Heading, Lead, Muted, Quote} from 'email/utils'
 import React from 'react'
 import {createT} from 'shared/locale'
 
@@ -51,135 +51,54 @@ export const ProposalCommentEmail = ({
               : undefined
 
   return (
-    <Html>
-      <Head />
-      <Preview>
-        {t('email.proposal_comment.preview', 'New discussion on "{proposalTitle}"', {
-          proposalTitle,
-        })}
-      </Preview>
-      <Body style={main}>
-        <Container style={container}>
-          <Section style={content}>
-            <div style={{textAlign: 'center', marginBottom: '32px'}}>
-              <Text
-                style={{
-                  fontSize: '28px',
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontWeight: '500',
-                  color: '#1e1a14',
-                  marginBottom: '8px',
-                  letterSpacing: '-0.01em',
-                  lineHeight: '1.1',
-                }}
-              >
-                {t('email.proposal_comment.greeting', 'Hi {name},', {name})}
-              </Text>
-            </div>
+    <EmailShell
+      preview={t('email.proposal_comment.preview', 'New discussion on "{proposalTitle}"', {
+        proposalTitle,
+      })}
+      unsubscribeUrl={unsubscribeUrl}
+      email={email ?? name}
+      locale={locale}
+    >
+      <Section style={{textAlign: 'center'}}>
+        <Eyebrow>{t('email.proposal_comment.badge', 'New discussion')}</Eyebrow>
+      </Section>
 
-            <Text
-              style={{
-                fontSize: '18px',
-                fontFamily: "'Cormorant Garamond', serif",
-                fontWeight: '500',
-                color: '#1e1a14',
-                marginBottom: '24px',
-                letterSpacing: '0.01em',
-                lineHeight: '1.3',
-                textAlign: 'center',
-              }}
-            >
-              {t(
-                'email.proposal_comment.message',
-                '{fromUserName} added to the discussion on "{proposalTitle}", which you voted on.',
-                {fromUserName: fromUser.name, proposalTitle},
-              )}
-            </Text>
+      <Heading style={{margin: '18px 0 12px 0'}}>
+        {t('email.proposal_comment.greeting', 'Hi {name},', {name})}
+      </Heading>
 
-            <div
-              style={{
-                backgroundColor: '#f7f4ef',
-                border: '1px solid #dee5b2',
-                borderRadius: '14px',
-                padding: '24px',
-                margin: '24px 0',
-                textAlign: 'center',
-              }}
-            >
-              {stanceLabel && (
-                <Text
-                  style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    color: '#8a6a3e',
-                    margin: '0 0 12px 0',
-                  }}
-                >
-                  {stanceLabel}
-                </Text>
-              )}
+      <Lead>
+        {t(
+          'email.proposal_comment.message',
+          '{fromUserName} added to the discussion on "{proposalTitle}", which you voted on.',
+          {fromUserName: fromUser.name, proposalTitle},
+        )}
+      </Lead>
 
-              <div
-                style={{
-                  backgroundColor: '#faf3e9',
-                  border: '1px solid #e8c99e',
-                  borderRadius: '12px',
-                  padding: '20px',
-                  marginBottom: '20px',
-                  fontStyle: 'italic',
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: '17px',
-                  lineHeight: '1.65',
-                  color: '#1e1a14',
-                }}
-              >
-                "{commentText}"
-              </div>
+      {/* The stance and the comment are one block, not two: the label is the quote's caption, so it sits
+          on the rule rather than in a box of its own. This is the double box that used to be here — a
+          bordered quote card inside a bordered container — collapsed into a single quoted passage. */}
+      {stanceLabel && (
+        <Section style={{textAlign: 'left', margin: '0 0 10px 0'}}>
+          <Eyebrow>{stanceLabel}</Eyebrow>
+        </Section>
+      )}
 
-              <Button
-                href={proposalUrl}
-                style={{
-                  backgroundColor: '#c17f3e',
-                  borderRadius: '10px',
-                  color: '#ffffff',
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '15px',
-                  fontWeight: '600',
-                  textDecoration: 'none',
-                  textAlign: 'center' as const,
-                  display: 'inline-block',
-                  padding: '14px 32px',
-                  margin: '0',
-                  border: '1px solid #a6682e',
-                }}
-              >
-                {t('email.proposal_comment.viewButton', 'Read the discussion')}
-              </Button>
-            </div>
+      <Quote>“{commentText}”</Quote>
 
-            <Text
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '13px',
-                color: '#6b6257',
-                textAlign: 'center',
-                lineHeight: '1.6',
-              }}
-            >
-              {t(
-                'email.proposal_comment.change_vote',
-                'You can change your vote at any time while voting is open.',
-              )}
-            </Text>
-          </Section>
+      <Actions>
+        <CTAButton href={proposalUrl}>
+          {t('email.proposal_comment.viewButton', 'Read the discussion')}
+        </CTAButton>
+      </Actions>
 
-          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} locale={locale} />
-        </Container>
-      </Body>
-    </Html>
+      <Muted style={{marginTop: '24px'}}>
+        {t(
+          'email.proposal_comment.change_vote',
+          'You can change your vote at any time while voting is open.',
+        )}
+      </Muted>
+    </EmailShell>
   )
 }
 

@@ -1,10 +1,10 @@
-import {Body, Container, Head, Html, Link, Preview, Section, Text} from '@react-email/components'
+import {Section} from '@react-email/components'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import {formatDistance, kmToMiles} from 'common/measurement-utils'
 import {OUTREACH_RADIUS_KM} from 'common/outreach/outreach'
 import {type User} from 'common/user'
 import {UNSUBSCRIBE_URL} from 'common/user-notification-preferences'
-import {container, content, Footer, main, paragraph} from 'email/utils'
+import {EmailShell, Heading, Lead, OutlineButton, Paragraph, Signature} from 'email/utils'
 import React from 'react'
 import {createT} from 'shared/locale'
 
@@ -21,6 +21,10 @@ import {mockUser} from './functions/mock'
  * is not an exception to the rule so much as the rule read properly — what it delivers is the honest
  * account of the value *not* being there, which is the one thing nobody else will tell them. Hence no
  * feature announcements, no encouragement, and no suggestion that trying harder would work.
+ *
+ * Design-wise it stays the plainest thing this package sends: a letter, left-aligned, one quiet
+ * outline button. A card or a filled CTA here would dress up the one message whose whole credibility
+ * rests on not being dressed up.
  */
 interface EmptyRoomEmailProps {
   toUser: User
@@ -50,75 +54,69 @@ export const EmptyRoomEmail = ({
   const radius = formatDistance(kmToMiles(radiusKm), locale === 'en' ? 'imperial' : 'metric')
 
   return (
-    <Html>
-      <Head />
-      <Preview>{t('email.empty_room.preview', 'The honest number for {city}', {city})}</Preview>
-      <Body style={main}>
-        <Container style={container}>
-          <Section style={content}>
-            <Text style={paragraph}>{t('email.empty_room.greeting', 'Hi {name},', {name})}</Text>
+    <EmailShell
+      preview={t('email.empty_room.preview', 'The honest number for {city}', {city})}
+      unsubscribeUrl={unsubscribeUrl}
+      email={email ?? name}
+      locale={locale}
+    >
+      <Heading align="left" style={{fontSize: '26px'}}>
+        {t('email.empty_room.greeting', 'Hi {name},', {name})}
+      </Heading>
 
-            {wasInactive && (
-              <Text style={paragraph}>
-                {t(
-                  'email.empty_room.away',
-                  "You haven't been back in a couple of weeks, and I think I know why. Rather than guess, here is the number.",
-                )}
-              </Text>
-            )}
+      {wasInactive && (
+        <Paragraph>
+          {t(
+            'email.empty_room.away',
+            "You haven't been back in a couple of weeks, and I think I know why. Rather than guess, here is the number.",
+          )}
+        </Paragraph>
+      )}
 
-            <Text style={paragraph}>
-              {nearbyCount === 0
-                ? t(
-                    'email.empty_room.number_none',
-                    "There isn't anyone here for you within {radius} of {city} yet — not one person.",
-                    {radius, city},
-                  )
-                : nearbyCount === 1
-                  ? t(
-                      'email.empty_room.number_one',
-                      "There isn't really anyone here for you within {radius} of {city} yet — one person only.",
-                      {radius, city},
-                    )
-                  : t(
-                      'email.empty_room.number',
-                      "There isn't really anyone here for you within {radius} of {city} yet — {count} people only.",
-                      {radius, city, count: String(nearbyCount)},
-                    )}
-            </Text>
-
-            <Text style={paragraph}>
-              {t(
-                'email.empty_room.no_feature',
-                "It's unlikely a new feature fixes that. Compass is a directory, and a directory of almost nobody is of almost no use, however good the search is. The only thing that changes it is people like you arriving.",
+      {/* The number is the message, so it is set as the lead rather than as the third paragraph of a
+          block of body copy that all reads at one weight. */}
+      <Lead align="left" style={{margin: '4px 0 24px 0'}}>
+        {nearbyCount === 0
+          ? t(
+              'email.empty_room.number_none',
+              "There isn't anyone here for you within {radius} of {city} yet — not one person.",
+              {radius, city},
+            )
+          : nearbyCount === 1
+            ? t(
+                'email.empty_room.number_one',
+                "There isn't really anyone here for you within {radius} of {city} yet — one person only.",
+                {radius, city},
+              )
+            : t(
+                'email.empty_room.number',
+                "There isn't really anyone here for you within {radius} of {city} yet — {count} people only.",
+                {radius, city, count: String(nearbyCount)},
               )}
-            </Text>
+      </Lead>
 
-            <Text style={paragraph}>
-              {t(
-                'email.empty_room.ask',
-                "Which is why the one honest thing I can ask is whether there's someone you'd actually want in the room. Just one person. If nobody comes to mind, that's completely fine and I won't ask again!",
-              )}
-            </Text>
+      <Paragraph>
+        {t(
+          'email.empty_room.no_feature',
+          "It's unlikely a new feature fixes that. Compass is a directory, and a directory of almost nobody is of almost no use, however good the search is. The only thing that changes it is people like you arriving.",
+        )}
+      </Paragraph>
 
-            <Section style={{marginTop: '20px'}}>
-              <Link href={`${DEPLOYED_WEB_URL}/referrals`}>
-                {t('email.empty_room.link', 'compassmeet.com/referrals')}
-              </Link>
-            </Section>
+      <Paragraph>
+        {t(
+          'email.empty_room.ask',
+          "Which is why the one honest thing I can ask is whether there's someone you'd actually want in the room. Just one person. If nobody comes to mind, that's completely fine and I won't ask again!",
+        )}
+      </Paragraph>
 
-            <Text style={{...paragraph, marginTop: '28px'}}>
-              Martin Braquet
-              <br />
-              <span style={{fontSize: '12px', color: '#888'}}>
-                {t('email.empty_room.signature_title', 'Founder, Compass')}
-              </span>
-            </Text>
-          </Section>
-          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} locale={locale} />
-        </Container>
-      </Body>
-    </Html>
+      <Section style={{margin: '24px 0 0 0'}}>
+        <OutlineButton href={`${DEPLOYED_WEB_URL}/referrals`}>
+          {t('email.empty_room.link', 'compassmeet.com/referrals')}
+        </OutlineButton>
+      </Section>
+
+      <Signature title={t('email.empty_room.signature_title', 'Founder, Compass')} />
+    </EmailShell>
   )
 }
 

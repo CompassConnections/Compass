@@ -1,8 +1,8 @@
-import {Body, Button, Container, Head, Html, Preview, Section, Text} from '@react-email/components'
+import {Section} from '@react-email/components'
 import {DOMAIN} from 'common/envs/constants'
 import {type ProfileRow} from 'common/profiles/profile'
 import {type User} from 'common/user'
-import {Footer} from 'email/utils'
+import {Actions, CTAButton, EmailShell, Eyebrow, Heading, Lead} from 'email/utils'
 import React from 'react'
 
 import {jamesProfile, jamesUser, mockUser} from './functions/mock'
@@ -27,44 +27,38 @@ export const NewMatchEmail = ({
   const userUrl = `https://${DOMAIN}/${matchedWithUser.username}`
 
   return (
-    <Html>
-      <Head />
-      <Preview>You have a new match!</Preview>
-      <Body style={main}>
-        <Container style={container}>
-          {/*<Section style={logoContainer}>*/}
-          {/*<Img*/}
-          {/*  src="..."*/}
-          {/*  width="550"*/}
-          {/*  height="auto"*/}
-          {/*  alt="compassmeet.com"*/}
-          {/*/>*/}
-          {/*</Section>*/}
+    // This one is currently unsent — its helper in `functions/helpers.tsx` is commented out — but it kept
+    // a private copy of the old `main`/`container`/`content`/`button` styles, blue CTA and all, which is
+    // exactly the drift the shared shell exists to stop. It now renders like everything else.
+    <EmailShell
+      preview="You have a new match!"
+      unsubscribeUrl={unsubscribeUrl}
+      email={email ?? name}
+    >
+      <Section style={{textAlign: 'center'}}>
+        <Eyebrow>New match</Eyebrow>
+      </Section>
 
-          <Section style={content}>
-            <Text style={paragraph}>Hi {name},</Text>
+      <Heading style={{margin: '18px 0 12px 0'}}>Hi {name},</Heading>
 
-            <Text style={paragraph}>{matchedWithUser.name} just matched with you!</Text>
+      <Lead>{matchedWithUser.name} just matched with you!</Lead>
 
-            <Section style={imageContainer}>
-              {/*<Link href={userUrl}>*/}
-              {/*  <Img*/}
-              {/*    src={userImgSrc}*/}
-              {/*    width="375"*/}
-              {/*    height="200"*/}
-              {/*    alt=""*/}
-              {/*    style={profileImage}*/}
-              {/*  />*/}
-              {/*</Link>*/}
-              <Button href={userUrl} style={button}>
-                View profile
-              </Button>
-            </Section>
-          </Section>
-          <Footer unsubscribeUrl={unsubscribeUrl} email={email ?? name} />
-        </Container>
-      </Body>
-    </Html>
+      {/*<Section style={imageContainer}>*/}
+      {/*  <Link href={userUrl}>*/}
+      {/*    <Img*/}
+      {/*      src={userImgSrc}*/}
+      {/*      width="375"*/}
+      {/*      height="200"*/}
+      {/*      alt=""*/}
+      {/*      style={profileImage}*/}
+      {/*    />*/}
+      {/*  </Link>*/}
+      {/*</Section>*/}
+
+      <Actions>
+        <CTAButton href={userUrl}>View profile</CTAButton>
+      </Actions>
+    </EmailShell>
   )
 }
 
@@ -75,58 +69,5 @@ NewMatchEmail.PreviewProps = {
   email: 'someone@gmail.com',
   unsubscribeUrl: 'https://compassmeet.com/unsubscribe',
 } as NewMatchEmailProps
-
-const main = {
-  // backgroundColor: '#f4f4f4',
-  fontFamily: 'Arial, sans-serif',
-  wordSpacing: 'normal',
-}
-
-const container = {
-  margin: '0 auto',
-  maxWidth: '600px',
-}
-
-// const logoContainer = {
-//   padding: '20px 0px 5px 0px',
-//   textAlign: 'center' as const,
-//   backgroundColor: '#ffffff',
-// }
-
-const content = {
-  backgroundColor: '#ffffff',
-  padding: '20px 25px',
-}
-
-const paragraph = {
-  fontSize: '18px',
-  lineHeight: '24px',
-  margin: '10px 0',
-  color: '#000000',
-  fontFamily: 'Arial, Helvetica, sans-serif',
-}
-
-const imageContainer = {
-  textAlign: 'center' as const,
-  margin: '20px 0',
-}
-
-// const profileImage = {
-//   // border: '1px solid #ec489a',
-// }
-
-const button = {
-  backgroundColor: '#4887ec',
-  borderRadius: '12px',
-  color: '#ffffff',
-  fontFamily: 'Helvetica, Arial, sans-serif',
-  fontSize: '16px',
-  fontWeight: 'semibold',
-  textDecoration: 'none',
-  textAlign: 'center' as const,
-  display: 'inline-block',
-  padding: '6px 10px',
-  margin: '10px 0',
-}
 
 export default NewMatchEmail

@@ -25,7 +25,12 @@ import {useIsClearedFilters} from 'web/hooks/use-is-cleared-filters'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {useProfile} from 'web/hooks/use-profile'
-import {useCompatibleProfiles} from 'web/hooks/use-profiles'
+import {
+  PROFILE_COUNT_CACHE_KEY,
+  PROFILES_ARGS_CACHE_KEY,
+  PROFILES_CACHE_KEY,
+  useCompatibleProfiles,
+} from 'web/hooks/use-profiles'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
@@ -81,15 +86,15 @@ export function ProfilesHome() {
 
   const [profiles, setProfiles] = usePersistentInMemoryState<Profile[] | undefined>(
     undefined,
-    'profiles',
+    PROFILES_CACHE_KEY,
   )
   const [getProfilesArgs, setGetProfilesArgs] = usePersistentInMemoryState<any>(
     undefined,
-    'get-profiles-args',
+    PROFILES_ARGS_CACHE_KEY,
   )
   const [profileCount, setProfileCount] = usePersistentInMemoryState<number | undefined>(
     undefined,
-    'profile-count',
+    PROFILE_COUNT_CACHE_KEY,
   )
   const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
   const [isLoadingMore, setIsLoadingMore] = useState(false)

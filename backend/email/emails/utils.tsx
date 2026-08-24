@@ -57,7 +57,8 @@ export const palette = {
   primary500: '#c17f3e', // brand base
   primary600: '#a6682e', // = --color-cta; white on this is 4.52:1
   primary700: '#855022', // = --color-cta-hover; the eyebrow colour
-  /** The ring on cards: canvas-200 at ~60% over the sheet, precomputed because mail has no alpha ring. */
+  /** canvas-200 at ~60% over the sheet, precomputed because mail has no alpha ring. For rules drawn
+   *  *on* the sheet — the sheet's own border uses canvas-200 undiluted, see `content`. */
   hairline: '#e6d9c4',
   /** The lighter divider used inside a card. */
   rule: '#ece7de',
@@ -80,8 +81,15 @@ export const fonts = {
 
 // ─── Shell ────────────────────────────────────────────────────────────────────
 
+/**
+ * No background on the page itself — only the sheet below is painted.
+ *
+ * It used to be canvas-100, mirroring the site's page ground. In a browser that reads as a page; in a
+ * mail client it reads as a beige wash across the entire reading pane, because the client's own chrome
+ * is what surrounds it and the colour has nothing to be the edge of. Leaving it unset lets the client's
+ * ground show through in both themes, and the sheet keeps the warmth.
+ */
 export const main: CSSProperties = {
-  backgroundColor: palette.canvas100,
   fontFamily: fonts.body,
   color: palette.ink600,
   margin: '0',
@@ -97,12 +105,16 @@ export const container: CSSProperties = {
 }
 
 /**
- * The sheet every email's body sits on: canvas-50 on the canvas-100 page, exactly like a card on the
- * site. It carries the hairline and the radius so no template has to.
+ * The sheet every email's body sits on, and the only painted surface in the message — canvas-50 with the
+ * site's card hairline and radius, so no template has to carry either.
+ *
+ * The border is canvas-200 rather than the blended `hairline`: that blend was computed against the
+ * canvas-100 page this used to sit on, and against the client's own (usually white) ground it all but
+ * disappears.
  */
 export const content: CSSProperties = {
   backgroundColor: palette.canvas50,
-  border: `1px solid ${palette.hairline}`,
+  border: `1px solid ${palette.canvas200}`,
   borderRadius: '20px',
   padding: '36px 32px 32px 32px',
 }
@@ -594,10 +606,8 @@ export const RESPONSIVE_CSS = `
  */
 export const DARK_MODE_CSS = `
   @media (prefers-color-scheme: dark) {
-    /* react-email's <Body> puts the page background on the <body> AND on a wrapper <td> it generates,
-       and only the <body> gets the className — so the td needs a structural selector or the whole page
-       stays cream behind a dark sheet. */
-    body, .cm-body, .cm-body > table > tbody > tr > td { background-color: #1a1612 !important; }
+    /* Nothing paints the page in either theme — see the note on the light-mode body style. The
+       client's own ground surrounds the sheet, which is the only surface this has to darken. */
     .cm-sheet { background-color: #231f1a !important; border-color: #3a332b !important; }
     /* Catch-all so any element that forgot its hook is still legible, then the hooks below override it.
        They are written doubled (\`.cm-heading.cm-heading\`) purely for specificity: a bare \`.cm-heading\`

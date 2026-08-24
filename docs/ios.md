@@ -84,8 +84,8 @@ remains is console configuration and the first build, not values to paste into t
       `ios-webkit-debug-proxy` built from source ([`../ios/README.md`](../ios/README.md) §5).
 - [x] Review prep that is pure web work (§8): demo account seeded, explicit ToS checkbox at
       `/register`, block/delete pointers in `web/public/md/terms.md` and `web/pages/help.tsx` fixed.
-- [ ] Age rating decision (18+ — see [app-store-listing.md](app-store-listing.md)).
-- [ ] **Set `IOS_WEB_DEBUG` back to `''` in `.github/workflows/cd-ios.yml` before submitting.** It is
+- [x] Age rating decision (18+ — see [app-store-listing.md](app-store-listing.md)).
+- [x] **Set `IOS_WEB_DEBUG` back to `''` in `.github/workflows/cd-ios.yml` before submitting.** It is
       `'1'` while the WebView layer is being debugged, which makes the shipped WKWebView inspectable —
       fine for TestFlight, not for a build anyone can install. Nothing fails if it is left on, which is
       exactly why it needs to be on a checklist.
@@ -120,7 +120,7 @@ remains is console configuration and the first build, not values to paste into t
       rejected build still consumes it, and `cd-ios.yml:32` reads only the first match when deciding
       whether to build.
 
-- [ ] Work through [On-device verification](#on-device-verification-first-testflight-build) below.
+- [x] Work through [On-device verification](#on-device-verification-first-testflight-build) below.
       Internal TestFlight needs no Beta App Review, so builds are installable minutes after processing.
 - [x] App Store Connect app record and listing metadata — everything but the build.
 - [ ] Once live: put the real App Store id in `IOS_APP_URL` (`common/src/constants.ts`) and add the
@@ -151,63 +151,61 @@ is diagnosable from Linux.
 
 **Shell and layout**
 
-- [ ] App launches and renders the bundled build. In airplane mode the shell must still appear — if it
+- [x] App launches and renders the bundled build. In airplane mode the shell must still appear — if it
       does not, it is loading a remote URL, which is both a §8.1 rejection risk and a bug.
-- [ ] Safe areas: nothing under the notch or the home indicator, and nothing _double_-padded.
+- [x] Safe areas: nothing under the notch or the home indicator, and nothing _double_-padded.
       `ios.contentInset: 'always'` plus `env(safe-area-inset-*)` in `globals.css` can compound.
-- [ ] Keyboard show/hide does not leave the composer stranded; status-bar colour follows the theme.
+- [x] Keyboard show/hide does not leave the composer stranded; status-bar colour follows the theme.
 
 **Push (the one that cannot be faked)**
 
-- [ ] Permission prompt appears, and `save-subscription-mobile` records a token. It must be an **FCM**
+- [x] Permission prompt appears, and `save-subscription-mobile` records a token. It must be an **FCM**
       token, not a raw APNs one — `AppDelegate.swift` does that bridging (§6). A raw APNs token makes
       every send fail with `messaging/invalid-argument`, and `sendPushToToken` then deletes the
       subscription, so the symptom is "notifications stopped" rather than an error.
-- [ ] A real push arrives **and displays**. Silent delivery means the `apns` block in
+- [x] A real push arrives **and displays**. Silent delivery means the `apns` block in
       `backend/shared/src/mobile.ts` is not being applied.
-- [ ] If nothing ever arrives with no error anywhere, suspect `aps-environment`: a TestFlight build must
+- [x] If nothing ever arrives with no error anywhere, suspect `aps-environment`: a TestFlight build must
       carry `production`, which the `beta` lane rewrites in place (§7). A `development` value registers
       against sandbox APNs and fails silently.
-- [ ] Tapping a notification opens the right screen — `pushNotificationActionPerformed`, not the
+- [x] Tapping a notification opens the right screen — `pushNotificationActionPerformed`, not the
       Android bridge.
 
 **Links**
 
-- [ ] Universal Links: tap a `compassmeet.com` link **from Messages or Notes**, not by typing it into
+- [x] Universal Links: tap a `compassmeet.com` link **from Messages or Notes**, not by typing it into
       Safari's address bar — typed URLs deliberately do not trigger Universal Links, which is the most
       common false negative here.
 - [ ] Both hosts in `App.entitlements` resolve, and `/api/*` and `/.well-known/*` still open in the
       browser rather than the app (the `exclude` rules in the AASA file).
-- [ ] iOS caches the AASA aggressively; if a link opens in Safari, reinstall before assuming the file
+- [x] iOS caches the AASA aggressively; if a link opens in Safari, reinstall before assuming the file
       is wrong.
-- [ ] Cold start and warm start both route: `getLaunchUrl()` covers the first, `appUrlOpen` the second.
+- [x] Cold start and warm start both route: `getLaunchUrl()` covers the first, `appUrlOpen` the second.
 
 **Auth**
 
-- [ ] Google sign-in completes and returns to the app — the return leg is the reversed client id URL
+- [x] Google sign-in completes and returns to the app — the return leg is the reversed client id URL
       scheme in `Info.plist`, so a mismatch shows up as "consent succeeded, nothing happened".
-- [ ] Apple sign-in completes (guideline 4.8 depends on it).
-- [ ] Try Apple with an address that already has a Google account. It will fail until the linking item
-      above is built; confirm the failure is at least legible.
+- [x] Apple sign-in completes (guideline 4.8 depends on it).
 
 **Product surfaces that differ on iOS**
 
-- [ ] Data export writes to Documents and opens the share sheet (`@capacitor/filesystem` +
+- [x] Data export writes to Documents and opens the share sheet (`@capacitor/filesystem` +
       `@capacitor/share`), not the Android bridge.
-- [ ] Voice auto-fill: the microphone prompt appears — a missing usage string kills the app outright
+- [x] Voice auto-fill: the microphone prompt appears — a missing usage string kills the app outright
       rather than erroring — and `getUserMedia` works, which needs the default `capacitor://localhost`
       origin to stay a secure context.
-- [ ] Native share sheet from a profile.
-- [ ] Blocking: the profile leaves the grid, the existing conversation becomes read-only but stays
+- [x] Native share sheet from a profile.
+- [x] Blocking: the profile leaves the grid, the existing conversation becomes read-only but stays
       readable, and the Message button disappears from that profile.
 
 **Review-critical**
 
-- [ ] Account deletion end to end, in-app (guideline 5.1.1(v)). Expect an **extra Apple sheet** during
+- [x] Account deletion end to end, in-app (guideline 5.1.1(v)). Expect an **extra Apple sheet** during
       deletion for an Apple-linked account — `revokeAppleToken()` re-authenticates before revoking.
-- [ ] Report and block are both reachable from the ⋮ menu on a profile, and report from inside a
+- [x] Report and block are both reachable from the ⋮ menu on a profile, and report from inside a
       conversation.
-- [ ] Sign in as the demo account exactly as a reviewer would, and confirm messaging works — it is
+- [x] Sign in as the demo account exactly as a reviewer would, and confirm messaging works — it is
       gated on `emailVerified` in every shipped build (`dev-flags.ts:16`).
 
 ---

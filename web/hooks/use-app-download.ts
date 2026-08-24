@@ -16,7 +16,14 @@ export type AppDownload = {
   store: AppStore | null
   /** Where a single "get the app" control should go. */
   href: string
-  /** Translation key and English fallback for that control's label. */
+  /**
+   * Translation key and English fallback for that control's label.
+   *
+   * Kept short — the sidebar rail truncates, and "Get it on Google Play" lost its last word there.
+   * The store icon sitting next to it already carries the "get the app" half of the sentence. The
+   * full vendor lockups ("Get it on Google Play", "Download on the App Store") still appear where
+   * there is room for them, in `StoreBadge` on `/download`.
+   */
   key: string
   label: string
   icon: React.ComponentType<{className?: string}>
@@ -41,7 +48,7 @@ export function resolveAppDownload(device: DeviceOS | 'unknown'): AppDownload {
       store: 'android',
       href: ANDROID_APP_URL,
       key: 'download.cta.android',
-      label: 'Get it on Google Play',
+      label: 'Google Play',
       icon: FaGooglePlay,
     }
 
@@ -51,7 +58,7 @@ export function resolveAppDownload(device: DeviceOS | 'unknown'): AppDownload {
       store: 'ios',
       href: IOS_APP_URL,
       key: 'download.cta.ios',
-      label: 'Download on the App Store',
+      label: 'App Store',
       icon: FaApple,
     }
 

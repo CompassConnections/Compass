@@ -22,9 +22,14 @@ runs:
         #
         # `runner.os`/`runner.arch` are load-bearing. GitHub does not namespace caches by runner, so
         # without them the Linux jobs' node_modules is restored onto the macOS runner in cd-ios.yml —
-        # bringing Linux-only native binaries with it. The visible symptom is `capacitor-assets`
-        # dying on `Cannot find module '../build/Release/sharp-darwin-arm64v8.node'`, since sharp
-        # fetches its prebuilt binary in a postinstall that a cache hit skips entirely.
+        # bringing Linux-only native binaries with it. The visible symptom was `capacitor-assets`
+        # dying on a missing `sharp-darwin-arm64v8.node`.
+        #
+        # Since the root `resolutions` pin of sharp to ^0.34.5, the platform binary arrives as a
+        # normal optionalDependency (`@img/sharp-<platform>`) that yarn resolves per runner, rather
+        # than through a postinstall download a cache hit would skip. That makes the cross-runner
+        # failure much less likely — but the keys stay, because a cache restored across
+        # architectures is wrong on principle and this is the only thing preventing it.
         key: node-modules-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/yarn.lock', '**/package.json', '!**/node_modules/**') }}
 
     - name: Setup Node.js

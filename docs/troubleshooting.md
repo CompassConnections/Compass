@@ -49,6 +49,27 @@ rm -rf node_modules yarn.lock
 yarn install
 ```
 
+### `sharp` fails to build during install
+
+**Problem**: `yarn install` dies in `[4/4] Building fresh packages...` with
+`../src/common.cc:13:10: fatal error: vips/vips8: No such file or directory` and a `node-gyp` stack.
+
+**Cause**: `@capacitor/assets@3.0.5` — the icon/splash generator, and the latest version there is —
+hard-pins `sharp@0.32.6`, which predates Node 22 and ships no prebuilt binary for its ABI.
+`prebuild-install` therefore fails and falls back to compiling from source, which needs libvips
+development headers that neither CI runners nor most dev machines have.
+
+It is latent rather than constant: an existing `node_modules/sharp` keeps its compiled binary across
+`yarn install --frozen-lockfile`, so it only surfaces on a genuinely fresh install — which in CI
+means the first run after any change to a `package.json` or `yarn.lock`, since those are the cache
+key.
+
+**Solution**: already fixed — the root `package.json` `resolutions` pins `sharp` to `^0.34.5`, which
+delivers a prebuilt `@img/sharp-<platform>` package per architecture and needs no compiler at all.
+Next.js already wanted that version, so the pin also dedupes two copies of sharp. Don't remove it
+without checking that `npx capacitor-assets generate` still produces correct icons — the generated
+output is gitignored, so a regression there would first be visible in a store listing.
+
 ### Docker Installation Issues
 
 **Problem**: Supabase or Firebase emulators fail to start

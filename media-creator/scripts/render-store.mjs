@@ -7,11 +7,12 @@
  *
  * ── Why a browser and not an image library ────────────────────────────────────
  * The frames are typography over a gradient with one photographic element, which is a layout problem,
- * and the layout has to re-solve itself at two quite different aspect ratios (0.56 for Play, 0.46 for
- * the App Store). CSS does that; a canvas library would mean hand-computing every position twice. It is
- * also the same Playwright the captures already use, so there is no new dependency.
+ * and the layout has to re-solve itself at three quite different aspect ratios (0.56 for Play, 0.46 for
+ * the App Store phone, 0.75 for the iPad). CSS does that; a canvas library would mean hand-computing
+ * every position three times over. It is also the same Playwright the captures already use, so there is
+ * no new dependency.
  *
- * ── Two canvases, one design ──────────────────────────────────────────────────
+ * ── Three canvases, one design ────────────────────────────────────────────────
  * Type is sized off the canvas *width* and the layout off its *height*, which is the only way one
  * design survives both. Sizing everything off height makes the App Store frame's headline enormous
  * relative to its narrower column; sizing off width leaves the Play frame's device with nowhere to go.
@@ -20,6 +21,21 @@
  *
  *   Google Play  1080x1920   (9:16; Play takes 2-8 phone shots, each side 320-3840px)
  *   App Store    1290x2796   (6.9" iPhone — the one size Apple still requires; up to 10)
+ *   App Store    2064x2752   (13" iPad — also required, because the build ships as a universal app)
+ *
+ * ── Why there is an iPad canvas at all ────────────────────────────────────────
+ * `TARGETED_DEVICE_FAMILY = "1,2"` in ios/App/App.xcodeproj: the binary is universal, so App Store
+ * Connect refuses to accept the version for review until the 13" iPad slot is filled ("You must upload
+ * a screenshot for 13-inch iPad displays"). It only takes 2064x2752, 2752x2064, 2048x2732 or 2732x2048
+ * — the 6.9" iPhone artwork is rejected on dimensions — and a 13" set is auto-scaled down to the other
+ * iPad sizes, so this one canvas is the whole iPad requirement.
+ *
+ * The device inside the iPad frame is still the *phone* capture, not an iPad one: public/store/raw/ is
+ * shot at 390x844 and there is no tablet capture pass. A 4:3 canvas cannot hold a 19.5:9 device at the
+ * 76% width the phone canvases give it — the geometry below caps out around 55% — so the iPad frames
+ * carry a deliberately larger bleed and a lower "device looks too small" threshold. If the listing ever
+ * needs to show the app's actual tablet layout (the `lg:` filter rail rather than the sheet), that is a
+ * capture-side change: shoot at 1032x1376 CSS px @2x into raw/ipad/ and point this target at it.
  *
  * ── Fonts ─────────────────────────────────────────────────────────────────────
  * Newsreader for headlines and DM Sans for everything else: the same two faces the product uses
@@ -28,12 +44,13 @@
  * are missing rather than silently falling back to a system serif.
  *
  * Usage:
- *   node media-creator/scripts/render-store.mjs                  # both canvases, all frames
+ *   node media-creator/scripts/render-store.mjs                  # every canvas, all frames
  *   node media-creator/scripts/render-store.mjs --target play
+ *   node media-creator/scripts/render-store.mjs --target ipad
  *   node media-creator/scripts/render-store.mjs --only 1,5,8
  *   node media-creator/scripts/render-store.mjs --no-feature     # skip the Play feature graphic
  *
- * Output -> media-creator/out/store/{play,ios}/NN-<key>.png, plus play/feature-graphic.png.
+ * Output -> media-creator/out/store/{play,ios,ipad}/NN-<key>.png, plus play/feature-graphic.png.
  */
 
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'node:fs'
@@ -58,7 +75,9 @@ const ONLY = (argOf('only', '') || '')
   .split(',')
   .map((s) => s.trim())
   .filter(Boolean)
-const TARGET = argOf('target', 'both')
+// `both` predates the iPad canvas and is kept as an alias for `all`, so an old command line does
+// not quietly render two thirds of the set.
+const TARGET = argOf('target', 'all')
 const WITH_FEATURE = !args.includes('--no-feature')
 
 // ─── Palette ──────────────────────────────────────────────────────────────────
@@ -83,6 +102,21 @@ const C = {
 const TARGETS = {
   play: {dir: 'play', width: 1080, height: 1920, label: 'Google Play phone'},
   ios: {dir: 'ios', width: 1290, height: 2796, label: 'App Store 6.9" iPhone'},
+  // 4:3, and the phone in it is the same 19.5:9 capture as the other two. Both overrides follow from
+  // that. `bleed`: the device is height-bound on every canvas — its width is whatever its height allows
+  // — so a canvas this squat gives it nowhere to grow sideways, and running more of it off the bottom
+  // edge is the only lever that makes it read as large. `minDeviceRatio`: the 0.55-of-frame-width alarm
+  // below is calibrated for the phone canvases, where the device lands at 0.76; here the geometry tops
+  // out near 0.55 with an empty header, so the default threshold would fire on every frame and mean
+  // nothing.
+  ipad: {
+    dir: 'ipad',
+    width: 2064,
+    height: 2752,
+    label: 'App Store 13" iPad',
+    bleed: 0.18,
+    minDeviceRatio: 0.42,
+  },
 }
 
 /**
@@ -584,9 +618,10 @@ ${ICON_URI ? `<img class="mark" src="${ICON_URI}" alt=""/>` : ''}
 // ─── Render ───────────────────────────────────────────────────────────────────
 
 const selected = FRAMES.filter((f, i) => ONLY.length === 0 || ONLY.includes(String(i + 1)) || ONLY.includes(f.key))
-const targets = TARGET === 'both' ? Object.values(TARGETS) : [TARGETS[TARGET]]
+const ALL = TARGET === 'all' || TARGET === 'both'
+const targets = ALL ? Object.values(TARGETS) : [TARGETS[TARGET]]
 if (targets.some((t) => !t)) {
-  console.error(`--target must be one of: ${Object.keys(TARGETS).join(', ')}, both`)
+  console.error(`--target must be one of: ${Object.keys(TARGETS).join(', ')}, all`)
   process.exit(1)
 }
 
@@ -625,7 +660,7 @@ for (const target of targets) {
       const headerH = await page.evaluate(
         () => document.querySelector('.header').getBoundingClientRect().height,
       )
-      const g = fitDevice({width: target.width, height: target.height, headerH})
+      const g = fitDevice({width: target.width, height: target.height, headerH, bleed: target.bleed ?? 0.1})
       // What the device actually left. Never less than the type needs — fitDevice derives the device
       // from `headerH` and only ever shrinks it further against the width cap.
       g.headerH = Math.max(headerH, Math.round(target.height - g.deviceH * 0.9))
@@ -642,7 +677,7 @@ for (const target of targets) {
       // A headline that wraps to three lines eats the frame from the top. The phone still bleeds
       // correctly, it just gets small — which is the one failure this layout cannot detect visually,
       // because every other proportion still looks deliberate.
-      if (g.deviceW < target.width * 0.55) {
+      if (g.deviceW < target.width * (target.minDeviceRatio ?? 0.55)) {
         console.warn(
           `  ! ${frame.key}: device is only ${Math.round((g.deviceW / target.width) * 100)}% of the ` +
             `frame width (header ${Math.round(headerH)}px) — the headline is probably too long.`,
@@ -662,7 +697,7 @@ for (const target of targets) {
   await page.close()
 }
 
-if (WITH_FEATURE && (TARGET === 'both' || TARGET === 'play') && ONLY.length === 0) {
+if (WITH_FEATURE && (ALL || TARGET === 'play') && ONLY.length === 0) {
   const outDir = join(OUT_ROOT, 'play')
   mkdirSync(outDir, {recursive: true})
   const htmlPath = join(WORK_DIR, '.frame-feature.html')

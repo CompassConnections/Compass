@@ -56,7 +56,9 @@ Operational detail for all of it is in [`../ios/README.md`](../ios/README.md).
 - [x] Capawesome live updates removed outright — the plugin was being synced into the iOS shell, and a
       remote-bundle mechanism is an extra thing to justify under App Review for a feature we disabled in
       early 2026. See [`../android/README.md`](../android/README.md#live-updates-removed).
-- [x] App Store screenshots rendered at 1290×2796 (`media-creator/out/store/ios/`, eight frames);
+- [x] App Store screenshots rendered at 1290×2796 (`media-creator/out/store/ios/`, eight frames) and at
+      2064×2752 for the 13" iPad (`media-creator/out/store/ipad/`) — the iPad set is mandatory while
+      `TARGETED_DEVICE_FAMILY = "1,2"`;
       `MARKETING_VERSION` in step with Android's `versionName`.
 - [x] Apple Developer Program membership active — team id `HFZVH8XR59`, filled into
       `web/public/.well-known/apple-app-site-association` (both `appIDs` and `webcredentials`) and into

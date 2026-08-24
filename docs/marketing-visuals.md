@@ -797,7 +797,7 @@ cd media-creator
 npm run capture:store:login   # ONCE — headed, sign in, close the window
 npm run capture:store         # light-theme screens -> public/store/raw/light/
 npm run capture:store:dark    # dark-theme screens  -> public/store/raw/dark/
-npm run render:store          # -> out/store/{play,ios}/ + play/feature-graphic.png
+npm run render:store          # -> out/store/{play,ios,ipad}/ + play/feature-graphic.png
 ```
 
 Needs `yarn dev` up and `SHOWCASE=1 ./scripts/dev_db_seed.sh` applied.
@@ -807,12 +807,26 @@ Needs `yarn dev` up and `SHOWCASE=1 ./scripts/dev_db_seed.sh` applied.
 | Target               | Size      | Notes                                                       |
 | -------------------- | --------- | ----------------------------------------------------------- |
 | Google Play phone    | 1080×1920 | 9:16; the listing takes 2–8, each side 320–3840px           |
-| App Store            | 1290×2796 | 6.9" iPhone, the one size Apple still requires; up to 10    |
+| App Store phone      | 1290×2796 | 6.9" iPhone, the one size Apple still requires; up to 10    |
+| App Store tablet     | 2064×2752 | 13" iPad — required too, because the build is universal     |
 | Play feature graphic | 1024×500  | landscape, cropped and overlaid by Google in several places |
 
-One design across both. **Type is sized off the canvas width and layout off its height** — the only split
-that survives two aspect ratios this far apart (0.56 vs 0.46). Sizing everything off height blows the App
-Store headline up relative to its narrower column; sizing off width leaves the Play device nowhere to go.
+One design across all three. **Type is sized off the canvas width and layout off its height** — the only
+split that survives aspect ratios this far apart (0.56, 0.46, 0.75). Sizing everything off height blows the
+App Store headline up relative to its narrower column; sizing off width leaves the Play device nowhere to
+go.
+
+**The iPad canvas is not optional.** `TARGETED_DEVICE_FAMILY = "1,2"` makes the binary universal, so App
+Store Connect blocks "Add for Review" until the 13" iPad slot is filled, and it accepts only 2064×2752,
+2752×2064, 2048×2732 or 2732×2048 — the 6.9" iPhone artwork comes back as "the dimensions of one or more
+screenshots are wrong". A 13" set is auto-scaled to the smaller iPads, so this one canvas covers the lot.
+
+The device inside the iPad frame is still the **390×844 phone capture** — there is no tablet capture pass,
+so the frames show the app's phone layout blown up rather than its `lg:` tablet layout. The geometry cannot
+give it the 76% of frame width it gets on the phone canvases (a 4:3 canvas tops out near 55% for a 19.5:9
+device), so the `ipad` target carries a larger `bleed` (0.18) and a lower `minDeviceRatio` alarm threshold.
+Showing the real tablet layout would be a capture-side change: shoot at 1032×1376 CSS px @2× into
+`raw/ipad/` and point the target at it.
 
 The header is **measured, not budgeted**. Headlines run two to five words and wrap differently at each
 width, so any fixed fraction of the canvas either clips the brand row off the longest or strands the
@@ -820,6 +834,9 @@ shortest over a gap. The page lays the type out, `render-store.mjs` reads the he
 into the remainder, then stretches the header to whatever the width cap left over and re-centres the type
 inside it. The device bleeds 10% off the bottom edge — applied as a negative margin against a
 bottom-aligned stage, not baked into the height, so the crop is guaranteed even when the cap bites.
+
+`--target play|ios|ipad` renders one canvas; the default is all of them. `--target both` still works and
+now means the same as `all`, so an older command line does not silently skip the iPad set.
 
 ### Things that bit
 

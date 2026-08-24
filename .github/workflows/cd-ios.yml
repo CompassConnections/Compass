@@ -14,18 +14,20 @@ on:
   # Lets a failed upload be retried without another version bump.
   workflow_dispatch:
 
-# ⚠️ TEMPORARY — set to '' before the App Store submission (tracked in docs/ios.md §0).
+# Off for App Store builds. Set to '1' only while the WebView layer is being debugged, and set it
+# back to '' before the next submission (tracked in docs/ios.md §0) — an inspectable WKWebView is
+# fine for TestFlight, not for a build anyone can install.
 #
 # TestFlight ships a Release build, where Capacitor leaves `webView.isInspectable` false: the device
 # then advertises no inspectable page, ios-webkit-debug-proxy's listing comes back empty, and there is
-# no way to see the JS console for the build people are actually testing. While the WebView layer is
-# being debugged every build is inspectable.
+# no way to see the JS console for the build people are actually testing. Flipping this to '1' makes
+# every build inspectable.
 #
 # It is a workflow-level constant rather than a `workflow_dispatch` input because the input would only
 # apply to manual runs: a push that bumps CURRENT_PROJECT_VERSION already triggers a build, so a
 # manual run afterwards would reuse that build number and Apple rejects the duplicate on upload.
 env:
-  IOS_WEB_DEBUG: '1'
+  IOS_WEB_DEBUG: ''
 
 jobs:
   check-version:

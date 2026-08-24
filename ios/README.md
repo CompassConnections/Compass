@@ -223,9 +223,10 @@ proxy's listing (`http://localhost:9222`) comes back empty, which reads as a bro
 locked-down WebView. If you then run JS in that empty listing page's console you are talking to the
 proxy's own HTTP server, and every `fetch` 404s.
 
-`cd-ios.yml` currently sets `IOS_WEB_DEBUG: '1'` at the workflow level, so **every** build is
-inspectable; `capacitor.config.ts` turns that into `ios.webContentsDebuggingEnabled`. Locally, put
-`IOS_WEB_DEBUG=1` in the repo-root `.env` before `yarn sync-ios`.
+`cd-ios.yml` sets `IOS_WEB_DEBUG: ''` at the workflow level — off, as it must be for a submitted
+build. Set it to `'1'` there while you need CI builds inspectable; `capacitor.config.ts` turns that
+into `ios.webContentsDebuggingEnabled`. Locally, put `IOS_WEB_DEBUG=1` in the repo-root `.env` before
+`yarn sync-ios`.
 
 It is a constant rather than a `workflow_dispatch` input on purpose: a push that bumps
 `CURRENT_PROJECT_VERSION` already triggers a build, so a manual run afterwards would reuse that build

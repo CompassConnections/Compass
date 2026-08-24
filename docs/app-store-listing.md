@@ -169,6 +169,10 @@ monitored during review — `hello@compassmeet.com` forwards, so it works. This 
 clarifying question instead of rejecting outright; an unreachable contact turns a question into a
 rejection round.
 
+**The draft below is superseded.** Submission 1.42.0 (11) was rejected under guideline 2.1 for
+thin App Review Information; the text that answers Apple's seven questions, and the screen-recording
+shot list that goes with it, are in [app-review-reply.md](app-review-reply.md).
+
 **Notes.** 4,000 characters, and worth using properly — it is the cheapest way to pre-empt the four
 rejections [ios.md](ios.md) §8 flags. Draft:
 

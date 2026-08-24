@@ -59,7 +59,8 @@ instant.
 - **Android** — bump `versionCode` (and `versionName`) in `android/app/build.gradle`, push to `main`;
   `cd-android.yml` builds the signed AAB and uploads to Play.
 - **iOS** — bump `CURRENT_PROJECT_VERSION` (and `MARKETING_VERSION`) in `project.pbxproj`, push to
-  `main`; `cd-ios.yml` builds on a `macos-15` runner and uploads to TestFlight. See
+  `main`; `cd-ios.yml` builds on a `macos-15` runner and uploads to TestFlight. That runner is the only
+  macOS in the pipeline — releasing iOS from a Linux box is just a commit. See
   [`../ios/README.md`](../ios/README.md) §4.
 
 Every `CHANGELOG.md` entry must start with `## <version>` matching root `package.json` exactly — the

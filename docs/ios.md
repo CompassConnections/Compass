@@ -13,9 +13,16 @@ React Native, no second UI codebase. `web/` stays the single source of the produ
 ## 0. Status
 
 Everything that is code — the web-side platform branching, the backend payload, the Xcode project, the
-release pipeline — is written and in the repo, and the whole Linux-side setup is done. The Apple
-Developer Program membership is **active** (team `HFZVH8XR59`), so the console work is unblocked. What
-is left is that console work, one Mac session, and the on-device checklist.
+release pipeline — is written and in the repo, the Apple Developer Program membership is **active**
+(team `HFZVH8XR59`), and the app is **live on the App Store** (id `6804429364`). What is left is the
+on-device checklist.
+
+**None of it needed a Mac.** Every local step ran on an ordinary Linux box; the only macOS anywhere in
+the story is the GitHub Actions `macos-15` runner that seeds the certificates (`ios-certs.yml`) and
+archives the build (`cd-ios.yml`). No Mac was bought, borrowed or rented — the EC2 Mac day sketched in
+[§2.1](#21-working-without-a-mac) was planned and never used, and everything that looked like it needed
+Xcode's GUI turned out to be either a portal page or a text file. §2.1 has the full account of what ran
+where.
 
 Operational detail for all of it is in [`../ios/README.md`](../ios/README.md).
 
@@ -88,7 +95,7 @@ remains is console configuration and the first build, not values to paste into t
       fine for TestFlight, not for a build anyone can install. Nothing fails if it is left on, which is
       exactly why it needs to be on a checklist.
 
-### To do — needs the Apple consoles, a Mac, or the phone
+### To do — needs the Apple consoles or the phone
 
 - [x] Register the App ID `com.compassconnections.app` with Push Notifications, Associated Domains and
       Sign in with Apple enabled, and create the app record in App Store Connect.
@@ -126,10 +133,11 @@ remains is console configuration and the first build, not values to paste into t
       Smart App Banner. The sidebar needs no separate App Store row — it resolves per device through
       `useAppDownload`.
 
-Everything left is a web console or a GitHub Actions run. **The EC2 Mac day described in §2.1 is no
-longer on the critical path**: certificate seeding moved to the `iOS Certificates (one-off)` workflow,
-the archive is `cd-ios.yml`, and the App ID capability toggles are portal pages rather than Xcode. Rent
-a Mac only if something needs interactive Xcode debugging.
+Everything left is a web console or a GitHub Actions run. **The EC2 Mac day described in §2.1 was
+never needed**: certificate seeding is the `iOS Certificates (one-off)` workflow, the archive is
+`cd-ios.yml`, and the App ID capability toggles turned out to be portal pages rather than Xcode. Rent a
+Mac only if something ever needs interactive Xcode debugging — through submission and release, nothing
+has.
 
 ### Still open in the codebase
 
@@ -140,7 +148,8 @@ Neither blocks TestFlight, both should land before a public release:
       them. This is the last place the block toast's promise is not kept — see §8.4.
 - [ ] **No workflow invokes the `symbolicate` lane.** `Fastfile:105` says to run it on the CI runner,
       but `cd-ios.yml`'s `workflow_dispatch` runs `beta`. The dSYMs are archived (`cd-ios.yml:113`);
-      there is just no way to reach a Mac to use them.
+      what is missing is a dispatch path that runs `symbolicate` on the `macos-15` runner. That runner
+      is the only macOS we have, and it is enough — this does not need a Mac, just a workflow input.
 
 ### On-device verification (first TestFlight build)
 
@@ -245,15 +254,17 @@ default: the product is meant to look the same on both. `isNativeMobile()` was a
 
 ## 2. Prerequisites (hard blockers)
 
-- **macOS, but not necessarily a Mac you own.** Xcode is macOS-only and there is no supported way to build
-  or sign an iOS app without it — but that macOS can be a `macos-latest` GitHub Actions runner (billed at
-  10× Linux minutes) or a rented remote Mac. See [§2.1](#21-working-without-a-mac) — the whole
-  build → sign → TestFlight loop is drivable from Linux/Windows.
+- **macOS, but only as a CI runner.** Xcode is macOS-only and there is no supported way to build or sign
+  an iOS app without it — but for the whole of this project that macOS was a `macos-15` GitHub Actions
+  runner (billed at 10× Linux minutes), never a machine anyone sat in front of. See
+  [§2.1](#21-working-without-a-mac): the entire build → sign → TestFlight → App Store loop is drivable
+  from Linux.
 - **Apple Developer Program membership** — $99/year. Not just for shipping: the Push Notifications and
   Sign in with Apple **entitlements are unavailable on a free account**, so the two features that make
   this more than a wrapped website can't even be built without it.
 - **A physical iPhone** — see below. The Simulator is not sufficient.
-- Xcode 16+, CocoaPods (`sudo gem install cocoapods`), Node 22+, Java is _not_ needed.
+- Node 22+ locally; Java is _not_ needed. Xcode 16+ and CocoaPods are only ever installed on the CI
+  runner — on Linux `pod install` and `xcodebuild` no-op and everything else in the sync still runs.
 
 ### Test device
 
@@ -287,10 +298,24 @@ top of the profile page and the filter sheet on whatever you get.
 
 ### 2.1 Working without a Mac
 
-We develop on Linux and Windows. Buying a Mac is not a prerequisite — the plan below assumes a physical
-iPhone (above) plus cloud/rented macOS for the steps that genuinely need Xcode.
+We develop on Linux. This section was written as a plan; it is now a record. **The app was built, signed,
+submitted and published without a Mac** — none bought, none rented, none borrowed. The only macOS involved
+was the GitHub Actions `macos-15` runner. What ran where, in the end:
 
-**Build and ship from CI.** The `macos-latest` runner in §7 does `npx cap sync ios`, CocoaPods, `xcodebuild`,
+| Step                                                                                            | Where it ran                                                             |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Web build, `npx cap sync ios`, icon generation (`yarn build-sync-ios`)                          | Linux, locally                                                           |
+| Editing `project.pbxproj`, `Info.plist`, `App.entitlements`, `Podfile`                          | Linux, in a normal editor                                                |
+| App ID + capabilities, Services ID, APNs `.p8`, Firebase, App Store Connect record and metadata | developer.apple.com / appstoreconnect.apple.com / Firebase, in a browser |
+| Certificate + provisioning profile creation (`match`)                                           | `macos-15` runner, once — `ios-certs.yml`                                |
+| `pod install`, `xcodebuild archive`, TestFlight and App Store upload                            | `macos-15` runner — `cd-ios.yml`                                         |
+| Getting builds onto the phone                                                                   | TestFlight app, over the air                                             |
+| Device logs, JS console, DOM, network, crash reports                                            | Linux, over USB (`libimobiledevice`, `ios-webkit-debug-proxy`)           |
+
+The two steps that genuinely require macOS — creating certificates and running `xcodebuild` — are each one
+lane in a workflow file. "Needing a Mac" reduces to "needing a runner", and a runner is a YAML line.
+
+**Build and ship from CI.** The `macos-15` runner in §7 does `npx cap sync ios`, CocoaPods, `xcodebuild`,
 fastlane `match` (certs/profiles) and `pilot` (TestFlight upload). Triggering it is just pushing a commit and
 setting secrets, so the whole release path is Mac-free. Install builds on the iPhone over the air via the
 **TestFlight app** — no cable, no Xcode, and the resulting build is a real signed one, so the APNs work in §6
@@ -316,21 +341,31 @@ phone, run the proxy over USB, and attach Chrome DevTools to the WKWebView. That
 Web Inspector — JS console, DOM, network — which matters a lot for a webview app. It is a community project
 and can be picky about iOS/tool version pairings, so budget some setup time.
 
-**What still needs a real interactive macOS session:**
+**What we expected to need an interactive macOS session for — and didn't:**
 
-- First-time Apple Developer setup done through Xcode's UI — Associated Domains (§4.1), Sign in with Apple
-  (§5), push entitlement (§6). All scriptable/hand-editable, but error-prone blind;
-  expect to burn CI cycles on provisioning-profile mismatches Xcode would have shown visually.
-- The first App Store Connect submission and its metadata (§7).
+- _First-time Apple Developer setup, assumed to be Xcode's UI_ — Associated Domains (§4.1), Sign in with
+  Apple (§5), push entitlement (§6). All three are toggles on the App ID in the developer portal, and the
+  matching `App.entitlements` is text. Xcode's capability editor is a convenience that writes those two
+  things for you; doing it directly is fine. The provisioning-profile mismatch cycles budgeted for here did
+  not materialise — `match` regenerates the profile from the App ID, so the entitlements and the profile
+  cannot drift the way they do when a human keeps both in sync by hand.
+- _The first App Store Connect submission and its metadata (§7)_ — also entirely a web console. The build
+  came from `cd-ios.yml` like every one since; the listing, screenshots and review notes are forms.
 - **Crash symbolication** — turning a `.ips` from `idevicecrashreport` into a readable stack trace needs the
-  `.dSYM` and Xcode's `symbolicatecrash`. Do it on the CI runner as a step, or on a rented Mac.
+  `.dSYM` and Xcode's `symbolicatecrash`. This is the one item still open, and the fix is a step on the CI
+  runner (the `symbolicate` lane already in `Fastfile`), not a Mac.
 
-**Getting that macOS time — AWS EC2 Mac.** This is what we use for the one-time setup. Be aware of the
-shape of the bill before starting: EC2 Mac runs on **dedicated hosts with a 24-hour minimum allocation**,
-so the smallest possible session costs a full day (`mac2.metal`, Apple silicon, ~$0.65/hr on-demand ≈ **$16
-for that minimum**), and the host keeps billing until it is _released_, not merely until the instance is
-stopped. Releasing is also rate-limited by the same 24-hour floor. Budget one day, do all of §4.1, §5, §6,
-§7 in it, then release the host.
+The one thing a Mac would still buy is interactive Xcode: Simulator, Instruments, breakpoints in Swift. We
+have not wanted it. The native layer is `AppDelegate.swift` and nothing else, everything above it is a
+WebView that Chrome DevTools attaches to over USB from Linux, and the Simulator cannot do the one test that
+mattered (§6 push) anyway.
+
+**The EC2 Mac day we planned and never used.** Kept here as the fallback if interactive Xcode ever does
+become necessary — and because the shape of the bill is worth knowing before starting. EC2 Mac runs on
+**dedicated hosts with a 24-hour minimum allocation**, so the smallest possible session costs a full day
+(`mac2.metal`, Apple silicon, ~$0.65/hr on-demand ≈ **$16 for that minimum**), and the host keeps billing
+until it is _released_, not merely until the instance is stopped. Releasing is also rate-limited by the same
+24-hour floor. Budget one day and batch everything into it.
 
 Setup, from Linux:
 
@@ -368,8 +403,9 @@ sudo gem install cocoapods
 For the GUI parts (capability toggles, App Store Connect), enable Screen Sharing and tunnel VNC over
 SSH — `ssh -L 5900:localhost:5900 ec2-user@<ip>` — rather than exposing 5900.
 
-Recommendation: EC2 Mac for the one-time setup and first submission, CI (`macos-15` runner) for every
-build after that, cable + `ios-webkit-debug-proxy` for day-to-day debugging.
+Recommendation, in hindsight: skip it. CI (`macos-15` runner) for the certificate seeding and every build,
+a browser for the Apple and Firebase consoles, cable + `ios-webkit-debug-proxy` for day-to-day debugging.
+That covered the whole project, from `npx cap add ios` to a live App Store listing.
 
 ---
 
@@ -655,17 +691,17 @@ Notes:
 
 ## 7. Build, sign, ship
 
-Local (on macOS):
+Locally, on Linux — this is the whole local half:
 
 ```bash
-yarn build-web-view
-npx cap sync ios
-npx cap open ios     # then Product → Archive
+yarn build-sync-ios      # web export + `npx cap sync ios` + icons. No archive step exists here.
+git push                 # a bumped CURRENT_PROJECT_VERSION on `main` triggers cd-ios.yml
 ```
 
-From Linux/Windows there is no local archive step — push and let the `macos-latest` job below do it
-([§2.1](#21-working-without-a-mac)). Everything up to `npx cap sync ios` still runs fine locally; it's only
-`xcodebuild`/Archive that needs macOS.
+There is no local archive and never was: push and let the `macos-15` job below do it
+([§2.1](#21-working-without-a-mac)). Everything up to `npx cap sync ios` runs fine on Linux; only
+`pod install` and `xcodebuild`/Archive need macOS, and both live in CI. On a Mac the equivalent would be
+`npx cap open ios` → Product → Archive — we have never run it.
 
 `yarn build-sync-ios` (mirroring `scripts/build_sync_android.sh`) does the first two, plus
 `npx capacitor-assets generate --ios` — the generated icons are gitignored, exactly as on Android, so they
@@ -706,10 +742,12 @@ One thing the lane does that is easy to miss: it rewrites `aps-environment` from
 `development` registers against the _sandbox_ APNs environment, and pushes then silently never arrive —
 there is no error anywhere to notice.
 
-Do the first submission by hand from Xcode to shake out the metadata, then automate. This is the step worth
-renting a Mac for — App Store Connect metadata, screenshots and capability toggles are fiddly enough that
-doing them blind through CI on the first pass invites a rejection round. Add a `symbolicatecrash` step to the
-same runner so crash reports pulled off the device from Linux can be symbolicated.
+The first submission went through the App Store Connect **web console**, not Xcode: the build came from
+`cd-ios.yml` exactly like every one since, and the metadata, screenshots and review notes are browser forms.
+The rejection round warned about here did happen — `ITMS-90129`, a `CFBundleDisplayName` collision (§8.8) —
+but it is a name clash Apple's upload check reports by email, and sitting at a Mac would not have surfaced it
+any earlier. Still worth doing: add a `symbolicatecrash` step to the same runner so crash reports pulled off
+the device from Linux can be symbolicated.
 
 ---
 
@@ -794,7 +832,8 @@ Steps 1–4, 7 and the code half of 6 and 9 are done — see [§0](#0-status). W
 2. ~~Move deep-link and notification-tap handling onto `@capacitor/app` +
    `pushNotificationActionPerformed`.~~ Done.
 3. ~~Add the `apns` block to `sendPushToToken`.~~ Done — harmless on Android, prerequisite for iOS.
-4. ~~`npx cap add ios`.~~ Done. Getting it running in the Simulator needs the Mac session.
+4. ~~`npx cap add ios`.~~ Done. The Simulator was never used — TestFlight over the air was the way builds
+   reached the phone, and the Simulator cannot obtain an APNs token anyway (step 9).
 5. Apple Developer Program, App ID with the three capabilities, App Store Connect app record.
 6. ~~Firebase iOS app; Google iOS OAuth client.~~ Done. Left: the APNs `.p8` key and the Apple provider
    in Firebase Auth (§5.2), both of which need the membership from step 5.
@@ -804,14 +843,15 @@ Steps 1–4, 7 and the code half of 6 and 9 are done — see [§0](#0-status). W
    first TestFlight build; internal testing on the iPhone 11.
 9. Verify push end-to-end on the **physical device** — the Simulator has no APNs token, so this step
    cannot be faked — then the rest of the on-device checklist
-   in [§0](#to-do--needs-an-apple-account-a-mac-or-the-phone).
+   in [§0](#to-do--needs-the-apple-consoles-or-the-phone).
 10. App Store Connect metadata and first submission.
 
-Since we develop on Linux ([§2.1](#21-working-without-a-mac)), CI replaces the Simulator as the way to get a
+Since we develop on Linux ([§2.1](#21-working-without-a-mac)), CI replaced the Simulator as the way to get a
 build onto the phone: get the fastlane half of step 8 standing early, then do 9 against TestFlight builds
-with `ios-webkit-debug-proxy` attached over cable. Batch every Xcode-GUI-only item — the capability toggles
-for §4.1, §5 and §6 — into the one EC2 Mac day. Seeding the match repo is no longer among them: the
-`iOS Certificates (one-off)` workflow does it on a GitHub `macos-15` runner.
+with `ios-webkit-debug-proxy` attached over cable. The Xcode-GUI-only items that were supposed to force an
+EC2 Mac day — the capability toggles for §4.1, §5 and §6 — were portal pages all along, and seeding the match
+repo is the `iOS Certificates (one-off)` workflow on a GitHub `macos-15` runner. The Mac day never happened,
+and steps 1–10 completed without one.
 
 ---
 

@@ -4,7 +4,12 @@ Capacitor wrapper that loads the Next.js static export into a WKWebView — the 
 [`../android`](../android/README.md), the same web bundle, no second UI codebase.
 
 The plan and the reasoning behind it live in [`../docs/ios.md`](../docs/ios.md). This file is the
-operational half: how to build, sign and ship, and what still has to be done by hand on a Mac.
+operational half: how to build, sign and ship.
+
+**No Mac is involved.** Everything local runs on Linux; the only macOS is the `macos-15` GitHub Actions
+runner that seeds the certificates and archives the build. The app went from `npx cap add ios` to a live
+App Store listing without anyone touching a Mac — see [`../docs/ios.md`](../docs/ios.md) §2.1 for the
+breakdown of what ran where.
 
 ---
 
@@ -50,13 +55,15 @@ Firebase console → Project settings → iOS app and drop it in `ios/App/App/`.
 
 ## 3. Building
 
-From the repo root — works on Linux for everything except the archive:
+From the repo root — this is the whole local build, and it runs on Linux:
 
 ```bash
 yarn build-sync-ios      # build the web export, cap sync ios, regenerate icons
 ```
 
-Then on macOS:
+`pod install` and `xcodebuild` no-op on Linux; the sync still does everything that matters. The archive
+happens in CI (§4) — there is no local equivalent and we have never needed one. On a Mac you would follow
+with:
 
 ```bash
 cd ios/App && bundle exec pod install
@@ -84,7 +91,8 @@ Only the *marketing* version is worth syncing. `CURRENT_PROJECT_VERSION` and And
 are per-store upload counters with separate histories — iOS is at 1 while Android is past 160 — and both
 must strictly increase per upload. Forcing those to match would be actively harmful.
 
-Locally (on a Mac with the secrets in the environment):
+The `beta` lane can also be run by hand, but only on a Mac with the secrets in the environment — it ends
+in `xcodebuild`. We have never had to; `workflow_dispatch` on `cd-ios.yml` re-runs it on the runner:
 
 ```bash
 cd ios && bundle exec fastlane beta
@@ -134,9 +142,11 @@ distinguishes "the certificate exists and is usable" from the failure mode descr
 Run it once, ever. Apple issues a team three distribution certificates; re-running where match cannot
 see the existing one creates another and eventually exhausts them.
 
-#### Why not from a laptop
+#### Why not from Linux
 
-Creating certificates needs macOS, and the way it fails on Linux is expensive rather than obvious.
+This is the one step where Linux does not merely no-op. Creating certificates needs macOS, and the way
+it fails on Linux is expensive rather than obvious — which is why it lives in a workflow rather than in
+anyone's shell.
 
 `match` runs fine on Linux right up to the end: it clones the repo, decrypts it, asks App Store Connect
 for a certificate, and creates a provisioning profile. It then tries to *install* that profile and dies
@@ -249,17 +259,29 @@ iOS/tool version pairings. Ubuntu ships libimobiledevice 1.3.0 (2020), which pre
 libimobiledevice from git master too rather than debugging the packaged one. Budget an afternoon the
 first time; this is the least reliable link in the Linux workflow.
 
-## 6. What still needs a Mac
+## 6. Where macOS is actually needed
 
-Everything above except `xcodebuild`/Archive runs on Linux, and the release path is CI. A real
-interactive macOS session is needed for:
+Two commands, both already in workflow files:
 
-- the one-time Apple Developer setup done through Xcode's UI (capability toggles that must match
-  `App.entitlements`),
-- the first App Store Connect submission and its metadata,
-- crash symbolication, if you'd rather not use the `symbolicate` fastlane lane on the runner.
+| Needs macOS                              | Runs in                                                  |
+| ---------------------------------------- | -------------------------------------------------------- |
+| `match` creating certs/profiles (once)   | [`ios-certs.yml`](../.github/workflows/ios-certs.yml)    |
+| `pod install` + `xcodebuild archive`     | [`cd-ios.yml`](../.github/workflows/cd-ios.yml)          |
 
-See [`../docs/ios.md`](../docs/ios.md) §2.1 for how to get that time on an AWS EC2 Mac instance.
+Everything else — the web build, `cap sync`, editing `project.pbxproj` / `Info.plist` /
+`App.entitlements`, the Apple and Firebase consoles, installing builds via TestFlight, device logs, the JS
+console, crash-report retrieval — is Linux or a browser. The things this file used to list as needing an
+interactive Mac did not:
+
+- **Apple Developer capability setup** is toggles on the App ID in the portal plus a text entitlements
+  file; Xcode's capability editor only writes those two things for you.
+- **The first App Store Connect submission and its metadata** is a web console; the build came from CI.
+- **Crash symbolication** is the `symbolicate` fastlane lane, which belongs on the runner. Nothing invokes
+  it yet — the only genuinely open item ([`../docs/ios.md`](../docs/ios.md) §0).
+
+A Mac would still buy interactive Xcode — Simulator, Instruments, Swift breakpoints. The native layer is
+one file (`AppDelegate.swift`) and the Simulator cannot obtain an APNs token, so it has not been worth it.
+[`../docs/ios.md`](../docs/ios.md) §2.1 keeps the AWS EC2 Mac recipe as a fallback, unused.
 
 ## 7. Caveats
 

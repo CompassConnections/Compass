@@ -12,9 +12,18 @@ platonic, romantic, or collaborative.
 
 [![Users](https://img.shields.io/badge/Users-800%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
 
-[![Demo](https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/demo.png)](https://youtu.be/KxMK0tkhrts)
-
-_Click the image above to watch a live demo._
+<p align="center">
+<img src="https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/store/play/01-search.png" width="22%">
+<img src="https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/store/play/02-filters.png" width="22%">
+<img src="https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/store/play/03-profile.png" width="22%">
+<img src="https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/store/play/04-bio.png" width="22%">
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/store/play/05-message.png" width="22%">
+<img src="https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/store/play/06-alert.png" width="22%">
+<img src="https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/store/play/07-stats.png" width="22%">
+<img src="https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/store/play/08-free.png" width="22%">
+</p>
 
 </div>
 

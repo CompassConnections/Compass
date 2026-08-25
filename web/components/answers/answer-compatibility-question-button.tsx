@@ -175,6 +175,18 @@ function CompatibilityOnboardingScreen({onNext, onSkip}: {onNext: () => void; on
   )
 }
 
+/**
+ * Which entry of the question list the modal should be showing, given the index it is holding.
+ *
+ * The list is refetched while the modal is open and only ever shrinks (answering a question moves
+ * it out of the "unanswered" group), so a held index can end up past the end. Clamp to the last
+ * remaining question rather than running off the array — the person still has questions to answer,
+ * so dropping them out of the flow would be wrong. Returns `-1` for an empty list, which indexes to
+ * `undefined` and is handled by the caller.
+ */
+export const clampQuestionIndex = (questionIndex: number, questionCount: number) =>
+  Math.min(Math.max(questionIndex, 0), questionCount - 1)
+
 function AnswerCompatibilityQuestionModal(props: {
   open: boolean
   setOpen: (open: boolean) => void
@@ -200,6 +212,25 @@ function AnswerCompatibilityQuestionModal(props: {
       return compareBySort(a, b, sort)
     }) as QuestionWithStats[]
   }, [otherQuestions, sort])
+
+  // `otherQuestions` is the "not answered yet" group, recomputed from whatever
+  // `refreshCompatibilityAll` last fetched — and this modal fires that refresh itself, from its own
+  // close handler. Every answer submitted here drops a question out of that group, so the array
+  // shrinks underneath a `questionIndex` that only counts up, and on the way out the two cross.
+  // Reading the question straight out of the array then yielded `undefined`, and `.id` on it threw
+  // during render: an error inside render escapes to the page's error boundary, so this took the
+  // whole screen down rather than just the dialog. That is how it surfaced — the onboarding E2E
+  // flow failed asserting on the profile *behind* the modal, with no sign the questions were at
+  // fault.
+  const questionCursor = clampQuestionIndex(questionIndex, sortedQuestions.length)
+  const question: QuestionWithStats | undefined = sortedQuestions[questionCursor]
+
+  // Nothing left to answer while the dialog is open past the intro means the last submit emptied
+  // the group; close instead of leaving an empty panel. Guarded on `showOnboarding` so it cannot
+  // fire on the intro screen, which is shown before the questions have loaded.
+  useEffect(() => {
+    if (open && !showOnboarding && sortedQuestions.length === 0) setOpen(false)
+  }, [open, showOnboarding, sortedQuestions.length])
 
   const handleStartQuestions = () => {
     if (otherQuestions.length === 0) {
@@ -240,28 +271,28 @@ function AnswerCompatibilityQuestionModal(props: {
             onNext={handleStartQuestions}
             onSkip={handleSkipOnboarding}
           />
-        ) : (
+        ) : question ? (
           <AnswerCompatibilityQuestionContent
-            key={sortedQuestions[questionIndex].id}
-            index={questionIndex}
+            key={question.id}
+            index={questionCursor}
             total={sortedQuestions.length}
-            question={sortedQuestions[questionIndex]}
+            question={question}
             user={user}
             onSubmit={() => {
               setOpen(false)
             }}
-            isLastQuestion={questionIndex === sortedQuestions.length - 1}
+            isLastQuestion={questionCursor === sortedQuestions.length - 1}
             onNext={() => {
-              if (questionIndex === sortedQuestions.length - 1) {
+              if (questionCursor === sortedQuestions.length - 1) {
                 setOpen(false)
               } else {
-                setQuestionIndex(questionIndex + 1)
+                setQuestionIndex(questionCursor + 1)
               }
             }}
             sort={sort}
             setSort={setSort}
           />
-        )}
+        ) : null}
       </Col>
     </Modal>
   )

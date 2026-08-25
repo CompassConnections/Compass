@@ -40,7 +40,7 @@ Alternates, if the primary reads too close to something already listed:
 ## Short description
 
 ```
-Search friends and dates by values and personality. Free, open source, no swiping.
+Search friends and dates by values and personality. Open source, no swiping.
 ```
 
 This is Play's `short description` field (80 max), shown above the fold and the single highest-leverage
@@ -122,6 +122,32 @@ avoids it; if a "web, Android and iOS" line is ever added for Play, strip it for
   read it as puffery.
 - **Any donation ask.** Both stores treat solicitation in a listing as a payments-policy risk. The
   funding model is stated as a fact ("runs on donations"), never as a request.
+
+---
+
+## Localised listings
+
+Play stores one listing per language, and the fields are the same three. The French cut lives in
+[app-store-listing.fr-FR.json](app-store-listing.fr-FR.json), shaped as a Play Developer API `Listing`
+resource — drop it straight into `edits.listings.update` (or paste field by field into the Play Console
+under _Grow > Store presence > Main store listing > fr-FR_).
+
+| Field              | Limit | fr-FR value                                                  | Chars |
+| ------------------ | ----- | ------------------------------------------------------------ | ----- |
+| `title`            | 30    | `Compass : Amis & Rencontres`                                | 27    |
+| `shortDescription` | 80    | Leads with the mechanism, closes on open source / no swiping | 80    |
+| `fullDescription`  | 4000  | Section-for-section mirror of the English block              | 3,281 |
+
+Two deliberate departures from a literal translation:
+
+- **Title.** "Social Connections" has no natural French equivalent that also works as a search term —
+  _rencontres sociales_ reads like a corporate event. `Amis & Rencontres` gives up the abstraction and
+  buys the two words French users actually search for.
+- **Short description.** The English plural ("friends and dates") does not fit 80 characters in French,
+  so it is singular: _ami ou partenaire_. Note the English string still reads "Open surce" — fix that
+  before either listing is submitted.
+
+The German listing is not written yet; the app ships `de`, so Play will fall back to English there.
 
 ---
 

@@ -1,6 +1,5 @@
 import {Dialog, Transition} from '@headlessui/react'
 import {ChevronLeftIcon, ChevronRightIcon, XMarkIcon} from '@heroicons/react/24/outline'
-import Image from 'next/image'
 import {
   Fragment,
   type MouseEvent as ReactMouseEvent,
@@ -376,11 +375,14 @@ function ZoomableImage(props: {
       onPointerCancel={endPointer}
       onPointerLeave={endPointer}
     >
-      <Image
+      {/* A plain <img>, not next/image: the viewer shows one image at natural size inside a
+          CSS-sized box, so the optimizer buys nothing here — and it refuses any host missing from
+          `remotePatterns` in next.config.ts with a 400, which broke every image a profile imported
+          from an external page. The inline renderer (components/editor/image.tsx) uses <img> for
+          the same reason. */}
+      <img
         ref={imageRef}
         src={url}
-        width={2000}
-        height={2000}
         alt=""
         draggable={false}
         className={`block h-auto max-h-full w-auto max-w-full select-none rounded object-contain ${

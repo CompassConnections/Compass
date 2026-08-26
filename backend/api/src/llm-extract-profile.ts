@@ -49,6 +49,7 @@ import {
   FireflyProfile,
   fireflyProfileToJSONContent,
 } from 'shared/parse-firefly'
+import {rehostExternalImages} from 'shared/profiles/rehost-images'
 
 const MAX_CONTEXT_LENGTH = 7 * 10 * 30 * 50
 const USE_CACHE = true
@@ -70,7 +71,7 @@ interface ParsedBody {
 // Bump whenever the extraction prompt changes, or whenever we start reading a source differently.
 // The cache key is otherwise derived purely from the request, so a fix would keep returning the old
 // answer for the 24h TTL — which looks exactly like the fix not working.
-const PROMPT_VERSION = 4
+const PROMPT_VERSION = 5
 
 function getCacheKey(parsedBody: ParsedBody): string {
   if (!USE_CACHE) return ''
@@ -363,9 +364,14 @@ async function processAndCache(
       debug(JSON.stringify(bio, null, 2))
       content = parseJsonContentToText(bio)
     }
-    const profile = await callLLM(content, locale, source)
-    if (bio) {
-      profile.bio = bio
+    // The LLM only ever sees the text, so copying the images into our own bucket has nothing to
+    // wait for — run it alongside the call rather than adding its seconds to the import.
+    const [profile, rehostedBio] = await Promise.all([
+      callLLM(content, locale, source),
+      bio ? rehostExternalImages(bio) : undefined,
+    ])
+    if (rehostedBio) {
+      profile.bio = rehostedBio
     }
     await setCachedResult(cacheKey, {profile, status: 'success'})
   } catch (error) {

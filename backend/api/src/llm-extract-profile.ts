@@ -27,6 +27,7 @@ import {debug} from 'common/logger'
 import {ageFromBirthDate, birthDateFromStated} from 'common/profiles/birth-date'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {SITE_ORDER} from 'common/socials'
+import {cleanUsername} from 'common/util/clean-username'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {parseJsonContentToText, textToJSONContent} from 'common/util/parse'
 import {HOUR_MS, MINUTE_MS, sleep} from 'common/util/time'
@@ -49,7 +50,8 @@ import {
   FireflyProfile,
   fireflyProfileToJSONContent,
 } from 'shared/parse-firefly'
-import {rehostExternalImages} from 'shared/profiles/rehost-images'
+import {firstOwnedImageSrc, rehostExternalImages} from 'shared/profiles/rehost-images'
+import {getUser, getUserByUsername} from 'shared/utils'
 
 const MAX_CONTEXT_LENGTH = 7 * 10 * 30 * 50
 const USE_CACHE = true
@@ -66,6 +68,7 @@ interface ParsedBody {
   url?: string
   locale?: string
   source?: ExtractSource
+  username?: string
 }
 
 // Bump whenever the extraction prompt changes, or whenever we start reading a source differently.
@@ -73,12 +76,15 @@ interface ParsedBody {
 // answer for the 24h TTL — which looks exactly like the fix not working.
 const PROMPT_VERSION = 5
 
-function getCacheKey(parsedBody: ParsedBody): string {
+// Keyed by the caller as well as the request: the bio now carries images copied into *this* user's
+// storage folder, so handing a cached result to somebody else would leave their profile pointing at
+// files that vanish when the first user deletes their account.
+function getCacheKey(parsedBody: ParsedBody, uid: string): string {
   if (!USE_CACHE) return ''
   const hash = createHash('sha256')
   // Normalize: sort keys for consistent hashing
   const normalized = JSON.stringify(parsedBody, Object.keys(parsedBody).sort())
-  hash.update(`v${PROMPT_VERSION}:${normalized}`)
+  hash.update(`v${PROMPT_VERSION}:${uid}:${normalized}`)
   return hash.digest('hex')
 }
 
@@ -346,6 +352,7 @@ async function clearProcessing(cacheKey: string): Promise<void> {
 
 async function processAndCache(
   cacheKey: string,
+  imageFolderName: string,
   content?: string | undefined,
   url?: string | undefined,
   locale?: string,
@@ -368,10 +375,15 @@ async function processAndCache(
     // wait for — run it alongside the call rather than adding its seconds to the import.
     const [profile, rehostedBio] = await Promise.all([
       callLLM(content, locale, source),
-      bio ? rehostExternalImages(bio) : undefined,
+      bio ? rehostExternalImages(bio, imageFolderName) : undefined,
     ])
     if (rehostedBio) {
       profile.bio = rehostedBio
+      // A page that leads with a photo of the person makes a far better profile picture than the
+      // generated initials avatar. `create-user-and-profile` and `update-profile` both derive
+      // `users.avatar_url` from `pinned_url`, so setting it here is all it takes for the imported
+      // photo to become the avatar too.
+      profile.pinned_url ??= firstOwnedImageSrc(rehostedBio)
     }
     await setCachedResult(cacheKey, {profile, status: 'success'})
   } catch (error) {
@@ -914,7 +926,27 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
   }
 }
 
-export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = async (parsedBody) => {
+/**
+ * The folder imported images are copied into: `user-images/<username>/love-images`, the same one the
+ * photo widget uploads to. Signup autofills *before* `create-user-and-profile` runs, so there is no
+ * user row to read the username from yet — hence the one the client picked, exactly as
+ * `AddPhotosWidget` already does for uploads. It is never taken on trust: a name that belongs to
+ * somebody else falls back to the uid, so no one can write into another profile's folder.
+ */
+async function resolveImageFolderName(uid: string, requested: string | undefined): Promise<string> {
+  const user = await getUser(uid)
+  if (user) return user.username
+
+  const cleaned = requested ? cleanUsername(requested) : ''
+  if (!cleaned) return uid
+  const owner = await getUserByUsername(cleaned)
+  return owner ? uid : cleaned
+}
+
+export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = async (
+  parsedBody,
+  auth,
+) => {
   const {url, locale, source} = parsedBody
   const content = parsedBody.content
 
@@ -927,7 +959,7 @@ export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = asyn
   if (url) assertProfileUrlIsFetchable(url)
 
   // Check cache based on parsedBody hash
-  const cacheKey = getCacheKey(parsedBody)
+  const cacheKey = getCacheKey(parsedBody, auth.uid)
   const cached = await getCachedResult(cacheKey)
   if (cached) {
     log('Returning cached profile', {cacheKey: cacheKey.substring(0, 8)})
@@ -943,8 +975,10 @@ export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = asyn
   // Start processing asynchronously
   await setProcessing(cacheKey)
 
+  const imageFolderName = await resolveImageFolderName(auth.uid, parsedBody.username)
+
   // Kick off async processing (don't await)
-  processAndCache(cacheKey, content, url, locale, source).catch((err) => {
+  processAndCache(cacheKey, imageFolderName, content, url, locale, source).catch((err) => {
     log('Unexpected error in async processing', {cacheKey, error: err})
   })
 

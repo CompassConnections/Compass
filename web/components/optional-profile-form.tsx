@@ -169,9 +169,10 @@ export const OptionalProfileUserForm = (props: {
   const [parsingEditor, setParsingEditor] = useState<any>(null)
   const [extractionProgress, setExtractionProgress] = useState(0)
   const [extractionError, setExtractionError] = useState<string | null>(null)
-  // Auto-fill can populate every field on the page, which makes the profile *look* finished — but it
-  // can never supply a photo. Set on a successful extraction; the banner itself also checks that
-  // there is still no photo, so it disappears the moment one is added.
+  // Auto-fill can populate every field on the page, which makes the profile *look* finished — and a
+  // source page without images leaves it without a photo (one with images donates its first as the
+  // pinned photo). Set on a successful extraction; the banner itself also checks that there is
+  // still no photo, so it disappears the moment one arrives.
   const [remindAboutPhotos, setRemindAboutPhotos] = useState(false)
   const photosRef = useRef<HTMLDivElement>(null)
   const hasPhotos = !!profile.photo_urls?.length || !!profile.pinned_url
@@ -197,7 +198,7 @@ export const OptionalProfileUserForm = (props: {
         setExtractionProgress((2 / 3) * 100 + ((elapsed - 20) / 150) * 100)
       }
     }, 100)
-    const payload = {locale, ...input}
+    const payload = {locale, username: user.username, ...input}
     try {
       let extractedProfile: Partial<ProfileWithoutUser> = {}
       let status: string | undefined = 'pending'

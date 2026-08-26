@@ -2,13 +2,16 @@ import {JSONContent} from '@tiptap/core'
 import {createHash} from 'crypto'
 import {lookup} from 'dns/promises'
 import * as firebaseUtils from 'shared/firebase-utils'
-import {rehostExternalImages} from 'shared/profiles/rehost-images'
+import {firstOwnedImageSrc, rehostExternalImages} from 'shared/profiles/rehost-images'
 
 jest.mock('shared/firebase-utils')
 jest.mock('dns/promises', () => ({lookup: jest.fn()}))
 jest.mock('shared/monitoring/log', () => ({log: jest.fn()}))
 
 const lookupMock = lookup as unknown as jest.Mock
+
+const USERNAME = 'awlego'
+const FOLDER = `user-images/${USERNAME}/love-images`
 
 /** A bio holding one image per src, in the shape tiptap stores. */
 const docWithImages = (...srcs: string[]): JSONContent => ({
@@ -67,10 +70,11 @@ describe('rehostExternalImages', () => {
 
     const result = await rehostExternalImages(
       docWithImages('https://awlego.com/images/dateme/kitchen-dancing.jpg'),
+      USERNAME,
     )
 
     expect(saved).toHaveLength(1)
-    expect(saved[0].path).toMatch(/^imported-images\/[0-9a-f]{32}\.jpg$/)
+    expect(saved[0].path).toMatch(new RegExp(`^${FOLDER}/[0-9a-f]{32}\\.jpg$`))
     expect(saved[0].options.public).toBe(true)
     expect(saved[0].options.metadata.contentType).toBe('image/jpeg')
     expect(imageSrcs(result)).toEqual([
@@ -84,7 +88,7 @@ describe('rehostExternalImages', () => {
     mockBucket()
     fetchSpy.mockResolvedValue(mockImageResponse())
 
-    const result = await rehostExternalImages(docWithImages('https://awlego.com/a.jpg'))
+    const result = await rehostExternalImages(docWithImages('https://awlego.com/a.jpg'), USERNAME)
 
     expect(result.type).toBe('doc')
     expect(result.content?.[0]).toEqual({type: 'paragraph', content: [{type: 'text', text: 'hi'}]})
@@ -98,6 +102,7 @@ describe('rehostExternalImages', () => {
 
     const result = await rehostExternalImages(
       docWithImages('https://awlego.com/a.jpg', 'https://awlego.com/a.jpg'),
+      USERNAME,
     )
 
     expect(fetchSpy).toHaveBeenCalledTimes(1)
@@ -108,14 +113,14 @@ describe('rehostExternalImages', () => {
   it('reuses an already-copied object without refetching', async () => {
     // The storage key is sha256(src).slice(0, 32) — stable, so a second import of the same page
     // (or a second person importing it) hits the object already in the bucket.
-    const existing = `imported-images/${createHash('sha256')
+    const existing = `${FOLDER}/${createHash('sha256')
       .update('https://awlego.com/a.jpg')
       .digest('hex')
       .slice(0, 32)}.jpg`
     const {saved} = mockBucket({existingFiles: [existing]})
     fetchSpy.mockResolvedValue(mockImageResponse())
 
-    const result = await rehostExternalImages(docWithImages('https://awlego.com/a.jpg'))
+    const result = await rehostExternalImages(docWithImages('https://awlego.com/a.jpg'), USERNAME)
 
     expect(fetchSpy).not.toHaveBeenCalled()
     expect(saved).toHaveLength(0)
@@ -127,7 +132,7 @@ describe('rehostExternalImages', () => {
     const src =
       'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/user-images%2FMartin%2Fa.jpg?alt=media'
 
-    const result = await rehostExternalImages(docWithImages(src))
+    const result = await rehostExternalImages(docWithImages(src), USERNAME)
 
     expect(fetchSpy).not.toHaveBeenCalled()
     expect(saved).toHaveLength(0)
@@ -142,7 +147,7 @@ describe('rehostExternalImages', () => {
       headers: new Headers(),
     } as unknown as Response)
 
-    const result = await rehostExternalImages(docWithImages('https://awlego.com/a.jpg'))
+    const result = await rehostExternalImages(docWithImages('https://awlego.com/a.jpg'), USERNAME)
 
     expect(imageSrcs(result)).toEqual(['https://awlego.com/a.jpg'])
   })
@@ -151,7 +156,7 @@ describe('rehostExternalImages', () => {
     const {saved} = mockBucket()
     fetchSpy.mockResolvedValue(mockImageResponse('<html>nope</html>', 'text/html; charset=utf-8'))
 
-    const result = await rehostExternalImages(docWithImages('https://awlego.com/a.jpg'))
+    const result = await rehostExternalImages(docWithImages('https://awlego.com/a.jpg'), USERNAME)
 
     expect(saved).toHaveLength(0)
     expect(imageSrcs(result)).toEqual(['https://awlego.com/a.jpg'])
@@ -161,7 +166,10 @@ describe('rehostExternalImages', () => {
     mockBucket()
     lookupMock.mockResolvedValue([{address: '169.254.169.254', family: 4}])
 
-    const result = await rehostExternalImages(docWithImages('https://metadata.example.com/a.jpg'))
+    const result = await rehostExternalImages(
+      docWithImages('https://metadata.example.com/a.jpg'),
+      USERNAME,
+    )
 
     expect(fetchSpy).not.toHaveBeenCalled()
     expect(imageSrcs(result)).toEqual(['https://metadata.example.com/a.jpg'])
@@ -180,7 +188,10 @@ describe('rehostExternalImages', () => {
       headers: new Headers({location: 'http://localhost:8080/secret'}),
     } as unknown as Response)
 
-    const result = await rehostExternalImages(docWithImages('https://evil.example.com/a.jpg'))
+    const result = await rehostExternalImages(
+      docWithImages('https://evil.example.com/a.jpg'),
+      USERNAME,
+    )
 
     // The first hop was allowed; the redirect target was not followed.
     expect(fetchSpy).toHaveBeenCalledTimes(1)
@@ -190,7 +201,10 @@ describe('rehostExternalImages', () => {
   it('rejects a src that is not http(s)', async () => {
     mockBucket()
 
-    const result = await rehostExternalImages(docWithImages('data:image/png;base64,iVBORw0KGgo='))
+    const result = await rehostExternalImages(
+      docWithImages('data:image/png;base64,iVBORw0KGgo='),
+      USERNAME,
+    )
 
     expect(fetchSpy).not.toHaveBeenCalled()
     expect(imageSrcs(result)).toEqual(['data:image/png;base64,iVBORw0KGgo='])
@@ -200,24 +214,53 @@ describe('rehostExternalImages', () => {
     const {saved} = mockBucket()
     fetchSpy.mockResolvedValue(mockImageResponse())
 
-    const result = await rehostExternalImages({
-      type: 'doc',
-      content: [
-        {
-          type: 'blockquote',
-          content: [{type: 'image', attrs: {src: 'https://awlego.com/nested.jpg'}}],
-        },
-      ],
-    })
+    const result = await rehostExternalImages(
+      {
+        type: 'doc',
+        content: [
+          {
+            type: 'blockquote',
+            content: [{type: 'image', attrs: {src: 'https://awlego.com/nested.jpg'}}],
+          },
+        ],
+      },
+      USERNAME,
+    )
 
     expect(saved).toHaveLength(1)
-    expect(result.content?.[0].content?.[0].attrs?.src).toContain('imported-images')
+    expect(result.content?.[0].content?.[0].attrs?.src).toContain(encodeURIComponent(FOLDER))
+  })
+
+  it('files the copies under the importing user, not a shared folder', async () => {
+    const {saved} = mockBucket()
+    fetchSpy.mockResolvedValue(mockImageResponse())
+
+    await rehostExternalImages(docWithImages('https://awlego.com/a.jpg'), 'someone_else')
+
+    expect(saved[0].path).toMatch(/^user-images\/someone_else\/love-images\/[0-9a-f]{32}\.jpg$/)
   })
 
   it('does nothing to a document without images', async () => {
     const doc: JSONContent = {type: 'doc', content: [{type: 'paragraph'}]}
 
-    expect(await rehostExternalImages(doc)).toEqual(doc)
+    expect(await rehostExternalImages(doc, USERNAME)).toEqual(doc)
     expect(firebaseUtils.getBucket).not.toHaveBeenCalled()
+  })
+})
+
+describe('firstOwnedImageSrc', () => {
+  it('returns the first image we serve ourselves', async () => {
+    const ours = 'https://firebasestorage.googleapis.com/v0/b/b/o/user-images%2Fa%2Fb.jpg?alt=media'
+
+    expect(firstOwnedImageSrc(docWithImages('https://awlego.com/a.jpg', ours))).toEqual(ours)
+  })
+
+  it('never returns an image still hosted elsewhere', async () => {
+    // An avatar goes through next/image, which rejects any host not in `remotePatterns`.
+    expect(firstOwnedImageSrc(docWithImages('https://awlego.com/a.jpg'))).toBeUndefined()
+  })
+
+  it('returns nothing for a document without images', async () => {
+    expect(firstOwnedImageSrc({type: 'doc', content: [{type: 'paragraph'}]})).toBeUndefined()
   })
 })

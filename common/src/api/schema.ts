@@ -1440,6 +1440,10 @@ export const API = (_apiTypeCheck = {
         // told to read past filler words and to write the bio itself rather than us storing the
         // transcript verbatim.
         source: z.enum(['text', 'url', 'voice']).optional(),
+        // The username the images found in an imported page get filed under. Needed because signup
+        // autofills before the user row exists; the server prefers the stored username whenever
+        // there is one, and ignores this if it belongs to somebody else.
+        username: z.string().optional(),
       })
       .strict(),
     returns: {} as {

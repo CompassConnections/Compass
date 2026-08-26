@@ -21,7 +21,12 @@ const MAX_BYTES_PER_IMAGE = 15 * 1024 ** 2
 const FETCH_TIMEOUT_MS = 15_000
 const MAX_REDIRECTS = 3
 
-const STORAGE_PREFIX = 'imported-images'
+/**
+ * The same folder the photo widget uploads to (`web/components/widgets/add-photos.tsx`), so a
+ * profile's imported images sit beside the ones it uploaded — and `deleteUserFiles` takes them all
+ * with the account.
+ */
+const storageFolder = (username: string) => `user-images/${username}/love-images`
 
 // Only what a browser will actually render in an <img>. Anything else (svg above all — it executes
 // script when opened directly) we leave alone rather than serve from our own origin.
@@ -43,16 +48,20 @@ const OWN_HOSTS = [
 ]
 
 /**
- * Copies every externally hosted image in `content` into our storage bucket and returns the content
- * with those `src`s rewritten. Never throws: an image we cannot copy keeps its original URL, which
- * is exactly the behaviour we had before.
+ * Copies every externally hosted image in `content` into `username`'s own folder in our storage
+ * bucket and returns the content with those `src`s rewritten. Never throws: an image we cannot copy
+ * keeps its original URL, which is exactly the behaviour we had before.
  */
-export async function rehostExternalImages(content: JSONContent): Promise<JSONContent> {
+export async function rehostExternalImages(
+  content: JSONContent,
+  username: string,
+): Promise<JSONContent> {
   try {
     const srcs = uniq(collectImageSrcs(content)).filter(shouldRehost)
     if (srcs.length === 0) return content
 
     const bucket = getBucket()
+    const folder = storageFolder(username)
     const rehosted = srcs.slice(0, MAX_IMAGES)
     if (srcs.length > rehosted.length) {
       log('Too many images to rehost; leaving the rest hotlinked', {
@@ -62,7 +71,7 @@ export async function rehostExternalImages(content: JSONContent): Promise<JSONCo
     }
 
     const results = await Promise.all(
-      rehosted.map(async (src) => [src, await rehostOne(src, bucket)] as const),
+      rehosted.map(async (src) => [src, await rehostOne(src, bucket, folder)] as const),
     )
     const urlBySrc = Object.fromEntries(results.filter(([, url]) => !!url)) as Record<
       string,
@@ -78,17 +87,17 @@ export async function rehostExternalImages(content: JSONContent): Promise<JSONCo
   }
 }
 
-async function rehostOne(src: string, bucket: Bucket): Promise<string | undefined> {
+async function rehostOne(src: string, bucket: Bucket, folder: string): Promise<string | undefined> {
   try {
-    // Keyed by the source URL, so re-importing the same page — or two people importing the same
-    // one — reuses the object instead of piling up copies. `llm-extract-profile` caches its result
-    // across callers too, which only works if these URLs are stable.
+    // Named after the source URL rather than a nanoid, so re-importing the same page overwrites the
+    // copy instead of piling up a second one. `llm-extract-profile` caches its result for a day too,
+    // which only works if these URLs are stable.
     const hash = createHash('sha256').update(src).digest('hex').slice(0, 32)
 
     // The extension is only known after the fetch, so look for an already-copied object under any
     // of the extensions we accept before paying for the download.
     for (const ext of uniq(Object.values(EXTENSION_BY_CONTENT_TYPE))) {
-      const existing = bucket.file(`${STORAGE_PREFIX}/${hash}.${ext}`)
+      const existing = bucket.file(`${folder}/${hash}.${ext}`)
       const [exists] = await existing.exists()
       if (exists) return downloadUrl(bucket, existing.name)
     }
@@ -96,7 +105,7 @@ async function rehostOne(src: string, bucket: Bucket): Promise<string | undefine
     const fetched = await fetchImage(src)
     if (!fetched) return undefined
 
-    const path = `${STORAGE_PREFIX}/${hash}.${fetched.ext}`
+    const path = `${folder}/${hash}.${fetched.ext}`
     await bucket.file(path).save(fetched.buffer, {
       public: true,
       metadata: {
@@ -229,11 +238,31 @@ function isPrivateAddress(address: string): boolean {
   )
 }
 
+/**
+ * The first image in the document that we serve ourselves — the one worth pinning as the profile
+ * photo. Deliberately never an image left hotlinked: an avatar is rendered through next/image
+ * everywhere, which 400s on any host missing from `remotePatterns`.
+ */
+export function firstOwnedImageSrc(content: JSONContent): string | undefined {
+  return collectImageSrcs(content).find(isOwnHost)
+}
+
 function shouldRehost(src: string): boolean {
+  return isHttp(src) && !isOwnHost(src)
+}
+
+function isOwnHost(src: string): boolean {
   try {
-    const {protocol, hostname} = new URL(src)
-    if (protocol !== 'https:' && protocol !== 'http:') return false
-    return !OWN_HOSTS.includes(hostname.toLowerCase())
+    return isHttp(src) && OWN_HOSTS.includes(new URL(src).hostname.toLowerCase())
+  } catch {
+    return false
+  }
+}
+
+function isHttp(src: string): boolean {
+  try {
+    const {protocol} = new URL(src)
+    return protocol === 'https:' || protocol === 'http:'
   } catch {
     return false
   }

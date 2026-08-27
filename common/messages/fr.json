@@ -645,6 +645,8 @@
   "messages.deleted_user": "Utilisateur supprimé",
   "messages.edited": "modifié",
   "messages.empty": "Vous n'avez pas encore de messages.",
+  "messages.search_placeholder": "Rechercher par nom ou identifiant...",
+  "messages.search_empty": "Aucune conversation ne correspond à votre recherche.",
   "messages.input_placeholder": "Envoyer un message",
   "messages.menu.copy_plain_text": "Copier en texte brut",
   "messages.menu.leave_chat": "Quitter la conversation",

@@ -645,6 +645,8 @@
   "messages.deleted_user": "Gelöschter Benutzer",
   "messages.edited": "bearbeitet",
   "messages.empty": "Sie haben noch keine Nachrichten.",
+  "messages.search_placeholder": "Nach Name oder Benutzername suchen...",
+  "messages.search_empty": "Keine Unterhaltung entspricht Ihrer Suche.",
   "messages.input_placeholder": "Nachricht senden",
   "messages.menu.copy_plain_text": "Als Klartext kopieren",
   "messages.menu.leave_chat": "Unterhaltung verlassen",

@@ -6,6 +6,7 @@ import {filterDefined} from 'common/util/array'
 import {parseJsonContentToText} from 'common/util/parse'
 import {keyBy, uniq} from 'lodash'
 import Link from 'next/link'
+import {useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
@@ -15,6 +16,7 @@ import {PageBase} from 'web/components/page-base'
 import {RelativeTimestamp} from 'web/components/relative-timestamp'
 import {SEO} from 'web/components/SEO'
 import {Avatar} from 'web/components/widgets/avatar'
+import {Input} from 'web/components/widgets/input'
 import {BannedBadge} from 'web/components/widgets/user-link'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {useLastPrivateMessages} from 'web/hooks/use-last-private-messages'
@@ -60,6 +62,7 @@ export function MessagesContent(props: {currentUser: User}) {
     useSortedPrivateMessageMemberships(currentUser.id)
   const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(true)
   const lastMessages = useLastPrivateMessages(currentUser.id)
+  const [query, setQuery] = useState('')
 
   // One batched fetch for every avatar on the page. get-channel-memberships already told us who is in
   // each channel, so letting each row fetch its own members would be one round-trip per chat.
@@ -71,6 +74,35 @@ export function MessagesContent(props: {currentUser: User}) {
   )
   const allUsers = useUsersInStore(allMemberIds, 'messages-page', MAX_DISPLAY_USERS)
   const usersById = keyBy(allUsers ?? [], 'id')
+
+  const rows = channels?.map((channel) => {
+    // Fall back to the people who left only when no one else is still here, so the row names
+    // who you can still talk to rather than everyone who ever passed through.
+    const activeIds = memberIdsByChannelId?.[channel.channel_id] ?? []
+    const userIds = activeIds.length
+      ? activeIds
+      : uniq(leftMemberIdsByChannelId?.[channel.channel_id] ?? [])
+    // undefined while the batch is still loading, so the row keeps its placeholder avatar
+    // instead of flashing "Deleted user".
+    const otherUsers = allUsers ? filterDefined(userIds.map((id) => usersById[id])) : undefined
+    return {channel, userIds, otherUsers}
+  })
+
+  // Name and username only — deliberately not message contents, which aren't all loaded here.
+  // While the member batch is in flight otherUsers is undefined, so leave every row in place
+  // rather than emptying the list and claiming nothing matched.
+  const trimmedQuery = query.trim().toLowerCase()
+  const filteredRows = !trimmedQuery
+    ? rows
+    : rows?.filter(({otherUsers}) =>
+        otherUsers === undefined
+          ? true
+          : otherUsers.some(
+              (user) =>
+                user.name?.toLowerCase().includes(trimmedQuery) ||
+                user.username?.toLowerCase().includes(trimmedQuery),
+            ),
+      )
 
   // The best moment Compass has to ask for a store review: someone wrote back, and they have just
   // stepped out of the thread. Whether the exchange is two-way enough to count is the server's call
@@ -85,6 +117,18 @@ export function MessagesContent(props: {currentUser: User}) {
         </h1>
         <NewMessageButton />
       </Row>
+      {!!channels?.length && (
+        <Row className="mb-4 items-center">
+          <Input
+            value={query}
+            placeholder={t('messages.search_placeholder', 'Search by name or username...')}
+            className="w-full max-w-md !h-14 !rounded-full !px-5 text-base shadow-md"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+            searchIcon
+            data-testid="messages-search"
+          />
+        </Row>
+      )}
       <Col className={'w-full overflow-hidden gap-2'} data-testid="messages-table">
         {channels && channels.length === 0 && (
           <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
@@ -99,30 +143,24 @@ export function MessagesContent(props: {currentUser: User}) {
             </p>
           </div>
         )}
-        {channels?.map((channel) => {
-          // Fall back to the people who left only when no one else is still here, so the row names
-          // who you can still talk to rather than everyone who ever passed through.
-          const activeIds = memberIdsByChannelId?.[channel.channel_id] ?? []
-          const userIds = activeIds.length
-            ? activeIds
-            : uniq(leftMemberIdsByChannelId?.[channel.channel_id] ?? [])
-          // undefined while the batch is still loading, so the row keeps its placeholder avatar
-          // instead of flashing "Deleted user".
-          const otherUsers = allUsers
-            ? filterDefined(userIds.map((id) => usersById[id]))
-            : undefined
-          return (
-            <MessageChannelRow
-              key={channel.channel_id}
-              otherUserIds={userIds}
-              otherUsers={otherUsers}
-              currentUser={currentUser}
-              channel={channel}
-              lastSeenTime={lastSeenChatTimeByChannelId[channel.channel_id]}
-              lastMessage={lastMessages[channel.channel_id]}
-            />
-          )
-        })}
+        {filteredRows?.map(({channel, userIds, otherUsers}) => (
+          <MessageChannelRow
+            key={channel.channel_id}
+            otherUserIds={userIds}
+            otherUsers={otherUsers}
+            currentUser={currentUser}
+            channel={channel}
+            lastSeenTime={lastSeenChatTimeByChannelId[channel.channel_id]}
+            lastMessage={lastMessages[channel.channel_id]}
+          />
+        ))}
+        {filteredRows?.length === 0 && !!channels?.length && (
+          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
+            <p className="text-ink-500 text-sm">
+              {t('messages.search_empty', 'No conversation matches your search.')}
+            </p>
+          </div>
+        )}
       </Col>
     </>
   )

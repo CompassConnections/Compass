@@ -30,6 +30,7 @@ describe('report', () => {
         contentOwnerId: 'mockContentOwnerId',
         contentType: 'user' as 'user' | 'comment' | 'contract',
         contentId: 'mockContentId',
+        description: 'Reasons: Spam, they keep messaging me',
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
@@ -79,6 +80,10 @@ describe('report', () => {
       expect(sendDiscordMessage).toBeCalledTimes(1)
       expect(sendDiscordMessage).toBeCalledWith(
         expect.stringContaining('**New Report**'),
+        'reports',
+      )
+      expect(sendDiscordMessage).toBeCalledWith(
+        expect.stringContaining(`**Description:** ${mockBody.description}`),
         'reports',
       )
     })

@@ -123,8 +123,18 @@ const TARGETS = {
  * The set, in listing order.
  *
  * Order is an argument, not a gallery: 1 is the whole pitch in three words, 2-3 answer "what is there to
- * search", 4-6 are the three things Compass does that its category does not, 7 is the proof, 8 is the
- * price. A browser who stops after two frames has still had the pitch.
+ * search", 4-6 are the three things Compass does that its category does not, 7 is the proof, 8 is who
+ * owns the thing. A browser who stops after two frames has still had the pitch.
+ *
+ * ── No price, anywhere in here (App Store guideline 2.3.7) ────────────────────
+ * Submission 1.42.0 (11) was rejected because frame 8 read "Free forever" over badges saying "No ads"
+ * and "No subscriptions". Apple counts a reference to a *free* or discounted service as a price
+ * reference, and price references are not allowed in screenshots — only in the app description, which
+ * is why docs/app-store-listing.md still says "free" in the description block and nowhere else.
+ * So: no "free", "no subscriptions", "no paywall", "no in-app purchases", "donate", currency symbols
+ * or running-cost figures in any headline, sub, badge or captured screen. Frame 8 makes the same
+ * argument structurally — open source, member-governed — which is a fact about governance rather than
+ * a claim about money.
  *
  * `<em>` in a headline renders amber — one emphasis per frame, on the word the frame is actually about.
  * Copy is the product's own, from web/components/home/home.tsx and web/pages/about.tsx, so the listing
@@ -178,15 +188,15 @@ const FRAMES = [
     shot: 'stats.png',
     theme: 'light',
     headline: 'Every number, <em>in public</em>.',
-    sub: 'Who is here, where they are, and what it costs to run. Published, not curated.',
+    sub: 'Who is here, where they are, and how the place is run. Published, not curated.',
   },
   {
-    key: 'free',
+    key: 'open',
     kind: 'statement',
     theme: 'dark',
-    headline: 'Free forever. <em>Open source.</em>',
-    sub: 'No ads, no subscriptions, no paywall. Every line of Compass is public on GitHub.',
-    badges: ['No ads', 'No subscriptions', 'Community owned'],
+    headline: 'Built in the <em>open</em>.',
+    sub: 'Every line of Compass is on GitHub. Members write the rules, and vote on them in public.',
+    badges: ['Open source', 'Member governed', 'No hidden ranking'],
     footer: 'compassmeet.com',
   },
 ]
@@ -610,7 +620,7 @@ ${watermark('dark', width)}
 ${ICON_URI ? `<img class="mark" src="${ICON_URI}" alt=""/>` : ''}
 <div class="copy">
   <h1>Don’t swipe. <em>Search.</em></h1>
-  <p>The free, open-source directory for finding your people. Searchable by values, readable end to end, yours to keep.</p>
+  <p>The open-source directory for finding your people. Searchable by values, readable end to end, yours to keep.</p>
 </div>
 </body></html>`
 }

@@ -29,6 +29,14 @@
  * Public screens (profile pages, /stats) are captured either way, so a session-less run still produces
  * most of the set and says which shots it skipped.
  *
+ * ── No price wording in frame (App Store guideline 2.3.7) ────────────────────
+ * A screenshot is metadata, so Apple's ban on price references applies to whatever is *inside* the
+ * captured screen too, and "free" counts as a price. That rules out the home page (the hero eyebrow
+ * reads "Free forever · Open source", and there is an "Open Source & Free Forever" strip further
+ * down) and /about (the stat band publishes "$0 / Cost to join"). Neither is in the set; before
+ * adding a screen here, read it for price wording first. 1.42.0 (11) was rejected over this —
+ * docs/app-store-listing.md, "No price outside the description".
+ *
  * ── Showcase profiles only ────────────────────────────────────────────────────
  * The dev DB holds the ten hand-authored showcase personas *and* a tail of faker accounts with
  * lorem-ipsum bios and no photo. A store screenshot with one of those in it is worse than no screenshot,

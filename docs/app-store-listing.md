@@ -151,6 +151,55 @@ The German listing is not written yet; the app ships `de`, so Play will fall bac
 
 ---
 
+## No price outside the description (guideline 2.3.7)
+
+Submission 1.42.0 (11) was **rejected on 27 Aug 2026** under 2.3.7: "the app screenshots include
+references to the price of the app or the service it provides". The offender was screenshot 8 —
+"Free forever. Open source." over badges reading "No ads" and "No subscriptions" — plus screenshot 7's
+caption, "what it costs to run".
+
+Two things to hold on to:
+
+- **"Free" is a price.** Apple's notice says it outright: "references to free or discounted services
+  are considered a price reference". So are "no subscriptions", "no paywall", "no in-app purchases",
+  "donations", a currency figure, or a running-cost number. Anything that answers "what does this
+  cost" is a price reference, including the answer "nothing".
+- **The description is the one exception.** Apple's own next step is "if you would like to advertise
+  changes to the app's price, consider including this information in the app description." The
+  FREE, AND STRUCTURALLY SO section above therefore stays exactly as it is — that argument is
+  load-bearing for the pitch and the description is where Apple has said to put it.
+
+| Field                      | Price talk? | Note                                                     |
+| -------------------------- | ----------- | -------------------------------------------------------- |
+| Name, Subtitle             | No          | Neither has ever mentioned it                            |
+| **Screenshots / previews** | **No**      | What got 1.42.0 (11) rejected                            |
+| Promotional text           | No          | Sits above the description but is not the description    |
+| Keywords                   | No          | Also where competitor brand names are banned, same 2.3.7 |
+| What's New                 | No          | Safer to treat it as promo copy than as description      |
+| **Description**            | **Yes**     | Explicitly allowed, and where Apple says to put it       |
+
+What to reply to Apple, and the order to change the fields in, is in
+[app-review-reply.md](app-review-reply.md#round-2--guideline-237-metadata-reply-this) — round 2.
+
+The screenshot set is generated, not hand-made, so the fix lives in code: frame 8 of `FRAMES` in
+[`media-creator/scripts/render-store.mjs`](../media-creator/scripts/render-store.mjs) is now
+"Built in the open." (open source / member governed / no hidden ranking) and outputs `08-open.png`
+rather than `08-free.png`; frame 7's caption reads "how the place is run". Re-render with
+`node media-creator/scripts/render-store.mjs --only 7,8`. The file carries the same rule as a comment
+so the next person editing the copy sees it before Apple does.
+
+**This is metadata only.** The rule covers what App Store Connect holds — listing text, screenshots,
+app previews — not the app itself. The hero eyebrow (`home.eyebrow.v3`, "Free forever · Open source"),
+the "Open Source & Free Forever" strip on the home page, the "$0 / Cost to join" stat in
+`components/about/platform-stats.tsx` and the funding copy in `/terms` are all untouched and fine:
+2.3.7 does not police in-app copy. The one crossover is that a _screenshot of_ an in-app screen is
+metadata, so a captured screen must not have price wording in frame either. None does today — the
+store captures shoot search, filters, profiles, the composer, alerts and /stats, and never the home
+or about page — but that is now a constraint on which screens `capture-store.mjs` may shoot, not a
+coincidence.
+
+---
+
 ## App Store Connect field mapping
 
 The App Store splits what Play puts in two fields across four. Same copy, re-cut.
@@ -265,11 +314,14 @@ room for a matching `compass-android` if Play reporting is ever unified.
 | **Description**      | 4000  | The full description above, minus any other-platform mention.         |
 | **Keywords**         | 100   | See below — comma-separated, **no spaces after commas** (they count). |
 
-**Promotional text** (152 chars) — sits above the description and can be updated between releases, so
-it is the only place a time-sensitive claim belongs:
+**Promotional text** (149 chars) — sits above the description and can be updated between releases, so
+it is the only place a time-sensitive claim belongs. It is _not_ the description, so guideline 2.3.7
+applies to it: no price, and "free" counts as a price (see "No price outside the description" above).
+The earlier draft ended "no ads … Free forever, and open source" and has been cut back to the
+mechanism:
 
 ```
-New: search every profile by values, causes, politics and personality — no swiping, no ads, no algorithm picking for you. Free forever, and open source.
+New: search every profile by values, causes, politics and personality — no swiping, no hidden ranking, and every line of the source public on GitHub.
 ```
 
 **Keywords** (97 chars) — do not repeat words already in the name or subtitle; Apple indexes those
@@ -283,6 +335,8 @@ friendship,meetup,values,community,relationship,platonic,opensource,nonprofit,co
 
 ## Pre-submission checklist
 
+- [ ] **No price references** in the name, subtitle, screenshots, app preview, promotional text,
+      keywords or What's New — "free" included (guideline 2.3.7, above). The description is exempt.
 - [ ] **Age rating 18+** on both stores. Compass carries romantic intent and user-to-user messaging;
       rating it lower invites a takedown, not just a rejection.
 - [ ] **Data safety / privacy nutrition label** must match what the app does: account data, messages,

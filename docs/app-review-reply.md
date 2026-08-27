@@ -1,14 +1,95 @@
-# App Review reply — 1.42.0 (11), guideline 2.1
+# App Review replies — 1.42.0 (11)
+
+Two rejection rounds on submission `03f117df-a8e3-46a7-b3a9-e27214324691`, neither of them functional
+and neither needing a new binary. Round 1 (Aug 24, 2026) was **guideline 2.1 — Information Needed**:
+thin App Review Information. Round 2 (Aug 27, 2026), after the resubmission, is **guideline 2.3.7 —
+Accurate Metadata**: price references in the screenshots. Round 2 is the live one; round 1's material
+stays because its Notes text is what sits on the version record from now on.
+
+Companion to [app-store-listing.md](app-store-listing.md) ("App Review Information" section, which this
+supersedes as the Notes text, and "No price outside the description", which is the standing rule round 2
+produced) and [ios.md](ios.md) §8 (the guideline risks the notes pre-empt).
+
+---
+
+## Round 2 — guideline 2.3.7, metadata (reply this)
+
+> "The app screenshots include references to the price of the app or the service it provides… Note that
+> references to free or discounted services are considered a price reference."
+
+Nothing here is arguable and nothing is worth arguing: Apple named the field, said what counts, and said
+where price talk is allowed instead. The screenshots are fixed in code and re-rendered, the promotional
+text is rewritten, and the description keeps its funding paragraph because Apple's own next step points
+there ("consider including this information in the app description"). Full reasoning, and the per-field
+table of what may and may not mention price, in
+[app-store-listing.md](app-store-listing.md#no-price-outside-the-description-guideline-237).
+
+### What to do, in order
+
+1. **Re-upload both screenshot sets.** App Store Connect → the 1.42.0 version page → Previews and
+   Screenshots. Replace **iPhone 6.9"** from `media-creator/out/store/ios/` and **iPad 13"** from
+   `media-creator/out/store/ipad/` — all eight frames in each, not only the last one, because frame 7's
+   caption changed too. The eighth file is now `08-open.png`; `08-free.png` is deleted, so a slot left
+   holding the old image is the exact thing being rejected. Both sets are already rendered on disk; if
+   they need rebuilding it is `node media-creator/scripts/render-store.mjs` (add `--only 7,8` for just
+   the two that changed).
+2. **Paste the new promotional text** from
+   [app-store-listing.md](app-store-listing.md#app-store-connect-field-mapping) — the one ending "every
+   line of the source public on GitHub", not the old one ending "Free forever, and open source".
+3. **Read the other fields once, cold.** Name, subtitle, keywords, What's New. None of them mentions
+   price today, but this is the round to confirm it rather than assume it. Leave the **description**
+   alone — it is the one field allowed to say the app is free.
+4. **Reply in the Messages thread** with [the reply](#the-reply-round-2) below.
+5. **Resubmit the same build.** Metadata-only change: do **not** bump `CURRENT_PROJECT_VERSION`. Build 11
+   is what Apple already has, and re-uploading a binary restarts checks that have already passed.
+
+Google Play's set was re-rendered from the same script, so `media-creator/out/store/play/` is current
+too. Play does not object to "free" and this is not urgent, but pushing both at once keeps the two
+listings from drifting.
+
+### The reply (round 2)
+
+Goes in the **Messages** thread ("Reply to App Review"), which caps at 4,000 characters; this is 1,380,
+because a metadata round needs no seven-item answer. Send it **after** steps 1–3 — it says the
+screenshots have been re-uploaded, and a reviewer who opens the listing and finds the old frame 8
+still there has been told something untrue.
+
+```
+Thank you. The screenshots have been replaced and the metadata no longer refers to price.
+
+WHAT WAS CHANGED
+1. Screenshots. The final screenshot read "Free forever. Open source." above badges reading "No ads" and "No subscriptions". It has been replaced with a screenshot making a non-price point — that the app is open source and governed by its members ("Built in the open", with "Open source", "Member governed" and "No hidden ranking"). The caption on the statistics screenshot, which read "what it costs to run", now reads "how the place is run". Both the 6.9-inch iPhone set and the 13-inch iPad set have been re-uploaded; every screenshot in both sets is free of price references, including references to the service being free.
+2. Promotional text. It ended "Free forever, and open source" and has been rewritten without any price reference.
+3. Name, subtitle, keywords and What's New contain no price reference and did not need changing.
+
+Following the guidance in your message, the only place price is now discussed is the app description, which explains that the app is non-commercial and donation-funded. Please let me know if you would prefer it removed from there as well and I will do so.
+
+No code changed, so build 1.42.0 (11) is resubmitted unchanged.
+
+The contact in App Review Information is monitored daily — happy to make any further metadata change you need.
+```
+
+Two things it deliberately does: it says what the screenshots now say, so the reviewer can check the
+claim against the artwork in one pass rather than hunting for the difference, and it offers to strip
+price from the description too. The offer costs nothing — Apple told us the description is fine — and it
+converts a second disagreement, if the reviewer reads 2.3.7 more broadly than the notice does, into a
+one-line request instead of a third rejection round.
+
+Do not argue the point, and do not cite the guideline back at them. The screenshots were changed; that
+is the whole reply.
+
+---
+
+## Round 1 — guideline 2.1, information needed (answered)
 
 Apple rejected submission `03f117df-a8e3-46a7-b3a9-e27214324691` (Aug 24, 2026) under **Guideline 2.1 —
 Information Needed**. This is not a functional rejection: no bug was found and no build change is
 required. Review stopped because the App Review Information section was thin, and they want the seven
-items below before continuing.
+items below before continuing. This round is answered — the reply below was sent and the Notes text is
+on the version record — but it stays here because Notes persists across submissions and because round 2
+does not replace any of it.
 
-Companion to [app-store-listing.md](app-store-listing.md) ("App Review Information" section, which this
-supersedes as the Notes text) and [ios.md](ios.md) §8 (the guideline risks the notes pre-empt).
-
-## What to do, in order
+### What to do, in order
 
 1. **Screen recording — done.** Recorded on the iPhone 11 (iOS 26.6.1, the current release, which is
    what Apple's "latest operating system" line asks for) against build 1.42.0 (11), and cut to
@@ -40,7 +121,7 @@ supersedes as the Notes text) and [ios.md](ios.md) §8 (the guideline risks the 
    something in the app actually changes — which it will if you close the blocked-comments gap in
    [Gaps to close](#gaps-to-close-before-resubmitting) first.
 
-## The reply (3,855 characters)
+### The reply (3,855 characters)
 
 Goes in the **Messages** thread ("Reply to App Review"), which caps at 4,000 characters — the same cap
 as the Notes field, so the two texts are different on purpose rather than duplicated. This one answers
@@ -75,7 +156,7 @@ Not applicable. No financial, health, gambling or similar services, and no prote
 The contact in App Review Information is monitored daily.
 ```
 
-## Screen recording shot list
+### Screen recording shot list
 
 One continuous recording on a **physical iPhone**, current iOS, of the build under review. Start the
 recording before launching the app, from the home screen. Roughly 3–5 minutes; do not narrate over
@@ -102,7 +183,7 @@ demo account afterwards if it was the one deleted.
 Nothing in the app is paid, so the "accessing paid content or features" bullet has no shot; say so in
 the reply (item 1 already does) rather than leaving it silently unaddressed.
 
-## Notes field version (3,991 characters)
+### Notes field version (3,991 characters)
 
 The App Review Information → Notes field caps at 4,000 characters, so the full reply does not fit. This
 is the same content re-cut to fit, and it is what stays on the version record for every future
@@ -138,7 +219,7 @@ No paid content, subscriptions or in-app purchases exist, so there is no purchas
 The contact in App Review Information is monitored daily.
 ```
 
-## Gaps to close before resubmitting
+### Gaps to close before resubmitting
 
 Not part of Apple's request, but each is something a reviewer following the notes above could walk into.
 

@@ -50,7 +50,11 @@ import {
   FireflyProfile,
   fireflyProfileToJSONContent,
 } from 'shared/parse-firefly'
-import {firstOwnedImageSrc, rehostExternalImages} from 'shared/profiles/rehost-images'
+import {
+  FALLBACK_IMAGE_FOLDER_NAME,
+  firstOwnedImageSrc,
+  rehostExternalImages,
+} from 'shared/profiles/rehost-images'
 import {getUser, getUserByUsername} from 'shared/utils'
 
 const MAX_CONTEXT_LENGTH = 7 * 10 * 30 * 50
@@ -932,15 +936,24 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
  * user row to read the username from yet — hence the one the client picked, exactly as
  * `AddPhotosWidget` already does for uploads. It is never taken on trust: a name that belongs to
  * somebody else falls back to the uid, so no one can write into another profile's folder.
+ *
+ * Both inputs are optional. `username` is: clients from before it existed never send it, and a
+ * signed-in user's stored name is preferred over it anyway. `uid` is because a script can call the
+ * handler directly with no auth at all — with neither, the images land in
+ * {@link FALLBACK_IMAGE_FOLDER_NAME} rather than under `undefined`.
  */
-async function resolveImageFolderName(uid: string, requested: string | undefined): Promise<string> {
-  const user = await getUser(uid)
+export async function resolveImageFolderName(
+  uid: string | undefined,
+  requested: string | undefined,
+): Promise<string> {
+  const user = uid ? await getUser(uid) : null
   if (user) return user.username
 
+  const ownFolder = uid ?? FALLBACK_IMAGE_FOLDER_NAME
   const cleaned = requested ? cleanUsername(requested) : ''
-  if (!cleaned) return uid
+  if (!cleaned) return ownFolder
   const owner = await getUserByUsername(cleaned)
-  return owner ? uid : cleaned
+  return owner ? ownFolder : cleaned
 }
 
 export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = async (
@@ -958,8 +971,10 @@ export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = asyn
   // replied, so this is the last point at which the client can still be told why.
   if (url) assertProfileUrlIsFetchable(url)
 
+  const uid: string | undefined = auth?.uid
+
   // Check cache based on parsedBody hash
-  const cacheKey = getCacheKey(parsedBody, auth.uid)
+  const cacheKey = getCacheKey(parsedBody, uid ?? FALLBACK_IMAGE_FOLDER_NAME)
   const cached = await getCachedResult(cacheKey)
   if (cached) {
     log('Returning cached profile', {cacheKey: cacheKey.substring(0, 8)})
@@ -975,7 +990,7 @@ export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = asyn
   // Start processing asynchronously
   await setProcessing(cacheKey)
 
-  const imageFolderName = await resolveImageFolderName(auth.uid, parsedBody.username)
+  const imageFolderName = await resolveImageFolderName(uid, parsedBody.username)
 
   // Kick off async processing (don't await)
   processAndCache(cacheKey, imageFolderName, content, url, locale, source).catch((err) => {

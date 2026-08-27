@@ -28,6 +28,14 @@ const MAX_REDIRECTS = 3
  */
 const storageFolder = (username: string) => `user-images/${username}/love-images`
 
+/**
+ * Where imported images go when there is no user to file them under — no signed-in user and no
+ * username, which is what a script calling the import handler directly looks like. The dash makes
+ * it a name `cleanUsername` can never produce, so it can never collide with a real profile's folder
+ * or be swept away by that profile's `deleteUserFiles`.
+ */
+export const FALLBACK_IMAGE_FOLDER_NAME = 'unclaimed-imports'
+
 // Only what a browser will actually render in an <img>. Anything else (svg above all — it executes
 // script when opened directly) we leave alone rather than serve from our own origin.
 const EXTENSION_BY_CONTENT_TYPE: Record<string, string> = {

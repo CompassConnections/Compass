@@ -48,6 +48,51 @@ describe('fetchOnlineProfile', () => {
       expect(requested).not.toContain('get_public_quiz_answers')
     })
   })
+
+  describe('Setup Sheets', () => {
+    const url = 'https://setupsheet.love/record/recZgSWBkQPZn411r'
+
+    it('reads the record the page reads instead of the empty SPA shell', async () => {
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        json: async () => ({record: {firstName: 'Félix', dealBreakers: 'No daily smoking.'}}),
+      } as Response)
+
+      const parsed = await fetchOnlineProfile(url)
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1)
+      expect(fetchSpy.mock.calls[0][0]).toBe(
+        'https://setupsheet.love/api/records/recZgSWBkQPZn411r',
+      )
+      expect(JSON.stringify(parsed)).toContain('No daily smoking.')
+    })
+
+    it('says the link is wrong rather than failing obscurely on an unknown record', async () => {
+      fetchSpy.mockResolvedValue({ok: false, status: 404, text: async () => ''} as Response)
+
+      await expect(fetchOnlineProfile(url)).rejects.toThrow(/No Setup Sheet found/)
+    })
+  })
+})
+
+describe('pinning an imported photo', () => {
+  // The model answers with the odd `"pinned_url": ""` even though the prompt never asks for the
+  // field. `??=` leaves that in place, so the import copied the photo into our bucket and then
+  // pinned nothing — every field filled in, no profile picture.
+  it('treats a blank pinned_url as unset rather than as an answer', () => {
+    const blank: {pinned_url?: string} = {pinned_url: ''}
+    const rehosted = 'https://firebasestorage.googleapis.com/v0/b/b/o/photo.jpg?alt=media'
+
+    // What the code used to do.
+    const viaNullish = {...blank}
+    viaNullish.pinned_url ??= rehosted
+    expect(viaNullish.pinned_url).toBe('')
+
+    // What it does now.
+    const viaEmptiness = {...blank}
+    if (!viaEmptiness.pinned_url) viaEmptiness.pinned_url = rehosted
+    expect(viaEmptiness.pinned_url).toBe(rehosted)
+  })
 })
 
 describe('resolveImageFolderName', () => {

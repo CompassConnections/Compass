@@ -51,6 +51,11 @@ import {
   fireflyProfileToJSONContent,
 } from 'shared/parse-firefly'
 import {
+  extractSetupSheetRecordId,
+  SetupSheetRecord,
+  setupSheetRecordToJSONContent,
+} from 'shared/parse-setupsheet'
+import {
   FALLBACK_IMAGE_FOLDER_NAME,
   firstOwnedImageSrc,
   rehostExternalImages,
@@ -61,6 +66,10 @@ const MAX_CONTEXT_LENGTH = 7 * 10 * 30 * 50
 const USE_CACHE = true
 const CACHE_DIR = join(tmpdir(), 'compass-llm-cache')
 const CACHE_TTL_MS = 24 * HOUR_MS
+// A failure is worth remembering only long enough to stop a retrying client hammering the same dead
+// URL. Keeping one for a day means a fixed bug, or a host that was briefly down, stays broken until
+// tomorrow — which looks exactly like the fix not having landed.
+const ERROR_CACHE_TTL_MS = MINUTE_MS
 const PROCESSING_TTL_MS = 10 * MINUTE_MS
 // 100 blocks per chunk — plenty for any realistic profile page, and a hard stop on runaway paging.
 const MAX_NOTION_CHUNKS = 10
@@ -78,7 +87,7 @@ interface ParsedBody {
 // Bump whenever the extraction prompt changes, or whenever we start reading a source differently.
 // The cache key is otherwise derived purely from the request, so a fix would keep returning the old
 // answer for the 24h TTL — which looks exactly like the fix not working.
-const PROMPT_VERSION = 5
+const PROMPT_VERSION = 6
 
 // Keyed by the caller as well as the request: the bio now carries images copied into *this* user's
 // storage folder, so handing a cached result to somebody else would leave their profile pointing at
@@ -279,6 +288,14 @@ async function validateProfileFields(
     }
   }
 
+  // A blank answer means the model had nothing, exactly like omitting the key — which is what the
+  // prompt asks for and what `removeNullOrUndefinedProps` above already does for null. It does emit
+  // the odd `""` regardless, and the client writes back every key it is handed, so a blank left in
+  // here does not merely fail to fill a field: it clears whatever the person had there.
+  for (const key of Object.keys(result) as (keyof ProfileWithoutUser)[]) {
+    if (typeof result[key] === 'string' && !result[key].trim()) result[key] = undefined
+  }
+
   return result
 }
 
@@ -287,14 +304,19 @@ async function getCachedResult(cacheKey: string): Promise<Partial<ProfileWithout
   try {
     const cacheFile = join(CACHE_DIR, `${cacheKey}.json`)
     const stats = await fs.stat(cacheFile)
-
-    if (Date.now() - stats.mtime.getTime() > CACHE_TTL_MS) {
+    const age = Date.now() - stats.mtime.getTime()
+    if (age > CACHE_TTL_MS) {
       await fs.unlink(cacheFile)
       return null
     }
 
     const cachedData = await fs.readFile(cacheFile, 'utf-8')
-    return JSON.parse(cachedData)
+    const cached = JSON.parse(cachedData)
+    if (cached?.status === 'error' && age > ERROR_CACHE_TTL_MS) {
+      await fs.unlink(cacheFile)
+      return null
+    }
+    return cached
   } catch {
     return null
   }
@@ -382,12 +404,23 @@ async function processAndCache(
       bio ? rehostExternalImages(bio, imageFolderName) : undefined,
     ])
     if (rehostedBio) {
+      console.log('rehosted bio')
       profile.bio = rehostedBio
       // A page that leads with a photo of the person makes a far better profile picture than the
       // generated initials avatar. `create-user-and-profile` and `update-profile` both derive
       // `users.avatar_url` from `pinned_url`, so setting it here is all it takes for the imported
       // photo to become the avatar too.
-      profile.pinned_url ??= firstOwnedImageSrc(rehostedBio)
+      //
+      // Tested for emptiness rather than `??=`: the model answers with the odd `"pinned_url": ""`
+      // even though the prompt never asks for the field, and `??=` reads that as already answered —
+      // an import that arrived with a photo, copied it into our bucket, and then pinned nothing.
+      if (!profile.pinned_url) {
+        console.log(firstOwnedImageSrc(rehostedBio))
+        profile.pinned_url = firstOwnedImageSrc(rehostedBio)
+        // Still nothing means every copy into our bucket failed (`rehostExternalImages` logs why)
+        // or the page had no images at all. Both used to be silent.
+        if (!profile.pinned_url) console.log('Imported page yielded no photo to pin', {cacheKey})
+      }
     }
     await setCachedResult(cacheKey, {profile, status: 'success'})
   } catch (error) {
@@ -809,6 +842,49 @@ async function fetchFireflyProfile(username: string): Promise<JSONContent> {
 }
 
 /**
+ * setupsheet.love is a client-rendered app whose `/record/<id>` pages are served as an empty shell;
+ * the sheet itself arrives from `GET /api/records/<id>` on the same origin. That endpoint takes no
+ * key and no session — it is the request the page makes on load — so we make the same one.
+ *
+ * As with Firefly, two limits are deliberate. We read a sheet only when the person importing hands
+ * us the link (the pages carry `noindex` and are not linked from anywhere, so there is nothing to
+ * crawl and we do not go looking). See {@link SetupSheetRecord}.
+ */
+async function fetchSetupSheetRecord(recordId: string): Promise<JSONContent> {
+  const response = await fetch(
+    `https://setupsheet.love/api/records/${encodeURIComponent(recordId)}`,
+    {headers: {Accept: 'application/json'}},
+  )
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    log('Setup Sheet API error', {
+      recordId,
+      status: response.status,
+      error: errorText.slice(0, 500),
+    })
+    // The site itself shows "Record not found" for these, so an unknown or retired link is the
+    // likely cause rather than anything going wrong on our side.
+    if (response.status === 404) {
+      throw APIErrors.badRequest(
+        `No Setup Sheet found at setupsheet.love/record/${recordId}. Please check the link.`,
+      )
+    }
+    throw new Error(`Failed to fetch Setup Sheet: ${response.status} ${response.statusText}`)
+  }
+
+  const data = await response.json()
+  const record: SetupSheetRecord | undefined = data?.record
+  if (!record) {
+    throw APIErrors.badRequest(
+      `No Setup Sheet found at setupsheet.love/record/${recordId}. Please check the link.`,
+    )
+  }
+
+  return setupSheetRecordToJSONContent(record)
+}
+
+/**
  * Rejects URLs we know we cannot read, with a message that tells the user what to do instead. Kept
  * separate from `fetchOnlineProfile` so the endpoint can run it synchronously: extraction is
  * otherwise fire-and-forget, and an error raised in there only ever reaches the client as a generic
@@ -854,7 +930,20 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
       return parsed
     }
 
-    // 1c. Google Docs shortcut
+    // 1c. Setup Sheet shortcut — a Vite app, so the fetched HTML is an empty `<div id="root">`.
+    const setupSheetRecordId = extractSetupSheetRecordId(url)
+    if (setupSheetRecordId) {
+      const parsed = await fetchSetupSheetRecord(setupSheetRecordId)
+      log('Fetched content from Setup Sheet', {url, recordId: setupSheetRecordId})
+      if (!hasText(parsed)) {
+        throw APIErrors.badRequest(
+          `The Setup Sheet at ${url} has no text to read. Please copy the text and paste it instead.`,
+        )
+      }
+      return parsed
+    }
+
+    // 1d. Google Docs shortcut
     const googleDocId = extractGoogleDocId(url)
     if (googleDocId) {
       url = `https://docs.google.com/document/d/${googleDocId}/export?format=html`

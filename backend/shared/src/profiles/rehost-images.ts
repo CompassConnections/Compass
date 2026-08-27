@@ -47,13 +47,22 @@ const EXTENSION_BY_CONTENT_TYPE: Record<string, string> = {
   'image/avif': 'avif',
 }
 
-/** Hosts we already serve, or that next/image is already configured for — nothing to copy. */
-const OWN_HOSTS = [
+/**
+ * Hosts we already serve, or that next/image is already configured for — nothing to copy.
+ *
+ * The first entry is derived rather than written out because it is wherever {@link downloadUrl}
+ * actually points, and that moves with the environment: under the Storage emulator it is
+ * `localhost:9199`. A hardcoded list could never contain that, so a copy that had just been written
+ * to our own bucket read back as somebody else's — which is how a local import ended up with the
+ * photo in its bio and no profile picture pinned from it.
+ */
+const OWN_HOSTS = uniq([
+  new URL(FIREBASE_STORAGE_URL).hostname.toLowerCase(),
   'firebasestorage.googleapis.com',
   'storage.googleapis.com',
   'compassmeet.com',
   'www.compassmeet.com',
-]
+])
 
 /**
  * Copies every externally hosted image in `content` into `username`'s own folder in our storage

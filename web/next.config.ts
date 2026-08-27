@@ -47,7 +47,15 @@ const nextConfig: NextConfig = {
   // },
   skipTrailingSlashRedirect: true,
   images: {
-    unoptimized: isAppBuild || IS_LOCAL,
+    unoptimized: IS_LOCAL,
+    // The static export has no optimiser of its own, so it borrows the deployed one over HTTP rather
+    // than falling back to `unoptimized` and shipping full-size originals into the app. Only the app
+    // build: on Vercel the built-in loader is already the right thing.
+    //
+    // `loader: 'custom'` is not optional here. `loaderFile` alone is merely *tolerated* alongside the
+    // default loader (next/dist/server/config.js), so the export still sees `loader === 'default'`
+    // and fails with "Image Optimization using the default loader is not compatible with export".
+    ...(isAppBuild ? {loader: 'custom' as const, loaderFile: './lib/webview-image-loader.ts'} : {}),
     dangerouslyAllowSVG: true,
     remotePatterns: [
       {hostname: 'martinbraquet.com'},

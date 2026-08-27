@@ -2,8 +2,9 @@ import clsx from 'clsx'
 import {ChatMessage} from 'common/chat-message'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {User} from 'common/user'
+import {filterDefined} from 'common/util/array'
 import {parseJsonContentToText} from 'common/util/parse'
-import {uniq} from 'lodash'
+import {keyBy, uniq} from 'lodash'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -26,6 +27,7 @@ import {useReviewPromptMoment} from 'web/hooks/use-review-prompt'
 import {useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {useT} from 'web/lib/locale'
+import {DisplayUser, MAX_DISPLAY_USERS} from 'web/lib/supabase/users'
 
 export default function MessagesPage() {
   useRedirectIfSignedOut()
@@ -58,6 +60,17 @@ export function MessagesContent(props: {currentUser: User}) {
     useSortedPrivateMessageMemberships(currentUser.id)
   const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(true)
   const lastMessages = useLastPrivateMessages(currentUser.id)
+
+  // One batched fetch for every avatar on the page. get-channel-memberships already told us who is in
+  // each channel, so letting each row fetch its own members would be one round-trip per chat.
+  const allMemberIds = uniq(
+    (channels ?? []).flatMap((c) => [
+      ...(memberIdsByChannelId?.[c.channel_id] ?? []),
+      ...(leftMemberIdsByChannelId?.[c.channel_id] ?? []),
+    ]),
+  )
+  const allUsers = useUsersInStore(allMemberIds, 'messages-page', MAX_DISPLAY_USERS)
+  const usersById = keyBy(allUsers ?? [], 'id')
 
   // The best moment Compass has to ask for a store review: someone wrote back, and they have just
   // stepped out of the thread. Whether the exchange is two-way enough to count is the server's call
@@ -93,10 +106,16 @@ export function MessagesContent(props: {currentUser: User}) {
           const userIds = activeIds.length
             ? activeIds
             : uniq(leftMemberIdsByChannelId?.[channel.channel_id] ?? [])
+          // undefined while the batch is still loading, so the row keeps its placeholder avatar
+          // instead of flashing "Deleted user".
+          const otherUsers = allUsers
+            ? filterDefined(userIds.map((id) => usersById[id]))
+            : undefined
           return (
             <MessageChannelRow
               key={channel.channel_id}
               otherUserIds={userIds}
+              otherUsers={otherUsers}
               currentUser={currentUser}
               channel={channel}
               lastSeenTime={lastSeenChatTimeByChannelId[channel.channel_id]}
@@ -111,14 +130,15 @@ export function MessagesContent(props: {currentUser: User}) {
 
 export const MessageChannelRow = (props: {
   otherUserIds: string[]
+  // Fetched once for the whole page by MessagesContent; undefined while that batch is in flight.
+  otherUsers: DisplayUser[] | undefined
   currentUser: User
   channel: PrivateMessageChannel
   lastSeenTime: Date | undefined
   lastMessage?: ChatMessage
 }) => {
-  const {otherUserIds, lastSeenTime, currentUser, channel, lastMessage} = props
+  const {otherUserIds, otherUsers, lastSeenTime, currentUser, channel, lastMessage} = props
   const channelId = channel.channel_id
-  const otherUsers = useUsersInStore(otherUserIds, `${channelId}`, 100)
   const unseen = lastSeenTime ? new Date(lastMessage?.createdTime ?? 0) > lastSeenTime : false
   const numOthers = otherUsers?.length ?? 0
   const t = useT()

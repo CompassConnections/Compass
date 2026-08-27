@@ -47,9 +47,13 @@ export async function searchUsers(prompt: string, limit: number) {
   return api('search-users', {term: prompt, limit: limit})
 }
 
+// Row cap of the get_display_users() SQL function — passing more ids than this silently truncates.
+// Keep in sync with backend/supabase/migrations/20260826_raise_get_display_users_cap.sql.
+export const MAX_DISPLAY_USERS = 500
+
 export async function getDisplayUsers(userIds: string[]) {
   // Direct SELECT on `users` is revoked from the anon/authenticated roles (bulk-read cap). The capped
-  // get_display_users() function requires ids and returns at most 100 rows.
+  // get_display_users() function requires ids and returns at most MAX_DISPLAY_USERS rows.
   const {data} = await run(db.rpc('get_display_users' as any, {ids: userIds}))
 
   return (data as any[]).map(convertPartialUser) as unknown as DisplayUser[]

@@ -13,6 +13,12 @@ import {api} from 'web/lib/api'
 import {track} from 'web/lib/service/analytics'
 import {getSortedChatMessageChannels, getTotalChatMessages} from 'web/lib/supabase/private-messages'
 
+// How many chat channels the messages page and the unread badge pull at once. The underlying query
+// computes every one of the user's channels either way — the limit only trims the tail — so this is
+// bounded by what the client can render and store, not by DB cost. Anything beyond this wants real
+// keyset paging (a cursor on last_updated_time pushed into the query's CTE), not a bigger number.
+export const MAX_CHAT_CHANNELS = 500
+
 export function usePrivateMessages(channelId: number, limit: number, userId: string) {
   // console.debug('getWebsocketUrl', getWebsocketUrl())
   const key = `private-messages-${channelId}-${limit}-v1`
@@ -72,7 +78,7 @@ export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean, ena
           lastUpdatedTime: ignorePageSeenTime
             ? new Date(0).toISOString()
             : millisToTs(lastSeenMessagesPageTime),
-          limit: 100,
+          limit: MAX_CHAT_CHANNELS,
         }
       : undefined,
     ['lastUpdatedTime'],
@@ -168,7 +174,7 @@ export type ChannelMembership = {
 
 export const useSortedPrivateMessageMemberships = (
   userId: string | undefined,
-  limit: number = 100,
+  limit: number = MAX_CHAT_CHANNELS,
   forChannelId?: number,
 ) => {
   const [channelMemberships, setChannelMemberships] = usePersistentLocalState<

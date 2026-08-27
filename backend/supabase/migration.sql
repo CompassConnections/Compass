@@ -78,4 +78,5 @@ BEGIN;
 \i backend/supabase/migrations/20260822_add_social_media_consent.sql
 \i backend/supabase/migrations/20260822_add_referred_by_user_id.sql
 \i backend/supabase/migrations/20260824_add_review_prompts.sql
+\i backend/supabase/migrations/20260826_raise_get_display_users_cap.sql
 COMMIT;

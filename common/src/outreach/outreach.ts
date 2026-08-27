@@ -74,6 +74,21 @@ export const EMPTY_ROOM_MAX_NEARBY = 5
 /** No sign of them for this long is the other way into Contact #E. */
 export const EMPTY_ROOM_INACTIVE_DAYS = 14
 
+/**
+ * How long a member has to have been here before either automated outreach email may reach them.
+ *
+ * Both messages are once-only and both make an argument about the state of the directory around
+ * them — "there are N members within reach of you, bring someone" or "there is nobody near you yet".
+ * On signup day neither is a message about them: they have not searched, not been found, not had a
+ * chance to form any opinion the mail could be answering. Spending the single send on that day buys
+ * the worst version of it, and the ledger means there is no second attempt once it is spent.
+ *
+ * It also keeps the two jobs honest about their own subject. The local number is a fact about a place
+ * a member has only just told us about; giving it a week means the count they are quoted is one they
+ * have had the opportunity to notice for themselves.
+ */
+export const OUTREACH_MIN_DAYS_SINCE_SIGNUP = 7
+
 /** Members within `OUTREACH_RADIUS_KM` of this member, and who they are. */
 export type LocalDensity = {
   count: number

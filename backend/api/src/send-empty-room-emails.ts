@@ -3,6 +3,7 @@ import {Notification} from 'common/notifications'
 import {
   EMPTY_ROOM_INACTIVE_DAYS,
   EMPTY_ROOM_MAX_NEARBY,
+  OUTREACH_MIN_DAYS_SINCE_SIGNUP,
   OUTREACH_RADIUS_KM,
 } from 'common/outreach/outreach'
 import {getNotificationDestinationsForUser} from 'common/user-notification-preferences'
@@ -25,6 +26,12 @@ const PAUSE_BETWEEN_SENDS_MS = 2000
  * below, because it needs a distance query against their own coordinates. Members with no city are
  * excluded — with no coordinates there is no honest number, and this message is nothing but the
  * honest number.
+ *
+ * Members who joined in the last `OUTREACH_MIN_DAYS_SINCE_SIGNUP` days are excluded too, same as in the
+ * city-number job. It matters more here, not less: "there is nobody within reach of you" on the day
+ * someone signs up is a reason to leave, and they have not yet had the days it would take to find out
+ * whether it is a reason to stay. The two-week inactivity arm cannot fire inside that window anyway,
+ * so the only sends this holds back are the ones triggered purely by a low count.
  */
 const CANDIDATES_SQL = `
   select u.id,
@@ -35,6 +42,7 @@ const CANDIDATES_SQL = `
            left join user_activity ua on ua.user_id = u.id
   where not coalesce(u.is_banned_from_posting, false)
     and not coalesce(p.disabled, false)
+    and u.created_time < now() - make_interval(days => $(minDaysSinceSignup))
     and p.city is not null
     and p.city_latitude is not null
     and not exists (select 1
@@ -69,6 +77,7 @@ export const sendEmptyRoomEmails = async (opts?: {batchSize?: number; dryRun?: b
   const candidates = await pg.manyOrNone<{id: string; was_inactive: boolean}>(CANDIDATES_SQL, {
     batchSize,
     inactiveDays: EMPTY_ROOM_INACTIVE_DAYS,
+    minDaysSinceSignup: OUTREACH_MIN_DAYS_SINCE_SIGNUP,
   })
 
   let sent = 0

@@ -1,5 +1,9 @@
 import {debug} from 'common/logger'
-import {EMPTY_ROOM_MAX_NEARBY, OUTREACH_RADIUS_KM} from 'common/outreach/outreach'
+import {
+  EMPTY_ROOM_MAX_NEARBY,
+  OUTREACH_MIN_DAYS_SINCE_SIGNUP,
+  OUTREACH_RADIUS_KM,
+} from 'common/outreach/outreach'
 import {sleep} from 'common/util/time'
 import {sendShareCompassEmail} from 'email/functions/helpers'
 import {log} from 'shared/monitoring/log'
@@ -17,8 +21,11 @@ const PAUSE_BETWEEN_SENDS_MS = 2000
 /**
  * Candidates for the personalised share email.
  *
- * Three exclusions, each load-bearing:
+ * Four exclusions, each load-bearing:
  *
+ *   - anyone who joined less than `OUTREACH_MIN_DAYS_SINCE_SIGNUP` days ago. The send is once-only, so
+ *     it is worth waiting until the member has been here long enough for the local number to mean
+ *     something to them.
  *   - anyone already sent a `city_number` or `empty_room` message. The two are mutually exclusive and
  *     both are once-only, so the ledger is checked for either.
  *   - anyone in an active hand-written founder thread. A member being written to personally must not
@@ -33,6 +40,7 @@ const CANDIDATES_SQL = `
            join profiles p on p.user_id = u.id
   where not coalesce(u.is_banned_from_posting, false)
     and not coalesce(p.disabled, false)
+    and u.created_time < now() - make_interval(days => $(minDaysSinceSignup))
     and p.looking_for_matches
     and p.city is not null
     and p.city_latitude is not null
@@ -65,7 +73,10 @@ export const sendCityNumberEmails = async (opts?: {batchSize?: number; dryRun?: 
   const batchSize = opts?.batchSize ?? DEFAULT_BATCH_SIZE
   const dryRun = opts?.dryRun ?? false
 
-  const candidates = await pg.manyOrNone<{id: string}>(CANDIDATES_SQL, {batchSize})
+  const candidates = await pg.manyOrNone<{id: string}>(CANDIDATES_SQL, {
+    batchSize,
+    minDaysSinceSignup: OUTREACH_MIN_DAYS_SINCE_SIGNUP,
+  })
 
   let sent = 0
   let skippedThinRoom = 0

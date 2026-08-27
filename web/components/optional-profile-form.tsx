@@ -202,6 +202,10 @@ export const OptionalProfileUserForm = (props: {
     try {
       let extractedProfile: Partial<ProfileWithoutUser> = {}
       let status: string | undefined = 'pending'
+      // The extraction runs after the first call has already answered `pending`, so a failure it
+      // hits — an unreadable page, a blocked host — comes back in the body rather than as a thrown
+      // APIError. Kept here so the catch below can show it the same way it shows a synchronous one.
+      let serverMessage: string | undefined
       while (status === 'pending') {
         const elapsedMs = Date.now() - startTime
         if (elapsedMs > 10 * MINUTE_MS) {
@@ -209,6 +213,7 @@ export const OptionalProfileUserForm = (props: {
         }
         const response = await api('llm-extract-profile', payload)
         status = response.status
+        serverMessage = response.error
         debug(response)
         if (status === 'pending') {
           await sleep(1000)
@@ -216,7 +221,9 @@ export const OptionalProfileUserForm = (props: {
         extractedProfile = response.profile
       }
       if (status !== 'success') {
-        throw new Error('Failed to extract profile')
+        throw serverMessage
+          ? new APIError(400, serverMessage)
+          : new Error('Failed to extract profile')
       }
       extractedProfile = removeNullOrUndefinedProps(extractedProfile)
       for (const data of Object.entries(extractedProfile)) {
@@ -528,7 +535,12 @@ export const OptionalProfileUserForm = (props: {
           />
         </div>
         {extractionError && (
-          <p className="border rounded-xl border-red-900 text-red-600 text-sm p-2">
+          // Now that the backend's own wording reaches this box, it holds full sentences rather than
+          // a bare "extraction failed" — so it gets the same roomy treatment as the notice below.
+          <p
+            role="alert"
+            className="rounded-xl bg-scarlet-100/60 ring-1 ring-scarlet-200 p-4 text-sm text-scarlet-700 leading-relaxed"
+          >
             {extractionError}
           </p>
         )}

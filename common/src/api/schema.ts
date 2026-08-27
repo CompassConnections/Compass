@@ -1449,6 +1449,10 @@ export const API = (_apiTypeCheck = {
     returns: {} as {
       profile: Partial<ProfileWithoutUser>
       status: string
+      // Set on `status: 'error'` when the failure has something useful to tell the user — the
+      // extraction runs after this endpoint has already answered `pending`, so an error raised
+      // there has no response left to be thrown on. Absent means "no specific reason to give".
+      error?: string
     },
     summary: 'Extract profile information from text using LLM',
     tag: 'Profiles',

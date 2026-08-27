@@ -392,7 +392,12 @@ async function processAndCache(
     await setCachedResult(cacheKey, {profile, status: 'success'})
   } catch (error) {
     log('Async LLM processing failed', {cacheKey, error})
-    await setCachedResult(cacheKey, {profile: {}, status: 'error'})
+    // A 400 we raised ourselves is a sentence written for the person importing — "this page builds
+    // its content with JavaScript, paste the text instead". It is thrown long after the request was
+    // answered with `pending`, so riding along with the cached result is the only way it reaches
+    // them. Anything else is a crash they can do nothing about, so it keeps the generic wording.
+    const message = error instanceof APIError && error.code === 400 ? error.message : undefined
+    await setCachedResult(cacheKey, {profile: {}, status: 'error', error: message})
   } finally {
     await clearProcessing(cacheKey)
   }
@@ -978,7 +983,11 @@ export const llmExtractProfileEndpoint: APIHandler<'llm-extract-profile'> = asyn
   const cached = await getCachedResult(cacheKey)
   if (cached) {
     log('Returning cached profile', {cacheKey: cacheKey.substring(0, 8)})
-    return cached as {profile: Partial<ProfileWithoutUser>; status: 'success' | 'error' | 'pending'}
+    return cached as {
+      profile: Partial<ProfileWithoutUser>
+      status: 'success' | 'error' | 'pending'
+      error?: string
+    }
   }
 
   // Check if already processing

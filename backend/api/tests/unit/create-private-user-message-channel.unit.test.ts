@@ -1,4 +1,5 @@
 import {createPrivateUserMessageChannel} from 'api/create-private-user-message-channel'
+import {getConnectionInterests} from 'api/get-connection-interests'
 import {AuthedUser} from 'api/helpers/endpoint'
 import * as privateMessageModules from 'api/helpers/private-messages'
 import {sendDiscordMessage} from 'common/discord/core'
@@ -20,6 +21,7 @@ jest.mock('common/envs/constants', () => ({
   isModUsername: jest.fn(),
 }))
 jest.mock('common/util/array')
+jest.mock('api/get-connection-interests')
 jest.mock('common/discord/core')
 jest.mock('api/helpers/private-messages')
 jest.mock('shared/supabase/users')
@@ -344,6 +346,61 @@ describe('createPrivateUserMessageChannel', () => {
       expect(createPrivateUserMessageChannel(mockBody, mockAuth, mockReq)).rejects.toThrowError(
         `Private user ${mockAuth.uid} not found`,
       )
+    })
+
+    it('should throw if the recipient has disabled direct messaging', async () => {
+      const mockBody = {
+        userIds: ['123'],
+      }
+      const mockPrivateUsers = [
+        {id: '123', blockedUserIds: [], blockedByUserIds: []},
+        {id: '321', blockedUserIds: [], blockedByUserIds: []},
+      ]
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue({
+        username: 'recipient',
+        isBannedFromPosting: false,
+      })
+      ;(utilArrayModules.filterDefined as jest.Mock).mockReturnValue(mockPrivateUsers)
+      // The first oneOrNone is getProfile for user '123'.
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValueOnce({allow_direct_messaging: false})
+      // No shared connection interest, so there is nothing to override the preference.
+      ;(getConnectionInterests as jest.Mock).mockResolvedValue({interests: [], targetInterests: []})
+
+      await expect(
+        createPrivateUserMessageChannel(mockBody, mockAuth, mockReq),
+      ).rejects.toThrowError('recipient has disabled direct messaging')
+    })
+
+    it('lets an admin message someone who has disabled direct messaging', async () => {
+      const mockBody = {
+        userIds: ['123'],
+      }
+      const mockPrivateUsers = [
+        {id: '123', blockedUserIds: [], blockedByUserIds: []},
+        {id: '321', blockedUserIds: [], blockedByUserIds: []},
+      ]
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+
+      ;(constants.isAdminId as jest.Mock).mockReturnValue(true)
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue({
+        username: 'admin',
+        isBannedFromPosting: false,
+      })
+      ;(utilArrayModules.filterDefined as jest.Mock).mockReturnValue(mockPrivateUsers)
+      // Only the existing-channel lookup runs: the direct-messaging check is skipped entirely, so
+      // getProfile is never consulted.
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue({channel_id: '444'})
+
+      const results = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq)
+
+      expect(results.status).toBe('success')
+      expect(results.channelId).toBe(444)
+      expect(mockPg.oneOrNone).toBeCalledTimes(1)
+      expect(getConnectionInterests).not.toBeCalled()
     })
 
     it('should throw if there is a blocked user in the userId list', async () => {

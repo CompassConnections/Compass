@@ -18,6 +18,7 @@ import {SendMessageButton} from 'web/components/messaging/send-message-button'
 import {ViewProfileCardButton} from 'web/components/photos-modal'
 import {StarButton} from 'web/components/widgets/star-button'
 import {Tooltip} from 'web/components/widgets/tooltip'
+import {useAdmin} from 'web/hooks/use-admin'
 import {useUser} from 'web/hooks/use-user'
 import {updateProfile} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
@@ -37,6 +38,7 @@ export function ProfileHeaderActions(props: {
 }) {
   const {user, profile, starredUserIds, refreshStars, showMessageButton, refreshProfile} = props
   const currentUser = useUser()
+  const isAdmin = useAdmin()
   const isCurrentUser = currentUser?.id === user.id
   const disabled = profile.disabled
   const t = useT()
@@ -58,6 +60,13 @@ export function ProfileHeaderActions(props: {
         'profile.header.tooltip.can_express_interest',
         ', but you can still express interest at the end of the profile',
       )
+  }
+  // Admins can still message them (the API lets staff through), so say so rather than leaving a
+  // tooltip that reads like the button is dead.
+  if (!profile.allow_direct_messaging && isAdmin) {
+    tooltipText =
+      tooltipText +
+      t('profile.header.tooltip.admin_can_still_message', ', but you can message them as an admin')
   }
 
   if (currentUser && isCurrentUser) {
@@ -186,7 +195,7 @@ export function ProfileHeaderActions(props: {
           toUser={user}
           profile={profile}
           tooltipText={tooltipText}
-          disabled={!profile.allow_direct_messaging}
+          disabled={!profile.allow_direct_messaging && !isAdmin}
         />
       )}
       <MoreOptionsUserButton user={user} />

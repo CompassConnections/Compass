@@ -1043,6 +1043,7 @@
   "profile.header.toast.enabling": "Profil wird aktiviert...",
   "profile.header.toast.failed_disable": "Deaktivierung des Profils fehlgeschlagen",
   "profile.header.toast.failed_enable": "Aktivierung des Profils fehlgeschlagen",
+  "profile.header.tooltip.admin_can_still_message": ", aber Sie können ihnen als Administrator eine Nachricht senden",
   "profile.header.tooltip.can_express_interest": ", aber Sie können am Ende des Profils immer noch Interesse zeigen",
   "profile.header.tooltip.direct_messaging_off": "{name} hat Direktnachrichten deaktiviert",
   "profile.info.signup_to_see": "Registrieren Sie sich, um das Profil zu sehen",

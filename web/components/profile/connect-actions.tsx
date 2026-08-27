@@ -10,6 +10,7 @@ import {SendMessageButton} from 'web/components/messaging/send-message-button'
 import {Section} from 'web/components/profile/section'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {shortenName} from 'web/components/widgets/user-link'
+import {useAdmin} from 'web/hooks/use-admin'
 import {useProfile} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
@@ -20,6 +21,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
   const {profile, user} = props
   const currentUser = useUser()
   const currentProfile = useProfile()
+  const isAdmin = useAdmin()
   const t = useT()
   const isCurrentUser = currentUser?.id === user.id
 
@@ -97,7 +99,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
   return (
     <>
       <Section id="connect" title={t('profile.connect.title', 'Connect')}>
-        {profile.allow_direct_messaging || matches.length > 0 ? (
+        {profile.allow_direct_messaging || matches.length > 0 || isAdmin ? (
           <SendMessageButton
             toUser={user}
             profile={profile}

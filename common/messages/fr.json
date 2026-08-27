@@ -1042,6 +1042,7 @@
   "profile.header.toast.enabling": "Activation du profil...",
   "profile.header.toast.failed_disable": "Échec de la désactivation du profil",
   "profile.header.toast.failed_enable": "Échec de l'activation du profil",
+  "profile.header.tooltip.admin_can_still_message": ", mais vous pouvez leur envoyer un message en tant qu’administrateur",
   "profile.header.tooltip.can_express_interest": ", mais vous pouvez toujours exprimer votre intérêt à la fin du profil",
   "profile.header.tooltip.direct_messaging_off": "{name} a désactivé la messagerie directe",
   "profile.info.signup_to_see": "Inscrivez-vous pour voir le profil",

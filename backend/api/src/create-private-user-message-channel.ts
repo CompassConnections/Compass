@@ -51,17 +51,23 @@ export const createPrivateUserMessageChannel: APIHandler<
     throw APIErrors.forbidden('One of the users has blocked another user in the list')
   }
 
-  for (const u of toPrivateUsers) {
-    const p = await getProfile(u.id)
-    if (p && !p.allow_direct_messaging) {
-      const {interests, targetInterests} = await getConnectionInterests(
-        {targetUserId: u.id},
-        auth.uid,
-      )
-      const matches = interests.filter((interest: string[]) => targetInterests.includes(interest))
-      if (matches.length > 0) continue
-      const failedUser = await getUser(u.id)
-      throw APIErrors.forbidden(`${failedUser?.username} has disabled direct messaging`)
+  // Admins bypass the "direct messaging off" wall: support, moderation and onboarding all require
+  // reaching a member who has closed their inbox, and there is no other channel to reach them on.
+  const isAdmin = isAdminId(creatorId)
+
+  if (!isAdmin) {
+    for (const u of toPrivateUsers) {
+      const p = await getProfile(u.id)
+      if (p && !p.allow_direct_messaging) {
+        const {interests, targetInterests} = await getConnectionInterests(
+          {targetUserId: u.id},
+          auth.uid,
+        )
+        const matches = interests.filter((interest: string[]) => targetInterests.includes(interest))
+        if (matches.length > 0) continue
+        const failedUser = await getUser(u.id)
+        throw APIErrors.forbidden(`${failedUser?.username} has disabled direct messaging`)
+      }
     }
   }
 
@@ -83,7 +89,7 @@ export const createPrivateUserMessageChannel: APIHandler<
 
   // Admins and mods are exempt: they legitimately reach out to many members (support, moderation,
   // onboarding), and auto-banning the people who handle the review queue would be self-defeating.
-  const isStaff = isAdminId(creatorId) || isModUsername(creator.username)
+  const isStaff = isAdmin || isModUsername(creator.username)
 
   // Spam guard: count how many conversations this user has started in the last 24h.
   // If they've already created MAX_NEW_CHANNELS_PER_DAY, this new one is over the

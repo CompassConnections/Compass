@@ -2,6 +2,7 @@ import {EllipsisVerticalIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
 import {ChatMessage} from 'common/chat-message'
+import {isAdminUserId} from 'common/envs/constants'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {User} from 'common/user'
 import {buildArray, filterDefined} from 'common/util/array'
@@ -30,7 +31,7 @@ import {SEO} from 'web/components/SEO'
 import {Avatar} from 'web/components/widgets/avatar'
 import {useTextEditor} from 'web/components/widgets/editor'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
-import {BannedBadge, UserAvatarAndBadge} from 'web/components/widgets/user-link'
+import {AdminBadge, BannedBadge, UserAvatarAndBadge} from 'web/components/widgets/user-link'
 import {useHideBottomNavOnKeyboard} from 'web/hooks/use-hide-bottom-nav-on-keyboard'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {usePreserveScrollFromBottom} from 'web/hooks/use-preserve-scroll-from-bottom'
@@ -404,6 +405,9 @@ export const PrivateChat = (props: {
           </span>
         )}
 
+        {/* Whoever is in the room, named on the header or not — see the same call in the messages
+            list. Sits outside the name link so a tap on it can't navigate away. */}
+        {members.some((member) => isAdminUserId(member.id)) && <AdminBadge className="ml-1.5" />}
         {members?.length == 1 && members[0].isBannedFromPosting && <BannedBadge />}
         <DropdownMenu
           className={'ml-auto [&_button]:p-4'}

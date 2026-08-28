@@ -20,6 +20,14 @@ export const ENV_CONFIG = IS_PROD ? PROD_CONFIG : DEV_CONFIG
 
 export function isAdminId(id: string) {
   if (IS_LOCAL) return true
+  return isAdminUserId(id)
+}
+
+// Strict membership test against the admin list, with no local-dev escape hatch. `isAdminId` grants
+// admin *powers* to everyone running locally, which is fine for gating a debug button but wrong for
+// the visible admin badge: a badge that sits next to every name in dev is a badge nobody has
+// calibrated on. Use this wherever the answer is shown to a reader rather than used to authorize.
+export function isAdminUserId(id: string) {
   return ENV_CONFIG.adminIds.includes(id)
 }
 

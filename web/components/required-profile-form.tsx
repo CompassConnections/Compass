@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import {APIError} from 'common/api/utils'
 import {debug} from 'common/logger'
+import {cleanDisplayName, impersonatesStaff} from 'common/util/clean-username'
 import {useState} from 'react'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
@@ -108,8 +109,21 @@ export const RequiredProfileUserForm = (props: {
                 value={data.name || ''}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const value = e.target.value || ''
+                  // The same three rules `me/update` enforces, checked here so the answer arrives
+                  // under the field as you type rather than as a toast after a save that failed.
                   if (value.length < 3) {
                     setErrorDisplayName('Minimum 3 characters for display names')
+                  } else if (!cleanDisplayName(value)) {
+                    setErrorDisplayName(
+                      t('profile.required.name_letters', 'Please use letters in your name'),
+                    )
+                  } else if (impersonatesStaff(value)) {
+                    setErrorDisplayName(
+                      t(
+                        'profile.required.name_reserved',
+                        'This name is reserved for Compass staff',
+                      ),
+                    )
                   } else {
                     setErrorDisplayName(null)
                   }

@@ -1,9 +1,10 @@
 import {CheckBadgeIcon, ShieldCheckIcon} from '@heroicons/react/24/outline'
 import {SparklesIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
-import {MOD_USERNAMES, VERIFIED_USERNAMES} from 'common/envs/constants'
+import {isAdminUserId, MOD_USERNAMES, VERIFIED_USERNAMES} from 'common/envs/constants'
 import {DAY_MS} from 'common/util/time'
 import Link from 'next/link'
+import {useT} from 'web/lib/locale'
 
 import {Row} from '../layout/row'
 import {Avatar} from './avatar'
@@ -98,11 +99,57 @@ export function BannedBadge() {
   )
 }
 
+/**
+ * Marks a Compass admin, and has to be worth trusting on a site where anyone can call themselves
+ * anything.
+ *
+ * Two things make it unforgeable. It is derived from the user id against `ENV_CONFIG.adminIds`
+ * (`isAdminUserId`) — never from the name, username or avatar, so no amount of profile editing
+ * produces one. And it is a filled chip carrying the word rather than a bare glyph: a lone
+ * checkmark or shield is exactly what a display name could imitate, whereas a coloured pill sits
+ * outside the name's text run in colours no text can paint. The remaining route — typing "Admin"
+ * into the name itself — is closed on the way in by `cleanDisplayName` / `impersonatesStaff`, which
+ * strip emoji and symbols and reject staff words.
+ *
+ * `shrink-0` because it shares a row with names that truncate: the name gives up characters, the
+ * badge never gives up pixels.
+ */
+export function AdminBadge(props: {className?: string}) {
+  const t = useT()
+  return (
+    <Tooltip
+      text={t(
+        'badge.admin.tooltip',
+        'Verified Compass admin. Only staff accounts show this badge.',
+      )}
+      placement="bottom"
+      // On the Tooltip rather than the chip: Tooltip renders its own wrapper span, which is what
+      // ends up being the flex item in every row this badge sits in.
+      className="inline-flex shrink-0 align-middle"
+    >
+      <span
+        className={clsx(
+          'bg-cta inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none tracking-wide text-white',
+          props.className,
+        )}
+        data-testid="admin-badge"
+      >
+        <ShieldCheckIcon className="h-3 w-3" aria-hidden="true" />
+        {t('badge.admin', 'Admin')}
+      </span>
+    </Tooltip>
+  )
+}
+
 export function UserBadge(props: {userId: string; username: string; fresh?: boolean}) {
-  const {username, fresh} = props
+  const {userId, username, fresh} = props
   const badges = []
 
-  if (MOD_USERNAMES.includes(username)) {
+  // Admin outranks the others rather than stacking with them: two badges next to one name read as
+  // decoration, and "runs the site" is the only one a reader needs at that point.
+  if (isAdminUserId(userId)) {
+    badges.push(<AdminBadge key="admin" />)
+  } else if (MOD_USERNAMES.includes(username)) {
     badges.push(<ModBadge key="mod" />)
   } else if (VERIFIED_USERNAMES.includes(username)) {
     badges.push(<VerifiedBadge key="check" />)

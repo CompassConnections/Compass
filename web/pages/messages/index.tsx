@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import {ChatMessage} from 'common/chat-message'
+import {isAdminUserId} from 'common/envs/constants'
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {User} from 'common/user'
 import {filterDefined} from 'common/util/array'
@@ -17,7 +18,7 @@ import {RelativeTimestamp} from 'web/components/relative-timestamp'
 import {SEO} from 'web/components/SEO'
 import {Avatar} from 'web/components/widgets/avatar'
 import {Input} from 'web/components/widgets/input'
-import {BannedBadge} from 'web/components/widgets/user-link'
+import {AdminBadge, BannedBadge} from 'web/components/widgets/user-link'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {useLastPrivateMessages} from 'web/hooks/use-last-private-messages'
 import {
@@ -182,6 +183,9 @@ export const MessageChannelRow = (props: {
   const t = useT()
 
   const isBanned = otherUsers?.length == 1 && otherUsers[0].isBannedFromPosting
+  // Any member, not just the ones whose names fit on the row: what the badge tells you is that a
+  // Compass admin is in this conversation, which is true whether or not they were named first.
+  const hasAdmin = !!otherUsers?.some((user) => isAdminUserId(user.id))
   return (
     <Row
       className={
@@ -233,6 +237,7 @@ export const MessageChannelRow = (props: {
                   </span>
                 )
               )}
+              {hasAdmin && <AdminBadge className="ml-1.5" />}
               {isBanned && <BannedBadge />}
             </span>
             <span className={'text-ink-300 text-xs'} data-testid="messages-timestamp">

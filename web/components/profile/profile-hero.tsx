@@ -1,5 +1,6 @@
 import {EyeSlashIcon, LockClosedIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
+import {isAdminUserId} from 'common/envs/constants'
 import {Profile} from 'common/profiles/profile'
 import {User, UserActivity} from 'common/user'
 import Link from 'next/link'
@@ -10,6 +11,7 @@ import ProfileHeroPhoto from 'web/components/profile/profile-hero-photo'
 import {useProfilePhotos} from 'web/components/profile/profile-photos'
 import {ProfileConnectionGoals} from 'web/components/profile-about'
 import {linkClass} from 'web/components/widgets/site-link'
+import {AdminBadge} from 'web/components/widgets/user-link'
 import {useAdminOrMod} from 'web/hooks/use-admin'
 import {useElementSize} from 'web/hooks/use-element-size'
 import {useUser} from 'web/hooks/use-user'
@@ -122,7 +124,14 @@ export default function ProfileHero(props: {
               almost none, and 8px read as the two lines being one block. */}
           <Col className="gap-4">
             <ProfilePrimaryInfo profile={profile} eyebrow />
-            <div data-testid="profile-display-name-age">
+            {/* The badge is a sibling of the link, not part of it: on the card view the whole name
+                is a link to the profile, and a badge that navigates when you reach for its tooltip
+                is a badge people learn not to touch. Sized up from its default 10px, which next to
+                display type reads as a stray pixel rather than a mark of office. */}
+            <div
+              data-testid="profile-display-name-age"
+              className="flex flex-wrap items-center gap-x-4 gap-y-2"
+            >
               {simpleView ? (
                 <Link className={linkClass} href={`/${user.username}`}>
                   {name}
@@ -130,6 +139,7 @@ export default function ProfileHero(props: {
               ) : (
                 name
               )}
+              {isAdminUserId(user.id) && <AdminBadge className="px-2 py-1 text-xs" />}
             </div>
           </Col>
 

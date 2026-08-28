@@ -1,3 +1,4 @@
+import {normalizeCountry} from 'common/geodb'
 import {ProfileRow} from 'common/profiles/profile'
 import {convertUserToSQL} from 'common/supabase/users'
 import {User} from 'common/user'
@@ -9,6 +10,11 @@ import {DataUpdate, update, updateData} from './utils'
 
 export const updateProfile = async (user_id: string, updated: Partial<ProfileRow>) => {
   updated = removeUndefinedProps(updated)
+  // Last line of defence: whatever the caller was handed (GeoDB, an LLM extraction, a hand-typed
+  // form), only the canonical country spelling reaches the column.
+  if (updated.country) updated.country = normalizeCountry(updated.country)
+  if (updated.raised_in_country)
+    updated.raised_in_country = normalizeCountry(updated.raised_in_country)
   // if (!updated) return
   const fullUpdate = {user_id, ...updated}
   const pg = createSupabaseDirectClient()

@@ -88,8 +88,14 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
     } catch (error) {
       let message =
         'We ran into an issue saving your profile. Please try again or contact us if the issue persists.'
-      if (error instanceof APIError) {
-        message = `Error: ` + JSON.stringify(error.toJSON().error.details)
+      if (error instanceof APIError && error.message) {
+        // The server writes these to be read by the person who typed the field ("This name is
+        // reserved for Compass staff"), so show the message itself. `details` is metadata for the
+        // form — which field, what to do about it — and stringifying it put `{"field":"name"}` on
+        // screen in place of the sentence. Only `resolution` is written for a reader, so it is the
+        // one part worth appending.
+        const details = Array.isArray(error.details) ? error.details[0] : error.details
+        message = filterDefined([error.message, details?.resolution]).join(' ')
       }
       Sentry.captureException(error, {
         user: baseUser, // shows in the User section

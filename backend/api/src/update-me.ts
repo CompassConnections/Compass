@@ -1,7 +1,7 @@
 import {toUserAPIResponse} from 'common/api/user-types'
 import {RESERVED_PATHS} from 'common/envs/constants'
 import {debug} from 'common/logger'
-import {cleanDisplayName, cleanUsername} from 'common/util/clean-username'
+import {cleanDisplayName, cleanUsername, impersonatesStaff} from 'common/util/clean-username'
 import {removeUndefinedProps} from 'common/util/object'
 import {cloneDeep} from 'lodash'
 import {updateUser} from 'shared/supabase/users'
@@ -17,7 +17,15 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
   if (!user) throw APIErrors.unauthorized('Your account was not found')
 
   if (update.name) {
-    update.name = cleanDisplayName(update.name)
+    // Cleaning can empty the name outright (a name made only of emoji), and an account with no name
+    // renders as a blank space everywhere it appears — say no rather than store that.
+    const cleanedName = cleanDisplayName(update.name)
+    if (!cleanedName) throw APIErrors.badRequest('Please use letters in your name', {field: 'name'})
+    // Nobody but staff gets to be called staff: the admin badge is only worth reading if a name
+    // can't claim the same thing in words right next to it.
+    if (impersonatesStaff(cleanedName))
+      throw APIErrors.badRequest('This name is reserved for Compass staff', {field: 'name'})
+    update.name = cleanedName
   }
 
   if (update.username) {

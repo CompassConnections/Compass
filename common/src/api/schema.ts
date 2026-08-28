@@ -562,7 +562,7 @@ export const API = (_apiTypeCheck = {
     props: z
       .object({
         term: z.string(),
-        limit: z.coerce.number().gte(0).lte(20).default(500),
+        limit: z.coerce.number().gte(0).lte(20).default(5),
         page: z.coerce.number().gte(0).default(0),
       })
       .strict(),

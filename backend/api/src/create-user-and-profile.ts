@@ -9,7 +9,7 @@ import {trimStrings} from 'common/parsing'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
 import {PrivateUser} from 'common/user'
 import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
-import {cleanDisplayName} from 'common/util/clean-username'
+import {cleanDisplayName, impersonatesStaff} from 'common/util/clean-username'
 import {removeUndefinedProps} from 'common/util/object'
 import {sendWelcomeEmail} from 'email/functions/helpers'
 import * as admin from 'firebase-admin'
@@ -49,7 +49,14 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
 
   const pg = createSupabaseDirectClient()
 
-  const cleanName = cleanDisplayName(name || 'User')
+  // `|| 'User'` twice over: the caller may send nothing, and cleaning can also empty a name that
+  // was nothing but emoji.
+  const cleanName = cleanDisplayName(name || 'User') || 'User'
+  if (impersonatesStaff(cleanName))
+    throw APIErrors.badRequest('This name is reserved for Compass staff', {
+      field: 'name',
+      resolution: 'Please sign up under the name people know you by.',
+    })
 
   const fbUser = await admin.auth().getUser(auth.uid)
   const email = fbUser.email

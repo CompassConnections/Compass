@@ -105,6 +105,50 @@ describe('updateMe', () => {
       expect(updateMe(mockProps, mockAuth, mockReq)).rejects.toThrow('This username is reserved')
     })
 
+    // The admin badge is keyed off the user id, so the way to fake one is to make the name look
+    // like it. Both routes are closed here, on the only endpoint that can change a name.
+    it('should throw if the name claims to be staff', async () => {
+      const mockProps = {name: 'Compass Admin'} as any
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(true)
+
+      await expect(updateMe(mockProps, mockAuth, mockReq)).rejects.toThrow(
+        'This name is reserved for Compass staff',
+      )
+    })
+
+    it('should throw if the name is nothing but emoji', async () => {
+      const mockProps = {name: '\u{1F6E1}\uFE0F'} as any
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(true)
+
+      await expect(updateMe(mockProps, mockAuth, mockReq)).rejects.toThrow(
+        'Please use letters in your name',
+      )
+    })
+
+    it('should strip badge-lookalike glyphs from an otherwise fine name', async () => {
+      const mockProps = {name: 'Martin \u2705'} as any
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(true)
+      ;(supabaseUsers.updateUser as jest.Mock).mockResolvedValue(null)
+      ;(websocketHelperModules.broadcastUpdatedUser as jest.Mock).mockReturnValue(null)
+
+      await updateMe(mockProps, mockAuth, mockReq)
+
+      expect(supabaseUsers.updateUser).toHaveBeenCalledWith(mockAuth.uid, {
+        name: 'Martin',
+        username: undefined,
+        avatarUrl: undefined,
+      })
+    })
+
     it('should throw if the username is taken', async () => {
       const mockProps = {
         name: 'mockName',

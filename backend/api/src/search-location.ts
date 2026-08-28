@@ -1,5 +1,5 @@
 import {ValidatedAPIParams} from 'common/api/schema'
-import {geodbFetch} from 'common/geodb'
+import {geodbFetch, normalizeCountry} from 'common/geodb'
 
 import {APIHandler} from './helpers/endpoint'
 
@@ -15,5 +15,16 @@ export async function searchLocation(body: ValidatedAPIParams<'search-location'>
   const safeLimit = Number.isFinite(limit) ? Math.trunc(limit as number) : 10
   const endpoint = `/cities?namePrefix=${namePrefix}&limit=${safeLimit}&offset=0&sort=-population`
   // const endpoint = `/countries?namePrefix=${term}&limit=${limit ?? 10}&offset=0`
-  return await geodbFetch(endpoint)
+  const result = await geodbFetch(endpoint)
+
+  // GeoDB says "United States of America"; every profile written from a search result must hold the
+  // one spelling we store, so normalize here rather than at each of the callers.
+  const cities = result.data?.data
+  if (Array.isArray(cities)) {
+    for (const city of cities) {
+      if (city?.country) city.country = normalizeCountry(city.country)
+    }
+  }
+
+  return result
 }

@@ -1,4 +1,9 @@
-jest.mock('common/geodb')
+// Only the network call is faked — `normalizeCountry` is the real one, since normalizing the GeoDB
+// response is part of what this endpoint is expected to do.
+jest.mock('common/geodb', () => ({
+  ...jest.requireActual('common/geodb'),
+  geodbFetch: jest.fn(),
+}))
 
 import {AuthedUser} from 'api/helpers/endpoint'
 import {searchLocationEndpoint} from 'api/search-location'
@@ -33,6 +38,29 @@ describe('searchLocation', () => {
           `/cities?namePrefix=${mockBody.term}&limit=${mockBody.limit}&offset=0&sort=-population`,
         ),
       )
+    })
+  })
+
+  describe('when GeoDB names the United States', () => {
+    it('should rewrite the country onto the spelling profiles store', async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+      ;(geodbModules.geodbFetch as jest.Mock).mockResolvedValue({
+        status: 'success',
+        data: {
+          data: [
+            {city: 'Austin', country: 'United States of America'},
+            {city: 'Brussels', country: 'Belgium'},
+          ],
+        },
+      })
+
+      const result = await searchLocationEndpoint({term: 'Austin', limit: 2}, mockAuth, mockReq)
+
+      expect((result as any).data.data.map((c: any) => c.country)).toEqual([
+        'United States',
+        'Belgium',
+      ])
     })
   })
 

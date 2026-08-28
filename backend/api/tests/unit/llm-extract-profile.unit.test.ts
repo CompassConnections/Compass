@@ -1,4 +1,8 @@
-import {fetchOnlineProfile, resolveImageFolderName} from 'api/llm-extract-profile'
+import {
+  fetchOnlineProfile,
+  resolveImageFolderName,
+  validateProfileFields,
+} from 'api/llm-extract-profile'
 import {FALLBACK_IMAGE_FOLDER_NAME} from 'shared/profiles/rehost-images'
 import {getUser, getUserByUsername} from 'shared/utils'
 
@@ -139,5 +143,24 @@ describe('resolveImageFolderName', () => {
 
   it('still honours a free username when unauthed', async () => {
     expect(await resolveImageFolderName(undefined, 'free_name')).toBe('free_name')
+  })
+})
+
+describe('validateProfileFields', () => {
+  // The prompt asks for "United States", but the model answers with whatever the document said.
+  it('collapses every US synonym onto the spelling profiles store', async () => {
+    const result = await validateProfileFields(
+      {country: 'United States', raised_in_country: 'u.s.'} as any,
+      {},
+    )
+
+    expect(result.country).toBe('USA')
+    expect(result.raised_in_country).toBe('USA')
+  })
+
+  it('leaves other countries alone', async () => {
+    const result = await validateProfileFields({country: 'Belgium'} as any, {})
+
+    expect(result.country).toBe('Belgium')
   })
 })

@@ -40,10 +40,39 @@ export const geodbFetch = async (
     return {status: 'failure', data: error}
   }
 }
-const usCountryNames = ['United States', 'United States of America', 'USA', 'US']
+
+/** The one spelling we store in `profiles.country` (and friends) for the US. */
+export const UNITED_STATES = 'USA'
+
+const usCountryNames = [
+  'united states',
+  'united states of america',
+  'the united states',
+  'the united states of america',
+  'usa',
+  'u.s.a.',
+  'u.s.a',
+  'us',
+  'u.s.',
+  'u.s',
+  'america',
+]
 
 export const isUnitedStates = (country: unknown) =>
-  typeof country === 'string' && usCountryNames.includes(country.trim())
+  typeof country === 'string' && usCountryNames.includes(country.trim().toLowerCase())
+
+/**
+ * Collapse every synonym of the US onto {@link UNITED_STATES}. Country strings reach us from GeoDB
+ * ("United States of America"), from LLM extraction ("USA", "U.S.") and from members typing them by
+ * hand, and anything that groups or filters by country (feed, stats, spotlights) only works if a
+ * single spelling is stored. Other countries pass through untouched.
+ */
+export function normalizeCountry(country: string): string
+export function normalizeCountry<T extends null | undefined>(country: T): T
+export function normalizeCountry(country: string | null | undefined): string | null | undefined
+export function normalizeCountry(country: string | null | undefined): string | null | undefined {
+  return isUnitedStates(country) ? UNITED_STATES : country
+}
 
 export function getLocationText(
   profile: ProfileRow | undefined | null,
@@ -66,7 +95,7 @@ export function getLocationText(
       ? regionCode
       : null
 
-  return [city, state, isUnitedStates(country) ? 'USA' : country].filter(Boolean).join(', ')
+  return [city, state, isUnitedStates(country) ? UNITED_STATES : country].filter(Boolean).join(', ')
 }
 
 export function getGoogleMapsUrl(locationText: string) {

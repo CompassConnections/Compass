@@ -23,6 +23,7 @@ import {
   SUBSTANCE_INTENTION_CHOICES,
   SUBSTANCE_PREFERENCE_CHOICES,
 } from 'common/choices'
+import {normalizeCountry, UNITED_STATES} from 'common/geodb'
 import {debug} from 'common/logger'
 import {ageFromBirthDate, birthDateFromStated} from 'common/profiles/birth-date'
 import {ProfileWithoutUser} from 'common/profiles/profile'
@@ -87,7 +88,7 @@ interface ParsedBody {
 // Bump whenever the extraction prompt changes, or whenever we start reading a source differently.
 // The cache key is otherwise derived purely from the request, so a fix would keep returning the old
 // answer for the 24h TTL — which looks exactly like the fix not working.
-const PROMPT_VERSION = 6
+const PROMPT_VERSION = 7
 
 // Keyed by the caller as well as the request: the bio now carries images copied into *this* user's
 // storage folder, so handing a cached result to somebody else would leave their profile pointing at
@@ -101,7 +102,7 @@ function getCacheKey(parsedBody: ParsedBody, uid: string): string {
   return hash.digest('hex')
 }
 
-async function validateProfileFields(
+export async function validateProfileFields(
   llmProfile: Partial<ProfileWithoutUser>,
   validChoices: Record<string, string[]>,
 ): Promise<Partial<ProfileWithoutUser>> {
@@ -232,6 +233,12 @@ async function validateProfileFields(
       result.raised_in_country ??= locations?.[0]?.country
     }
   }
+
+  // The model writes "USA", "U.S." or "America" as readily as the canonical name, whatever the prompt
+  // asks for, so collapse the synonyms before the extraction is shown or saved.
+  if (result.country) result.country = normalizeCountry(String(result.country))
+  if (result.raised_in_country)
+    result.raised_in_country = normalizeCountry(String(result.raised_in_country))
 
   if (result.links) {
     const sites = Object.keys(result.links).filter((key) => SITE_ORDER.includes(key as any))
@@ -592,13 +599,13 @@ export async function callLLM(
       'String. Free-form elaboration on their orientation, only if they say more than the label itself.',
     height_in_inches: 'Number. Height converted to inches.',
     city: 'String. Current city of residence (English spelling).',
-    country: 'String. Current country of residence (English spelling).',
+    country: `String. Current country of residence (English spelling). For the US, always exactly "${UNITED_STATES}" — never "USA", "US", "America" or "United States of America".`,
     city_latitude: 'Number. Latitude of current city.',
     city_longitude: 'Number. Longitude of current city.',
 
     // Background
     raised_in_city: 'String. City where they grew up (English spelling).',
-    raised_in_country: 'String. Country where they grew up (English spelling).',
+    raised_in_country: `String. Country where they grew up (English spelling). For the US, always exactly "${UNITED_STATES}".`,
     raised_in_lat: 'Number. Latitude of city where they grew up.',
     raised_in_lon: 'Number. Longitude of city where they grew up.',
     university: 'String. University or college attended.',

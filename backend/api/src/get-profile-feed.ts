@@ -6,6 +6,7 @@ import {
   MAX_FEED_BIO_CHARS,
   truncateAtWord,
 } from 'common/feed/feed'
+import {normalizeCountry} from 'common/geodb'
 import {compact} from 'lodash'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
@@ -55,7 +56,7 @@ export const getProfileFeed: APIHandler<'get-profile-feed'> = async ({country, l
        and ($(country) is null or lower(profiles.country) = lower($(country)))
      order by profiles.created_time desc
      limit $(limit)`,
-    {country: country ?? null, limit: limit ?? DEFAULT_FEED_LIMIT},
+    {country: normalizeCountry(country) ?? null, limit: limit ?? DEFAULT_FEED_LIMIT},
   )
 
   return {items: rows.map(toFeedItem)}

@@ -1,6 +1,7 @@
 import {XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {OriginLocation} from 'common/filters'
+import {UNITED_STATES} from 'common/geodb'
 import {formatDistance, kmToMiles, milesToKm} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
 import {buildArray} from 'common/util/array'
@@ -59,7 +60,7 @@ const DEFAULT_LAST_CITY: City = {
   geodb_city_id: '172153',
   city: 'San Francisco County',
   region_code: 'CA',
-  country: 'United States of America',
+  country: UNITED_STATES,
   country_code: 'US',
   latitude: 37.778333333,
   longitude: -122.4425,

@@ -89,7 +89,7 @@ export function RepoActivity({className}: {className?: string}) {
   // proof of life whatever the other two say — so in practice this block is usually just that one stat,
   // and the layout below treats one metric as its normal case, not a degenerate one.
   const CONTRIBUTORS_FLOOR = 10
-  const STARS_FLOOR = 100
+  const STARS_FLOOR = 50
   const metrics: {icon: IconType; value: ReactNode; label: string; live?: boolean}[] = []
   if (data.contributors !== null && data.contributors >= CONTRIBUTORS_FLOOR)
     metrics.push({

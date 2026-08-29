@@ -58,7 +58,7 @@ describe('searchLocation', () => {
       const result = await searchLocationEndpoint({term: 'Austin', limit: 2}, mockAuth, mockReq)
 
       expect((result as any).data.data.map((c: any) => c.country)).toEqual([
-        'United States',
+        geodbModules.UNITED_STATES,
         'Belgium',
       ])
     })

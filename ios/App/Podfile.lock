@@ -30,20 +30,10 @@ PODS:
     - Capacitor
   - CapacitorStatusBar (7.0.3):
     - Capacitor
-  - CapgoCapacitorSocialLogin (7.14.9):
+  - CapgoCapacitorSocialLogin (7.20.0):
     - Alamofire (~> 5.10.2)
     - Capacitor
-    - FBSDKCoreKit (= 18.0.0)
-    - FBSDKLoginKit (= 18.0.0)
     - GoogleSignIn (~> 9.0.0)
-  - FBAEMKit (18.0.0):
-    - FBSDKCoreKit_Basics (= 18.0.0)
-  - FBSDKCoreKit (18.0.0):
-    - FBAEMKit (= 18.0.0)
-    - FBSDKCoreKit_Basics (= 18.0.0)
-  - FBSDKCoreKit_Basics (18.0.0)
-  - FBSDKLoginKit (18.0.0):
-    - FBSDKCoreKit (= 18.0.0)
   - FirebaseCore (11.15.0):
     - FirebaseCoreInternal (~> 11.15.0)
     - GoogleUtilities/Environment (~> 8.1)
@@ -129,10 +119,6 @@ SPEC REPOS:
     - Alamofire
     - AppAuth
     - AppCheckCore
-    - FBAEMKit
-    - FBSDKCoreKit
-    - FBSDKCoreKit_Basics
-    - FBSDKLoginKit
     - FirebaseCore
     - FirebaseCoreInternal
     - FirebaseInstallations
@@ -174,20 +160,16 @@ SPEC CHECKSUMS:
   Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
   AppAuth: ef4da5a3fc2e10b90c09a0a94a9baeaedc0341d5
   AppCheckCore: e215d35177a9cf469927863e69c13e220df32a8b
-  Capacitor: 09d9ff8e9618e8c4b3cab2bbee34a17215dd2fef
-  CapacitorApp: 846d4b4a1dbb19dd1e9029c08ba6f028aa7be862
-  CapacitorCommunityInAppReview: 3469e8228d723797ec890ff8c91cd0882becb0f8
+  Capacitor: 358dd1c3fdd71d969547b17e159fd8a7736cb45f
+  CapacitorApp: 26587c2ce485d88ddb39adb21cac64f8e481afe3
+  CapacitorCommunityInAppReview: 3756d05524c5cf2eccbc8ed460f77f8f8db6c141
   CapacitorCordova: bf648a636f3c153f652d312ae145fb508b6ffced
-  CapacitorFilesystem: ac0a386949ed6c295a3dffa129ecd26b881ae5be
-  CapacitorKeyboard: 3822c3a0c6b58168f96ca562f9534ed095d40860
-  CapacitorPushNotifications: 729ade0d2791ec1969feaf931a15e28d929a6d70
-  CapacitorShare: 14b5d7f0a2c6de86dcad8995da80fb707ee32f62
-  CapacitorStatusBar: 7d8fcbd6768db014bd721d75e246590b014928e8
-  CapgoCapacitorSocialLogin: 25e5fa25c0e516093f72b7f8bb94d96eabfc5c7a
-  FBAEMKit: e34530df538b8eb8aeb53c35867715ba6c63ef0c
-  FBSDKCoreKit: d3f479a69127acebb1c6aad91c1a33907bcf6c2f
-  FBSDKCoreKit_Basics: 017b6dc2a1862024815a8229e75661e627ac1e29
-  FBSDKLoginKit: 5875762d1fe09ddcb05d03365d4f5dc34413843d
+  CapacitorFilesystem: f9bd850c41e048180e5dc0cbb90f2033ede9d2cc
+  CapacitorKeyboard: 62f36104f26d53d8b3a2a43f2a69fe714f1777d5
+  CapacitorPushNotifications: bdd621fbd562be34a41f4a7b1750efa000447d5a
+  CapacitorShare: 25f7fc5dd0e4edbde5d6801c6de5d14a8b450a41
+  CapacitorStatusBar: 0659ddc7b1713764a05831463d215b177a15d054
+  CapgoCapacitorSocialLogin: 27bccb5e6c6f8aaa54af8189dcc9d9fb56073c29
   FirebaseCore: efb3893e5b94f32b86e331e3bd6dadf18b66568e
   FirebaseCoreInternal: 9afa45b1159304c963da48addb78275ef701c6b4
   FirebaseInstallations: 317270fec08a5d418fdbc8429282238cab3ac843

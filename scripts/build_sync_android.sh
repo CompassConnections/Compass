@@ -8,7 +8,8 @@ yarn build-web-view
 
 source web/.env
 
-npx cap sync android
+# `npx cap` resolves to an old nested CLI — see scripts/cap.sh.
+./scripts/cap.sh sync android
 
 # To generate  icons
 npx capacitor-assets generate --android

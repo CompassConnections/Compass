@@ -10,7 +10,8 @@ cd "$(dirname "$0")"/..
 # Set only the iOS one — capacitor.config.ts has a single server.url shared by both platforms.
 export $(grep -E '^(NEXT_PUBLIC_(LOCAL_IOS|WEBVIEW_DEV_PHONE|DEV_LAN_IP)|IOS_WEB_DEBUG)=' .env || true)
 
-npx cap sync ios
+# `npx cap` resolves to an old nested CLI — see scripts/cap.sh.
+./scripts/cap.sh sync ios
 
 # `cap sync` does not leave `packageClassList` in ios/App/App/capacitor.config.json, without which
 # the native bridge registers no plugins at all and every Capacitor call fails at runtime with

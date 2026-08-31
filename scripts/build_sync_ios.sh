@@ -8,7 +8,8 @@ yarn build-web-view
 
 source web/.env
 
-npx cap sync ios
+# `npx cap` resolves to an old nested CLI — see scripts/cap.sh.
+./scripts/cap.sh sync ios
 
 # `cap sync` does not leave `packageClassList` in ios/App/App/capacitor.config.json, without which
 # the native bridge registers no plugins at all and every Capacitor call fails at runtime with

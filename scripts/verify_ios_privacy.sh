@@ -36,9 +36,14 @@ if [ ! -f "$PODSPEC" ]; then
   bad "$PODSPEC not found — run yarn install"
 elif grep -q "^ *s.dependency 'FBSDK" "$PODSPEC"; then
   bad "podspec still declares FBSDK. \`plugins.SocialLogin.providers.facebook: false\` in"
-  note "  capacitor.config.ts did not take effect. It needs plugin >= 7.20 and a \`cap sync\` run"
-  note "  after the config change — the hook is \`capacitor:sync:before\`, so a bare \`pod install\`"
-  note "  will not rewrite the podspec on its own."
+  note "  capacitor.config.ts did not take effect. Three things have to hold, in order:"
+  note "    1. plugin >= 7.20            (installed: $(node -p "require('./node_modules/@capgo/capacitor-social-login/package.json').version" 2>/dev/null || echo '?'))"
+  note "    2. a \`cap sync\` run *after* the config change — the hook is \`capacitor:sync:before\`,"
+  note "       so a bare \`pod install\` will not rewrite the podspec on its own"
+  note "    3. that sync ran the project's OWN CLI. This is the one that bit us: \`npx cap\`"
+  note "       resolves to the copy nested under @capacitor/assets, which is Capacitor 5 and has"
+  note "       no \`runHooks\` at all — it never walks plugins looking for the hook, so the sync"
+  note "       succeeds and silently does nothing. Use ./scripts/cap.sh, not \`npx cap\`."
   grep -n "s.dependency" "$PODSPEC" | sed 's/^/      /'
 else
   ok "no FBSDK dependency"

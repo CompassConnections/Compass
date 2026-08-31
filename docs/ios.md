@@ -844,11 +844,21 @@ necessary because 1000 is ambiguous and a genuine unknown failure now also passe
 
 Two dead ends worth recording, so they are not re-walked:
 
-- **It is not the presentation anchor.** Both providers find their window with
-  `UIApplication.shared.windows.first` — deprecated since iOS 15, order not contractual, and
-  force-unwrapped in `AppleProvider.swift`. That looked like a single cause for both failures and it is
-  genuinely poor practice, but the sheet presents fine, so nothing supports patching it. Left alone; the
-  force-unwrap remains a latent crash if that array is ever empty.
+- **The presentation anchor was a dead end for Apple, and the actual bug for Google.** Both providers
+  find their window with `UIApplication.shared.windows.first` — deprecated since iOS 15, order not
+  contractual, force-unwrapped in `AppleProvider.swift`. Apple's sheet presents fine on device, so that
+  copy is left alone (its force-unwrap remains a latent crash if the array is ever empty). Google's does
+  not: it hands the window's `rootViewController` to GIDSignIn, AppAuth derives its
+  `ASWebAuthenticationSession` anchor from `presentingViewController.view.window`, and a wrong guess
+  makes the session refuse to start — reported as "Unable to open Safari."
+
+  This only became visible once `forcePrompt: true` shipped in build 16. Before that the provider took
+  the silent `restorePreviousSignIn` branch (`GoogleProvider.swift:80`) on any returning device and
+  never presented at all, so the broken path could not be reached. Sentry COMPASS-60 then caught a
+  _first_ tap on a freshly loaded `/signin` — no prior attempt, no focused field, nothing presented —
+  failing with exactly that string. [`scripts/patch_google_presenting_vc.mjs`](../scripts/patch_google_presenting_vc.mjs),
+  run from `postinstall`, resolves the key window and walks to the topmost presented controller.
+
 - **It is not provisioning.** TestFlight and App Store review get the identical binary from the same
   upload, so "works on TestFlight" rules out entitlement and profile theories outright.
 

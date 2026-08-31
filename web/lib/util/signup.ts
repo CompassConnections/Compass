@@ -21,21 +21,52 @@ export function isOnboardingFlag() {
   return safeLocalStorage?.getItem(`is-onboarding`)
 }
 
-const socialSigninSignup = async (login: () => Promise<any>) => {
+/**
+ * The one path from a social button into an account. Both `/register` and `/signin` go through it.
+ *
+ * They used not to. `/signin` had its own copy that called the provider and then redirected, and the
+ * copy was missing `setOnboardingFlag()` — so signing up with Google or Apple from the sign-in page
+ * produced a *different* app state than pressing the identical button one page over. Without the
+ * flag, `auth-context.tsx` takes the branch that loads the user from the database, finds nothing
+ * (the row does not exist until `/signup` finishes), logs "should redirect to /onboarding" and
+ * leaves `useUser()` null. The redirect still happened, so it mostly looked fine; the two entry
+ * points simply disagreed about what a half-created account is, which is the sort of difference that
+ * only shows up in someone else's bug report.
+ *
+ * The flag is set *before* the provider sheet opens rather than after it returns: the Firebase
+ * listener can fire the moment the credential is exchanged, which is inside `login()`, and a flag set
+ * afterwards would be too late to stop that first load attempt.
+ *
+ * `path` is where to land once an existing account is recognised — `/signin`'s `?redirect=` — and is
+ * ignored for a new one, which always goes to onboarding.
+ *
+ * Throws rather than swallowing, so each page can present the failure the way it already does:
+ * a toast on `/register`, the inline `AuthError` on `/signin`. The state handling either side of the
+ * failure is what has to match, and now does.
+ */
+export async function socialSigninSignup(login: () => Promise<any>, path?: string | null) {
+  setOnboardingFlag()
   try {
-    setOnboardingFlag()
     const creds = await login()
-    await signinSignupRedirect(creds?.user?.uid)
-  } catch (e: any) {
-    console.error(e)
-    toast.error('Failed to sign in: ' + e.message)
+    await signinSignupRedirect(creds?.user?.uid, path)
+  } catch (e) {
+    // Cleared on the way out, or a failed attempt would leave every later session convinced it is
+    // mid-onboarding and stop `auth-context` loading anyone at all.
     clearOnboardingFlag()
+    throw e
   }
 }
 
-export const googleSigninSignup = async () => socialSigninSignup(googleLogin)
+const toastSocialFailure = (e: any) => {
+  console.error(e)
+  toast.error('Failed to sign in: ' + (e?.message ?? ''))
+}
 
-export const appleSigninSignup = async () => socialSigninSignup(appleLogin)
+export const googleSigninSignup = async () =>
+  socialSigninSignup(googleLogin).catch(toastSocialFailure)
+
+export const appleSigninSignup = async () =>
+  socialSigninSignup(appleLogin).catch(toastSocialFailure)
 
 export async function startSignup() {
   await Router.push('/register')

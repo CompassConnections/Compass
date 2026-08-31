@@ -24,7 +24,7 @@ import {useUser} from 'web/hooks/use-user'
 import {sendPasswordReset} from 'web/lib/firebase/password'
 import {appleLogin, auth, canAppleLogin, googleLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
-import {signinSignupRedirect} from 'web/lib/util/signup'
+import {signinSignupRedirect, socialSigninSignup} from 'web/lib/util/signup'
 
 export default function LoginPage() {
   return (
@@ -74,25 +74,36 @@ function RegisterComponent() {
     checkAndRedirect(user?.id)
   }, [user])
 
+  /**
+   * Google and Apple, which on this page can just as easily *create* an account as sign into one —
+   * App Review does exactly that, and so does anyone who taps "Sign in" out of habit.
+   *
+   * Delegates to `socialSigninSignup` so that is byte-for-byte the same path as pressing the same
+   * button on `/register`. It used to be a near-copy that skipped `setOnboardingFlag()`, which left
+   * a brand-new account in a state `auth-context` handles differently — see the comment on
+   * `socialSigninSignup`. `redirectPath` still gets through, so `?redirect=` keeps working for
+   * someone who already has an account.
+   *
+   * Only the error presentation stays local: the reason is shown inline rather than swallowed. App
+   * Review rejected 1.42.0 for "got an error when trying to login with Apple login", and the generic
+   * string that used to be here is why that was all they could say — `appleNativeLogin` now tags the
+   * failing leg and its code, and that is only useful if it reaches the screen someone can
+   * photograph.
+   */
   const handleSocialSignIn = async (login: () => Promise<any>, provider: string) => {
+    setIsLoading(true)
     setIsLoadingGoogle(true)
     setError(null)
     try {
-      const creds = await login()
-      debug('creds', creds)
-      if (creds) {
-        setIsLoading(true)
-        setIsLoadingGoogle(true)
-        await checkAndRedirect(creds?.user?.uid)
-      }
+      await socialSigninSignup(login, redirectPath)
     } catch (error: any) {
       console.error('Error signing in:', error)
-      // The reason is shown rather than swallowed. App Review rejected 1.42.0 for "got an error when
-      // trying to login with Apple login" and the generic string that used to be here is why that was
-      // all they could say — `appleNativeLogin` now tags the failing leg and its code, and that is
-      // only useful if it reaches the screen someone can photograph.
       const reason = error?.message ? `: ${error.message}` : ''
       setError(`Failed to sign in with ${provider}${reason}`)
+    } finally {
+      // `finally`, not the catch: the success path navigates away, and on the rare occasion it does
+      // not — an existing account whose redirect is a no-op — a spinner left running forever is
+      // worse than a moment of flicker.
       setIsLoading(false)
       setIsLoadingGoogle(false)
     }

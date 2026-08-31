@@ -85,9 +85,14 @@ function RegisterComponent() {
         setIsLoadingGoogle(true)
         await checkAndRedirect(creds?.user?.uid)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error signing in:', error)
-      setError(`Failed to sign in with ${provider}`)
+      // The reason is shown rather than swallowed. App Review rejected 1.42.0 for "got an error when
+      // trying to login with Apple login" and the generic string that used to be here is why that was
+      // all they could say — `appleNativeLogin` now tags the failing leg and its code, and that is
+      // only useful if it reaches the screen someone can photograph.
+      const reason = error?.message ? `: ${error.message}` : ''
+      setError(`Failed to sign in with ${provider}${reason}`)
       setIsLoading(false)
       setIsLoadingGoogle(false)
     }
@@ -215,7 +220,7 @@ function RegisterComponent() {
             <AuthSubmitButton isLoading={isLoading}>
               {isLoading ? 'Signing in...' : t('signin.submit', 'Sign in with Email')}
             </AuthSubmitButton>
-            <AuthDivider label={t('signin.continue', 'Or continue with')} />
+            <AuthDivider label={t('signin.continue', 'Or')} />
             <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading} />
             {/* App Store guideline 4.8: an app offering third-party social login must also offer
                 Sign in with Apple. Shown in the iOS app (native flow) and in browsers once the

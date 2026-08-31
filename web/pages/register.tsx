@@ -51,21 +51,62 @@ function RegisterComponent() {
   // first client render do not have — deciding during render would be a hydration mismatch.
   const [showApple, setShowApple] = useState(false)
   useEffect(() => setShowApple(canAppleLogin()), [])
-  // Explicit rather than implied consent. App Store Review reads Guideline 1.2 strictly for
-  // UGC/dating-adjacent apps and expects an affirmative act, not a "by signing up you agree" line.
-  // It gates every route into an account — email, Google and Apple — because all three create one.
-  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  /**
+   * The terms checkbox is **disabled for now** — it is a suspect in the guideline 2.1 rejection of
+   * 1.42.0, "got an error when trying to login with Apple login".
+   *
+   * The gate blocked all three sign-up routes, and the message it set renders in `AuthError`, which
+   * sits *above* the buttons. On a phone the tap lands at the bottom of the screen and the
+   * explanation appears a couple of hundred pixels north of the thumb, with no Apple sheet in
+   * between — from a reviewer's seat, indistinguishable from the Apple button erroring. Nothing
+   * proves that is what happened, which is exactly why it is worth removing from the path: it is the
+   * one candidate that can be eliminated for free, and with it gone a repeat of the same rejection
+   * points squarely at the native flow instead.
+   *
+   * Nothing about Apple's rules requires it back. Guideline 1.2 asks a UGC app for content
+   * filtering, reporting, blocking and published contact details, and says nothing about an
+   * affirmative tick for terms; an earlier version of this comment claimed otherwise and was wrong.
+   * The real argument for it is legal rather than Apple's: an explicit tick is clickwrap, which US
+   * courts enforce far more reliably than the "by signing up you agree" line that now carries the
+   * weight in `AuthFooter`. That is a trade worth making deliberately once the store build is
+   * unblocked, not while it is the thing under investigation.
+   *
+   * Kept whole, and kept together with the JSX below, so restoring it is one uncomment in each of
+   * three places: here, the `handleSubmit` guard, and the checkbox itself.
+   */
+  // const [agreedToTerms, setAgreedToTerms] = useState(false)
+  // const termsRef = useRef<HTMLInputElement>(null)
+  //
+  // /**
+  //  * What happens when someone taps a sign-up button without having ticked the box.
+  //  *
+  //  * The failure points at the control that caused it: the message is repeated as a toast, which
+  //  * appears near the tap rather than above the fold, and the checkbox is scrolled to, focused and
+  //  * outlined. `scrollIntoView` is guarded because jsdom does not implement it.
+  //  */
+  // const flagMissingAgreement = () => {
+  //   const message = t(
+  //     'register.error.terms_required',
+  //     'Please accept the Terms and Conditions and Privacy Policy to continue.',
+  //   )
+  //   setError(message)
+  //   toast.error(message)
+  //   termsRef.current?.focus()
+  //   termsRef.current?.scrollIntoView?.({block: 'center', behavior: 'smooth'})
+  // }
+  //
+  // /** True once a blocked attempt has happened and the box is still unticked. */
+  // const termsMissing = !!error && !agreedToTerms
 
+  /**
+   * A pass-through while the gate above is off. The call sites keep wrapping their handlers in it,
+   * so turning the checkbox back on means uncommenting the body rather than rewiring three buttons.
+   */
   const requireAgreement = (signUp: () => void) => () => {
-    if (!agreedToTerms) {
-      setError(
-        t(
-          'register.error.terms_required',
-          'Please accept the Terms and Conditions and Privacy Policy to continue.',
-        ),
-      )
-      return
-    }
+    // if (!agreedToTerms) {
+    //   flagMissingAgreement()
+    //   return
+    // }
     signUp()
   }
 
@@ -122,16 +163,13 @@ function RegisterComponent() {
         return
       }
 
-      if (!agreedToTerms) {
-        handleError(
-          t(
-            'register.error.terms_required',
-            'Please accept the Terms and Conditions and Privacy Policy to continue.',
-          ),
-        )
-        setIsLoading(false)
-        return
-      }
+      // Off with the checkbox — see the block near the top of this component.
+      // if (!agreedToTerms) {
+      //   // Same treatment as the social buttons — see `flagMissingAgreement`.
+      //   flagMissingAgreement()
+      //   setIsLoading(false)
+      //   return
+      // }
 
       await handleEmailPasswordSignUp(email, password)
 
@@ -237,17 +275,29 @@ function RegisterComponent() {
                 />
               </AuthFieldGroup>
 
+              {/* Disabled for now — see the block near the top of this component for why, and for
+                  what has to come back with it. The links to /terms and /privacy have not gone
+                  anywhere: `AuthFooter` below carries them, which is what keeps 5.1.1(i) satisfied
+                  and leaves the agreement implied rather than absent.
+
               <label className="mt-2 flex items-start gap-2 text-sm text-ink-600 custom-link cursor-pointer">
                 <input
+                  ref={termsRef}
                   type="checkbox"
                   name="terms"
                   data-testid="register-terms"
                   checked={agreedToTerms}
+                  aria-invalid={termsMissing}
                   onChange={(e) => {
                     setAgreedToTerms(e.target.checked)
                     if (e.target.checked) setError(null)
                   }}
-                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-ink-300 text-primary-500 focus:ring-primary-500"
+                  className={clsx(
+                    'mt-0.5 h-4 w-4 shrink-0 rounded border-ink-300 text-primary-500 focus:ring-primary-500',
+                    // Only after a blocked attempt: an unticked box is the normal starting state and
+                    // has done nothing wrong until someone tries to get past it.
+                    termsMissing && 'ring-2 ring-red-500 ring-offset-2',
+                  )}
                 />
                 <span>
                   {t('register.agreement.checkbox_prefix', 'I agree to the ')}
@@ -259,6 +309,23 @@ function RegisterComponent() {
                   {t('register.agreement.suffix', '.')}
                 </span>
               </label>
+              */}
+
+              {/* Sign-in wrap: assent is implied by using the button, so the sentence has to be
+                  about the act rather than a first-person claim with nothing behind it. The
+                  checkbox wording lives on under `register.agreement.checkbox_prefix`, which the
+                  commented-out clickwrap above still uses. */}
+              <div>
+                <span className={'custom-link'}>
+                  {t('register.agreement.prefix', 'By signing up, you agree to the ')}
+                  <NewTabLink href="/terms">
+                    {t('register.terms', 'Terms and Conditions')}
+                  </NewTabLink>
+                  {t('register.agreement.and', ' and ')}
+                  <NewTabLink href="/privacy">{t('register.privacy', 'Privacy Policy')}</NewTabLink>
+                  {t('register.agreement.suffix', '.')}
+                </span>
+              </div>
 
               <AuthError>{error}</AuthError>
 
@@ -268,16 +335,20 @@ function RegisterComponent() {
                     ? t('register.button.creating', 'Creating account...')
                     : t('register.button.email', 'Sign up with Email')}
                 </AuthSubmitButton>
-                <AuthDivider label={t('register.or_sign_up_with', 'Or sign up with')} />
+                <AuthDivider label={t('register.or_sign_up_with', 'Or')} />
                 <GoogleButton
                   onClick={requireAgreement(googleSigninSignup)}
                   isLoading={isLoading}
+                  label="Sign up with Google"
                 />
                 {/* App Store guideline 4.8 — see the same block in signin.tsx. */}
                 {showApple && (
                   <AppleButton
                     onClick={requireAgreement(appleSigninSignup)}
                     isLoading={isLoading}
+                    // "Sign up with Apple" rather than the default "Sign in with Apple": both are
+                    // Apple's own permitted strings, and this page creates an account.
+                    label="Sign up with Apple"
                   />
                 )}
               </div>

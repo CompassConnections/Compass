@@ -6,6 +6,7 @@ import {removeUndefinedProps} from 'common/util/object'
 import posthog from 'posthog-js'
 import {SENTRY_REPLAY_ENABLED} from 'web/lib/sentry-config'
 import {db} from 'web/lib/supabase/db'
+import {isIosApp} from 'web/lib/util/webview'
 
 type EventIds = {
   contractId?: string | null
@@ -26,6 +27,42 @@ type EventData = Record<string, Json | undefined>
  * than something ePrivacy's consent rule covers.
  */
 let posthogStarted = false
+
+/**
+ * Whether PostHog may run at all, before consent is even considered — the same shape as
+ * `SENTRY_REPLAY_ENABLED`, and off in the iOS app.
+ *
+ * Nothing here is "tracking" as Apple defines it (guideline 5.1.2(i)): tracking is linking app data
+ * with *third-party* data for advertising, or handing it to a data broker, and PostHog is neither —
+ * no ad SDK, no IDFA, no attribution SDK anywhere in this codebase. App Review nonetheless read the
+ * consent banner as a custom prompt asking permission to track and rejected 1.42.0 over it, twice.
+ *
+ * Arguing the definition costs a review cycle per attempt and wins nothing, because the events are
+ * not actually lost: `track()` below writes every one of them to our own `user_events` table
+ * regardless of consent or platform. What switching this off on iOS gives up is PostHog's *dashboards*
+ * for iOS members — the funnels and cohorts — not the underlying data, which stays in Postgres and
+ * can be replayed into any analytics tool later. That is a cheap price for a clean submission.
+ *
+ * A function rather than a module constant because `isIosApp()` reads `Capacitor.getPlatform()`,
+ * which answers `'web'` during the static export and only becomes true once the shell has booted.
+ */
+export function posthogEnabled() {
+  return !isIosApp()
+}
+
+/**
+ * Whether anything on this platform actually needs permission — i.e. whether there is a question for
+ * the consent banner to ask.
+ *
+ * The banner covers exactly two things, PostHog and Sentry's session replay. Replay is already off in
+ * both native shells (`sentry-config.ts`) and PostHog is now off in the iOS one, which leaves the iOS
+ * app with nothing consent-requiring running and therefore no honest reason to prompt. Sentry's error
+ * reporting and the `user_events` insert are unaffected: neither stores anything on the member's
+ * device beyond a session id, and both are first-party.
+ */
+export function consentRequired() {
+  return posthogEnabled() || SENTRY_REPLAY_ENABLED
+}
 
 export async function track(name: string, properties?: EventIds & EventData) {
   const {commentId, userId, ...data} = properties || {}
@@ -48,7 +85,7 @@ export function isTrackingStarted() {
 }
 
 export function initTracking() {
-  if (posthogStarted) return
+  if (posthogStarted || !posthogEnabled()) return
   posthogStarted = true
   posthog.init(ENV_CONFIG.posthogKey, {
     api_host: 'https://us.i.posthog.com',

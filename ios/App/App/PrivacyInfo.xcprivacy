@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <!-- Deliberately minimal. Two keys, both of which are stable for the life of the product.
+
+             What is NOT here, and why:
+
+             `NSPrivacyCollectedDataTypes` is optional, and listing the 15 types published under App
+             Privacy in App Store Connect would duplicate a declaration that already exists and is
+             already authoritative — the label is what users see and what review reads; nothing
+             validates this file against it. Two copies with no mechanism keeping them in step is a
+             drift generator, and a manifest that has fallen behind the label is worse than an absent
+             one, because it is a false statement rather than a missing one. Add a type here only if
+             Apple ever starts enforcing agreement.
+
+             `NSPrivacyAccessedAPITypes` is required only for required-reason APIs called by *this
+             target*. `AppDelegate.swift` and `NextExportViewController.swift` between them touch
+             `FileManager.fileExists` and `contentsOfDirectory`, neither of which is on Apple's list;
+             everything else is pod code, and each pod ships its own manifest that Xcode aggregates.
+             An earlier version of this file declared `UserDefaults` on the grounds that Capacitor
+             uses it — true, but that is Capacitor's declaration to make, not ours. If an upload ever
+             returns ITMS-91053, add the category the warning names and nothing more. -->
+
+        <!-- The app does not track. Tracking, in Apple's sense, is linking data collected here with
+             third-party data for advertising, or handing it to a data broker; Compass does neither.
+             Nothing reads the IDFA, and PostHog — the one third-party analytics tool the web build
+             uses — is switched off entirely in the iOS shell (`posthogEnabled()` in
+             web/lib/service/analytics.ts), along with the consent banner App Review read as a custom
+             tracking prompt in 1.42.0 (11).
+
+             ⚠️ This key states what *our* code does; it does not override a linked SDK. Xcode builds
+             the app's privacy report by aggregating every manifest in the binary, so an SDK that
+             declares tracking makes the app declare tracking no matter what this file says. See
+             `docs/design/sign-in-with-apple/` — as of this writing FBSDKCoreKit is linked via
+             @capgo/capacitor-social-login and declares exactly that. -->
+        <key>NSPrivacyTracking</key>
+        <false/>
+        <!-- Empty by definition: a domain listed here is one the app contacts for tracking, and there
+             are none of ours. Not omitted — an explicit empty array is the unambiguous statement. -->
+        <key>NSPrivacyTrackingDomains</key>
+        <array/>
+    </dict>
+</plist>

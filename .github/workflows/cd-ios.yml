@@ -113,6 +113,14 @@ jobs:
         working-directory: ios/App
         run: bundle exec pod install
 
+      # Deliberately between `pod install` and the build. The thing being checked only exists once
+      # the pods are resolved — it reads the manifests of every SDK linked into the binary — and
+      # Apple burns the build number on *receipt* of an upload rather than on acceptance, so a
+      # failure here costs nothing while the same failure at review costs a version bump and a
+      # review cycle. See scripts/verify_ios_privacy.sh for what it proves and why it exists.
+      - name: Verify no tracking SDKs are linked
+        run: ./scripts/verify_ios_privacy.sh
+
       - name: Build and upload to TestFlight
         working-directory: ios
         env:

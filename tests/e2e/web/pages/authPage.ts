@@ -33,13 +33,15 @@ export class AuthPage {
   }
 
   /**
-   * Registration requires explicit consent (App Store guideline 1.2 wants an affirmative act, not a
-   * "by signing up you agree" line), and the same checkbox gates the Google and Apple buttons. Every
-   * path through `/register` has to tick it or `handleSubmit` returns early.
+   * A no-op while the terms checkbox is commented out of `/register` — see the block near the top of
+   * `web/pages/register.tsx` for why it is off and what has to come back with it.
+   *
+   * Left in place, and still called by the specs, so that restoring the checkbox is an uncomment
+   * here rather than a hunt through every registration test for where the tick used to go.
    */
   async acceptTerms() {
-    await expect(this.termsCheckbox).toBeVisible()
-    await this.termsCheckbox.check()
+    // await expect(this.termsCheckbox).toBeVisible()
+    // await this.termsCheckbox.check()
   }
 
   async clickSignInWithEmailButton() {

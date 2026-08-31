@@ -1,5 +1,6 @@
 import {Capacitor} from '@capacitor/core'
 import {SocialLogin} from '@capgo/capacitor-social-login'
+import * as Sentry from '@sentry/nextjs'
 import {
   GOOGLE_CLIENT_ID,
   HAS_APPLE_SERVICES_ID,
@@ -191,17 +192,60 @@ async function appleNonce() {
  * seeding the profile. Emails may be `…@privaterelay.appleid.com` — real, forwarding addresses that
  * must be treated like any other.
  */
+/**
+ * Runs one leg of the Apple flow, and makes a failure say *which* leg failed and why.
+ *
+ * Written after App Review rejected 1.42.0 under guideline 2.1 with nothing more than "got an error
+ * when trying to login with Apple login". That report is unactionable, and it was unactionable
+ * because the app threw it away: `/signin` caught whatever came back and rendered the fixed string
+ * "Failed to sign in with Apple", so the screenshot a reviewer could have attached would have said
+ * no more than their sentence did.
+ *
+ * The three legs fail for entirely different reasons and are worth telling apart. `initialize` and
+ * `login` are the native side — an `ASAuthorizationError` here is almost always the provisioning
+ * profile rather than the code, since the Sign in with Apple capability has to be on the App ID and
+ * in the *distribution* profile, and a development build will happily work while the store build
+ * does not. `credential` is Firebase, where the codes are self-explaining
+ * (`auth/operation-not-allowed` = provider off, `auth/invalid-credential` = the nonce did not match,
+ * `auth/account-exists-with-different-credential` = the address is already a Google account).
+ *
+ * The stage and code go into the thrown message deliberately: it is what the person sees, so a
+ * screenshot from a reviewer or a member is finally worth something. Sentry gets the original.
+ */
+async function appleStep<T>(stage: string, run: () => Promise<T>): Promise<T> {
+  try {
+    return await run()
+  } catch (e: any) {
+    // `code` is Firebase's; `errorMessage` is what the Capacitor bridge puts a rejected native call
+    // under. Neither is always present, hence the walk down to `message`.
+    const code = e?.code ?? e?.errorMessage ?? e?.message ?? 'unknown error'
+    debug('Apple sign-in failed at', stage, e)
+    Sentry.captureException(e, {
+      tags: {flow: 'apple-signin', stage, platform: Capacitor.getPlatform()},
+    })
+    const error: any = new Error(`Apple sign-in failed at ${stage}: ${code}`)
+    error.code = e?.code
+    error.cause = e
+    throw error
+  }
+}
+
 export async function appleNativeLogin() {
   debug('Platform:', Capacitor.getPlatform())
 
-  await SocialLogin.initialize({apple: {redirectUrl: ''}})
+  await appleStep('initialize', () => SocialLogin.initialize({apple: {redirectUrl: ''}}))
 
   const {raw, hashed} = await appleNonce()
+  // Worth having in the breadcrumbs: a build where `crypto.subtle` turned out to be unavailable takes
+  // the no-nonce path, and that changes which Firebase errors are possible downstream.
+  debug('Apple nonce:', hashed ? 'hashed' : 'none')
 
-  const {result}: any = await SocialLogin.login({
-    provider: 'apple',
-    options: {scopes: ['name', 'email'], ...(hashed ? {nonce: hashed} : {})},
-  })
+  const {result}: any = await appleStep('login', () =>
+    SocialLogin.login({
+      provider: 'apple',
+      options: {scopes: ['name', 'email'], ...(hashed ? {nonce: hashed} : {})},
+    }),
+  )
 
   const idToken = result?.idToken
   if (!idToken) {
@@ -213,7 +257,9 @@ export async function appleNativeLogin() {
     ...(raw ? {rawNonce: raw} : {}),
   })
 
-  const userCredential = await signInWithCredential(auth, credential)
+  const userCredential = await appleStep('credential', () =>
+    signInWithCredential(auth, credential),
+  )
 
   const {givenName, familyName} = result?.profile ?? {}
   const fullName = [givenName, familyName].filter(Boolean).join(' ')

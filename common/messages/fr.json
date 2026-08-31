@@ -1479,7 +1479,7 @@
   "constellation.empty": "Une seule étoile pour l'instant — la vôtre. Chaque personne que vous invitez en allume une autre, et chacune qu'elle amène en allume une de plus, plus loin.",
   "constellation.hint": "Touchez une étoile pour savoir qui elle est. Faites défiler ou pincez pour zoomer, glissez pour vous déplacer.",
   "register.agreement.and": " et ",
-  "register.agreement.prefix": "En vous inscrivant, j'accepte les ",
+  "register.agreement.prefix": "En vous inscrivant, vous acceptez les ",
   "register.agreement.checkbox_prefix": "J'accepte les ",
   "register.agreement.suffix": ".",
   "register.already_account": "Vous avez déjà un compte ?",

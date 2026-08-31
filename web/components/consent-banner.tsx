@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {useEffect, useState} from 'react'
 import {Consent, getConsent, recordConsent} from 'web/lib/consent'
 import {useT} from 'web/lib/locale'
-import {startConsentedTracking} from 'web/lib/service/analytics'
+import {consentRequired, startConsentedTracking} from 'web/lib/service/analytics'
 
 /**
  * The analytics consent prompt.
@@ -25,6 +25,12 @@ import {startConsentedTracking} from 'web/lib/service/analytics'
  * Shown in the Android shell too. The app is this same web bundle in a WebView, so PostHog stores the
  * same ids on the same device there; skipping the prompt would leave the exact gap it exists to
  * close. Only Sentry's replay differs, and that is already off natively (see `sentry-config.ts`).
+ *
+ * **Not shown in the iOS shell**, where `consentRequired()` is false because PostHog is switched off
+ * there entirely — App Review read this card as a custom prompt asking permission to track and
+ * rejected 1.42.0 under guideline 5.1.2(i). Suppressing the banner while leaving PostHog running would
+ * have been the worst of both: it would trade the App Store problem for a GDPR one, since the cookie
+ * would then be set with no consent behind it. So the collection goes, and the question goes with it.
  */
 export function ConsentBanner() {
   const t = useT()
@@ -35,7 +41,9 @@ export function ConsentBanner() {
   const [showDecline, setShowDecline] = useState(false)
 
   useEffect(() => {
-    if (!getConsent()) setShow(true)
+    // `consentRequired()` is checked here rather than in the render body for the same reason `show`
+    // starts false: it reads the Capacitor platform, which is not known during the static render.
+    if (consentRequired() && !getConsent()) setShow(true)
   }, [])
 
   const choose = (consent: Consent) => {

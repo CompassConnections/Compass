@@ -4,7 +4,7 @@ import {SettingsRow} from 'web/components/settings/settings-card'
 import {SwitchSetting} from 'web/components/switch-setting'
 import {getConsent, recordConsent} from 'web/lib/consent'
 import {useT} from 'web/lib/locale'
-import {startConsentedTracking} from 'web/lib/service/analytics'
+import {consentRequired, startConsentedTracking} from 'web/lib/service/analytics'
 
 /**
  * Where the answer given to the consent banner can be changed.
@@ -17,15 +17,23 @@ import {startConsentedTracking} from 'web/lib/service/analytics'
  * Switching it off does not merely stop future collection: `recordConsent('denied')` also deletes the
  * ids PostHog already wrote. Switching it on takes effect immediately — no reload — because
  * `startConsentedTracking()` initialises PostHog and attaches Sentry's replay recorder on the spot.
+ *
+ * Absent in the iOS app, which runs nothing consent-requiring at all (see `consentRequired()`). A
+ * switch there would be worse than none: it would promise a choice that changes nothing, and it would
+ * be the second thing App Review could read as a custom tracking opt-in after the banner itself.
  */
 export function AnalyticsConsentSetting() {
   const t = useT()
   // Read in an effect, not in the initial state: the cookie is invisible during the static render, so
   // seeding from it directly would hydrate the switch in the wrong position for half the members.
   const [consent, setConsent] = useState(false)
+  // Same reasoning, and the same reason it starts `true`: the platform is only knowable on the client,
+  // and the row exists on every platform but iOS, so showing it is the safe first paint.
+  const [applicable, setApplicable] = useState(true)
 
   useEffect(() => {
     setConsent(getConsent() === 'granted')
+    setApplicable(consentRequired())
   }, [])
 
   const handleChange = (checked: boolean) => {
@@ -33,6 +41,8 @@ export function AnalyticsConsentSetting() {
     recordConsent(checked ? 'granted' : 'denied')
     if (checked) startConsentedTracking()
   }
+
+  if (!applicable) return null
 
   return (
     <SettingsRow

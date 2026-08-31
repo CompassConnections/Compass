@@ -30,7 +30,7 @@
     "@capacitor/push-notifications": "7.0.3",
     "@capacitor/share": "7.0.4",
     "@capacitor/status-bar": "7.0.3",
-    "@capgo/capacitor-social-login": "7.14.9",
+    "@capgo/capacitor-social-login": "7.20.0",
     "@floating-ui/dom": "1.7.5",
     "@floating-ui/react": "0.27.18",
     "@floating-ui/react-dom": "2.1.7",

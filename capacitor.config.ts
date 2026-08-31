@@ -42,6 +42,39 @@ const config: CapacitorConfig = {
     // `crypto.subtle` (the Sign-in-with-Apple nonce) need. Renaming the scheme buys nothing and risks
     // that, so it stays at the default.
   },
+  plugins: {
+    SocialLogin: {
+      // Which providers get *compiled into the binary*. The default is all four, and that is what
+      // shipped in 1.42.0: `FBSDKCoreKit`, `FBSDKCoreKit_Basics` and `FBSDKLoginKit` were linked
+      // into the app even though nothing ever calls `initialize({facebook: ...})`.
+      //
+      // That is not merely dead weight. FBSDKCoreKit ships a privacy manifest declaring
+      // `NSPrivacyTracking: true`, the tracking domain `ep1.facebook.com`, and Device ID collected
+      // with `tracking = true`. Xcode builds the app's privacy report by aggregating every manifest
+      // in the binary, so a linked-but-unused Facebook SDK makes the *app* declare that it tracks —
+      // which is a far better explanation of the guideline 5.1.2(i) rejection than the consent
+      // banner was, because it is machine-detectable and Apple's tooling detects it. Our own
+      // `ios/App/App/PrivacyInfo.xcprivacy` saying `false` does not override it; only unlinking does.
+      //
+      // Needs plugin >= 7.20, which is why the version moved with this: 7.14.9 hard-depended on
+      // FBSDK in its podspec with no opt-out. 7.20 added a `capacitor:sync:before` hook that
+      // comments those dependencies out of the podspec from this config, and wrapped the provider's
+      // Swift in `#if canImport(FBSDKLoginKit)` so it compiles out once the pod is gone.
+      //
+      // Deliberately *not* the 8.x line, which has the same feature: every 8.x peer-depends on
+      // @capacitor/core >= 8, and this project is on 7.4.4. Removing a tracking SDK should not
+      // require a Capacitor major upgrade across both platforms.
+      //
+      // Apple stays on — guideline 4.8 requires it, and it costs nothing anyway (system frameworks,
+      // no pod). Google brings GoogleSignIn, which we do use.
+      providers: {
+        google: true,
+        apple: true,
+        facebook: false,
+        twitter: false,
+      },
+    },
+  },
   includePlugins: [
     '@capacitor-community/in-app-review',
     '@capacitor/app',

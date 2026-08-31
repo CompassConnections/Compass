@@ -844,20 +844,31 @@ necessary because 1000 is ambiguous and a genuine unknown failure now also passe
 
 Two dead ends worth recording, so they are not re-walked:
 
-- **The presentation anchor was a dead end for Apple, and the actual bug for Google.** Both providers
-  find their window with `UIApplication.shared.windows.first` — deprecated since iOS 15, order not
-  contractual, force-unwrapped in `AppleProvider.swift`. Apple's sheet presents fine on device, so that
-  copy is left alone (its force-unwrap remains a latent crash if the array is ever empty). Google's does
-  not: it hands the window's `rootViewController` to GIDSignIn, AppAuth derives its
-  `ASWebAuthenticationSession` anchor from `presentingViewController.view.window`, and a wrong guess
-  makes the session refuse to start — reported as "Unable to open Safari."
+- **Google's failure is Guided Access, and it is not fixable.** `OIDExternalUserAgentIOS.m:100-140`
+  (AppAuth 2.1.0, pulled in by `GoogleSignIn 9.0.0`):
 
-  This only became visible once `forcePrompt: true` shipped in build 16. Before that the provider took
-  the silent `restorePreviousSignIn` branch (`GoogleProvider.swift:80`) on any returning device and
-  never presented at all, so the broken path could not be reached. Sentry COMPASS-60 then caught a
-  _first_ tap on a freshly loaded `/signin` — no prior attempt, no focused field, nothing presented —
-  failing with exactly that string. [`scripts/patch_google_presenting_vc.mjs`](../scripts/patch_google_presenting_vc.mjs),
-  run from `postinstall`, resolves the key window and walks to the topmost presented controller.
+  ```objc
+  if (@available(iOS 12.0, *)) {
+    // ASWebAuthenticationSession doesn't work with guided access (rdar://40809553)
+    if (!UIAccessibilityIsGuidedAccessEnabled()) { ... openedUserAgent = [authenticationVC start]; }
+  }
+  if (!openedUserAgent) { [self cleanUp]; return NO; }
+  ```
+
+  With Guided Access on, the block is skipped, nothing is started, and `OIDAuthorizationService.m:83`
+  reports the refusal as "Unable to open Safari." There is no fallback in this version, so the failure
+  is certain rather than incidental, and no configuration on our side avoids it — it applies to every
+  iOS app using Google's SDK. Review devices are commonly run under Guided Access to keep the app
+  foregrounded, and Sentry COMPASS-60 (`provider: google`, build 16) geolocates to Cupertino on iOS
+  18.7. `describeSignInFailure` now explains it on screen instead of showing the raw string, so it
+  reads as a limitation with two other ways in rather than as a broken button.
+
+  Two theories were chased and discarded before this. Neither survives a first tap on a freshly loaded
+  `/signin` with nothing presented and no text field focused, which is what the breadcrumbs show:
+  a stuck `_externalUserAgentFlowInProgress` from an earlier cancel, and a bad presentation anchor from
+  `UIApplication.shared.windows.first`. The anchor one got as far as a committed patch before the
+  Guided Access branch turned up; it was removed. `windows.first` is still deprecated and
+  force-unwrapped in `AppleProvider.swift` — a latent crash if that array is ever empty, unaddressed.
 
 - **It is not provisioning.** TestFlight and App Store review get the identical binary from the same
   upload, so "works on TestFlight" rules out entitlement and profile theories outright.
@@ -908,6 +919,8 @@ Martin
 Demo account credentials are provided for email sign-in. Sign in with Apple and Google create new accounts and can be tested directly.
 
 The app does not track users; there is no AppTrackingTransparency prompt because there is nothing to request permission for.
+
+Please note: if the review device has Guided Access enabled, Sign in with Google cannot open its authentication session. This is a documented limitation of Google's iOS SDK (AppAuth, rdar://40809553) and affects every app using it — the app now explains this on screen. Sign in with Apple and email sign-in are unaffected and can be used instead.
 ```
 
 The App Privacy declaration was deliberately left untouched for this round. It was never the problem,

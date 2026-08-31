@@ -3,7 +3,13 @@ import {debug} from 'common/logger'
 import {getProfileRowWithFrontendSupabase} from 'common/profiles/profile'
 import Router from 'next/router'
 import toast from 'react-hot-toast'
-import {appleLogin, auth, googleLogin, isSignInCancellation} from 'web/lib/firebase/users'
+import {
+  appleLogin,
+  auth,
+  describeSignInFailure,
+  googleLogin,
+  isSignInCancellation,
+} from 'web/lib/firebase/users'
 import {db} from 'web/lib/supabase/db'
 import {safeLocalStorage} from 'web/lib/util/local'
 
@@ -79,18 +85,18 @@ export async function socialSigninSignup(
   }
 }
 
-const toastSocialFailure = (e: any) => {
+const toastSocialFailure = (label: string) => (e: any) => {
   console.error(e)
-  toast.error('Failed to sign in: ' + (e?.message ?? ''))
+  toast.error(describeSignInFailure(e, label))
 }
 
 export type SocialProvider = 'google' | 'apple'
 
 export const googleSigninSignup = async () =>
-  socialSigninSignup(googleLogin, 'google').catch(toastSocialFailure)
+  socialSigninSignup(googleLogin, 'google').catch(toastSocialFailure('Google'))
 
 export const appleSigninSignup = async () =>
-  socialSigninSignup(appleLogin, 'apple').catch(toastSocialFailure)
+  socialSigninSignup(appleLogin, 'apple').catch(toastSocialFailure('Apple'))
 
 export async function startSignup() {
   await Router.push('/register')

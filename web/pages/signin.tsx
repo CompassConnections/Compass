@@ -22,7 +22,13 @@ import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
 import {useUser} from 'web/hooks/use-user'
 import {sendPasswordReset} from 'web/lib/firebase/password'
-import {appleLogin, auth, canAppleLogin, googleLogin} from 'web/lib/firebase/users'
+import {
+  appleLogin,
+  auth,
+  canAppleLogin,
+  describeSignInFailure,
+  googleLogin,
+} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {signinSignupRedirect, type SocialProvider, socialSigninSignup} from 'web/lib/util/signup'
 
@@ -98,9 +104,8 @@ function RegisterComponent() {
       await socialSigninSignup(login, provider, redirectPath)
     } catch (error: any) {
       console.error('Error signing in:', error)
-      const reason = error?.message ? `: ${error.message}` : ''
       const label = provider === 'apple' ? 'Apple' : 'Google'
-      setError(`Failed to sign in with ${label}${reason}`)
+      setError(describeSignInFailure(error, label))
     } finally {
       // `finally`, not the catch: the success path navigates away, and on the rare occasion it does
       // not — an existing account whose redirect is a no-op — a spinner left running forever is

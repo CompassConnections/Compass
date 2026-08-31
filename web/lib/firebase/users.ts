@@ -249,6 +249,38 @@ export function isSignInCancellation(e: any): boolean {
   )
 }
 
+/**
+ * A message for the failures whose native wording explains nothing to the person reading it.
+ *
+ * "Unable to open Safari." is the one that matters, and it is not about Safari. AppAuth — which
+ * Google's SDK uses — reports it whenever its external user agent refuses to start, and there is one
+ * case where that is guaranteed rather than incidental:
+ *
+ *   // ASWebAuthenticationSession doesn't work with guided access (rdar://40809553)
+ *   if (!UIAccessibilityIsGuidedAccessEnabled()) { ... openedUserAgent = [authenticationVC start]; }
+ *   if (!openedUserAgent) { return NO; }
+ *
+ * — `OIDExternalUserAgentIOS.m:100-140`, AppAuth 2.1.0. With Guided Access on, the block is skipped
+ * entirely, nothing is ever started, and the failure is certain. There is no fallback path in this
+ * version, so no configuration of ours can avoid it: Google sign-in simply cannot run under Guided
+ * Access, in this or any other app using Google's iOS SDK.
+ *
+ * This is what App Review hit on build 16 — Sentry COMPASS-60, `provider: google`, geolocated to
+ * Cupertino — and review devices are commonly run under Guided Access to keep the app foregrounded.
+ * We cannot make it work for them. We can stop it looking like a broken button, which is the
+ * difference between a guideline 2.1 rejection and a comprehensible limitation with two other ways in.
+ */
+export function describeSignInFailure(e: any, label: string): string {
+  const text = `${e?.code ?? ''} ${e?.errorMessage ?? ''} ${e?.message ?? ''}`
+  if (/Unable to open Safari/i.test(text)) {
+    return (
+      `${label} sign-in cannot open its secure browser window. This happens for instance when Guided Access is ` +
+      `turned on — switch it off in Settings › Accessibility, or continue with email instead.`
+    )
+  }
+  return `Failed to sign in with ${label}${e?.message ? `: ${e.message}` : ''}`
+}
+
 async function appleStep<T>(stage: string, run: () => Promise<T>): Promise<T> {
   try {
     return await run()

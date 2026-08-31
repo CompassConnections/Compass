@@ -1,8 +1,9 @@
+import * as Sentry from '@sentry/nextjs'
 import {debug} from 'common/logger'
 import {getProfileRowWithFrontendSupabase} from 'common/profiles/profile'
 import Router from 'next/router'
 import toast from 'react-hot-toast'
-import {appleLogin, auth, googleLogin} from 'web/lib/firebase/users'
+import {appleLogin, auth, googleLogin, isSignInCancellation} from 'web/lib/firebase/users'
 import {db} from 'web/lib/supabase/db'
 import {safeLocalStorage} from 'web/lib/util/local'
 
@@ -43,16 +44,37 @@ export function isOnboardingFlag() {
  * Throws rather than swallowing, so each page can present the failure the way it already does:
  * a toast on `/register`, the inline `AuthError` on `/signin`. The state handling either side of the
  * failure is what has to match, and now does.
+ *
+ * One exception: closing the provider's sheet returns quietly. Both pages would otherwise report a
+ * deliberate act as a failure — see `isSignInCancellation`, and the guideline 2.1 rejection it is
+ * there to answer. Handled here rather than in each page so neither can forget.
  */
-export async function socialSigninSignup(login: () => Promise<any>, path?: string | null) {
+export async function socialSigninSignup(
+  login: () => Promise<any>,
+  provider: SocialProvider,
+  path?: string | null,
+) {
+  // A breadcrumb per attempt, because the DOM ones cannot tell these apart: both buttons render from
+  // `SOCIAL_BUTTON_CLASSES`, so a click on either serialises to the same selector. A Sentry report
+  // showing two identical clicks and two different errors is exactly what that ambiguity looks like.
+  Sentry.addBreadcrumb({category: 'auth', level: 'info', message: `${provider} sign-in tapped`})
   setOnboardingFlag()
   try {
     const creds = await login()
     await signinSignupRedirect(creds?.user?.uid, path)
   } catch (e) {
     // Cleared on the way out, or a failed attempt would leave every later session convinced it is
-    // mid-onboarding and stop `auth-context` loading anyone at all.
+    // mid-onboarding and stop `auth-context` loading anyone at all. Cancelling counts: the flag has
+    // to go whether they backed out or it broke.
     clearOnboardingFlag()
+    if (isSignInCancellation(e)) {
+      debug('Social sign-in dismissed by the user')
+      return
+    }
+    // Reported here rather than per-provider. Only Apple was instrumented before, so a Google failure
+    // left nothing but a `console.error` breadcrumb — which is why "Unable to open Safari." (AppAuth,
+    // via GoogleSignIn) arrived with no stack, no tags and no way to tell which button produced it.
+    Sentry.captureException(e, {tags: {flow: 'social-signin', provider}})
     throw e
   }
 }
@@ -62,11 +84,13 @@ const toastSocialFailure = (e: any) => {
   toast.error('Failed to sign in: ' + (e?.message ?? ''))
 }
 
+export type SocialProvider = 'google' | 'apple'
+
 export const googleSigninSignup = async () =>
-  socialSigninSignup(googleLogin).catch(toastSocialFailure)
+  socialSigninSignup(googleLogin, 'google').catch(toastSocialFailure)
 
 export const appleSigninSignup = async () =>
-  socialSigninSignup(appleLogin).catch(toastSocialFailure)
+  socialSigninSignup(appleLogin, 'apple').catch(toastSocialFailure)
 
 export async function startSignup() {
   await Router.push('/register')

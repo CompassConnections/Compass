@@ -111,6 +111,9 @@ export function GoogleButton({onClick, isLoading = false, label, ...props}: Goog
       disabled={isLoading}
       style={{fontFamily: SYSTEM_FONT_STACK}}
       className={SOCIAL_BUTTON_CLASSES}
+      // The two buttons are otherwise identical in the DOM, so a Sentry click breadcrumb cannot say
+      // which was pressed — which is what made a Google failure and an Apple one read as two Apple taps.
+      data-provider="google"
       {...props}
     >
       {/* Sized to sit level with `AppleMark` beside it — the G is square where the Apple mark is
@@ -192,6 +195,8 @@ export function AppleButton({onClick, isLoading = false, label, ...props}: Apple
       disabled={isLoading}
       style={{fontFamily: SYSTEM_FONT_STACK}}
       className={SOCIAL_BUTTON_CLASSES}
+      // See `GoogleButton` — this is what tells the two apart in a click breadcrumb.
+      data-provider="apple"
       {...props}
     >
       {/* 15px tall, width following the artwork's own 15:19 box so nothing is stretched.

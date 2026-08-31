@@ -781,6 +781,128 @@ Ordered by how likely they are to cost us a rejection round:
    is unrelated. Only the home-screen label collided. Android's `app_name` stays `Compass` — Play has
    no such constraint, and renaming it would rename the app for existing installs for no benefit.
 
+### 8.11 Rejection of 1.42.0 (11), 31 Aug 2026 — and the reply
+
+Submission `03f117df-a8e3-46a7-b3a9-e27214324691`, reviewed on an iPhone 17 Pro Max running iOS 26.6.
+Three items, cited together. Recorded here because two of the three had causes that were nowhere near
+where the rejection text pointed.
+
+| Guideline | Cited as                                                | Actual cause                                                        |
+| --------- | ------------------------------------------------------- | ------------------------------------------------------------------- |
+| 5.1.2(i)  | Custom prompt requesting permission to track            | `FBSDKCoreKit` linked into the binary by an unused plugin provider  |
+| 4         | Sign in with Apple logo not from Apple Design Resources | `FaApple` from `react-icons` — Font Awesome's redrawing of the mark |
+| 2.1       | "got an error when trying to login with Apple login"    | Never reproduced. Most likely the Terms checkbox gate; see below    |
+
+**5.1.2(i) was not about the consent banner.** The App Store Connect privacy label already declared no
+tracking, and had done since a week before the review — so the label was never the trigger. What
+contradicted it was `@capgo/capacitor-social-login`, whose podspec hard-depended on `FBSDKCoreKit` and
+`FBSDKLoginKit`. Facebook login is not offered anywhere in the app and `initialize({facebook: ...})` is
+never called, but Xcode builds the app's privacy report by aggregating every manifest in the binary, and
+FBSDKCoreKit's declares `NSPrivacyTracking: true`, the tracking domain `ep1.facebook.com`, and Device ID
+with `tracking = true`. A linked SDK that declares tracking makes the _app_ declare tracking, however
+little of it runs — and our own `PrivacyInfo.xcprivacy` saying `false` does not override it.
+
+Removing it needed plugin >= 7.20, which added a `capacitor:sync:before` hook that comments the FBSDK
+lines out of the podspec from `plugins.SocialLogin.providers` in `capacitor.config.ts`, and wrapped the
+provider's Swift in `#if canImport(FBSDKLoginKit)` so it compiles out. Not the 8.x line, which has the
+same feature but peer-depends on `@capacitor/core >= 8`.
+
+That hook is also how [`scripts/cap.sh`](../scripts/cap.sh) came to exist: `npx cap` resolved to the
+Capacitor 5 CLI nested under `@capacitor/assets`, which has no `runHooks` at all and silently skipped it.
+See that script's header — the same bug is why `scripts/ios_plugin_classlist.mjs` was ever needed.
+
+[`scripts/verify_ios_privacy.sh`](../scripts/verify_ios_privacy.sh) now runs in `cd-ios.yml` between
+`pod install` and `fastlane beta` and fails the build if anything linked declares tracking. It goes
+before the upload deliberately: Apple burns the build number on receipt, not on acceptance.
+
+**Guideline 4 was about provenance, not appearance.** Font Awesome's Apple glyph is close enough that
+nobody notices; Apple's Sign-in-with-Apple mark is its own simplified drawing and is not the marketing
+logo either. Replacing one redrawing with another does not answer the citation. `AppleMark` in
+`web/components/buttons/sign-up-button.tsx` now carries Apple's path verbatim from
+`Logo - SIWA - Logo-only - Black.svg`; the originals and the measurements taken from them are in
+[`docs/design/sign-in-with-apple/`](design/sign-in-with-apple/).
+
+**2.1 was a cancelled sheet reported as a failure.** Build 15 was the first build that reported the
+failing leg, and Sentry caught it within hours: `flow: apple-signin`, `stage: login`,
+`AuthorizationError 1000`. On device the Apple sheet opens and works normally — the error appears when
+it is _dismissed_.
+
+Apple documents `.canceled` as 1001, but backing out of the sheet reports **1000**, `.unknown`, the
+catch-all. So the app treated a deliberate act as a failure and left an error on screen, which reads as a
+broken button. That is the most likely thing App Review saw: they opened the sheet, backed out, and got
+"Failed to sign in with Apple: …error 1000".
+
+The Google breadcrumb in the same session — AppAuth's "Unable to open Safari."
+(`OIDAuthorizationService.m:83`) — fits the same story. Cancelling an AppAuth flow can leave
+`_externalUserAgentFlowInProgress` set, so the _next_ tap returns NO from
+`presentExternalUserAgentRequest` and is reported with that misleading string.
+
+`isSignInCancellation` in `web/lib/firebase/users.ts` now recognises a dismissal from either provider,
+and `socialSigninSignup` returns quietly for it, so neither `/signin` nor `/register` can report backing
+out as an error. Cancellations still reach Sentry, as an info breadcrumb rather than an exception —
+necessary because 1000 is ambiguous and a genuine unknown failure now also passes quietly.
+
+Two dead ends worth recording, so they are not re-walked:
+
+- **It is not the presentation anchor.** Both providers find their window with
+  `UIApplication.shared.windows.first` — deprecated since iOS 15, order not contractual, and
+  force-unwrapped in `AppleProvider.swift`. That looked like a single cause for both failures and it is
+  genuinely poor practice, but the sheet presents fine, so nothing supports patching it. Left alone; the
+  force-unwrap remains a latent crash if that array is ever empty.
+- **It is not provisioning.** TestFlight and App Store review get the identical binary from the same
+  upload, so "works on TestFlight" rules out entitlement and profile theories outright.
+
+Also removed while chasing this: `/register` required a Terms checkbox before any sign-up button would
+proceed, and rendered the message above the buttons where it is easy to miss on a phone — a second way to
+get "an error" with no Apple sheet.
+
+#### The reply sent
+
+Plain text, and deliberately not hard-wrapped: App Store Connect's message box neither renders
+Markdown nor reflows, so manual line breaks paste through as ragged ones. One line per paragraph.
+
+```text
+Hello,
+
+Thank you for the detail. All three items are addressed in build 1.42.0 (15).
+
+Guideline 5.1.2(i) — Data Use and Sharing
+
+The app does not track users, and we found what contradicted that. A third-party login plugin (@capgo/capacitor-social-login) was linking the Facebook SDK into the binary even though Facebook login is not offered anywhere in the app and the SDK is never initialised. FBSDKCoreKit's privacy manifest declares NSPrivacyTracking = true and the tracking domain ep1.facebook.com, so the app's aggregated privacy report declared tracking that no code in the app performs.
+
+That dependency has been removed. The build links no SDK that declares tracking, and contains no advertising SDK, no attribution SDK, no IDFA access and no data broker integration. The app's own privacy manifest declares NSPrivacyTracking = false with an empty NSPrivacyTrackingDomains array. Our App Store Connect privacy declaration is unchanged and continues to state that no data is used to track.
+
+Because the app does not track, there is no AppTrackingTransparency prompt and no permission request to point you to. The custom prompt in the previous build was a GDPR/ePrivacy consent notice for first-party product analytics, not a request to track. That notice and the analytics behind it are now disabled on iOS entirely.
+
+Guideline 4 — Sign in with Apple
+
+The button now uses the SVG artwork from the "Sign in with Apple Logo" download in Apple Design Resources, unmodified, with the label, proportions, minimum height and typography matched to Apple's specification. It appears on both the sign-in and registration screens.
+
+Guideline 2.1 — Apple login error
+
+We reproduced this and fixed it. Thank you for the report — it was a real bug.
+
+Dismissing the Sign in with Apple sheet reports AuthorizationError 1000 (.unknown) rather than the documented .canceled (1001). Our app treated that as a failure and displayed an error message, so closing the sheet — a deliberate action — looked like a broken sign-in. We believe this is what was encountered: the sheet itself presents and completes normally.
+
+Cancellation from either provider is now recognised and handled silently, so closing the sheet simply returns to the sign-in screen with no error. Sign in with Apple and Sign in with Google complete normally when carried through.
+
+We also removed a second way to see an error without an Apple sheet: the registration screen required a Terms and Conditions checkbox before any sign-up button would proceed, and the message was rendered above the buttons where it is easy to miss on a phone. That requirement is gone; the Terms and Privacy Policy links remain on the screen.
+
+Thank you,
+Martin
+```
+
+#### Review Notes for the resubmission
+
+```text
+Demo account credentials are provided for email sign-in. Sign in with Apple and Google create new accounts and can be tested directly.
+
+The app does not track users; there is no AppTrackingTransparency prompt because there is nothing to request permission for.
+```
+
+The App Privacy declaration was deliberately left untouched for this round. It was never the problem,
+and changing it in the same submission would blur which fix worked.
+
 ---
 
 ## 9. Order of work

@@ -24,7 +24,7 @@ import {useUser} from 'web/hooks/use-user'
 import {sendPasswordReset} from 'web/lib/firebase/password'
 import {appleLogin, auth, canAppleLogin, googleLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
-import {signinSignupRedirect, socialSigninSignup} from 'web/lib/util/signup'
+import {signinSignupRedirect, type SocialProvider, socialSigninSignup} from 'web/lib/util/signup'
 
 export default function LoginPage() {
   return (
@@ -90,16 +90,17 @@ function RegisterComponent() {
    * failing leg and its code, and that is only useful if it reaches the screen someone can
    * photograph.
    */
-  const handleSocialSignIn = async (login: () => Promise<any>, provider: string) => {
+  const handleSocialSignIn = async (login: () => Promise<any>, provider: SocialProvider) => {
     setIsLoading(true)
     setIsLoadingGoogle(true)
     setError(null)
     try {
-      await socialSigninSignup(login, redirectPath)
+      await socialSigninSignup(login, provider, redirectPath)
     } catch (error: any) {
       console.error('Error signing in:', error)
       const reason = error?.message ? `: ${error.message}` : ''
-      setError(`Failed to sign in with ${provider}${reason}`)
+      const label = provider === 'apple' ? 'Apple' : 'Google'
+      setError(`Failed to sign in with ${label}${reason}`)
     } finally {
       // `finally`, not the catch: the success path navigates away, and on the rare occasion it does
       // not — an existing account whose redirect is a no-op — a spinner left running forever is
@@ -109,8 +110,8 @@ function RegisterComponent() {
     }
   }
 
-  const handleGoogleSignIn = () => handleSocialSignIn(googleLogin, 'Google')
-  const handleAppleSignIn = () => handleSocialSignIn(appleLogin, 'Apple')
+  const handleGoogleSignIn = () => handleSocialSignIn(googleLogin, 'google')
+  const handleAppleSignIn = () => handleSocialSignIn(appleLogin, 'apple')
 
   const handleEmailPasswordSignIn = async (email: string, password: string) => {
     try {

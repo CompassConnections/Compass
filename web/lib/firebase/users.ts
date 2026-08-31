@@ -131,10 +131,19 @@ export async function googleNativeLogin() {
     },
   })
 
-  // Run the native Google OAuth
+  // Run the native Google OAuth.
+  //
+  // `forcePrompt` is what makes the account chooser appear. Without it `GoogleProvider.swift:80` takes
+  // the `hasPreviousSignIn()` branch and calls `restorePreviousSignIn` — silently returning whichever
+  // Google account was used last, with no sheet and no way to pick another. Anyone with two Google
+  // accounts is therefore permanently stuck on the first one they ever used here, and the only visible
+  // symptom is a button that appears to do nothing before logging you straight in.
+  //
+  // The cost is one extra tap for a single-account user, which is the same bargain Google's own web
+  // flow makes and is worth it to have account switching work at all.
   const {result}: any = await SocialLogin.login({
     provider: 'google',
-    options: {},
+    options: {forcePrompt: true},
   })
 
   debug('SocialLogin.login result:', JSON.stringify(result))
@@ -212,6 +221,34 @@ async function appleNonce() {
  * The stage and code go into the thrown message deliberately: it is what the person sees, so a
  * screenshot from a reviewer or a member is finally worth something. Sentry gets the original.
  */
+/**
+ * Whether a failed sign-in is just someone closing the sheet.
+ *
+ * Backing out is not an error and must not be shown as one — which is what App Review most likely saw
+ * when they reported "got an error when trying to login with Apple login". Opening the Apple sheet and
+ * dismissing it left the fixed failure string on screen, which reads as a broken button rather than as
+ * a cancelled action.
+ *
+ * The awkward part is `1000`. Apple documents `.canceled` as 1001, but dismissing the sheet reports
+ * `AuthorizationError error 1000` — `.unknown`, the catch-all — so treating only 1001 as a
+ * cancellation catches almost nothing in practice. 1000 is therefore included, and the cost is
+ * acknowledged: a *genuine* unknown failure now also passes quietly. That trade is deliberate. A
+ * person who backed out deserves silence, and the diagnostics are not lost — see below, these still
+ * reach Sentry, just as a breadcrumb rather than as an exception.
+ *
+ * Google's side is matched on wording rather than a code: `GIDSignIn` and AppAuth both say "cancel",
+ * and AppAuth spells it with one `l` while the Firebase web codes use two.
+ */
+export function isSignInCancellation(e: any): boolean {
+  const text = `${e?.code ?? ''} ${e?.errorMessage ?? ''} ${e?.message ?? ''}`
+  return (
+    /AuthorizationError error (1000|1001)/.test(text) ||
+    /cancell?ed/i.test(text) ||
+    e?.code === 'auth/popup-closed-by-user' ||
+    e?.code === 'auth/cancelled-popup-request'
+  )
+}
+
 async function appleStep<T>(stage: string, run: () => Promise<T>): Promise<T> {
   try {
     return await run()
@@ -219,10 +256,24 @@ async function appleStep<T>(stage: string, run: () => Promise<T>): Promise<T> {
     // `code` is Firebase's; `errorMessage` is what the Capacitor bridge puts a rejected native call
     // under. Neither is always present, hence the walk down to `message`.
     const code = e?.code ?? e?.errorMessage ?? e?.message ?? 'unknown error'
+    const cancelled = isSignInCancellation(e)
     debug('Apple sign-in failed at', stage, e)
-    Sentry.captureException(e, {
-      tags: {flow: 'apple-signin', stage, platform: Capacitor.getPlatform()},
-    })
+
+    if (cancelled) {
+      // A breadcrumb rather than an exception: closing a sheet is not something to page anyone about,
+      // but because `1000` is ambiguous this is also the only trace a real failure would leave. It
+      // rides along on whatever the session reports next.
+      Sentry.addBreadcrumb({
+        category: 'auth',
+        level: 'info',
+        message: `Apple sign-in dismissed at ${stage}: ${code}`,
+      })
+    } else {
+      Sentry.captureException(e, {
+        tags: {flow: 'apple-signin', stage, platform: Capacitor.getPlatform()},
+      })
+    }
+
     const error: any = new Error(`Apple sign-in failed at ${stage}: ${code}`)
     error.code = e?.code
     error.cause = e
@@ -257,9 +308,7 @@ export async function appleNativeLogin() {
     ...(raw ? {rawNonce: raw} : {}),
   })
 
-  const userCredential = await appleStep('credential', () =>
-    signInWithCredential(auth, credential),
-  )
+  const userCredential = await appleStep('credential', () => signInWithCredential(auth, credential))
 
   const {givenName, familyName} = result?.profile ?? {}
   const fullName = [givenName, familyName].filter(Boolean).join(' ')
@@ -399,6 +448,22 @@ export async function revokeAppleToken(): Promise<'revoked' | 'not-applicable' |
   }
 }
 
+/**
+ * Signing out of Firebase does not sign you out of the *native* providers, and until it did, "sign
+ * out" was only half true on iOS and Android: `GIDSignIn` kept its session, so the next tap on
+ * "Sign in with Google" silently restored the same account. Combined with `restorePreviousSignIn`
+ * (see `googleNativeLogin`) that made switching accounts impossible without deleting the app.
+ *
+ * Both provider logouts are best-effort. `SocialLogin.logout` rejects when the provider was never
+ * initialised this session, or — for Apple — with "Not logged in; Cannot logout" when there is no
+ * stored token, and neither is a reason to leave someone half signed out.
+ */
 export async function firebaseLogout() {
+  if (isNativeApp()) {
+    await Promise.all([
+      SocialLogin.logout({provider: 'google'}).catch((e) => debug('Google logout skipped', e)),
+      SocialLogin.logout({provider: 'apple'}).catch((e) => debug('Apple logout skipped', e)),
+    ])
+  }
   await auth.signOut()
 }

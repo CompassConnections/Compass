@@ -87,6 +87,20 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      # Before the web build, not after. `cap sync` runs `pod install` itself, and Capacitor 7
+      # notices ios/Gemfile and shells out to `bundle exec pod` — which fails with
+      # `Bundler::GemNotFound` if the gems are not installed yet. The old Capacitor 5 CLI that
+      # `npx cap` used to resolve to never reached that code, so the ordering was wrong all along
+      # and simply never mattered. See scripts/cap.sh.
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Install fastlane and CocoaPods
+        working-directory: ios
+        run: bundle install
+
       - name: Compile Web App into iOS assets
         env:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
@@ -99,15 +113,6 @@ jobs:
         # Mirrors the google-services.json step in cd-android.yml. Without it AppDelegate skips
         # FirebaseApp.configure() and devices register with a raw APNs token the backend can't use.
         run: echo "${{ secrets.IOS_GOOGLE_SERVICES_PLIST }}" | base64 -d > ios/App/App/GoogleService-Info.plist
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3'
-
-      - name: Install fastlane and CocoaPods
-        working-directory: ios
-        run: bundle install
 
       - name: Install pods
         working-directory: ios/App

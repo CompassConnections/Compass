@@ -18,14 +18,17 @@
 //
 // What this is *not*: the site's own search. Search answers "who matches these filters"; this answers
 // "who can I suggest". The difference is the
-// caveats — dormant, empty bio, kids mismatch, members-only
+// caveats — empty bio, kids mismatch, members-only
+//
+// How long ago someone was last online is reported but never scored, never filtered and never a caveat
+// (`martin/outreach/new-members.md` § Contact #2(a)). A dormant profile is a person with a working email
+// address, and the message is the notification that brings them back.
 
 import chalk from 'chalk'
 import {readFileSync, writeFileSync} from 'fs'
 import {countBy, uniq} from 'lodash'
 
 import {debug} from 'common/logger'
-import {DORMANT_AFTER_DAYS} from 'common/outreach/outreach'
 import {
   areAgeCompatible,
   areGenderCompatible,
@@ -53,8 +56,6 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000
 
 /** A bio shorter than this is a page with nothing on it — clicking through costs the reader more than it gives. */
 const MIN_READABLE_BIO = 300
-/** Past this, a handed-over profile is a coin flip on whether anyone is still there to answer. */
-const STALE_DAYS = 60
 
 const daysSince = (ts: string | Date | null | undefined): number | null =>
   ts ? Math.floor((Date.now() - new Date(ts).valueOf()) / MS_PER_DAY) : null
@@ -352,23 +353,16 @@ runScript(async ({pg}) => {
     if (kidsGap !== null) score += kidsGap === 0 ? 4 : kidsGap === 1 ? 1 : -3
     if (target.mbti && row.mbti && target.mbti === row.mbti) score += 1
 
-    // Deliverability. Everything above is about fit; this is about whether a message sent there gets
-    // read, and it is weighted to matter, because a perfect match who left in March is worth less to
-    // hand over than a decent one who was here yesterday.
-    if (offline === null || offline > 180) score -= 12
-    else if (offline > DORMANT_AFTER_DAYS * 3) score -= 8
-    else if (offline > STALE_DAYS) score -= 5
-    else if (offline <= 7) score += 3
+    // Readability. Everything above is about fit; this is about whether there is anything on the page
+    // for the recipient to read. It used to also penalise dormancy — a perfect match who left in March
+    // scored below a decent one who was here yesterday — and that is now deliberately gone: ranking on
+    // recency hands every member the same small circle of currently-active people, and the member who
+    // has been away four months is the one for whom an unexpected message is worth the most.
     if (bioLength < MIN_READABLE_BIO) score -= 6
     else if (bioLength > 1000) score += 2
     if ((row.photo_urls ?? []).length > 0) score += 1
 
     const caveats = [
-      offline === null
-        ? 'never seen online'
-        : offline > STALE_DAYS
-          ? `last online ${offline} days ago — say so, or don't send`
-          : null,
       bioLength < MIN_READABLE_BIO
         ? `bio is ${bioLength} chars — nothing to read on the other end`
         : null,
@@ -406,9 +400,8 @@ runScript(async ({pg}) => {
     .filter((s) => s.eligible)
     .filter((s) => !EXCLUDE.includes(s.row.username.toLowerCase()))
   const ranked = [...eligible].sort((a, b) => b.score - a.score)
-  const sendable = eligible.filter(
-    (s) => s.bioLength >= MIN_READABLE_BIO && s.offline !== null && s.offline <= STALE_DAYS,
-  )
+  /** The only thing that still disqualifies: an empty page has nothing for the recipient to read. */
+  const sendable = eligible.filter((s) => s.bioLength >= MIN_READABLE_BIO)
 
   const out: string[] = [
     `# Candidates for ${target.name} (@${target.username})`,
@@ -424,7 +417,7 @@ runScript(async ({pg}) => {
     field('Pool', `${pool.length} open to matches, ${eligible.length} mutually eligible`),
     field(
       'Of those, sendable',
-      `${sendable.length} (bio ≥ ${MIN_READABLE_BIO} chars and online within ${STALE_DAYS} days)`,
+      `${sendable.length} (bio ≥ ${MIN_READABLE_BIO} chars — last online is not a filter)`,
     ),
     field(
       'Already handed over',
@@ -432,7 +425,8 @@ runScript(async ({pg}) => {
     ),
     '',
     "_Mutual eligibility uses the platform's own gender/age/relation-style helpers, so this list and the" +
-      ' site agree. Distance and the kids gap are shown, never filtered — they are things to say out loud,' +
+      ' site agree. Distance, the kids gap and how long ago they were last online are shown, never' +
+      ' filtered — they are things to say out loud,' +
       ' not reasons to hide someone._',
     '',
     `## Top ${Math.min(LIMIT, ranked.length)}`,
@@ -485,12 +479,8 @@ runScript(async ({pg}) => {
     '## The pool, said out loud',
     '',
     field('Mutually eligible', eligible.length),
-    field(
-      '… with a bio worth reading',
-      eligible.filter((s) => s.bioLength >= MIN_READABLE_BIO).length,
-    ),
+    field('… with a bio worth reading', sendable.length),
     field('… online in the past 30 days', eligible.filter((s) => (s.offline ?? 999) <= 30).length),
-    field('… both', sendable.length),
   )
   for (const value of uniq((target.diet ?? []).map((d) => d.toLowerCase()))) {
     const sharing = eligible.filter((s) =>
@@ -499,7 +489,7 @@ runScript(async ({pg}) => {
     out.push(
       field(
         `… sharing diet "${value}"`,
-        `${sharing.length} total, ${sharing.filter((s) => s.bioLength >= MIN_READABLE_BIO && (s.offline ?? 999) <= STALE_DAYS).length} sendable`,
+        `${sharing.length} total, ${sharing.filter((s) => s.bioLength >= MIN_READABLE_BIO).length} sendable`,
       ),
     )
   }
@@ -512,7 +502,7 @@ runScript(async ({pg}) => {
     out.push(
       field(
         '… wanting kids about as much as they do',
-        `${aligned.length} total, ${aligned.filter((s) => s.bioLength >= MIN_READABLE_BIO && (s.offline ?? 999) <= STALE_DAYS).length} sendable`,
+        `${aligned.length} total, ${aligned.filter((s) => s.bioLength >= MIN_READABLE_BIO).length} sendable`,
       ),
     )
   }

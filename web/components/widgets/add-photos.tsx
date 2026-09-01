@@ -68,13 +68,13 @@ export const AddPhotosWidget = (props: {
     // Convert files to an array and take only the first 6 files
     const selectedFiles = Array.from(files).slice(0, 6)
 
-    const newUrls = await Promise.all(
-      selectedFiles.map((f) => uploadImage(f, 'love-images')),
-    ).catch((e) => {
-      console.error(e)
-      toast.error(e)
-      return []
-    })
+    const newUrls = await Promise.all(selectedFiles.map((f) => uploadImage(f, 'profiles'))).catch(
+      (e) => {
+        console.error(e)
+        toast.error(e)
+        return []
+      },
+    )
     commitOrder(uniq([...urls, ...newUrls]))
     setUploadingImages(false)
     onUpload?.(false)

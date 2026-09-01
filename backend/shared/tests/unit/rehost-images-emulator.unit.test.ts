@@ -14,7 +14,7 @@ jest.mock('shared/monitoring/log', () => ({log: jest.fn()}))
  */
 describe('under the storage emulator', () => {
   const emulated =
-    'http://localhost:9199/v0/b/compass-57c3c.firebasestorage.app/o/user-images%2Fclb%2Flove-images%2Fabc.jpg?alt=media'
+    'http://localhost:9199/v0/b/compass-57c3c.firebasestorage.app/o/user-images%2Fclb%2Fimported%2Fabc.jpg?alt=media'
   const doc = (src: string): JSONContent => ({
     type: 'doc',
     content: [{type: 'image', attrs: {src}}],

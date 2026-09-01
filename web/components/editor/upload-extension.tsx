@@ -9,15 +9,16 @@ export const Upload = Extension.create({
   addStorage: () => ({mutation: {}}),
 })
 
-export const useUploadMutation = (editor: Editor | null) =>
+export const useUploadMutation = (editor: Editor | null, folder?: string) =>
   useMutation(
     (files: File[]) =>
-      // Uploads land under the signed-in member's own uid; there is nothing to pass. This used to
-      // send the literal 'default', which put every editor image in one shared folder that the old
-      // storage rules let any signed-in member overwrite.
+      // Uploads land under the signed-in member's own uid, and `folder` only ever names a subfolder
+      // of it — the caller cannot choose whose folder it writes to. This used to send the literal
+      // 'default', which put every editor image in one shared folder that the old storage rules let
+      // any signed-in member overwrite.
       Promise.all(
         files.map(async (file) => ({
-          src: await uploadImage(file),
+          src: await uploadImage(file, folder),
           isVideo: file.type.startsWith('video'),
         })),
       ),

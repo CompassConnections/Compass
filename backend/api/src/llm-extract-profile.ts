@@ -1080,8 +1080,7 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
 }
 
 /**
- * The folder imported images are copied into: `user-images/<username>/love-images`, the same one the
- * photo widget uploads to. Signup autofills *before* `create-user-and-profile` runs, so there is no
+ * The folder imported images are copied into: `user-images/<username>/imported`. Signup autofills *before* `create-user-and-profile` runs, so there is no
  * user row to read the username from yet — hence the one the client picked, exactly as
  * `AddPhotosWidget` already does for uploads. It is never taken on trust: a name that belongs to
  * somebody else falls back to the uid, so no one can write into another profile's folder.

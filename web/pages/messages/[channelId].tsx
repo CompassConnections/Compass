@@ -255,6 +255,7 @@ export const PrivateChat = (props: {
   const editor = useTextEditor({
     key: `private-message-${channelId}-${user.id}`,
     size: 'sm',
+    uploadFolder: 'messages',
     placeholder: t('messages.input_placeholder', 'Send a message'),
   })
 

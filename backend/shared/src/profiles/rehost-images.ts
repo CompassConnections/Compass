@@ -24,8 +24,13 @@ const MAX_REDIRECTS = 3
  * Filed under the profile's username rather than its uid, which is what the photo widget now uses
  * (`web/lib/firebase/storage.ts` — the storage rules can only check a uid, and an import may have no
  * signed-in user at all). `deleteUserFiles` sweeps both prefixes, so these still go with the account.
+ *
+ * `imported`, not the widget's `profiles`, because these are whatever pictures the source page
+ * happened to contain — they land in the bio, and only the first owned one gets pinned as the
+ * profile photo. The name is cosmetic: the storage rules allow any subfolder of the uid folder, and
+ * nothing reads the segment back out of a URL.
  */
-const storageFolder = (username: string) => `user-images/${username}/love-images`
+const storageFolder = (username: string) => `user-images/${username}/imported`
 
 /**
  * Where imported images go when there is no user to file them under — no signed-in user and no

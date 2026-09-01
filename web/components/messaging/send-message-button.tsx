@@ -88,6 +88,7 @@ export const SendMessageButton = (props: {
   const editor = useTextEditor({
     key: `compose-new-message-${toUser.id}`,
     size: 'sm',
+    uploadFolder: 'messages',
     max: MAX_COMMENT_LENGTH,
     placeholder: t(
       'send_message.placeholder',

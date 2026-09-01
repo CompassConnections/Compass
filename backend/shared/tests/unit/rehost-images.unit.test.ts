@@ -12,7 +12,7 @@ jest.mock('shared/monitoring/log', () => ({log: jest.fn()}))
 const lookupMock = lookup as unknown as jest.Mock
 
 const USERNAME = 'awlego'
-const FOLDER = `user-images/${USERNAME}/love-images`
+const FOLDER = `user-images/${USERNAME}/imported`
 
 /** A bio holding one image per src, in the shape tiptap stores. */
 const docWithImages = (...srcs: string[]): JSONContent => ({
@@ -242,7 +242,7 @@ describe('rehostExternalImages', () => {
 
     await rehostExternalImages(docWithImages('https://awlego.com/a.jpg'), 'someone_else')
 
-    expect(saved[0].path).toMatch(/^user-images\/someone_else\/love-images\/[0-9a-f]{32}\.jpg$/)
+    expect(saved[0].path).toMatch(/^user-images\/someone_else\/imported\/[0-9a-f]{32}\.jpg$/)
   })
 
   it('does nothing to a document without images', async () => {

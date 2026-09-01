@@ -149,6 +149,12 @@ export function useTextEditor(props: {
   className?: string
   onChange?: () => void
   nRowsMin?: number
+  /**
+   * Subfolder of the uploader's own `user-images/<uid>/` that pasted and dropped media lands in —
+   * `messages` for the chat composers. Unset, it goes straight into the uid folder, which is where
+   * bio and comment media stays.
+   */
+  uploadFolder?: string
 }) {
   const {placeholder, className, max, defaultValue, size = 'md', key, onChange, nRowsMin} = props
   const simple = size === 'sm'
@@ -238,7 +244,7 @@ export function useTextEditor(props: {
     })
   }, [className])
 
-  const upload = useUploadMutation(editor)
+  const upload = useUploadMutation(editor, props.uploadFolder)
   if (!editor) return null
   editor.storage.upload.mutation = upload
 

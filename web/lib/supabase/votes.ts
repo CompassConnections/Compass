@@ -30,10 +30,16 @@ export const getVote = async (params: {voteId: number}) => {
 // (the list is fetched with the anon key, not as the signed-in Postgres role).
 export const getMyVoteChoices = async (params: {userId: string}) => {
   const {userId} = params
-  const {data, error} = await db.from('vote_results').select('vote_id, choice').eq('user_id', userId)
+  const {data, error} = await db
+    .from('vote_results')
+    .select('vote_id, choice')
+    .eq('user_id', userId)
   if (error) throw error
 
-  return Object.fromEntries((data ?? []).map((r) => [r.vote_id, r.choice])) as Record<number, number>
+  return Object.fromEntries((data ?? []).map((r) => [r.vote_id, r.choice])) as Record<
+    number,
+    number
+  >
 }
 
 // The author's own recorded vote, shown next to their comments so a reader can see whether an

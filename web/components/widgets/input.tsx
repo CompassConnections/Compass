@@ -60,6 +60,11 @@ export const Input = forwardRef(
           error
             ? 'border-error text-error focus:border-error focus:ring-error placeholder-rose-700' // matches invalid: styles
             : '',
+          // With `searchIcon` the visible field is the wrapper below, so the input itself has to be
+          // stripped: @tailwindcss/forms' base layer gives every `input[type=text]` a 1px border
+          // (grey, and blue-600 once focused) plus its own padding, which drew a second rectangle
+          // inside our pill and pushed the text away from the magnifier.
+          searchIcon && 'border-0 p-0 shadow-none focus:border-0 focus:shadow-none',
           !searchIcon && rowClassName,
         )}
         {...rest}

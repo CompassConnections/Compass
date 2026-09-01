@@ -23,11 +23,7 @@ import {DEPLOYED_WEB_URL} from 'common/envs/constants'
  * fetches and resizes whatever remote URL it is handed, and prod's `remotePatterns` already cover
  * the Firebase and ui-avatars hosts the avatars actually live on.
  */
-export default function webviewImageLoader(props: {
-  src: string
-  width: number
-  quality?: number
-}) {
+export default function webviewImageLoader(props: {src: string; width: number; quality?: number}) {
   const {src, width, quality} = props
 
   // Assets bundled into the export itself (`/_next/static/media/...`), plus `data:`/`blob:` sources.

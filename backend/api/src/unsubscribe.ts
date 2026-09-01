@@ -1,5 +1,5 @@
+import {debug} from 'common/logger'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {log} from 'shared/utils'
 
 import {APIHandler} from './helpers/endpoint'
 
@@ -9,7 +9,7 @@ export const unsubscribe: APIHandler<'unsubscribe/:token'> = async ({token}, _au
   //   throw APIErrors.badRequest('Invalid List-Unsubscribe value')
   // }
 
-  log('Unsubscribe', token)
+  debug('Unsubscribe', token)
 
   const pg = createSupabaseDirectClient()
 
@@ -27,13 +27,13 @@ export const unsubscribe: APIHandler<'unsubscribe/:token'> = async ({token}, _au
 
   if (!tokenRecord) {
     // Return success to avoid token probing
-    log('Token not found', token)
+    debug('Token not found', token)
     return {success: true}
   }
 
   if (tokenRecord.used_at) {
     // Endpoint must be idempotent
-    log('Token already used', token, tokenRecord)
+    debug('Token already used', token, tokenRecord)
     return {success: true}
   }
 

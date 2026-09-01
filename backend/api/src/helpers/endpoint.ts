@@ -7,6 +7,7 @@ import {
   ValidatedAPIParams,
 } from 'common/api/schema'
 import {APIErrors} from 'common/api/utils'
+import {debug} from 'common/logger'
 import {PrivateUser} from 'common/user'
 import {NextFunction, Request, Response} from 'express'
 import * as admin from 'firebase-admin'
@@ -85,9 +86,10 @@ export const parseCredentials = async (req: Request): Promise<Credentials> => {
         const raw = payload.split('.')[0]
         const _header = JSON.parse(Buffer.from(raw, 'base64').toString())
         // This is somewhat suspicious, so get it into the firebase console
-        console.error('Error verifying Firebase JWT: ', err, scheme, payload, {
+        console.error('Error verifying Firebase JWT: ', err, scheme, {
           jwtHeader: _header,
         })
+        debug('Failing Firebase JWT payload: ', payload)
         Sentry.captureException(err, {
           extra: {jwtHeader: _header},
         })
@@ -112,7 +114,8 @@ export const lookupUser = async (creds: Credentials): Promise<AuthedUser> => {
       const key = creds.data
       const privateUser = await getPrivateUserByKey(key)
       if (!privateUser) {
-        throw APIErrors.unauthorized(`No private user exists with API key ${key}.`)
+        debug('No private user exists with API key', key)
+        throw APIErrors.unauthorized('No private user exists with the provided API key.')
       }
       return {uid: privateUser.id, creds: {privateUser, ...creds}}
     }
@@ -134,9 +137,10 @@ export const validate = <T extends z.ZodTypeAny>(schema: T, val: unknown) => {
     if (issues.length > 0) {
       log.error(issues.map((i) => `${i.field}: ${i.context}`).join('\n'))
     }
-    console.error('Validation failed', {issues, schema, val})
+    console.error('Validation failed', {issues})
+    debug('Validation failed', {issues, schema, val})
     Sentry.captureException(APIErrors.validationFailed(issues), {
-      extra: {issues, schema, val},
+      extra: {issues},
     })
     throw APIErrors.validationFailed(issues)
   } else {

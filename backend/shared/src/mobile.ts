@@ -1,3 +1,4 @@
+import {debug} from 'common/logger'
 import * as admin from 'firebase-admin'
 import {TokenMessage} from 'firebase-admin/lib/messaging/messaging-api'
 import {SupabaseDirectClient} from 'shared/supabase/init'
@@ -17,12 +18,13 @@ export async function sendWebNotifications(
   const subscriptions = await getSubscriptionsFromDB(pg, userId)
   for (const subscription of subscriptions) {
     try {
-      console.log('Sending notification to:', subscription.endpoint, payload)
+      debug('Sending notification to:', subscription.endpoint, payload)
       await webPush.sendNotification(subscription, payload)
     } catch (err: any) {
       console.log('Failed to send notification', err)
       if (err.statusCode === 410 || err.statusCode === 404) {
-        console.warn('Removing expired subscription', subscription.endpoint)
+        console.warn('Removing expired push subscription')
+        debug('Removing expired subscription', subscription.endpoint)
         await removeSubscription(pg, subscription.endpoint, userId)
       } else {
         console.error('Push failed', err)
@@ -144,7 +146,7 @@ export async function sendPushToToken(
   try {
     // Fine to create at each call, as it's a cached singleton
     const fcm = admin.messaging()
-    console.log('Sending notification to:', token, message)
+    debug('Sending notification to:', token, message)
     const response = await fcm.send(message)
     console.log('Push sent successfully:', response)
     return response

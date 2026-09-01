@@ -676,7 +676,6 @@ export const OptionalProfileUserForm = (props: {
           {/*</div>*/}
 
           <AddPhotosWidget
-            username={user.username}
             photo_urls={profile.photo_urls}
             pinned_url={profile.pinned_url}
             setPhotoUrls={(urls) => setProfile('photo_urls', urls)}

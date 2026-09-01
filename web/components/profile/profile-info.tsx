@@ -168,14 +168,21 @@ export function ProfileInfo(props: {
           {/*  }}*/}
           {/*/>*/}
           {/* First letter of name */}
+          {/* Hung off the top of the band rather than centred in it: the rule above "Looking for" is
+              drawn over whatever sits behind it, and a letter centred on the band lands square on
+              that rule at every width — it read as a struck-through glyph rather than a watermark.
+              Anchoring to the top keeps it beside the name, where it belongs, and the size is capped
+              so that even the shortest hero (no tagline, no keywords) still has room for it above
+              the rule. The small negative shift lets the glyph's cap height, not its empty line-box
+              top, sit level with the eyebrow. */}
           <div
             style={{
               position: 'absolute',
               right: '0%',
-              top: '40%',
-              transform: 'translateY(-50%)',
+              top: 0,
+              transform: 'translateY(-22%)',
               fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(7rem, 14vw, 16rem)',
+              fontSize: 'clamp(5rem, 10vw, 11rem)',
               fontWeight: 500,
               color: 'rgba(193,127,62,0.04)',
               lineHeight: 1,

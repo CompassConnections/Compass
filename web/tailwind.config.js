@@ -464,6 +464,17 @@ module.exports = {
             '--tw-prose-headings': theme('colors.ink.900'),
             '--tw-prose-links': theme('colors.primary.500'),
             '--tw-prose-bold': 'inherit',
+            // The plugin defaults bullets to gray-300 light / #4b5563 inverted — cool greys picked
+            // for a white page. On the warm `primary-200` chat bubble the inverted one reads as a
+            // washed-out blue and all but disappears. `ink` already flips with the theme, so one
+            // value covers both, and the invert var must be set too or `dark:prose-invert` puts the
+            // gray straight back. Written as a raw `rgb(var(...))` rather than `theme('colors.ink.600')`:
+            // the theme value carries an unresolved `<alpha-value>` placeholder, which survives into
+            // the emitted custom property and makes `color: var(--tw-prose-bullets)` invalid at
+            // computed-value time — the marker then just inherits, which is the silent no-op the
+            // neighbouring `--tw-prose-*` lines are already hitting.
+            '--tw-prose-bullets': 'rgb(var(--color-ink-600))',
+            '--tw-prose-invert-bullets': 'rgb(var(--color-ink-600))',
             '--tw-prose-quote-borders': theme('colors.green.500'),
             '--tw-prose-invert-quote-borders': theme('colors.green.300'),
             'code::before': false,

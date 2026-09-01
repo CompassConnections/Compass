@@ -28,6 +28,7 @@ backend/shared/src/
 ├── monitoring/
 │   ├── log.ts              log.info / log.error — use everywhere on the backend
 │   ├── metrics.ts, metric-writer.ts, context.ts, instance-info.ts
+├── safe-fetch.ts           safeFetch / readBodyWithLimit — the only way to fetch a user-supplied URL
 ├── init-admin.ts           Firebase Admin init
 ├── encryption.ts           Message encryption helpers
 ├── analytics.ts, audit-events.ts

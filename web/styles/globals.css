@@ -28,7 +28,10 @@
 
 .safe-bottom {
   /*bottom: calc(48px);*/
-  bottom: env(safe-area-inset-bottom);
+  /* The bar sits flush with the physical bottom edge and pads its *contents* up out of the home
+     indicator's band, rather than floating the whole bar above it. Lifting the bar left a strip of
+     page content scrolling past underneath, which read as an oversized empty margin. */
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .keyboard-open .pb-page-base {
@@ -53,7 +56,7 @@
 
 /* When keyboard is open, remove safe area offset */
 .keyboard-open .safe-bottom {
-  bottom: 0;
+  padding-bottom: 0;
 }
 
 .keyboard-open {

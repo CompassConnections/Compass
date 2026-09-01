@@ -3,6 +3,7 @@ import {createHash} from 'crypto'
 import {lookup} from 'dns/promises'
 import * as firebaseUtils from 'shared/firebase-utils'
 import {firstOwnedImageSrc, rehostExternalImages} from 'shared/profiles/rehost-images'
+import {Readable} from 'stream'
 
 jest.mock('shared/firebase-utils')
 jest.mock('dns/promises', () => ({lookup: jest.fn()}))
@@ -45,7 +46,11 @@ function mockImageResponse(body = 'jpeg-bytes', contentType = 'image/jpeg') {
   return {
     ok: true,
     status: 200,
+    url: 'https://awlego.com/a.jpg',
     headers: new Headers({'content-type': contentType}),
+    // The body is read as a stream so it can be cut off at the size ceiling, not with
+    // `arrayBuffer()` — which buffers whatever the far end sends before anyone can object.
+    body: Readable.from([Buffer.from(body)]),
     arrayBuffer: async () => Buffer.from(body),
   } as unknown as Response
 }

@@ -2,11 +2,10 @@ import {JSONContent} from '@tiptap/core'
 import {FIREBASE_STORAGE_URL} from 'common/envs/constants'
 import {YEAR_SECONDS} from 'common/util/time'
 import {createHash} from 'crypto'
-import {lookup} from 'dns/promises'
 import {uniq} from 'lodash'
-import {isIP} from 'net'
 import {Bucket, getBucket} from 'shared/firebase-utils'
 import {log} from 'shared/monitoring/log'
+import {readBodyWithLimit, safeFetch} from 'shared/safe-fetch'
 
 // A profile imported from a personal site, a Google Doc or a Notion page arrives with its images
 // still pointing at whoever hosted the original page. Hotlinking them is a bad deal: the host can
@@ -22,9 +21,9 @@ const FETCH_TIMEOUT_MS = 15_000
 const MAX_REDIRECTS = 3
 
 /**
- * The same folder the photo widget uploads to (`web/components/widgets/add-photos.tsx`), so a
- * profile's imported images sit beside the ones it uploaded — and `deleteUserFiles` takes them all
- * with the account.
+ * Filed under the profile's username rather than its uid, which is what the photo widget now uses
+ * (`web/lib/firebase/storage.ts` — the storage rules can only check a uid, and an import may have no
+ * signed-in user at all). `deleteUserFiles` sweeps both prefixes, so these still go with the account.
  */
 const storageFolder = (username: string) => `user-images/${username}/love-images`
 
@@ -138,9 +137,20 @@ async function rehostOne(src: string, bucket: Bucket, folder: string): Promise<s
 }
 
 async function fetchImage(src: string) {
-  const response = await fetchFollowingSafeRedirects(src)
-  if (!response?.ok) {
-    log('Image fetch failed', {src, status: response?.status})
+  let response: Response
+  try {
+    response = await safeFetch(src, {
+      timeoutMs: FETCH_TIMEOUT_MS,
+      maxRedirects: MAX_REDIRECTS,
+      headers: {Accept: 'image/avif,image/webp,image/png,image/jpeg,*/*;q=0.8'},
+    })
+  } catch (error) {
+    log('Image fetch failed', {src, error})
+    return undefined
+  }
+
+  if (!response.ok) {
+    log('Image fetch failed', {src, status: response.status})
     return undefined
   }
 
@@ -154,105 +164,15 @@ async function fetchImage(src: string) {
     return undefined
   }
 
-  const declaredLength = Number(response.headers.get('content-length'))
-  if (declaredLength > MAX_BYTES_PER_IMAGE) {
-    log('Skipping oversized image', {src, declaredLength})
-    return undefined
-  }
-
-  const buffer = Buffer.from(await response.arrayBuffer())
-  // Re-checked after the fact: content-length is a claim, not a guarantee.
-  if (buffer.byteLength > MAX_BYTES_PER_IMAGE) {
-    log('Skipping oversized image', {src, size: buffer.byteLength})
+  let buffer: Buffer
+  try {
+    buffer = await readBodyWithLimit(response, MAX_BYTES_PER_IMAGE)
+  } catch (error) {
+    log('Skipping oversized or unreadable image', {src, error})
     return undefined
   }
 
   return {buffer, contentType, ext}
-}
-
-/**
- * Follows redirects by hand so every hop is checked against {@link isPubliclyRoutable} — a public
- * URL that 302s to `169.254.169.254` is the standard way to turn a fetch-this-URL feature into a
- * read-our-metadata-service one.
- */
-async function fetchFollowingSafeRedirects(src: string): Promise<Response | undefined> {
-  let url = src
-  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
-    if (!(await isPubliclyRoutable(url))) {
-      log('Refusing to fetch image from a non-public address', {src, url})
-      return undefined
-    }
-
-    const response = await fetch(url, {
-      redirect: 'manual',
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      headers: {Accept: 'image/avif,image/webp,image/png,image/jpeg,*/*;q=0.8'},
-    })
-
-    const location = response.headers.get('location')
-    if (response.status >= 300 && response.status < 400 && location) {
-      url = new URL(location, url).href
-      continue
-    }
-    return response
-  }
-
-  log('Too many redirects fetching image', {src})
-  return undefined
-}
-
-/** True for an http(s) URL whose host resolves to an address outside our own network. */
-async function isPubliclyRoutable(url: string): Promise<boolean> {
-  let hostname: string
-  try {
-    const parsed = new URL(url)
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return false
-    hostname = parsed.hostname.replace(/^\[|]$/g, '')
-  } catch {
-    return false
-  }
-
-  if (isIP(hostname)) return !isPrivateAddress(hostname)
-
-  try {
-    const addresses = await lookup(hostname, {all: true})
-    return addresses.length > 0 && addresses.every(({address}) => !isPrivateAddress(address))
-  } catch {
-    return false
-  }
-}
-
-function isPrivateAddress(address: string): boolean {
-  const ip = address.toLowerCase()
-
-  if (isIP(ip) === 6) {
-    // IPv4-mapped (::ffff:10.0.0.1) is still IPv4 as far as the kernel is concerned.
-    const mapped = ip.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/)
-    if (mapped) return isPrivateAddress(mapped[1])
-    return (
-      ip === '::' ||
-      ip === '::1' ||
-      ip.startsWith('fc') || // unique local
-      ip.startsWith('fd') ||
-      ip.startsWith('fe8') || // link-local
-      ip.startsWith('fe9') ||
-      ip.startsWith('fea') ||
-      ip.startsWith('feb')
-    )
-  }
-
-  const [a, b] = ip.split('.').map(Number)
-  return (
-    a === 0 ||
-    a === 10 ||
-    a === 127 ||
-    (a === 100 && b >= 64 && b <= 127) || // carrier-grade NAT
-    (a === 169 && b === 254) || // link-local, incl. the cloud metadata endpoint
-    (a === 172 && b >= 16 && b <= 31) ||
-    (a === 192 && b === 168) ||
-    (a === 198 && (b === 18 || b === 19)) ||
-    a >= 224 // multicast and reserved
-  )
 }
 
 /**

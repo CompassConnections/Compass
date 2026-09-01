@@ -61,6 +61,12 @@ import {
   firstOwnedImageSrc,
   rehostExternalImages,
 } from 'shared/profiles/rehost-images'
+import {
+  BlockedUrlError,
+  readTextWithLimit,
+  ResponseTooLargeError,
+  safeFetch,
+} from 'shared/safe-fetch'
 import {getUser, getUserByUsername} from 'shared/utils'
 
 const MAX_CONTEXT_LENGTH = 7 * 10 * 30 * 50
@@ -74,6 +80,13 @@ const ERROR_CACHE_TTL_MS = MINUTE_MS
 const PROCESSING_TTL_MS = 10 * MINUTE_MS
 // 100 blocks per chunk — plenty for any realistic profile page, and a hard stop on runaway paging.
 const MAX_NOTION_CHUNKS = 10
+
+/**
+ * Ceiling on the page we pull down for an import. Only the first {@link MAX_CONTEXT_LENGTH}
+ * characters ever reach the model, so anything past this is bytes we buffer for nothing — and a URL
+ * whose response never ends would otherwise buffer forever.
+ */
+const MAX_PROFILE_PAGE_BYTES = 5 * 1024 ** 2
 
 type ExtractSource = 'text' | 'url' | 'voice'
 
@@ -898,6 +911,21 @@ async function fetchSetupSheetRecord(recordId: string): Promise<JSONContent> {
  * `status: 'error'`.
  */
 export function assertProfileUrlIsFetchable(url: string) {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    throw APIErrors.badRequest(`${url} is not a valid link.`)
+  }
+
+  // `fetch` speaks more than http: `file:///etc/passwd` and friends are not pages anyone can
+  // publish a profile at, so they are only ever an attempt to read something of ours.
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw APIErrors.badRequest(
+      'Only http and https links can be read. Please copy the text of the profile and paste it instead.',
+    )
+  }
+
   const blockedHost = getBlockedProfileHost(url)
   if (blockedHost) {
     throw APIErrors.badRequest(
@@ -987,7 +1015,10 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
     for (const userAgent of userAgents) {
       try {
         const headers = {...baseHeaders, 'User-Agent': userAgent}
-        response = await fetch(url, {headers})
+        // `safeFetch`, not `fetch`: the URL is whatever the user typed, and this request leaves
+        // from inside our own network. It checks every hop against the private ranges and gives up
+        // on a host that never answers.
+        response = await safeFetch(url, {headers})
 
         if (response.ok) {
           break // Success, exit the loop
@@ -996,6 +1027,13 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
           await sleep(2000)
         }
       } catch (error) {
+        // A link pointing inside our network will not answer differently to the next user agent,
+        // and the user needs to be told what is wrong rather than left with a generic failure.
+        if (error instanceof BlockedUrlError) {
+          throw APIErrors.badRequest(
+            `${new URL(url).hostname} is not a public address we can read. Please copy the text of the profile and paste it instead.`,
+          )
+        }
         lastError = error as Error
         // continue // Try next user agent
       }
@@ -1006,7 +1044,17 @@ export async function fetchOnlineProfile(url: string | undefined): Promise<JSONC
     }
 
     const contentType = response.headers.get('content-type') ?? ''
-    const content = await response.text()
+    let content: string
+    try {
+      content = await readTextWithLimit(response, MAX_PROFILE_PAGE_BYTES)
+    } catch (error) {
+      if (error instanceof ResponseTooLargeError) {
+        throw APIErrors.badRequest(
+          `The page at ${new URL(url).hostname} is too large to read. Please copy the text of the profile and paste it instead.`,
+        )
+      }
+      throw error
+    }
 
     log('Fetched content from URL', {url, contentType, contentLength: content.length})
     debug({content})

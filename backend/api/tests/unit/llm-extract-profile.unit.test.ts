@@ -3,10 +3,13 @@ import {
   resolveImageFolderName,
   validateProfileFields,
 } from 'api/llm-extract-profile'
+import {lookup} from 'dns/promises'
 import {FALLBACK_IMAGE_FOLDER_NAME} from 'shared/profiles/rehost-images'
 import {getUser, getUserByUsername} from 'shared/utils'
+import {Readable} from 'stream'
 
 jest.mock('shared/supabase/init')
+jest.mock('dns/promises', () => ({lookup: jest.fn()}))
 jest.mock('shared/utils', () => ({
   getUser: jest.fn(),
   getUserByUsername: jest.fn(),
@@ -50,6 +53,66 @@ describe('fetchOnlineProfile', () => {
       expect(requested).toContain('get_public_profile')
       // Special-category data we deliberately do not collect — see FireflyProfile.
       expect(requested).not.toContain('get_public_quiz_answers')
+    })
+  })
+
+  describe('addresses we refuse to fetch', () => {
+    const lookupMock = lookup as unknown as jest.Mock
+
+    // A URL typed into the import box becomes a request leaving from inside our own network, so
+    // every one of these would otherwise be a way to read something only the server can reach.
+    beforeEach(() => {
+      lookupMock.mockReset()
+      lookupMock.mockResolvedValue([{address: '93.184.216.34', family: 4}])
+    })
+
+    it('rejects a scheme that is not http(s) before resolving anything', async () => {
+      await expect(fetchOnlineProfile('file:///etc/passwd')).rejects.toThrow(
+        /Only http and https links/,
+      )
+      expect(fetchSpy).not.toHaveBeenCalled()
+    })
+
+    it('rejects a hostname that resolves inside our network', async () => {
+      lookupMock.mockResolvedValue([{address: '169.254.169.254', family: 4}])
+
+      await expect(fetchOnlineProfile('https://metadata.example.com/profile')).rejects.toThrow(
+        /not a public address/,
+      )
+      expect(fetchSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not follow a redirect into our network', async () => {
+      lookupMock.mockImplementation(async (hostname: string) =>
+        hostname === 'evil.example.com'
+          ? [{address: '93.184.216.34', family: 4}]
+          : [{address: '127.0.0.1', family: 4}],
+      )
+      fetchSpy.mockResolvedValue({
+        ok: false,
+        status: 302,
+        headers: new Headers({location: 'http://localhost:8080/secret'}),
+      } as unknown as Response)
+
+      await expect(fetchOnlineProfile('https://evil.example.com/me')).rejects.toThrow(
+        /not a public address/,
+      )
+      // The first hop was allowed; the redirect target was never requested.
+      expect(fetchSpy).toHaveBeenCalledTimes(1)
+      expect(fetchSpy.mock.calls[0][1].redirect).toBe('manual')
+    })
+
+    it('gives up on a page larger than the ceiling instead of buffering it', async () => {
+      const tenMegabytes = Buffer.alloc(10 * 1024 ** 2, 'a')
+      fetchSpy.mockResolvedValue({
+        ok: true,
+        status: 200,
+        url: 'https://awlego.com/me',
+        headers: new Headers({'content-type': 'text/html'}),
+        body: Readable.from([tenMegabytes]),
+      } as unknown as Response)
+
+      await expect(fetchOnlineProfile('https://awlego.com/me')).rejects.toThrow(/too large to read/)
     })
   })
 

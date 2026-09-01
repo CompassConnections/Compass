@@ -14,7 +14,7 @@ import {
   OutreachStatus,
   OutreachTrigger,
 } from 'common/outreach/outreach'
-import {groupBy, orderBy} from 'lodash'
+import {groupBy, orderBy, partition} from 'lodash'
 import Link from 'next/link'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
@@ -41,6 +41,8 @@ const STATUS_LABELS: Record<OutreachStatus, string> = {
   awaiting_reply: 'Waiting on them',
   dormant: 'Gone quiet',
 }
+
+const CLOSED_REPLIED_LABEL = 'They replied — conversation closed'
 
 const TIER_CLASS: Record<string, string> = {
   A: 'bg-primary-100 text-primary-700',
@@ -92,7 +94,16 @@ export default function Outreach() {
   if (!(isAdmin || IS_LOCAL)) return <p>Not authorized</p>
 
   const rows = (data?.rows ?? []).map((row) => ({...row, ...edits[row.user.id]}))
-  const byStatus = groupBy(rows, 'status')
+
+  // Someone who wrote back but whose conversation has been marked closed is not owed an answer, so
+  // they do not belong in the group whose whole meaning is "unanswered". They stay on the page —
+  // closing a thread is a judgement worth being able to see and undo — just out of the way.
+  const [closedReplied, open] = partition(
+    rows,
+    (row) =>
+      row.status === 'needs_reply' && getEffectiveStage(row.stage, row.contacted) === 'closed',
+  )
+  const byStatus = groupBy(open, 'status')
 
   const save = async (
     userId: string,
@@ -156,56 +167,82 @@ export default function Outreach() {
           </a>
         </Row>
 
-        {STATUS_ORDER.map((status) => {
-          const group = byStatus[status] ?? []
-          if (!group.length) return null
+        {STATUS_ORDER.map((status) => (
+          <OutreachSection
+            key={status}
+            label={STATUS_LABELS[status]}
+            rows={sortGroup(status, byStatus[status] ?? [])}
+            onSave={save}
+            onCreateSearch={createSearch}
+          />
+        ))}
 
-          return (
-            <Col key={status} className={'gap-2'}>
-              <Row className={'items-baseline gap-2'}>
-                <div className={'text-ink-800 text-lg'}>{STATUS_LABELS[status]}</div>
-                <div className={'text-ink-400 text-sm'}>{group.length}</div>
-              </Row>
-
-              <div className={'overflow-x-auto'}>
-                <table className={'w-full min-w-[60rem] text-sm'}>
-                  <thead className={'text-ink-400 text-left text-xs uppercase'}>
-                    <tr>
-                      <th className={'py-1 pr-3 font-normal'}>Member</th>
-                      <th className={'py-1 pr-3 font-normal'}>Tier</th>
-                      <th className={'py-1 pr-3 font-normal'}>Profile</th>
-                      <th className={'py-1 pr-3 font-normal'}>Joined</th>
-                      <th className={'py-1 pr-3 font-normal'}>Silence</th>
-                      <th className={'py-1 pr-3 font-normal'}>Seen</th>
-                      <th className={'py-1 pr-3 font-normal'}>Saved</th>
-                      <th className={'py-1 pr-3 font-normal'}>Brought</th>
-                      <th className={'py-1 pr-3 font-normal'}>Near</th>
-                      <th className={'py-1 pr-3 font-normal'}>Ready</th>
-                      <th className={'py-1 pr-3 font-normal'}>Stage</th>
-                      <th className={'py-1 pr-3 font-normal'}>Next action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortGroup(status, group).map((row) => (
-                      <OutreachTableRow
-                        key={row.user.id}
-                        row={row}
-                        onSave={save}
-                        onCreateSearch={createSearch}
-                      />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Col>
-          )
-        })}
+        {/* Last, and after everything still open: a closed conversation is a record, not a debt. */}
+        <OutreachSection
+          label={CLOSED_REPLIED_LABEL}
+          rows={sortGroup('needs_reply', closedReplied)}
+          onSave={save}
+          onCreateSearch={createSearch}
+        />
 
         <div id={'outreach-stats'} className={'scroll-mt-4'}>
           <OutreachStats />
         </div>
       </Col>
     </PageBase>
+  )
+}
+
+function OutreachSection(props: {
+  label: string
+  rows: OutreachRow[]
+  onSave: (
+    userId: string,
+    update: {stage?: OutreachStage; nextAction?: string | null},
+  ) => Promise<void>
+  onCreateSearch: (userId: string) => Promise<void>
+}) {
+  const {label, rows, onSave, onCreateSearch} = props
+  if (!rows.length) return null
+
+  return (
+    <Col className={'gap-2'}>
+      <Row className={'items-baseline gap-2'}>
+        <div className={'text-ink-800 text-lg'}>{label}</div>
+        <div className={'text-ink-400 text-sm'}>{rows.length}</div>
+      </Row>
+
+      <div className={'overflow-x-auto'}>
+        <table className={'w-full min-w-[60rem] text-sm'}>
+          <thead className={'text-ink-400 text-left text-xs uppercase'}>
+            <tr>
+              <th className={'py-1 pr-3 font-normal'}>Member</th>
+              <th className={'py-1 pr-3 font-normal'}>Tier</th>
+              <th className={'py-1 pr-3 font-normal'}>Profile</th>
+              <th className={'py-1 pr-3 font-normal'}>Joined</th>
+              <th className={'py-1 pr-3 font-normal'}>Silence</th>
+              <th className={'py-1 pr-3 font-normal'}>Seen</th>
+              <th className={'py-1 pr-3 font-normal'}>Saved</th>
+              <th className={'py-1 pr-3 font-normal'}>Brought</th>
+              <th className={'py-1 pr-3 font-normal'}>Near</th>
+              <th className={'py-1 pr-3 font-normal'}>Ready</th>
+              <th className={'py-1 pr-3 font-normal'}>Stage</th>
+              <th className={'py-1 pr-3 font-normal'}>Next action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <OutreachTableRow
+                key={row.user.id}
+                row={row}
+                onSave={onSave}
+                onCreateSearch={onCreateSearch}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Col>
   )
 }
 

@@ -12,7 +12,6 @@ import {isVideo, uploadImage} from 'web/lib/firebase/storage'
 import {useT} from 'web/lib/locale'
 
 export const AddPhotosWidget = (props: {
-  username: string
   image_descriptions: Record<string, string> | null
   photo_urls: string[] | null
   pinned_url: string | null
@@ -22,7 +21,6 @@ export const AddPhotosWidget = (props: {
   onUpload?: (uploading: boolean) => void
 }) => {
   const {
-    username,
     photo_urls,
     pinned_url,
     setPhotoUrls,
@@ -71,7 +69,7 @@ export const AddPhotosWidget = (props: {
     const selectedFiles = Array.from(files).slice(0, 6)
 
     const newUrls = await Promise.all(
-      selectedFiles.map((f) => uploadImage(username, f, 'love-images')),
+      selectedFiles.map((f) => uploadImage(f, 'love-images')),
     ).catch((e) => {
       console.error(e)
       toast.error(e)

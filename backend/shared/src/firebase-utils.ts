@@ -33,12 +33,25 @@ export function getBucket() {
 
 export type Bucket = ReturnType<InstanceType<typeof Storage>['bucket']>
 
-export async function deleteUserFiles(username: string) {
-  const path = `user-images/${username}`
+/**
+ * Removes every object the account owns from the public bucket.
+ *
+ * Two prefixes, because uploads moved. Members' own uploads now land under `user-images/<uid>/`
+ * (see `web/lib/firebase/storage.ts` — the storage rules can check a uid against the caller's token
+ * and cannot check a username), which also happens to catch the generated avatar that
+ * `generateAvatarUrl` writes to `user-images/<uid>.png`. The username prefix still holds every file
+ * uploaded before that change, plus the images `rehostExternalImages` copies in on the server, so
+ * both have to be swept or a deleted account leaves photos behind.
+ */
+export async function deleteUserFiles(username: string, userId: string) {
+  const prefixes = [`user-images/${username}`, `user-images/${userId}`]
 
-  // Delete all files in the directory
+  // Delete all files in the directories
   const bucket = getBucket()
-  const [files] = await bucket.getFiles({prefix: path})
+  const fileLists = await Promise.all(
+    prefixes.map(async (prefix) => (await bucket.getFiles({prefix}))[0]),
+  )
+  const files = fileLists.flat()
 
   if (files.length === 0) {
     debug(`No files found in bucket for user ${username}`)

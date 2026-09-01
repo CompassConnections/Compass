@@ -1,10 +1,36 @@
 rules_version = '2';
 
+// Public bucket. Everything in it is world-readable by design: profile photos, bio media and
+// generated avatars are served straight from here to signed-out visitors.
+//
+// Writes are another matter. This used to be `allow write: if request.auth != null` with nothing
+// but a size cap, which meant any signed-in member could write *any* path in the bucket. Since the
+// object paths are embedded in the public download URLs, learning another member's photo URL was
+// enough to overwrite their profile picture with anything under 20 MB. Uploads are therefore pinned
+// to a folder named after the writer's own uid — the one path segment a client cannot forge.
 service firebase.storage {
   match /b/{bucket}/o {
     match /{allPaths=**} {
       allow read;
-      allow write: if request.auth != null && request.resource.size <= 20 * 1024 * 1024;
+    }
+
+    // `user-images/{uid}/...` — the only path clients write, see web/lib/firebase/storage.ts.
+    // `request.auth.uid` is the Supabase `users.id` too (see create-user-and-profile.ts), so this
+    // folder is the member's own in both systems.
+    //
+    // contentType is checked because these files are served from our own origin: without it an
+    // authenticated member could park an `image/svg+xml` (which executes script when opened
+    // directly) or an HTML file on compassmeet.com's storage host. The client sets the type
+    // explicitly from a sniffed magic number when the browser leaves `File.type` empty.
+    //
+    // Deletes are denied along with everything else: `request.resource` is null for them, so the
+    // conditions below are false. No client code deletes objects — `deleteUserFiles` runs in the
+    // API on the admin SDK, which bypasses these rules entirely.
+    match /user-images/{userId}/{allPaths=**} {
+      allow write: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.size <= 20 * 1024 * 1024 // 20MB
+        && request.resource.contentType.matches('(image|video)/.*');
     }
   }
 }

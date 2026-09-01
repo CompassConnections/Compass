@@ -5,13 +5,27 @@ import {getDownloadURL, ref, uploadBytesResumable} from 'firebase/storage'
 import {nanoid} from 'nanoid'
 
 import {storage} from './init'
+import {auth} from './users'
 
+/**
+ * Uploads `file` to the public bucket and resolves with its download URL.
+ *
+ * The object always lands under `user-images/<the caller's own uid>/`, and never under a folder the
+ * caller names. `backend/firebase/storage.rules` enforces the same thing server-side — it used to
+ * allow any signed-in member to write any path, so anyone who read another member's (public) photo
+ * URL could overwrite the file it pointed at. Anything the caller could pass here would be a value
+ * the rules cannot verify, which is why there is no folder-owner parameter: uploads that used to be
+ * filed under a username now go under that member's uid, which is the same id Supabase stores as
+ * `users.id`.
+ */
 export const uploadImage = async (
-  username: string,
   file: File,
   prefix?: string,
   onProgress?: (progress: number, isRunning: boolean) => void,
 ) => {
+  const uid = auth.currentUser?.uid
+  if (!uid) return Promise.reject('You must be signed in to upload')
+
   const fileType = await getFileType(file)
 
   const lastDot = file.name.lastIndexOf('.')
@@ -39,6 +53,13 @@ export const uploadImage = async (
     console.warn('Likely unsupported image format', file.type)
   }
 
+  // The storage rules only accept `image/*` and `video/*`, so anything else would come back as an
+  // opaque 403 from the upload task. Say what is actually wrong instead. Sniffing above means a file
+  // the browser gave no type for still gets here on its magic number rather than on its extension.
+  if (!/^(image|video)\//.test(fileType || '')) {
+    return Promise.reject('Only images and videos can be uploaded')
+  }
+
   if (isHeic(file) && typeof window !== 'undefined') {
     file = await convertHeicToJpeg(file)
     ext = 'jpg'
@@ -51,10 +72,7 @@ export const uploadImage = async (
 
   const filename = `${stem}.${ext}`
   console.log('filename', filename)
-  const storageRef = ref(
-    storage,
-    `user-images/${username}${prefix ? '/' + prefix : ''}/${filename}`,
-  )
+  const storageRef = ref(storage, `user-images/${uid}${prefix ? '/' + prefix : ''}/${filename}`)
 
   if (file.size > 20 * 1024 ** 2) {
     return Promise.reject('File is over 20 MB')
@@ -74,7 +92,14 @@ export const uploadImage = async (
     })
   }
 
+  // Set explicitly rather than left to the SDK's `file.type`: a file the browser typed as `''` would
+  // otherwise be stored as `application/octet-stream`, which the storage rules reject and which
+  // browsers will not render anyway. `fileType` is the sniffed fallback for exactly that case, and
+  // `file.type` wins because the conversion and compression steps above may have replaced the file.
+  const contentType = file.type || fileType
+
   const uploadTask = uploadBytesResumable(storageRef, file, {
+    contentType,
     cacheControl: `public, max-age=${YEAR_SECONDS}`,
   })
 

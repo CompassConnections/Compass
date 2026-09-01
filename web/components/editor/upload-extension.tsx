@@ -12,10 +12,12 @@ export const Upload = Extension.create({
 export const useUploadMutation = (editor: Editor | null) =>
   useMutation(
     (files: File[]) =>
-      // TODO: Images should be uploaded under a particular username
+      // Uploads land under the signed-in member's own uid; there is nothing to pass. This used to
+      // send the literal 'default', which put every editor image in one shared folder that the old
+      // storage rules let any signed-in member overwrite.
       Promise.all(
         files.map(async (file) => ({
-          src: await uploadImage('default', file),
+          src: await uploadImage(file),
           isVideo: file.type.startsWith('video'),
         })),
       ),

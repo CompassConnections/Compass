@@ -143,6 +143,8 @@ contributors.
 - [x] Add password reset
 - [x] Add automated welcome email
 - [ ] Security audit and penetration testing
+- [ ] Add Content-Security-Policy and other security headers
+- [ ] Add automated dependency and secret scanning to CI
 - [x] Make `deploy-api.sh` run automatically on push to `main` branch
 - [x] Create settings page (change email, password, delete account, etc.)
 - [ ] Improve [financials](web/public/md/financials.md) page (donor / acknowledgments, etc.)

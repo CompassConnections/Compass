@@ -140,6 +140,16 @@ import {validateUsernameEndpoint} from './validate-username'
 //   allowedHeaders: ['Content-Type', 'Authorization'],
 //   credentials: true, // if you use cookies or auth headers
 // };
+// Deliberately unrestricted: `Access-Control-Allow-Origin: *`, no `Access-Control-Allow-Credentials`.
+// The API has no ambient authority to protect — auth is an `Authorization` header the caller must attach
+// explicitly (see helpers/endpoint.ts), there is no session cookie, and a cross-origin page cannot read a
+// visitor's Firebase token out of compassmeet.com's storage. That, not CORS, is what rules out CSRF here;
+// CORS is a browser policy that curl and the native shells ignore anyway. The API is also meant to be
+// publicly callable (Swagger docs, signed-out reads) and the Capacitor shells request from origins
+// (capacitor://localhost, ionic://localhost) that an allowlist keeps breaking on.
+//
+// If auth ever becomes cookie-based — or this gains `credentials: true` — the wildcard has to be replaced
+// with an explicit origin allowlist in the same change. See the CORS section of SECURITY.md.
 const allowCorsUnrestricted: RequestHandler = cors({})
 
 function cacheController(policy?: string): RequestHandler {

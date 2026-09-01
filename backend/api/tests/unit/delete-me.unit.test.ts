@@ -61,7 +61,7 @@ describe('deleteMe', () => {
         mockUser.id,
       ])
       expect(firebaseUtils.deleteUserFiles).toBeCalledTimes(1)
-      expect(firebaseUtils.deleteUserFiles).toBeCalledWith(mockUser.username)
+      expect(firebaseUtils.deleteUserFiles).toBeCalledWith(mockUser.username, mockUser.id)
       expect(mockDeleteUser).toBeCalledTimes(1)
       expect(mockDeleteUser).toBeCalledWith(mockUser.id)
 

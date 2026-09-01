@@ -67,7 +67,7 @@ export const deleteMe: APIHandler<'me/delete'> = async (
   // Should cascade delete in other tables
 
   // Delete user files from Firebase Storage
-  await deleteUserFiles(user.username)
+  await deleteUserFiles(user.username, userId)
 
   // Remove user from Firebase Auth
   try {

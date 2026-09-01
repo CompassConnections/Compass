@@ -117,7 +117,7 @@ export const createPrivateUserMessageMain = async (
   pg: SupabaseDirectClient,
   visibility: ChatVisibility,
 ) => {
-  log('createPrivateUserMessageMain', creator, channelId, content)
+  debug('createPrivateUserMessageMain', creator, channelId, content)
 
   // Normally, users can only submit messages to channels that they are active members of
   // (a member who has left keeps their row with status = 'left' and must not be able to post).

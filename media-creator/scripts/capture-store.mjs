@@ -263,7 +263,10 @@ async function assertNoConsentBanner(label) {
 async function dismissBanner() {
   const dismiss = page.getByLabel('Dismiss', {exact: true})
   if (await dismiss.count()) {
-    await dismiss.first().click({timeout: 5000}).catch(() => {})
+    await dismiss
+      .first()
+      .click({timeout: 5000})
+      .catch(() => {})
     await page.waitForTimeout(600)
   }
 }
@@ -376,7 +379,9 @@ if (wanted('bio')) {
     // against the viewport's top edge where the device frame's corner radius shaves the letters. 40px
     // is enough margin to survive the rounding and still short of the card above, whose bottom sits
     // about 65px clear — a larger nudge drags its last line into shot.
-    await about.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 40))
+    await about.evaluate((el) =>
+      window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 40),
+    )
     await page.waitForTimeout(900)
   } else {
     await page.mouse.wheel(0, 1400)
@@ -400,7 +405,9 @@ if (wanted('stats')) {
   const who = page.getByText(/where members are/i).first()
   const anchor = (await who.count()) ? who : page.getByText(/who's on compass/i).first()
   if (await anchor.count()) {
-    await anchor.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 40))
+    await anchor.evaluate((el) =>
+      window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 40),
+    )
     await page.waitForTimeout(1200)
   } else {
     console.warn('    warning: no distribution heading found — the shot may open on the counters')
@@ -416,7 +423,8 @@ if (wanted('stats')) {
 if (!signedIn) {
   writeFileSync(
     join(OUT_DIR, 'manifest.json'),
-    JSON.stringify({capturedAt: new Date().toISOString(), theme: THEME, signedIn, shots}, null, 2) + '\n',
+    JSON.stringify({capturedAt: new Date().toISOString(), theme: THEME, signedIn, shots}, null, 2) +
+      '\n',
   )
   console.warn(
     '\nSkipped the people list, filters, composer and saved searches — they do not exist logged out.' +
@@ -502,7 +510,8 @@ if (wanted('filters')) {
   // Back to the top: expanding the first section pushes the second one's toggle down, and the sheet
   // scrolls to follow the click.
   await page.evaluate(() => {
-    const sheet = document.querySelector('[data-testid="filter-sheet"]') ?? document.scrollingElement
+    const sheet =
+      document.querySelector('[data-testid="filter-sheet"]') ?? document.scrollingElement
     sheet.scrollTop = 0
   })
   await page.waitForTimeout(500)
@@ -571,7 +580,9 @@ if (wanted('alert')) {
 
   const cta = page.getByText(/No profiles found/i).first()
   if (await cta.count()) {
-    await cta.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 120))
+    await cta.evaluate((el) =>
+      window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 120),
+    )
     await page.waitForTimeout(700)
   }
   await quieten()
@@ -595,5 +606,7 @@ writeFileSync(
   ) + '\n',
 )
 
-console.log(`\ncaptured ${shots.length} ${THEME} screens -> media-creator/public/store/raw/${THEME}/`)
+console.log(
+  `\ncaptured ${shots.length} ${THEME} screens -> media-creator/public/store/raw/${THEME}/`,
+)
 await context.close()

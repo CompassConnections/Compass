@@ -24,10 +24,12 @@ export function useProfilePhotos(profile: Profile) {
   // the first photo showed up twice in the carousel.
   const urls = uniq(buildArray(profile.pinned_url, profile.photo_urls))
 
-  // Signed-out visitors on a members-only profile see the pinned photo and a locked count.
+  // A members-only profile shows a signed-out visitor its display name and nothing else, so there is
+  // no teaser photo either. The row now arrives from the server already stripped of its urls (see
+  // common/profiles/visibility), and this keeps the component right even when a cached full row from
+  // an earlier session is still in memory.
   const isLocked = !currentUser && profile.visibility !== 'public'
-  const visibleUrls = isLocked ? urls.slice(0, 1) : urls
-  const lockedCount = isLocked ? urls.length - 1 : 0
+  const visibleUrls = isLocked ? [] : urls
 
   const safeIndex = Math.min(index, Math.max(0, visibleUrls.length - 1))
 
@@ -35,7 +37,6 @@ export function useProfilePhotos(profile: Profile) {
     urls,
     visibleUrls,
     isLocked,
-    lockedCount,
     /** Opens the lightbox on one photo of the set — same set from either component. */
     openAt: (i: number) => {
       setIndex(i)

@@ -63,6 +63,76 @@ describe('getUserAndProfile', () => {
       expect(mockPg.any).toHaveBeenCalledTimes(3)
     })
 
+    it('redacts a members-only profile for a signed-out reader', async () => {
+      const mockUser = {
+        id: 'mock-user-id',
+        username: 'mockuser',
+        name: 'Mock User',
+        avatarUrl: 'https://example.com/face.jpg',
+      }
+
+      const mockProfile = {
+        id: 'mock-profile-id',
+        user_id: 'mock-user-id',
+        visibility: 'member',
+        disabled: false,
+        bio: 'Mock bio',
+        city: 'Mock city',
+        pinned_url: 'https://example.com/photo.jpg',
+        birth_date: '1990-01-01',
+      }
+
+      mockPg.oneOrNone.mockResolvedValueOnce(mockUser).mockResolvedValueOnce(mockProfile)
+
+      const result = await getUserAndProfile('mockuser')
+
+      // The display name and nothing else: no bio, no city, no photo, not even the profile id the
+      // option tables join on.
+      expect(result).toEqual({
+        user: {...mockUser, avatarUrl: ''},
+        profile: {user_id: 'mock-user-id', visibility: 'member', disabled: false},
+      })
+      // The option tables are never even read for a reader who may not see them.
+      expect(mockPg.any).not.toHaveBeenCalled()
+    })
+
+    it('returns a members-only profile in full to a signed-in member', async () => {
+      const mockUser = {id: 'mock-user-id', username: 'mockuser', name: 'Mock User'}
+      const mockProfile = {
+        id: 'mock-profile-id',
+        user_id: 'mock-user-id',
+        visibility: 'member',
+        bio: 'Mock bio',
+        birth_date: '1990-01-01',
+      }
+
+      mockPg.oneOrNone.mockResolvedValueOnce(mockUser).mockResolvedValueOnce(mockProfile)
+      mockPg.any.mockResolvedValue([])
+
+      const result = await getUserAndProfile('mockuser', 'some-other-member')
+
+      expect(result?.profile).toMatchObject({bio: 'Mock bio'})
+      // Everyone but the owner still reads the age, never the date behind it.
+      expect(result?.profile?.birth_date).toBeNull()
+    })
+
+    it('returns birth_date only to the owner', async () => {
+      const mockUser = {id: 'mock-user-id', username: 'mockuser', name: 'Mock User'}
+      const mockProfile = {
+        id: 'mock-profile-id',
+        user_id: 'mock-user-id',
+        visibility: 'member',
+        birth_date: '1990-01-01',
+      }
+
+      mockPg.oneOrNone.mockResolvedValueOnce(mockUser).mockResolvedValueOnce(mockProfile)
+      mockPg.any.mockResolvedValue([])
+
+      const result = await getUserAndProfile('mockuser', 'mock-user-id')
+
+      expect(result?.profile?.birth_date).toBe('1990-01-01')
+    })
+
     it('should return null when user does not exist', async () => {
       mockPg.oneOrNone.mockResolvedValueOnce(null)
 

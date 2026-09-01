@@ -413,7 +413,26 @@ export const API = (_apiTypeCheck = {
       username: z.string().min(1),
     }),
     returns: {} as {user: User | null | undefined; profile: ProfileRow | null | undefined},
-    summary: 'Get user and profile data by username',
+    summary: 'Get user and profile data by username (members-only profiles are redacted)',
+    tag: 'Users',
+  },
+  /**
+   * The same lookup as `get-user-and-profile`, for a caller that is signed in.
+   *
+   * Members-only profiles — the default on this site — reach an anonymous reader as a display name
+   * and nothing else, so the client needs a read that is declared to require a session rather than
+   * one that merely tolerates it. This is also the only path that returns a member's own
+   * `birth_date`.
+   */
+  'get-profile': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({
+      username: z.string().min(1),
+    }),
+    returns: {} as {user: User | null | undefined; profile: ProfileRow | null | undefined},
+    summary: 'Get full user and profile data by username, for signed-in members',
     tag: 'Users',
   },
   'me/data': {

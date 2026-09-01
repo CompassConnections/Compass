@@ -35,8 +35,18 @@ export function ProfileHeaderActions(props: {
   showMessageButton: boolean
   refreshProfile: () => void
   isHiddenFromMe: boolean | undefined
+  /** False for a members-only profile read by someone who is not signed in. */
+  isProfileVisible?: boolean
 }) {
-  const {user, profile, starredUserIds, refreshStars, showMessageButton, refreshProfile} = props
+  const {
+    user,
+    profile,
+    starredUserIds,
+    refreshStars,
+    showMessageButton,
+    refreshProfile,
+    isProfileVisible = true,
+  } = props
   const currentUser = useUser()
   const isAdmin = useAdmin()
   const isCurrentUser = currentUser?.id === user.id
@@ -181,7 +191,10 @@ export function ProfileHeaderActions(props: {
 
   return (
     <Row className="items-center gap-2">
-      <ViewProfileCardButton user={user} profile={profile} />
+      {/* The card is the profile in miniature — photo, place, tagline — so it is gated by the same
+          rule as the page it sits on. Sharing a link is not: a link reveals nothing the recipient
+          isn't separately entitled to. */}
+      {isProfileVisible && <ViewProfileCardButton user={user} profile={profile} />}
       <ShareProfileButton className="sm:flex" username={user.username} />
       {currentUser && (
         <StarButton

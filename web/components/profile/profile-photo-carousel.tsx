@@ -3,7 +3,6 @@ import {clamp} from 'lodash'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
-import {SignUpButton} from 'web/components/nav/sidebar'
 import {useT} from 'web/lib/locale'
 
 import {MediaTile} from './profile-photos'
@@ -25,13 +24,12 @@ const MAX_ASPECT = 16 / 9
 export default function ProfilePhotoCarousel(props: {
   urls: string[]
   descriptions?: Record<string, string>
-  lockedCount?: number
   /** Index within the full photo set, so the lightbox opens on the photo that was clicked. */
   indexOffset?: number
   onSelect?: (index: number) => void
   className?: string
 }) {
-  const {urls, descriptions, lockedCount = 0, indexOffset = 0, onSelect, className} = props
+  const {urls, descriptions, indexOffset = 0, onSelect, className} = props
   const t = useT()
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -59,7 +57,7 @@ export default function ProfilePhotoCarousel(props: {
     }
   }, [measure, urls.length])
 
-  if (urls.length === 0 && lockedCount === 0) return null
+  if (urls.length === 0) return null
 
   return (
     <Col className={clsx('gap-4', className)} data-testid="profile-photo-carousel">
@@ -99,22 +97,6 @@ export default function ProfilePhotoCarousel(props: {
             onClick={onSelect && (() => onSelect(indexOffset + i))}
           />
         ))}
-        {lockedCount > 0 && (
-          <div
-            className={clsx(
-              'bg-canvas-100 border-canvas-300 text-ink-500 flex flex-none snap-start items-center justify-center rounded-[4px] border border-dashed',
-              CARD_HEIGHT_CLASS,
-            )}
-            style={{aspectRatio: MIN_ASPECT}}
-          >
-            <SignUpButton
-              text={`+${lockedCount}`}
-              size="xs"
-              color="none"
-              className="dark:text-ink-500 hover:text-primary-500"
-            />
-          </div>
-        )}
       </div>
     </Col>
   )

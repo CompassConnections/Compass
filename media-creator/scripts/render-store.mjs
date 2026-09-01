@@ -210,8 +210,7 @@ const FONT_FILES = {
 const missingFonts = Object.values(FONT_FILES).filter((f) => !existsSync(join(FONT_DIR, f)))
 if (missingFonts.length) {
   console.error(
-    `missing font file(s): ${missingFonts.join(', ')}\n` +
-      `Run: cd media-creator && npm run fonts`,
+    `missing font file(s): ${missingFonts.join(', ')}\n` + `Run: cd media-creator && npm run fonts`,
   )
   process.exit(1)
 }
@@ -242,7 +241,8 @@ const FONT_CSS = `
 `
 
 const ICON_URI = existsSync(ICON) ? dataUri(ICON, 'image/png') : null
-if (!ICON_URI) console.warn(`warning: no app icon at ${ICON} — frames render without the brand mark`)
+if (!ICON_URI)
+  console.warn(`warning: no app icon at ${ICON} — frames render without the brand mark`)
 
 // ─── Geometry ─────────────────────────────────────────────────────────────────
 // The capture is 390x844 CSS px. The device frame adds a bezel all round, so its *outer* aspect is
@@ -627,7 +627,9 @@ ${ICON_URI ? `<img class="mark" src="${ICON_URI}" alt=""/>` : ''}
 
 // ─── Render ───────────────────────────────────────────────────────────────────
 
-const selected = FRAMES.filter((f, i) => ONLY.length === 0 || ONLY.includes(String(i + 1)) || ONLY.includes(f.key))
+const selected = FRAMES.filter(
+  (f, i) => ONLY.length === 0 || ONLY.includes(String(i + 1)) || ONLY.includes(f.key),
+)
 const ALL = TARGET === 'all' || TARGET === 'both'
 const targets = ALL ? Object.values(TARGETS) : [TARGETS[TARGET]]
 if (targets.some((t) => !t)) {
@@ -670,7 +672,12 @@ for (const target of targets) {
       const headerH = await page.evaluate(
         () => document.querySelector('.header').getBoundingClientRect().height,
       )
-      const g = fitDevice({width: target.width, height: target.height, headerH, bleed: target.bleed ?? 0.1})
+      const g = fitDevice({
+        width: target.width,
+        height: target.height,
+        headerH,
+        bleed: target.bleed ?? 0.1,
+      })
       // What the device actually left. Never less than the type needs — fitDevice derives the device
       // from `headerH` and only ever shrinks it further against the width cap.
       g.headerH = Math.max(headerH, Math.round(target.height - g.deviceH * 0.9))
@@ -696,7 +703,9 @@ for (const target of targets) {
     }
 
     await page
-      .evaluate(() => Promise.all(Array.from(document.images).map((im) => im.decode().catch(() => {}))))
+      .evaluate(() =>
+        Promise.all(Array.from(document.images).map((im) => im.decode().catch(() => {}))),
+      )
       .catch(() => {})
     await page.waitForTimeout(120)
     const file = join(outDir, `${n}-${frame.key}.png`)

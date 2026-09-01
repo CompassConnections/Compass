@@ -27,7 +27,9 @@ export function SearchAsMemberFilter(props: {
     setError(undefined)
     setAppliedFor(undefined)
     try {
-      const {user, profile} = await api('get-user-and-profile', {username: name})
+      // The member-facing read: this is a signed-in tool, and most profiles are members-only, so
+      // the public endpoint would hand back a redacted row for half the people looked up here.
+      const {user, profile} = await api('get-profile', {username: name})
       if (!user) {
         setError(`No member with username "${name}"`)
       } else if (!profile) {

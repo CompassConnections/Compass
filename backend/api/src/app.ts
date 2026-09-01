@@ -96,7 +96,7 @@ import {getSpotlightsAdmin} from './get-spotlights-admin'
 import {getSupabaseToken} from './get-supabase-token'
 import {getTestimonials} from './get-testimonials'
 import {getTestimonialsMod} from './get-testimonials-mod'
-import {getUserAndProfileHandler} from './get-user-and-profile'
+import {getProfileHandler, getUserAndProfileHandler} from './get-user-and-profile'
 import {getUserDataExport} from './get-user-data-export'
 import {getUserJourneys} from './get-user-journeys'
 import {hasFreeLike} from './has-free-like'
@@ -762,6 +762,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'unsubscribe/:token': unsubscribe,
   me: getMe,
   'get-user-and-profile': getUserAndProfileHandler,
+  'get-profile': getProfileHandler,
   report: report,
 }
 

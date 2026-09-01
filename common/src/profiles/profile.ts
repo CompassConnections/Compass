@@ -36,6 +36,12 @@ export const getProfileRowWithFrontendSupabase = async (
   const profile = profileRes.data?.[0] as ProfileRow | undefined
   if (!profile) return null
 
+  // A members-only profile arrives from the RPC redacted, with no `id` at all (see
+  // `redactMemberOnlyProfile`) — and PostgREST turns `eq('profile_id', undefined)` into the literal
+  // `profile_id=eq.null`, which the server rejects with `22P02: invalid input syntax for type
+  // bigint`. Three failed requests for tags that were deliberately withheld anyway.
+  if (profile.id == null) return {...profile, interests: [], causes: [], work: []}
+
   // Parallel instead of sequential
   const [interestsRes, causesRes, workRes] = await Promise.all([
     run(db.from('profile_interests').select('interests(name, id)').eq('profile_id', profile.id)),

@@ -1,5 +1,13 @@
 import React from 'react'
-import {AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig,} from 'remotion'
+import {
+  AbsoluteFill,
+  Easing,
+  Img,
+  interpolate,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from 'remotion'
 import {colors, fonts, FORMATS} from '../theme'
 
 // A twelve-second silent b-roll scroll of a single profile, made to sit *under* the

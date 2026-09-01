@@ -38,8 +38,15 @@ export default function ProfileHero(props: {
   userActivity?: UserActivity
   simpleView?: boolean
   isHiddenFromMe: boolean | undefined
+  /**
+   * A members-only profile being read by someone who is not signed in. The server has already
+   * stripped the row down to its display name, so almost everything below would render empty
+   * anyway — but the band is drawn deliberately rather than accidentally, so that a stale cached
+   * profile can never put back what the redaction took out.
+   */
+  locked?: boolean
 }) {
-  const {user, profile, isHiddenFromMe, simpleView} = props
+  const {user, profile, isHiddenFromMe, simpleView, locked} = props
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user.id
   const isMod = useAdminOrMod()
@@ -65,6 +72,22 @@ export default function ProfileHero(props: {
       {user.name}
     </span>
   )
+
+  // Just the name, at the same display size it has on any other profile: this is a person's page,
+  // not an error state, and the panel underneath does the explaining.
+  if (locked) {
+    return (
+      <Col className="gap-5">
+        <div
+          data-testid="profile-display-name-age"
+          className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2"
+        >
+          {name}
+          {isAdminUserId(user.id) && <AdminBadge className="px-2 py-1 text-xs" />}
+        </div>
+      </Col>
+    )
+  }
 
   return (
     <Col className="gap-5">

@@ -1,3 +1,4 @@
+import {LockClosedIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
@@ -27,6 +28,7 @@ import ProfileAbout, {
 } from 'web/components/profile-about'
 import {ProfileCommentSection} from 'web/components/profile-comment-section'
 import {ScrollPanel} from 'web/components/widgets/scroll-panel'
+import {linkClass} from 'web/components/widgets/site-link'
 import {shortenName} from 'web/components/widgets/user-link'
 import {useGetter} from 'web/hooks/use-getter'
 import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
@@ -37,6 +39,7 @@ import {useUserActivity} from 'web/hooks/use-user-activity'
 import {User} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {getStars} from 'web/lib/supabase/stars'
+import {promptSignIn} from 'web/lib/util/signup'
 
 import {BackButton} from '../back-button'
 
@@ -52,7 +55,6 @@ export function ProfileInfo(props: {
   const {profile, refreshProfile, fromProfilePage, fromSignup} = props
 
   const currentUser = useUser()
-  const t = useT()
   // const currentProfile = useProfile()
 
   const isCurrentUser = currentUser?.id === props.user.id
@@ -89,9 +91,14 @@ export function ProfileInfo(props: {
   // Allow everyone to message everyone for now
   const showMessageButton = true // liked || likedBack || !areCompatible
 
+  // Members-only profiles are the default here (see `profiles.visibility`), and the gate is enforced
+  // on the server: what arrives for a signed-out visitor is a display name and nothing else. This
+  // flag decides what to *draw*, not what to hide — see common/profiles/visibility.
   const isProfileVisible = currentUser || profile.visibility === 'public'
 
-  const {data: userActivity} = useUserActivity(user?.id)
+  // Not asked for when the profile is gated: "last online" is still something about the person, and
+  // a request in the network tab is a request whether or not anything renders from it.
+  const {data: userActivity} = useUserActivity(isProfileVisible ? user?.id : undefined)
 
   const {ref: heroRef, scrolledPast: scrolledPastHero} = useScrolledPast<HTMLDivElement>()
 
@@ -143,6 +150,7 @@ export function ProfileInfo(props: {
               showMessageButton={showMessageButton}
               refreshProfile={refreshProfile}
               isHiddenFromMe={isHiddenFromMe}
+              isProfileVisible={!!isProfileVisible}
             />
           </div>
         </div>
@@ -184,6 +192,7 @@ export function ProfileInfo(props: {
               profile={profile}
               simpleView={!!fromProfilePage}
               isHiddenFromMe={isHiddenFromMe}
+              locked={!isProfileVisible}
             />
           </div>
         </div>
@@ -201,20 +210,7 @@ export function ProfileInfo(props: {
             // refreshShips={refresh}
           />
         ) : (
-          <Col className="bg-canvas-50 border-canvas-300 w-full gap-4 rounded-xl border p-6">
-            {/*<div className="text-sm text-gray-500 dark:text-gray-400">*/}
-            {/*  <Content className="w-full line-clamp-6" content={profile.bio as JSONContent} />*/}
-            {/*</div>*/}
-            <Col className="relative gap-4">
-              <div className="bg-ink-200 dark:bg-ink-400 h-4 w-2/5" />
-              <div className="bg-ink-200 dark:bg-ink-400 h-4 w-3/5" />
-              <div className="bg-ink-200 dark:bg-ink-400 h-4 w-1/2" />
-              <div className="from-canvas-50 absolute bottom-0 h-12 w-full bg-gradient-to-t to-transparent" />
-            </Col>
-            <Row className="gap-2">
-              <SignUpButton text={t('profile.info.signup_to_see', signupMessage)} />
-            </Row>
-          </Col>
+          <MembersOnlyPanel name={user.name} />
         )}
       </div>
       {/*{areCompatible &&*/}
@@ -237,6 +233,58 @@ export function ProfileInfo(props: {
       {/*    </Row>*/}
       {/*  )}*/}
     </>
+  )
+}
+
+/**
+ * What a signed-out visitor gets instead of the profile.
+ *
+ * The grey bars this replaces were a lie in two directions: they mimicked three lines of hidden text
+ * that may not exist, and they implied the rest of the page was merely unrendered when in fact none
+ * of it was ever sent. Saying plainly what is behind the gate — and that the same gate is on by
+ * default for their own profile — is both honest and a better argument for signing up than a
+ * teaser is.
+ */
+function MembersOnlyPanel(props: {name: string}) {
+  const {name} = props
+  const t = useT()
+
+  return (
+    <Col
+      data-testid="profile-members-only"
+      className="border-canvas-300 bg-canvas-50 mt-10 w-full max-w-xl gap-5 rounded-2xl border p-7"
+    >
+      <Row className="text-ink-500 font-microcaps items-center gap-2">
+        <LockClosedIcon className="h-3.5 w-3.5 flex-none" />
+        {t('profile.info.members_only_label', 'Members only')}
+      </Row>
+
+      <div
+        className="font-heading text-ink-1000"
+        style={{fontSize: 'clamp(1.35rem, 2vw, 1.75rem)', lineHeight: 1.3}}
+      >
+        {t('profile.info.members_only_title', '{name} shares their profile with members only.', {
+          name,
+        })}
+      </div>
+
+      <div className="text-ink-600 max-w-[46ch] text-[15px] leading-relaxed">
+        {t(
+          'profile.info.members_only_body',
+          'Their photos, their story and what they are looking for are for members to read, not for the open web.',
+        )}
+      </div>
+
+      <Col className="gap-3 pt-1 sm:max-w-sm">
+        <SignUpButton text={t('profile.info.signup_to_see', signupMessage)} />
+        <div className="text-ink-500 text-sm">
+          {t('profile.info.already_member', 'Already a member?')}{' '}
+          <button type="button" className={linkClass} onClick={promptSignIn}>
+            {t('profile.info.sign_in', 'Sign in')}
+          </button>
+        </div>
+      </Col>
+    </Col>
   )
 }
 
@@ -505,7 +553,6 @@ function ProfileContent(props: {
           <ProfilePhotoCarousel
             urls={photos.visibleUrls.slice(1)}
             descriptions={profile.image_descriptions as Record<string, string>}
-            lockedCount={photos.lockedCount}
             indexOffset={1}
             onSelect={photos.openAt}
           />

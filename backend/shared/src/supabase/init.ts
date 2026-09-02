@@ -33,6 +33,12 @@ export const pgp = pgPromise({
 pgp.pg.types.setTypeParser(20, (value: any) => parseInt(value, 10))
 pgp.pg.types.setTypeParser(1700, parseFloat) // Type Id 1700 = NUMERIC
 
+// Type Id 1082 = DATE. A `date` is a calendar day, not an instant, but the default parser turns it
+// into a JS `Date` at *local* midnight — which then crosses the wire as the previous day anywhere
+// east of UTC ('1997-07-01' leaves a CET server as '1997-06-30T22:00:00.000Z'). Hand back the
+// 'YYYY-MM-DD' string the column actually holds, which is also what the generated row types say.
+pgp.pg.types.setTypeParser(1082, (value: any) => value)
+
 export type SupabaseTransaction = ITask<object>
 export type SupabaseDirectClient = IDatabase<object, IClient> | SupabaseTransaction
 

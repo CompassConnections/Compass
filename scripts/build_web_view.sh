@@ -46,6 +46,7 @@ rm -rf .next/* .next/.* 2>/dev/null || true
 SSG_PAGES=(
   "pages/[username]/index.tsx"
   "pages/blog/[slug].tsx"
+  "pages/vote/[id].tsx"
   "pages/index.tsx"
 )
 

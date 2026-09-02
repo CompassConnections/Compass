@@ -1823,6 +1823,7 @@
   "vote.order.label": "Trier par :",
   "vote.priority": "Priorité",
   "vote.seo.description": "Un endroit pour voter sur les décisions",
+  "vote.seo.tally": "{for} pour, {against} contre, {abstain} abstentions",
   "vote.seo.title": "Propositions",
   "vote.showmore.closed": "Ajouter une nouvelle proposition",
   "vote.showmore.open": "Masquer",

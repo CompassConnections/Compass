@@ -1,9 +1,11 @@
 import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
+import {truncateAtWord} from 'common/feed/feed'
 import {filterDefined} from 'common/util/array'
 import {richTextToString} from 'common/util/parse'
 import {isCommentable, STATUS_CHOICES, VOTE_STATUSES, type VoteStatus} from 'common/votes/constants'
 import {ArrowLeft} from 'lucide-react'
+import {GetStaticPropsContext} from 'next'
 import Link from 'next/link'
 import {useRouter} from 'next/router'
 import {useEffect, useState} from 'react'
@@ -28,15 +30,70 @@ import {useUser} from 'web/hooks/use-user'
 import {useUserInStore} from 'web/hooks/use-user-supabase'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
-import {getVote, getVoteResultsByUser} from 'web/lib/supabase/votes'
+import {getVote, getVoteMeta, getVoteResultsByUser, type VoteMeta} from 'web/lib/supabase/votes'
+import {isNativeMobile} from 'web/lib/util/webview'
 
-export default function VoteDetailPage() {
+type Props = {
+  /** Absent in the native export, where nothing ran at build time to supply it. */
+  voteId?: number
+  /** `null` when no proposal carries that id; absent when the render could not reach the database. */
+  meta?: VoteMeta | null
+}
+
+/**
+ * Rendered on first request and then cached, the same arrangement as `/blog/[slug]` and
+ * `/[username]`.
+ *
+ * The point of it is the metadata. The proposal used to be read only in the browser, so the `<SEO>`
+ * tags were mounted a fetch too late: every crawler, and every link preview in Slack, WhatsApp or
+ * iMessage, saw the site-wide default title and description — identical for all proposals, and
+ * saying nothing about the one being shared.
+ *
+ * The Android and iOS builds are static exports, which support neither `fallback: 'blocking'` nor
+ * anything else that runs per request, so `scripts/build_web_view.sh` strips both exports below for
+ * them (this page is listed in its `SSG_PAGES`). Nothing here runs there: `voteId` and `vote` arrive
+ * undefined and come from the router and Supabase instead, exactly as before.
+ */
+export const getStaticProps = async (props: GetStaticPropsContext<{id: string}>) => {
+  const voteId = Number(props.params!.id)
+  // `/vote/banana` is not a proposal that might appear later, so it 404s rather than being cached as
+  // an empty page.
+  if (!Number.isFinite(voteId)) return {notFound: true}
+
+  if (isNativeMobile()) return {props: {voteId}}
+
+  try {
+    const meta = await getVoteMeta({voteId})
+    return {
+      props: {voteId, meta},
+      // The tallies and the status move while a proposal is open, and both are in the description
+      // that gets shared. An unknown id is retried fast: the likeliest reason to be asking for one is
+      // that it has just been created.
+      revalidate: meta ? 60 : 5,
+    }
+  } catch (e) {
+    // The tags fall back to the generic proposal ones rather than the page failing: a preview that
+    // says less is a much smaller problem than a proposal that will not open.
+    console.error('Failed to prefetch proposal', voteId, e)
+    return {props: {voteId}, revalidate: 5}
+  }
+}
+
+export const getStaticPaths = () => {
+  // Nothing pre-built: proposals are cheap to render on demand, and enumerating them here would make
+  // every deploy depend on a database read that is already stale by the time the build finishes.
+  return {paths: [], fallback: 'blocking'}
+}
+
+export default function VoteDetailPage({voteId: staticVoteId, meta}: Props) {
   const t = useT()
   const router = useRouter()
   const user = useUser()
 
+  // The static prop when there is one, the URL otherwise: in the native export nothing was rendered
+  // at build time, and `router.query` is empty for one render either way.
   const rawId = router.query.id
-  const voteId = typeof rawId === 'string' ? Number(rawId) : undefined
+  const voteId = staticVoteId ?? (typeof rawId === 'string' ? Number(rawId) : undefined)
   const validId = voteId !== undefined && Number.isFinite(voteId)
 
   const {data: vote, refresh: refreshVote} = useGetter(
@@ -44,6 +101,9 @@ export default function VoteDetailPage() {
     validId ? {voteId: voteId!} : undefined,
     getVote,
   )
+  // The full row once the browser has it, the statically fetched one until then — which is the only
+  // one a crawler or a link-preview fetcher ever sees, since none of them wait for the client fetch.
+  const seoVote: VoteSeoFields | undefined = (vote as Vote | null) ?? meta ?? undefined
   const {data: choicesByUserId, refresh: refreshChoices} = useGetter(
     'vote-results',
     validId ? {voteId: voteId!} : undefined,
@@ -63,9 +123,10 @@ export default function VoteDetailPage() {
     if (match) setIdInUrl(match[1])
   }, [])
 
-  if (!router.isReady || vote === undefined) {
+  if (vote === undefined) {
     return (
       <PageBase trackPageView={'vote detail page'} className={'relative p-2 sm:pt-0'}>
+        <VoteSEO vote={seoVote} voteId={validId ? voteId : undefined} />
         <CompassLoadingIndicator />
       </PageBase>
     )
@@ -74,6 +135,7 @@ export default function VoteDetailPage() {
   if (!vote) {
     return (
       <PageBase trackPageView={'vote detail page'} className={'relative p-2 sm:pt-0'}>
+        <VoteSEO vote={seoVote} voteId={validId ? voteId : undefined} />
         <Col className="mx-auto mt-10 max-w-3xl w-full items-center gap-2">
           <p className="font-heading text-lg text-ink-900">
             {t('vote.detail.not_found', 'Proposal not found')}
@@ -103,11 +165,7 @@ export default function VoteDetailPage() {
 
   return (
     <PageBase trackPageView={'vote detail page'} className={'relative p-2 sm:pt-0'}>
-      <SEO
-        title={typedVote.title}
-        description={richTextToString(typedVote.description as JSONContent).slice(0, 200)}
-        url={`/vote/${typedVote.id}`}
-      />
+      <VoteSEO vote={seoVote} voteId={typedVote.id} />
       <Col className="mx-auto max-w-3xl w-full gap-6">
         <Link
           href="/vote"
@@ -190,6 +248,56 @@ export default function VoteDetailPage() {
       </Col>
     </PageBase>
   )
+}
+
+/**
+ * The subset of a proposal the tags read — the fields the statically fetched row and the full client
+ * row have in common, so either can be handed to `VoteSEO`.
+ */
+type VoteSeoFields = Pick<VoteMeta, 'id' | 'title' | 'status'> & {
+  description: unknown
+  votes_for?: number | null
+  votes_against?: number | null
+  votes_abstain?: number | null
+}
+
+/**
+ * The proposal's own title, status, tally and opening lines, instead of the site-wide defaults.
+ *
+ * Rendered on the loading and not-found branches too, so a page always carries tags — and, since
+ * `getStaticProps` has the row in hand before the first byte, the interesting ones are in the HTML
+ * itself rather than appearing after a client fetch that no crawler waits for.
+ *
+ * The status and the tally lead the description: they are what a reader wants off a search result or
+ * a link preview, and they are the part the proposal's own prose cannot tell them. 200 characters is
+ * a little past what Google shows and comfortably inside what the preview cards render.
+ */
+function VoteSEO(props: {vote?: VoteSeoFields; voteId?: number}) {
+  const {vote, voteId} = props
+  const t = useT()
+
+  if (!vote) {
+    return (
+      <SEO
+        title={t('vote.seo.title', 'Proposals')}
+        description={t('vote.seo.description', 'A place to vote on decisions')}
+        url={voteId !== undefined ? `/vote/${voteId}` : '/vote'}
+      />
+    )
+  }
+
+  const status = vote.status
+    ? t(`vote.status.${vote.status}`, STATUS_CHOICES[vote.status] ?? vote.status)
+    : undefined
+  const tally = t('vote.seo.tally', '{for} for, {against} against, {abstain} abstaining', {
+    for: vote.votes_for ?? 0,
+    against: vote.votes_against ?? 0,
+    abstain: vote.votes_abstain ?? 0,
+  })
+  const summary = richTextToString(vote.description as JSONContent)
+  const description = truncateAtWord(filterDefined([status, tally, summary]).join(' · '), 200)
+
+  return <SEO title={vote.title} description={description} url={`/vote/${vote.id}`} />
 }
 
 /**

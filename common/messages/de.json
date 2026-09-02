@@ -1824,6 +1824,7 @@
   "vote.order.label": "Sortieren nach:",
   "vote.priority": "Priorität",
   "vote.seo.description": "Ein Ort zum Abstimmen über Entscheidungen",
+  "vote.seo.tally": "{for} dafür, {against} dagegen, {abstain} Enthaltungen",
   "vote.seo.title": "Vorschläge",
   "vote.showmore.closed": "Neuen Vorschlag hinzufügen",
   "vote.showmore.open": "Ausblenden",

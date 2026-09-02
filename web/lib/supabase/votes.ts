@@ -24,6 +24,36 @@ export const getVote = async (params: {voteId: number}) => {
   return data?.[0] ?? null
 }
 
+// What the `<head>` of a proposal page needs, read on the server before the page is sent — which
+// means it is read as the anon role, since nobody is signed in at that point.
+//
+// `get_votes_with_results` can't be used here even though it returns a superset: it joins
+// `vote_comments` to rank the highlighted arguments, and anon has no grant on that table, so the
+// whole call errors rather than coming back without them. The proposal row and the ballots are both
+// anon-readable, and the tallies are the same arithmetic the function does.
+export const getVoteMeta = async (params: {voteId: number}) => {
+  const {voteId} = params
+  const [vote, results] = await Promise.all([
+    db.from('votes').select('id, title, description, status').eq('id', voteId).limit(1),
+    db.from('vote_results').select('choice').eq('vote_id', voteId),
+  ])
+  if (vote.error) throw vote.error
+  if (results.error) throw results.error
+
+  const row = vote.data?.[0]
+  if (!row) return null
+
+  const choices = (results.data ?? []).map((r) => r.choice)
+  return {
+    ...row,
+    votes_for: choices.filter((c) => c === 1).length,
+    votes_against: choices.filter((c) => c === -1).length,
+    votes_abstain: choices.filter((c) => c === 0).length,
+  }
+}
+
+export type VoteMeta = NonNullable<Awaited<ReturnType<typeof getVoteMeta>>>
+
 // The viewer's own ballot on every proposal, so each card can highlight the button they picked. One
 // query for the whole list rather than a per-card lookup — it's a single index scan on `user_id`, and
 // the alternative is teaching `get_votes_with_results` about the caller, which it has no way to know

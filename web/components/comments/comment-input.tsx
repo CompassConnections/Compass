@@ -134,6 +134,8 @@ export function CommentInputTextArea(props: {
   isEditing?: boolean
   commentTypes?: CommentType[]
   maxHeight?: string
+  /** Passed through to TextEditor — see its own doc comment. */
+  overscrollContain?: boolean
 }) {
   const {
     user,
@@ -149,6 +151,7 @@ export function CommentInputTextArea(props: {
     cancelEditing,
     isDisabled,
     maxHeight,
+    overscrollContain,
   } = props
   const t = useT()
 
@@ -217,7 +220,13 @@ export function CommentInputTextArea(props: {
   }, [replyTo, editor])
 
   return (
-    <TextEditor editor={editor} maxHeight={maxHeight} className={className} hideEmbed>
+    <TextEditor
+      editor={editor}
+      maxHeight={maxHeight}
+      overscrollContain={overscrollContain}
+      className={className}
+      hideEmbed
+    >
       <Row className={''}>
         {user && !isSubmitting && submit && commentTypes.includes('repost') && (
           <Tooltip text={'Post question & comment to your followers'} className={'mt-2'}>

@@ -301,6 +301,12 @@ const TOOLBAR_VIEWPORT_GAP = 16
 const CARET_VIEWPORT_GAP = 8
 
 /**
+ * Whether the device puts a keyboard over the bottom of the screen. Proxied by the pointer being
+ * coarse, which is what the platform reports for phones, tablets and the native shells' WebViews.
+ */
+const hasOnScreenKeyboard = () => window.matchMedia?.('(pointer: coarse)').matches ?? false
+
+/**
  * The lowest y coordinate that is actually *visible*, which is not the same as the viewport bottom.
  *
  * On mobile the bottom nav bar is `fixed inset-x-0 bottom-0 z-50`, so it sits on top of the page —
@@ -362,6 +368,14 @@ export function TextEditor(props: {
   onBlur?: () => void
   onChange?: () => void
   maxHeight?: string
+  /**
+   * Stop a scroll that reaches the end of the content box from chaining out to whatever is behind it.
+   * For the chat composer, where the thing behind it is the conversation and dragging the composer
+   * must not drag the transcript with it. Off everywhere else: on a normal page it means a wheel with
+   * the pointer over the box scrolls nothing at all once the box is at its end (and, in Chrome, even
+   * when the box is too short to scroll), which reads as the page being stuck.
+   */
+  overscrollContain?: boolean
 }) {
   const {
     editor,
@@ -383,28 +397,36 @@ export function TextEditor(props: {
     // height (see useVisualViewportVars), so the box always fits above the keyboard and the
     // overflow scrolls inside it instead.
     maxHeight = 'max-h-[calc(var(--vvh,100dvh)*0.6)]',
+    overscrollContain,
   } = props
 
   const toolbarRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
 
   /**
-   * Keep the format toolbar on screen while typing.
+   * Keep what the user is looking at on screen while they type: the caret first, inside the editor's
+   * own scroll box and then in the viewport, and only after that — and only on touch — the format
+   * toolbar. Each step is documented at its definition below.
    *
-   * Capping the content area's height is not sufficient on its own: the box grows *downwards*, so an
-   * editor that starts near the bottom of the viewport pushes its toolbar past the bottom edge long
-   * before the content ever reaches the height cap. The bio editor at the end of the signup form is
-   * the worst case — it is the last thing on the page, so it always starts there.
-   *
-   * `scrollIntoView({block: 'nearest'})` on the toolbar scrolls by the minimum needed and does nothing
-   * when it is already visible, so it neither fights the user's own scrolling nor jumps the page. It
-   * also walks whatever scrollable ancestor actually exists rather than assuming the window scrolls.
+   * Everything here scrolls by the minimum needed and does nothing when there is nothing to fix, so it
+   * neither fights the reader's own scrolling nor jumps the page, and it walks whatever scrollable
+   * ancestor actually exists rather than assuming the window scrolls.
    *
    * Guarded on `isFocused` so that programmatic content changes (loading an existing bio, the
    * auto-fill extraction writing its result) cannot yank the page around while the user is elsewhere.
    */
   useEffect(() => {
     if (!editor) return
+
+    /** Viewport-relative rect of the caret, or null while its position is not rendered. */
+    const getCaretRect = () => {
+      // `coordsAtPos` throws when the position is not laid out yet (mid-update).
+      try {
+        return editor.view.coordsAtPos(editor.state.selection.head)
+      } catch {
+        return null
+      }
+    }
 
     /**
      * Keep the caret inside the editor's own scroll box.
@@ -419,14 +441,8 @@ export function TextEditor(props: {
     const scrollCaretIntoView = () => {
       const box = contentRef.current
       if (!box || box.scrollHeight <= box.clientHeight) return
-      // `coordsAtPos` throws when the position is not rendered yet (mid-update); nothing to scroll
-      // to in that case.
-      let caret
-      try {
-        caret = editor.view.coordsAtPos(editor.state.selection.head)
-      } catch {
-        return
-      }
+      const caret = getCaretRect()
+      if (!caret) return
       const rect = box.getBoundingClientRect()
       const below = caret.bottom + CARET_VIEWPORT_GAP - rect.bottom
       const above = rect.top + CARET_VIEWPORT_GAP - caret.top
@@ -434,11 +450,42 @@ export function TextEditor(props: {
       else if (above > 0) box.scrollTop -= above
     }
 
-    const measureAndScroll = () => {
-      if (!editor.isFocused) return
-      scrollCaretIntoView()
+    /**
+     * Then the page, but only for the caret itself — never merely because the toolbar is out of sight.
+     *
+     * The browser already keeps the caret visible in the *layout* viewport; what it does not know
+     * about is the on-screen keyboard and the fixed bottom nav sitting over the bottom of it, which is
+     * what `getUsableViewportBottom` measures.
+     */
+    const scrollCaretIntoViewport = () => {
+      const caret = getCaretRect()
+      if (!caret) return
+      const hidden = caret.bottom + CARET_VIEWPORT_GAP - getUsableViewportBottom()
+      if (hidden > 0) window.scrollBy(0, hidden)
+      else if (caret.top < 0) window.scrollBy(0, caret.top - CARET_VIEWPORT_GAP)
+    }
+
+    /**
+     * Keep the format toolbar on screen, on touch devices only.
+     *
+     * Capping the content area's height is not sufficient on its own: the box grows *downwards*, so an
+     * editor that starts near the bottom of the viewport pushes its toolbar past the bottom edge long
+     * before the content ever reaches the height cap. The bio editor at the end of the signup form is
+     * the worst case — it is the last thing on the page, so it always starts there.
+     *
+     * Touch only, because the thing this is fighting is the on-screen keyboard eating the bottom half
+     * of the screen. With a mouse the toolbar being below the fold is just ordinary page scrolling that
+     * the reader can undo — and doing it there meant every click into a long bio (a `selectionUpdate`
+     * like any other) yanked the page down to reveal a toolbar nobody had asked for.
+     */
+    const revealToolbar = () => {
       const el = toolbarRef.current
       if (!el) return
+
+      // Scrolling the toolbar up moves the caret up by exactly as much, so this can never spend more
+      // than the room above the caret: revealing the toolbar must not hide what is being typed.
+      const caret = getCaretRect()
+      let allowance = caret ? Math.max(0, caret.top - CARET_VIEWPORT_GAP) : Infinity
 
       // Explicit rather than `scrollIntoView({block: 'nearest'})`. 'nearest' considers an element
       // that is flush with the edge to be already visible and does nothing — and in that no-op case
@@ -449,19 +496,34 @@ export function TextEditor(props: {
       // moves: the page behind it is locked, so the window branch below is a no-op there.
       const scroller = getScrollParent(el)
       if (scroller) {
-        const overshoot =
+        const overshoot = Math.min(
           el.getBoundingClientRect().bottom +
-          TOOLBAR_VIEWPORT_GAP -
-          scroller.getBoundingClientRect().bottom
-        if (overshoot > 0) scroller.scrollTop += overshoot
+            TOOLBAR_VIEWPORT_GAP -
+            scroller.getBoundingClientRect().bottom,
+          allowance,
+        )
+        if (overshoot > 0) {
+          scroller.scrollTop += overshoot
+          allowance -= overshoot
+        }
       }
 
       // Then the window, for the inline case — and for a modal that is itself taller than the screen.
       // Re-measure: the scroller above may already have moved it.
       const rect = el.getBoundingClientRect()
-      const overshoot = rect.bottom + TOOLBAR_VIEWPORT_GAP - getUsableViewportBottom()
+      const overshoot = Math.min(
+        rect.bottom + TOOLBAR_VIEWPORT_GAP - getUsableViewportBottom(),
+        allowance,
+      )
       if (overshoot > 0) window.scrollBy(0, overshoot)
       else if (rect.top < 0) el.scrollIntoView({block: 'nearest'})
+    }
+
+    const measureAndScroll = () => {
+      if (!editor.isFocused) return
+      scrollCaretIntoView()
+      scrollCaretIntoViewport()
+      if (hasOnScreenKeyboard()) revealToolbar()
     }
 
     // Coalesce the measurement into a single animation frame. TipTap fires `update` *and*
@@ -503,9 +565,10 @@ export function TextEditor(props: {
     >
       {/* Only where the bar has no formatting of its own — see FloatingFormatMenu's doc comment. */}
       {toolbar === 'minimal' && <FloatingFormatMenu editor={editor} />}
-      {/* overscroll-contain: a drag started in the editor stays here instead of chaining out and
-          scrolling whatever is behind it (e.g. the chat page) */}
-      <div ref={contentRef} className={clsx(`overflow-auto overscroll-contain`, maxHeight)}>
+      <div
+        ref={contentRef}
+        className={clsx('overflow-auto', overscrollContain && 'overscroll-contain', maxHeight)}
+      >
         <EditorContent editor={editor} onBlur={onBlur} onChange={onChange} />
       </div>
 

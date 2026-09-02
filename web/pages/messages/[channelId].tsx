@@ -675,6 +675,9 @@ export const PrivateChat = (props: {
               // Cap the composer at 40% of the *visible* viewport (the default max-h-[60vh] tracks the
               // layout viewport, so with the keyboard up a long draft swallowed the whole feed).
               maxHeight="max-h-[calc(var(--vvh)*0.4)]"
+              // A drag started in the composer stays in it rather than scrolling the transcript
+              // behind it.
+              overscrollContain
               user={user}
               submit={submitMessage}
               isSubmitting={isSubmitting}

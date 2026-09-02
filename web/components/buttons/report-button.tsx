@@ -6,9 +6,11 @@ import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Modal} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
+import {SafetyLink} from 'web/components/safety-note'
 import {Title} from 'web/components/widgets/title'
 import {useUser} from 'web/hooks/use-user'
 import {report as reportContent} from 'web/lib/api'
+import {useT} from 'web/lib/locale'
 import {withTracking} from 'web/lib/service/analytics'
 
 export function ReportButton(props: {report: ReportProps}) {
@@ -48,6 +50,7 @@ export const ReportModal = (props: {
 }) => {
   const {label, report, setIsModalOpen, isModalOpen} = props
 
+  const t = useT()
   const [isReported, setIsReported] = useState(false)
 
   const onReport = async () => {
@@ -74,6 +77,20 @@ export const ReportModal = (props: {
           )}
           .
         </span>
+        {isReported && (
+          /* Same reasoning as the user report flow: the moment right after a report is the moment the
+             guide is worth reading, and the recovery steps are the part that is time-sensitive. */
+          <span className={'mb-4 text-sm text-ink-600'}>
+            {t(
+              'report.content.safety_prefix',
+              'If this involved a request for money, intimate photos, or moving off Compass, ',
+            )}
+            <SafetyLink section="gone-wrong" source="report content confirmation">
+              {t('safety.link.what_to_do', 'here is what to do next')}
+            </SafetyLink>
+            .
+          </span>
+        )}
         <Row className={'items-center justify-between'}>
           <Button color={'gray-white'} onClick={() => setIsModalOpen(false)}>
             {isReported ? 'Done' : 'Cancel'}

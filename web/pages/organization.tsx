@@ -131,6 +131,10 @@ export default function Organization() {
       links: [
         {url: '/contact', label: t('organization.contact', 'Contact us'), primary: true},
         {url: '/help', label: t('organization.help', 'Help & support center')},
+        // Member safety belongs here rather than under Trust & legal, where `/security` sits: that
+        // one is vulnerability disclosure for researchers, and the two words are close enough that
+        // filing them together sends people to the wrong page.
+        {url: '/safety', label: t('organization.safety', 'Safety guide')},
       ],
     },
     {

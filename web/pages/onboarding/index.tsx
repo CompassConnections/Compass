@@ -277,10 +277,70 @@ function Step3CompatibilityInspect({
       onNext={onNext}
       onSkip={onSkip}
       onBack={onBack}
-      continueText={t('onboarding.step3.continue', 'Get started')}
     />
   )
 }
+
+/**
+ * The one screen here that is about other people rather than about the product.
+ *
+ * It is last on purpose: the first three explain what Compass does differently, and this one is the
+ * thing that is true of every platform where strangers talk. Three lines, no lecture — the depth lives
+ * on `/safety`, and the job of this screen is only to make sure nobody meets their first person here
+ * without having seen the three patterns once.
+ */
+// function Step4StayingSafe({onNext, onSkip, onBack}: OnboardingStepProps & {onBack: () => void}) {
+//   const t = useT()
+//   const content = (
+//     <>
+//       <p>
+//         {t(
+//           'onboarding.step4.body1',
+//           'Almost everyone here is exactly who they say they are. A few are not, and they all behave the same way.',
+//         )}
+//       </p>
+//       <Bullets
+//         items={[
+//           t(
+//             'onboarding.step4.item1',
+//             'They push to move to WhatsApp or Telegram within a few messages',
+//           ),
+//           t('onboarding.step4.item2', 'They always have a reason not to get on a video call'),
+//           t('onboarding.step4.item3', 'Sooner or later, there is money involved'),
+//         ]}
+//       />
+//       <p>
+//         {t(
+//           'onboarding.step4.body2',
+//           'Meet in public, get yourself there and back, and tell a friend where you are going.',
+//         )}{' '}
+//         <Link
+//           href="/safety"
+//           target="_blank"
+//           className="text-primary-600 hover:text-primary-800 underline underline-offset-4"
+//         >
+//           {t('safety.link', 'Read the safety guide')}
+//         </Link>
+//       </p>
+//     </>
+//   )
+//
+//   return (
+//     <OnboardingScreen
+//       step={4}
+//       title={t('onboarding.step4.title', 'Meeting people you have not met yet.')}
+//       content={content}
+//       footerText={t(
+//         'onboarding.step4.footer',
+//         'Reporting an account is private — they never find out — and it is how we catch the ones doing this to twenty people at once.',
+//       )}
+//       onNext={onNext}
+//       onSkip={onSkip}
+//       onBack={onBack}
+//       continueText={t('onboarding.step3.continue', 'Get started')}
+//     />
+//   )
+// }
 
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0)
@@ -314,12 +374,10 @@ export default function OnboardingPage() {
         )
       case 2:
         return (
-          <Step3CompatibilityInspect
-            onNext={handleComplete}
-            onSkip={handleSkip}
-            onBack={handleBack}
-          />
+          <Step3CompatibilityInspect onNext={handleNext} onSkip={handleSkip} onBack={handleBack} />
         )
+      // case 3:
+      //   return <Step4StayingSafe onNext={handleComplete} onSkip={handleSkip} onBack={handleBack} />
       default:
         return handleComplete()
     }

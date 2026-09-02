@@ -89,6 +89,52 @@ zugrunde liegende Mathematik.
 Die [vollständige Implementierung](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts)
 ist **Open Source** und offen für Überprüfung, Feedback und Verbesserungen durch die Community.
 
+## Sicherheit
+
+### Wie treffe ich jemanden von Compass sicher?
+
+Drei Gewohnheiten decken fast alles ab: **Bleib auf Compass**, bis du der Person vertraust, **mach einen
+Videoanruf**, bevor ihr euch trefft, und **schick niemals Geld** an jemanden, den du nicht persönlich
+getroffen hast. Für das erste Treffen: ein öffentlicher Ort, eigene An- und Abreise, und sag einer
+Freundin oder einem Freund, wo du bist und wann du zurück sein willst.
+
+Der [Sicherheitsleitfaden](/safety) geht jedes Muster im Detail durch: den Druck, die Plattform zu
+verlassen, die immer neuen Ausreden gegen einen Videoanruf und die Formen, die eine Geldbitte annimmt.
+
+### Woran erkenne ich, ob ein Profil echt ist?
+
+Mach eine Rückwärtssuche der Fotos (Google Lens, TinEye oder Yandex), stell eine unvorbereitete Frage,
+die kein Skript beantworten kann, und telefoniere per Video. Echte Menschen hinterlassen unordentliche
+Spuren — einen Arbeitgeber, einen Verein, ein altes Konto; makellose Fotos ohne jede weitere Spur sind
+einen zweiten Blick wert. Die vollständige Checkliste steht im
+[Sicherheitsleitfaden](/safety#prufen-ob-jemand-wirklich-die-person-ist).
+
+Compass führt keine Identitätsprüfung und keine Hintergrundchecks durch, und wir sagen das lieber
+deutlich, als eine Garantie anzudeuten, die wir nicht geben können. Was ein offenes Verzeichnis
+stattdessen leistet: Jedes Profil steht allen offen. Ein Fake in einer Swipe-App wird nur von denen
+gesehen, denen er gezeigt wird; hier steht er in einem Verzeichnis, das jeder durchsuchen kann — deshalb
+gibt es hier deutlich weniger davon, und die, die auftauchen, werden meist innerhalb weniger Tage
+gemeldet. Solche Konten entfernen wir, so schnell wir davon erfahren.
+
+### Jemand hat mich um Geld gebeten. Was soll ich tun?
+
+Schick keines und melde das Konto. Keine online entstandene Beziehung braucht dein Geld — weder für einen
+Notfall noch für einen Flug, um dich zu besuchen, noch für eine Investmentplattform, auf der die Person
+angeblich gut verdient. Die Bitte kommt immer nach Wochen der Zuwendung; genau das lässt sie
+funktionieren.
+
+Wenn du schon etwas geschickt hast, handle noch heute: Kontakt abbrechen, vor dem Blockieren alles per
+Screenshot sichern, das Betrugsteam deiner Bank anrufen und Anzeige erstatten. Die Schritte stehen unter
+[wenn etwas schiefgegangen ist](/safety#wenn-etwas-schiefgegangen-ist).
+
+### Wie melde oder blockiere ich jemanden?
+
+Öffne das Profil, nutze das Menü **⋯** oben und wähle **Melden** oder **Blockieren**. In einer
+Unterhaltung stehen dieselben Optionen im Menü **⋮** in der Kopfzeile. Meldungen sind privat — die andere
+Person erfährt nie davon — und sie sind der Weg, auf dem wir ein Konto erkennen, das dasselbe gerade bei
+zwanzig Menschen versucht. Für alles Dringende oder Komplizierte schreib uns über das
+[Kontaktformular](/contact).
+
 ## Finanzierung & Governance
 
 ### Ist Compass wirklich kostenlos?

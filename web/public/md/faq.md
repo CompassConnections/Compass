@@ -79,6 +79,48 @@ this [video](https://www.youtube.com/watch?v=m9PiPlRuy6E) for the math behind it
 The [full implementation](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts)
 is **open source** and open to review, feedback, and improvement by the community.
 
+## Safety
+
+### How do I stay safe meeting someone from Compass?
+
+Three habits cover almost everything: **stay on Compass** until you trust the person, **get on a video call**
+before you meet, and **never send money** to someone you have not met in person. When you do meet, make it a
+public place, arrange your own transport both ways, and tell a friend where you are going and when you expect
+to be back.
+
+The [safety guide](/safety) goes through each pattern in detail — what the off-platform push looks like, why
+the video-call excuses escalate, and the shapes a money request takes.
+
+### How do I know a profile is real?
+
+Reverse image search the photos (Google Lens, TinEye or Yandex), ask something unrehearsed that a script
+cannot answer, and get on a live video call. Real people accumulate untidy traces — a workplace, a club, an
+old account; a flawless set of photos with no other trace anywhere is worth a second look. There is a longer
+checklist in the [safety guide](/safety#checking-that-someone-is-who-they-say-they-are).
+
+Compass does not run identity verification or background checks, and we would rather say so plainly than
+imply a guarantee we cannot make. What an open directory does instead is put every profile in front of
+everyone: a fake on a swiping app is only ever seen by the people it is shown to, while here it sits in a
+directory anyone can search — which is why there are far fewer of them here, and why the ones that do
+appear are usually reported within days. We remove those accounts as fast as we hear about them.
+
+### Someone asked me for money. What should I do?
+
+Do not send it, and report the account. No genuine connection made online needs your money — not for an
+emergency, not for a flight to come and see you, not for an investment platform they are doing well on. The
+ask always arrives after weeks of warmth, which is what makes it work.
+
+If you have already sent something, act today: stop contact, screenshot everything before you block, call
+your bank's fraud team, and report it to your national fraud body. The steps are in
+[if something has gone wrong](/safety#if-something-has-gone-wrong).
+
+### How do I report or block someone?
+
+Open their profile, use the **⋯** menu at the top, and choose **Report** or **Block**. Inside a conversation
+the same options are in the **⋮** menu in the header. Reports are private — the other person is never told —
+and they are how we spot an account that is doing the same thing to twenty people at once. For anything
+urgent or complicated, write to us through the [contact form](/contact).
+
 ## Money & governance
 
 ### Is Compass really free?

@@ -6,6 +6,7 @@ import {toast} from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
+import {SafetyLink} from 'web/components/safety-note'
 import {Checkbox} from 'web/components/widgets/checkbox'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
@@ -54,6 +55,18 @@ export const ReportUser = (props: {user: Pick<User, 'id'>; closeModal: () => voi
           <span>{t('report.user.thanks', 'Thank you for your report.')}</span>
           <span>
             {t('report.user.review_message', "We'll review the user and take action if necessary.")}
+          </span>
+          {/* Someone who has just reported a user is, more often than not, in the middle of the thing
+              the guide describes — so this points at the recovery steps, not at the top of the page. */}
+          <span className={'text-ink-600 text-sm'}>
+            {t(
+              'report.user.safety_prefix',
+              'If they asked you for money, for intimate photos, or to move off Compass, ',
+            )}
+            <SafetyLink section="gone-wrong" source="report user confirmation">
+              {t('safety.link.what_to_do', 'here is what to do next')}
+            </SafetyLink>
+            {t('report.user.safety_suffix', '.')}
           </span>
           <Row className={'mt-2 justify-end'}>
             <Button onClick={closeModal}>{t('common.close', 'Close')}</Button>

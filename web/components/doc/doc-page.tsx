@@ -112,8 +112,15 @@ export function DocPage({
               <div className="mb-4 flex items-center gap-3">
                 {/* A real `h2` so the sections are in the document outline, styled as the eyebrow the
                     rest of the site uses — hence `m-0 font-figtree`, which undoes the global heading
-                    margins and the serif face that would otherwise land on an 11px cap. */}
-                <h2 className={clsx(eyebrow, 'm-0 shrink-0 font-figtree text-ink-700')}>
+                    margins and the serif face that would otherwise land on an 11px cap.
+
+                    `text-ink-900`, not `ink-700`: the eyebrow is a *label* treatment, and at 11px
+                    uppercase with 1.2px of tracking its smallness already carries the "quiet". Dimming
+                    it as well put the heading 1.25x above body text — invisible as a difference — and
+                    1.65x *below* the `strong` inside its own paragraphs, so an emphasised phrase
+                    outranked the section it sat in. Small tracked caps need more contrast than body,
+                    not less. */}
+                <h2 className={clsx(eyebrow, 'm-0 shrink-0 font-figtree text-ink-900')}>
                   {s.title}
                 </h2>
                 <div className="h-px flex-1 bg-gradient-to-r from-canvas-200 to-transparent" />

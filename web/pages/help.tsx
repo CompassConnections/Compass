@@ -42,6 +42,11 @@ export default function HelpPage() {
               <Link href="/contact">{t('security.how.contact_form', 'contact form')}</Link>
             </li>
             <li>
+              {t('help.links.safety_prefix', 'Read the ')}
+              <Link href="/safety">{t('safety.title', 'safety guide')}</Link>
+              {t('help.links.safety_suffix', ' before meeting someone you have met here')}
+            </li>
+            <li>
               {t('help.links.consult_prefix', 'See our ')}
               <Link href="/privacy">{t('privacy.title', 'Privacy Policy')}</Link>
               {t('help.links.consult_and', ' and ')}
@@ -89,6 +94,54 @@ export default function HelpPage() {
         </section>
 
         <section className="space-y-2">
+          <h2 className="text-xl font-semibold">
+            {t('help.safety.title', 'Staying safe with other members')}
+          </h2>
+          <p>
+            {t(
+              'help.safety.paragraph',
+              'Romance scams, fake profiles and pressure to move off the platform follow a small number of predictable patterns, and they are easy to spot once you have seen them written down.',
+            )}
+          </p>
+          <ul className="list-disc ml-6 space-y-1">
+            <li>
+              {t(
+                'help.safety.item1',
+                'Stay on Compass until you trust someone, and get on a video call before you meet.',
+              )}
+            </li>
+            <li>
+              {t(
+                'help.safety.item2',
+                'Never send money, crypto or gift cards to someone you have not met in person.',
+              )}
+            </li>
+            <li>
+              {t(
+                'help.safety.item3',
+                'Meet in public, arrange your own transport, and tell a friend where you are going.',
+              )}
+            </li>
+          </ul>
+          <p>
+            {t(
+              'help.safety.read_prefix',
+              'The full guide — including how to check that someone is real, and what to do if something has already gone wrong — is here: ',
+            )}
+            <Link href="/safety">{t('safety.title', 'safety guide')}</Link>
+            {t('help.safety.read_suffix', '.')}
+          </p>
+          <p>
+            {t(
+              'help.safety.report',
+              'To report or block someone, open their profile and use the ⋯ menu at the top. Reports are private — the other person is never told.',
+            )}
+          </p>
+        </section>
+
+        <section className="space-y-2">
+          {/* Note this is the *vulnerability disclosure* page, not member safety — the two are one
+              word apart and people land on the wrong one, hence the section above. */}
           <h2 className="text-xl font-semibold">{t('security.title', 'Security')}</h2>
           <p>
             {t(
@@ -114,6 +167,12 @@ export default function HelpPage() {
               className="px-3 py-2 rounded-md border border-primary-600 text-primary-700 hover:bg-primary-50"
             >
               {t('help.actions.faq_button', 'View FAQ')}
+            </Link>
+            <Link
+              href="/safety"
+              className="px-3 py-2 rounded-md border border-primary-600 text-primary-700 hover:bg-primary-50"
+            >
+              {t('help.actions.safety_button', 'Safety guide')}
             </Link>
           </Row>
         </section>

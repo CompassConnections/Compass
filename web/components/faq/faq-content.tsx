@@ -259,7 +259,10 @@ export function FaqContent({doc}: {doc: FaqDoc}) {
                   {/* A real `h2` so the categories are in the document outline, but styled as the
                       same eyebrow /about uses — hence `m-0 font-figtree`, which undoes the global
                       heading margins and the serif face that would otherwise land on an 11px cap. */}
-                  <h2 className={clsx(eyebrow, 'm-0 shrink-0 font-figtree text-ink-700')}>
+                  {/* `text-ink-900` for the reason spelled out on the same heading in
+                      `doc-page.tsx`: dimming an 11px tracked cap on top of its own smallness leaves it
+                      weaker than the bold text inside the answers below it. */}
+                  <h2 className={clsx(eyebrow, 'm-0 shrink-0 font-figtree text-ink-900')}>
                     {category.title}
                   </h2>
                   <div className="h-px flex-1 bg-gradient-to-r from-canvas-200 to-transparent" />

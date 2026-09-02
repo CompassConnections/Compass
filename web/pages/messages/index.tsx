@@ -15,6 +15,7 @@ import NewMessageButton from 'web/components/messaging/new-message-button'
 import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
 import {PageBase} from 'web/components/page-base'
 import {RelativeTimestamp} from 'web/components/relative-timestamp'
+import {SafetyLink} from 'web/components/safety-note'
 import {SEO} from 'web/components/SEO'
 import {Avatar} from 'web/components/widgets/avatar'
 import {Input} from 'web/components/widgets/input'
@@ -141,6 +142,13 @@ export function MessagesContent(props: {currentUser: User}) {
                 'messages.empty_hint',
                 'Start a conversation with someone who resonates with you.',
               )}
+            </p>
+            {/* An empty inbox is the one moment in the messages pane where nobody is mid-conversation,
+                so the guide can be offered rather than interrupt. */}
+            <p className="text-ink-400 text-xs mt-3">
+              <SafetyLink source="messages empty state">
+                {t('safety.link.meeting', 'New to meeting people online? Read the safety guide')}
+              </SafetyLink>
             </p>
           </div>
         )}

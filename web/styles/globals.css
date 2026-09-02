@@ -115,16 +115,6 @@
 
     --grid-stroke: rgb(232 213 188); /* canvas-200 */
 
-    /* Ink - Text Colors */
-    --color-ink-500: 140 128 112; /* Muted Warm Gray (#8C8070) */
-    --color-ink-600: 110 98 82; /* body text — 4.88:1 on canvas-100; 120/108/92 sat at 4.21:1, under AA */
-    --color-ink-700: 100 88 72;
-    --color-ink-900: 30 26 20; /* Deep Warm Black (#1E1A14) */
-
-    /* Green - Accents */
-    --color-green-200: #f0faf3;
-    --color-green-500: 107 143 113; /* Accent - Sage Green (#6B8F71) */
-
     /* Canvas - Backgrounds & Surfaces */
     --color-canvas-0: 255 255 255; /* white */
     --color-canvas-25: 242 240 232;
@@ -168,11 +158,16 @@
     --color-ink-200: 255 255 255;
     --color-ink-300: 160 160 160;
     --color-ink-400: 160 160 160;
-    /*--color-ink-500: 80 80 80;*/
-    /*--color-ink-600: 0 0 0;*/
-    /*--color-ink-700: 0 0 0;*/
-    --color-ink-800: 0 0 0;
-    /*--color-ink-900: 0 0 0;*/
+    --color-ink-500: 140 128 112; /* Muted Warm Gray (#8C8070) */
+    --color-ink-600: 110 98 82; /* body text — 4.88:1 on canvas-100; 120/108/92 sat at 4.21:1, under AA */
+    --color-ink-700: 100 88 72;
+    /* A real step between 700 and 900, in both themes. This used to be pinned to the extreme — pure
+       black here, pure white in `.dark` — which broke the ramp's only promise: that a higher number is
+       stronger. `text-ink-800` was *stronger* than `text-ink-900`, so anything reaching for "one step
+       below the strongest" (a sub-heading under an `ink-900` heading, say) came out louder than the
+       thing it sat under, in both themes. The pure extremes are still available as 950/1000. */
+    --color-ink-800: 62 54 44; /* #3E362C — 10.8:1 on cards, between 700 (6.3) and 900 (15.8) */
+    --color-ink-900: 30 26 20; /* Deep Warm Black (#1E1A14) */
     --color-ink-950: 0 0 0;
     --color-ink-1000: 0 0 0; /* black */
 
@@ -209,10 +204,10 @@
     --color-green-800: 22 101 52;
     --color-green-700: 21 128 61;
     --color-green-600: 22 163 74;
-    /*--color-green-500: 34 197 94; !* standard green *!*/
+    --color-green-500: 107 143 113; /* Accent - Sage Green (#6B8F71) */
     --color-green-400: 74 222 128;
     --color-green-300: 110 231 183; /* vibrant but not neon */
-    /*--color-green-200: 167 243 208; !* gentle mid-light tone *!*/
+    --color-green-200: #f0faf3;
     --color-green-100: 209 260 229; /* soft and airy */
     --color-green-50: 240 263 245; /* subtle, barely tinted background */
 
@@ -246,27 +241,14 @@
 
     --grid-stroke: rgb(68 52 34); /* canvas-900 */
 
-    /* Ink - Text becomes light */
-    --color-ink-500: 176 160 140; /* Muted Text - shifted to warm tan */
-    --color-ink-600: 186 170 150;
-    --color-ink-700: 206 190 170;
-    --color-ink-900: 247 244 239; /* Main Body Text (Old Card color) */
-    --color-ink-950: 255 255 255; /* Purest highlight */
-
-    /* Button background — barely-there dark green surface */
-    --color-green-200: 32 54 38;
-
-    /* Icon, dot, text — readable sage on that dark surface */
-    --color-green-500: 125 160 131;
-
     /* High Contrast */
     --color-ink-1000: 255 255 255; /* white */
-    /*--color-ink-950: 255 255 255;*/
-    /*--color-ink-900: 255 255 255;*/
-    --color-ink-800: 255 255 255;
-    /*--color-ink-700: 255 255 255;*/
-    /*--color-ink-600: 255 255 255;*/
-    /*--color-ink-500: 200 200 200;*/
+    --color-ink-950: 255 255 255; /* Purest highlight */
+    --color-ink-900: 247 244 239; /* Main Body Text (Old Card color) */
+    --color-ink-800: 227 217 205; /* #E3D9CD — see the light ramp: a step, not the extreme */
+    --color-ink-700: 206 190 170;
+    --color-ink-600: 186 170 150;
+    --color-ink-500: 176 160 140; /* Muted Text - shifted to warm tan */
     --color-ink-400: 100 100 100;
     --color-ink-300: 100 100 100;
     --color-ink-200: 0 0 0;
@@ -338,10 +320,10 @@
     --color-green-800: 187 247 208;
     --color-green-700: 134 239 172;
     --color-green-600: 74 222 128;
-    /*--color-green-500: 34 197 94; !* standard green *!*/
+    --color-green-500: 125 160 131; /* Icon, dot, text — readable sage on that dark surface */
     --color-green-400: 22 163 74;
     --color-green-300: 21 128 61;
-    /*--color-green-200: 22 101 52;*/
+    --color-green-200: 32 54 38; /* Button background — barely-there dark green surface */
     --color-green-100: 20 83 45;
     --color-green-50: 5 46 22; /* darkest green */
 

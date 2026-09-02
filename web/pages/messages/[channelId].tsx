@@ -27,6 +27,7 @@ import {AccountOnHoldNotice} from 'web/components/moderation/account-on-hold'
 import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
 import {PageBase} from 'web/components/page-base'
 import {ReportUser} from 'web/components/profile/report-user'
+import {ConversationSafetyTip} from 'web/components/safety-note'
 import {SEO} from 'web/components/SEO'
 import {Avatar} from 'web/components/widgets/avatar'
 import {useTextEditor} from 'web/components/widgets/editor'
@@ -662,21 +663,27 @@ export const PrivateChat = (props: {
             </span>
           </div>
         ) : (
-          <CommentInputTextArea
-            editor={editor}
-            // Cap the composer at 40% of the *visible* viewport (the default max-h-[60vh] tracks the
-            // layout viewport, so with the keyboard up a long draft swallowed the whole feed).
-            maxHeight="max-h-[calc(var(--vvh)*0.4)]"
-            user={user}
-            submit={submitMessage}
-            isSubmitting={isSubmitting}
-            // Same as mobile: enter starts a new paragraph, sending goes through the send button
-            // (or ctrl/cmd+enter), so a multi-paragraph message never gets fired off half-written.
-            submitOnEnter={false}
-            replyTo={replyToUserInfo}
-            isEditing={!!editingMessage}
-            cancelEditing={cancelEditing}
-          />
+          <>
+            {/* Only at the start of a conversation, and only until it is dismissed once: the two
+                things this says (stay on the platform, never send money) are worth saying before the
+                first reply, and worth nothing on the four-hundredth. */}
+            {(messages?.length ?? 0) <= 3 && <ConversationSafetyTip className="mx-2 mb-2" />}
+            <CommentInputTextArea
+              editor={editor}
+              // Cap the composer at 40% of the *visible* viewport (the default max-h-[60vh] tracks the
+              // layout viewport, so with the keyboard up a long draft swallowed the whole feed).
+              maxHeight="max-h-[calc(var(--vvh)*0.4)]"
+              user={user}
+              submit={submitMessage}
+              isSubmitting={isSubmitting}
+              // Same as mobile: enter starts a new paragraph, sending goes through the send button
+              // (or ctrl/cmd+enter), so a multi-paragraph message never gets fired off half-written.
+              submitOnEnter={false}
+              replyTo={replyToUserInfo}
+              isEditing={!!editingMessage}
+              cancelEditing={cancelEditing}
+            />
+          </>
         )}
       </div>
     </Col>

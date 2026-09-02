@@ -77,6 +77,53 @@ Les correspondances sont évaluées selon l’alignement des réponses et des r�
 
 L’[implémentation complète](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts) est **open source** et ouverte à la révision, aux retours et aux améliorations de la communauté.
 
+## Sécurité
+
+### Comment rester en sécurité quand on rencontre quelqu'un via Compass ?
+
+Trois habitudes couvrent presque tout : **restez sur Compass** tant que vous n'avez pas confiance,
+**faites un appel vidéo** avant de vous rencontrer, et **n'envoyez jamais d'argent** à quelqu'un que vous
+n'avez pas rencontré en personne. Pour la première rencontre, choisissez un lieu public, organisez vos
+trajets aller et retour vous-même, et dites à un ami où vous allez et quand vous comptez rentrer.
+
+Le [guide de sécurité](/safety) détaille chaque schéma : la pression pour quitter la plateforme, les
+excuses qui s'accumulent pour éviter l'appel vidéo, et les formes que prend une demande d'argent.
+
+### Comment savoir si un profil est réel ?
+
+Faites une recherche d'image inversée sur les photos (Google Lens, TinEye ou Yandex), posez une question
+imprévue à laquelle un script ne peut pas répondre, et passez un appel vidéo en direct. Une vraie vie
+laisse des traces désordonnées — un employeur, un club, un vieux compte ; une série de photos parfaites
+sans aucune autre trace mérite un second regard. La liste complète est dans le
+[guide de sécurité](/safety#verifier-que-quelqu-un-est-bien-qui-il-pretend-etre).
+
+Compass ne vérifie pas les identités et ne fait pas d'enquête sur ses membres, et nous préférons le dire
+franchement plutôt que de laisser croire à une garantie que nous ne pouvons pas donner. Ce qu'un annuaire
+ouvert fait à la place, c'est exposer chaque profil à tout le monde : un faux profil sur une application
+de swipe n'est vu que par les personnes à qui on le montre, alors qu'ici il figure dans un annuaire que
+n'importe qui peut fouiller — d'où le fait qu'il y en ait bien moins ici, et que ceux qui apparaissent
+soient en général signalés en quelques jours. Nous supprimons ces comptes aussi vite que nous en sommes
+informés.
+
+### Quelqu'un m'a demandé de l'argent. Que faire ?
+
+N'en envoyez pas, et signalez le compte. Aucune relation nouée en ligne n'a besoin de votre argent — ni
+pour une urgence, ni pour un billet d'avion afin de venir vous voir, ni pour une plateforme
+d'investissement où la personne dit bien s'en sortir. La demande arrive toujours après des semaines de
+chaleur : c'est précisément ce qui la rend efficace.
+
+Si vous avez déjà envoyé quelque chose, agissez aujourd'hui : coupez le contact, faites des captures
+d'écran avant de bloquer, appelez le service fraude de votre banque et signalez les faits aux autorités.
+Les étapes sont dans [si quelque chose a mal tourné](/safety#si-quelque-chose-a-mal-tourne).
+
+### Comment signaler ou bloquer quelqu'un ?
+
+Ouvrez son profil, utilisez le menu **⋯** en haut, puis choisissez **Signaler** ou **Bloquer**. Dans une
+conversation, les mêmes options sont dans le menu **⋮** de l'en-tête. Les signalements sont privés — la
+personne n'en est jamais informée — et c'est ainsi que nous repérons un compte qui fait la même chose à
+vingt personnes à la fois. Pour tout ce qui est urgent ou compliqué, écrivez-nous via le
+[formulaire de contact](/contact).
+
 ## Financement et gouvernance
 
 ### Compass est-il vraiment gratuit ?

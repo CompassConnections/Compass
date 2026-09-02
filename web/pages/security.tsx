@@ -22,6 +22,20 @@ export default function SecurityPage() {
       />
       <Col className="max-w-3xl w-full mx-auto gap-6 custom-link mb-4">
         <h1 className="text-3xl font-semibold">{t('security.title', 'Security')}</h1>
+        {/* `/security` is where members guess "safety" lives, so the cross-link goes above the fold
+            rather than in a footer — this page is for vulnerability reports and is no use to someone
+            worried about the person they are talking to. */}
+        <div className="rounded-xl border border-canvas-200 bg-canvas-50 px-4 py-3 text-sm text-ink-700">
+          {t(
+            'security.member_safety_prefix',
+            'Looking for advice on scams, fake profiles or meeting someone safely? That is the ',
+          )}
+          <Link href="/safety">{t('safety.title', 'safety guide')}</Link>
+          {t(
+            'security.member_safety_suffix',
+            '. This page is for reporting vulnerabilities in the platform itself.',
+          )}
+        </div>
         <p className="text-ink-700">
           {t(
             'security.intro',

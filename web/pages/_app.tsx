@@ -37,6 +37,7 @@ import {ProfileProvider} from 'web/hooks/use-profile'
 import {markNotificationOpened} from 'web/hooks/use-review-prompt'
 import {markBackNavigation, useScrollRestoration} from 'web/hooks/use-scroll-restoration'
 import {updateStatusBar} from 'web/hooks/use-theme'
+import {useVisualViewportVars} from 'web/hooks/use-visual-viewport-height'
 import {updateBackendLocale} from 'web/lib/api'
 import {getConsent} from 'web/lib/consent'
 import {DAYJS_LOCALE_IMPORTS, registerDatePickerLocale} from 'web/lib/dayjs'
@@ -124,6 +125,10 @@ function MyApp(props: AppProps<PageProps>) {
     registerDatePickerLocale(newLocale)
     updateBackendLocale(newLocale)
   }
+
+  // Publishes `--vvh` / `--vvo` for every page: anything that has to stay clear of the keyboard
+  // (the chat page's layout, the text editors' max height) sizes itself off the visible viewport.
+  useVisualViewportVars()
 
   useEffect(() => {
     debug('native app:', isNativeApp(), nativePlatform())

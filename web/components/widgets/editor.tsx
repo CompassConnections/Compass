@@ -297,6 +297,9 @@ const getMediaFiles = (data: DataTransfer | null) =>
 /** Breathing room left below the format toolbar when we scroll it back into view. */
 const TOOLBAR_VIEWPORT_GAP = 16
 
+/** Same, between the caret's line and the edges of the editor's scroll box. */
+const CARET_VIEWPORT_GAP = 8
+
 /**
  * The lowest y coordinate that is actually *visible*, which is not the same as the viewport bottom.
  *
@@ -310,7 +313,11 @@ const TOOLBAR_VIEWPORT_GAP = 16
  * furniture that gets added later. Both are cheap to query on each keystroke.
  */
 function getUsableViewportBottom(): number {
-  const viewportBottom = window.visualViewport?.height ?? window.innerHeight
+  const vv = window.visualViewport
+  // `+ offsetTop` because element rects are measured from the *layout* viewport's origin, while a
+  // browser that cannot scroll the document any further reveals the caret by panning the visual
+  // viewport down inside it. Without the pan the comparison below is off by exactly that much.
+  const viewportBottom = vv ? vv.height + vv.offsetTop : window.innerHeight
   let usable = viewportBottom
   document.querySelectorAll<HTMLElement>('nav, [data-bottom-overlay]').forEach((el) => {
     if (getComputedStyle(el).position !== 'fixed') return
@@ -370,10 +377,16 @@ export function TextEditor(props: {
     // you typed a few lines — the toolbar sits *after* the content in flow, so its position is
     // whatever the content height puts it at. Capping lower means new lines scroll within the box
     // instead of growing it, and the toolbar stays a fixed ~32px below wherever you are typing.
-    maxHeight = 'max-h-[60vh]',
+    // `vh` tracks the *layout* viewport, which the on-screen keyboard does not shrink, so a `60vh`
+    // box could be taller than everything still visible once the keyboard was up — the bio is the
+    // case that bites, since it is long enough to actually reach the cap. `--vvh` is the visible
+    // height (see useVisualViewportVars), so the box always fits above the keyboard and the
+    // overflow scrolls inside it instead.
+    maxHeight = 'max-h-[calc(var(--vvh,100dvh)*0.6)]',
   } = props
 
   const toolbarRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
 
   /**
    * Keep the format toolbar on screen while typing.
@@ -392,8 +405,38 @@ export function TextEditor(props: {
    */
   useEffect(() => {
     if (!editor) return
+
+    /**
+     * Keep the caret inside the editor's own scroll box.
+     *
+     * The box is capped (see `maxHeight`), so once the content outgrows the cap the caret is only
+     * visible if the box is scrolled to it. Two things move it out of view: tapping into the middle of
+     * a long draft — the browser scrolls the *page* to the tap, but the box keeps whatever scrollTop it
+     * had, so with a bio long enough to overflow, the line you tapped can sit outside the visible slice
+     * — and the keyboard opening, which shrinks the cap under a caret that was until then near the
+     * bottom of the box.
+     */
+    const scrollCaretIntoView = () => {
+      const box = contentRef.current
+      if (!box || box.scrollHeight <= box.clientHeight) return
+      // `coordsAtPos` throws when the position is not rendered yet (mid-update); nothing to scroll
+      // to in that case.
+      let caret
+      try {
+        caret = editor.view.coordsAtPos(editor.state.selection.head)
+      } catch {
+        return
+      }
+      const rect = box.getBoundingClientRect()
+      const below = caret.bottom + CARET_VIEWPORT_GAP - rect.bottom
+      const above = rect.top + CARET_VIEWPORT_GAP - caret.top
+      if (below > 0) box.scrollTop += below
+      else if (above > 0) box.scrollTop -= above
+    }
+
     const measureAndScroll = () => {
       if (!editor.isFocused) return
+      scrollCaretIntoView()
       const el = toolbarRef.current
       if (!el) return
 
@@ -438,9 +481,14 @@ export function TextEditor(props: {
     }
     editor.on('update', keepToolbarInView)
     editor.on('selectionUpdate', keepToolbarInView)
+    // The keyboard opening is a resize, not an edit: it shrinks both the usable viewport and the box's
+    // own cap, so the toolbar and the caret have to be re-measured even though nothing was typed.
+    const vv = window.visualViewport
+    vv?.addEventListener('resize', keepToolbarInView)
     return () => {
       editor.off('update', keepToolbarInView)
       editor.off('selectionUpdate', keepToolbarInView)
+      vv?.removeEventListener('resize', keepToolbarInView)
       if (frame) cancelAnimationFrame(frame)
     }
   }, [editor])
@@ -457,7 +505,7 @@ export function TextEditor(props: {
       {toolbar === 'minimal' && <FloatingFormatMenu editor={editor} />}
       {/* overscroll-contain: a drag started in the editor stays here instead of chaining out and
           scrolling whatever is behind it (e.g. the chat page) */}
-      <div className={clsx(`overflow-auto overscroll-contain`, maxHeight)}>
+      <div ref={contentRef} className={clsx(`overflow-auto overscroll-contain`, maxHeight)}>
         <EditorContent editor={editor} onBlur={onBlur} onChange={onChange} />
       </div>
 

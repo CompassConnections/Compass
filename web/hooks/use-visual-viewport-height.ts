@@ -1,39 +1,27 @@
 import {useEffect} from 'react'
 
 /**
- * Pins the calling page to the *visual* viewport (the part of the screen not covered by the on-screen
- * keyboard) and stops the document itself from scrolling, for as long as the component is mounted.
+ * Publishes the *visual* viewport — the part of the screen not covered by the on-screen keyboard — as
+ * CSS variables on `<html>`, app-wide:
  *
- * Why: on a chat page the composer sits at the bottom of the page. When the keyboard opens, the visual
- * viewport shrinks but the document keeps its old height, so the browser/WebView scrolls the document up
- * to keep the focused input visible — dragging the conversation header (the name of the person you're
- * messaging) off the top of the screen. `100dvh` doesn't help: it tracks the *layout* viewport, which the
- * keyboard doesn't change.
+ * - `--vvh`: its height. `100dvh` is not a substitute: that tracks the *layout* viewport, which the
+ *   keyboard does not change, so anything sized off it runs on under the keyboard.
+ * - `--vvo`: how far the browser has *panned* the visual viewport down inside the layout viewport. It
+ *   does that to reveal the caret when the document itself cannot scroll (see
+ *   `useVisualViewportHeight`). Pages that lock their scroll need to add it back to `--vvh` to stay
+ *   flush with the keyboard; pages that scroll normally never see it move off 0.
  *
- * The fix is to publish the live visual-viewport height as `--vvh` and let the page size itself off that,
- * with the document locked at scroll 0 so nothing can push the header away. The page then only scrolls
- * where we want it to: inside the message list.
+ * Mounted once in `_app`, on every platform: in the native shell the WebView is resized by the
+ * keyboard, so the visual viewport still reports the visible height.
  */
-export const useVisualViewportHeight = () => {
+export const useVisualViewportVars = () => {
   useEffect(() => {
     const root = document.documentElement
     const vv = window.visualViewport
 
     const update = () => {
-      // `offsetTop` is how far the browser has *panned* the visual viewport down inside the layout
-      // viewport. It does that to reveal the caret when the document itself cannot scroll, which is
-      // exactly the case here (both overflows are hidden below) — tapping into the middle of an
-      // already-typed message is the usual trigger. The page starts at the layout viewport's top and
-      // is locked at scroll 0, so sizing it to `height` alone leaves its bottom `offsetTop` px short
-      // of the visible area: a strip of empty page sitting between the composer and the keyboard.
-      // Including the pan keeps the composer flush with the keyboard, and self-limits — the caret
-      // stays visible, so the browser has no reason to pan further.
-      const height = vv ? vv.height + vv.offsetTop : window.innerHeight
-      root.style.setProperty('--vvh', `${height}px`)
-      // Undo any auto-scroll the browser did to reveal the focused input: with the page sized to the
-      // visual viewport there is nothing to scroll to, and a leftover offset hides the header.
-      if (document.scrollingElement) document.scrollingElement.scrollTop = 0
-      window.scrollTo(0, 0)
+      root.style.setProperty('--vvh', `${vv?.height ?? window.innerHeight}px`)
+      root.style.setProperty('--vvo', `${vv?.offsetTop ?? 0}px`)
     }
 
     update()
@@ -41,6 +29,48 @@ export const useVisualViewportHeight = () => {
     vv?.addEventListener('scroll', update)
     window.addEventListener('resize', update)
     window.addEventListener('orientationchange', update)
+
+    return () => {
+      vv?.removeEventListener('resize', update)
+      vv?.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+      window.removeEventListener('orientationchange', update)
+      root.style.removeProperty('--vvh')
+      root.style.removeProperty('--vvo')
+    }
+  }, [])
+}
+
+/**
+ * Pins the calling page to the visual viewport and stops the document itself from scrolling, for as
+ * long as the component is mounted. The measurements themselves come from `useVisualViewportVars`.
+ *
+ * Why: on a chat page the composer sits at the bottom of the page. When the keyboard opens, the visual
+ * viewport shrinks but the document keeps its old height, so the browser/WebView scrolls the document up
+ * to keep the focused input visible — dragging the conversation header (the name of the person you're
+ * messaging) off the top of the screen.
+ *
+ * The fix is to let the page size itself off `--vvh` (+ `--vvo`, since a locked document is panned
+ * rather than scrolled) with the document locked at scroll 0 so nothing can push the header away. The
+ * page then only scrolls where we want it to: inside the message list.
+ */
+export const useVisualViewportHeight = () => {
+  useEffect(() => {
+    const root = document.documentElement
+    const vv = window.visualViewport
+
+    // Undo any auto-scroll the browser did to reveal the focused input: with the page sized to the
+    // visual viewport there is nothing to scroll to, and a leftover offset hides the header.
+    const resetScroll = () => {
+      if (document.scrollingElement) document.scrollingElement.scrollTop = 0
+      window.scrollTo(0, 0)
+    }
+
+    resetScroll()
+    vv?.addEventListener('resize', resetScroll)
+    vv?.addEventListener('scroll', resetScroll)
+    window.addEventListener('resize', resetScroll)
+    window.addEventListener('orientationchange', resetScroll)
 
     const bodyStyle = {
       overflow: document.body.style.overflow,
@@ -56,15 +86,14 @@ export const useVisualViewportHeight = () => {
     root.style.overscrollBehavior = 'none'
 
     return () => {
-      vv?.removeEventListener('resize', update)
-      vv?.removeEventListener('scroll', update)
-      window.removeEventListener('resize', update)
-      window.removeEventListener('orientationchange', update)
+      vv?.removeEventListener('resize', resetScroll)
+      vv?.removeEventListener('scroll', resetScroll)
+      window.removeEventListener('resize', resetScroll)
+      window.removeEventListener('orientationchange', resetScroll)
       document.body.style.overflow = bodyStyle.overflow
       document.body.style.overscrollBehavior = bodyStyle.ob
       root.style.overflow = rootStyle.overflow
       root.style.overscrollBehavior = rootStyle.ob
-      root.style.removeProperty('--vvh')
     }
   }, [])
 }

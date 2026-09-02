@@ -351,8 +351,10 @@ export const PrivateChat = (props: {
 
   return (
     // Sized to the visual viewport (see useVisualViewportHeight) so the keyboard can't push the header
-    // off-screen: the header and composer are fixed rows, only the message list scrolls.
-    <Col className="w-full overflow-hidden h-[calc(var(--vvh,100dvh)-var(--hloss)-var(--bnv))] lg:h-[calc(100dvh-var(--hloss)-1.5rem)]">
+    // off-screen: the header and composer are fixed rows, only the message list scrolls. `--vvo` is
+    // added back because this page's document is locked, so the browser reveals the caret by panning
+    // the visual viewport — without it the page stops that many px short of the keyboard.
+    <Col className="w-full overflow-hidden h-[calc(var(--vvh,100dvh)+var(--vvo,0px)-var(--hloss)-var(--bnv))] lg:h-[calc(100dvh-var(--hloss)-1.5rem)]">
       <Row
         className={
           'bg-canvas-0 border border-canvas-200 h-14 shrink-0 items-center gap-2 rounded-xl px-2'

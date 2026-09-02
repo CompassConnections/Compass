@@ -277,6 +277,7 @@ function Step3CompatibilityInspect({
       onNext={onNext}
       onSkip={onSkip}
       onBack={onBack}
+      continueText={t('onboarding.step3.continue', 'Get started')}
     />
   )
 }

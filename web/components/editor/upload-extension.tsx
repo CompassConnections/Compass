@@ -2,6 +2,7 @@ import {Editor, Extension} from '@tiptap/core'
 import toast from 'react-hot-toast'
 import {useMutation} from 'web/hooks/use-mutation'
 import {uploadImage} from 'web/lib/firebase/storage'
+import {useT} from 'web/lib/locale'
 
 export const Upload = Extension.create({
   name: 'upload',
@@ -9,8 +10,10 @@ export const Upload = Extension.create({
   addStorage: () => ({mutation: {}}),
 })
 
-export const useUploadMutation = (editor: Editor | null, folder?: string) =>
-  useMutation(
+export const useUploadMutation = (editor: Editor | null, folder?: string) => {
+  const t = useT()
+
+  return useMutation(
     (files: File[]) =>
       // Uploads land under the signed-in member's own uid, and `folder` only ever names a subfolder
       // of it — the caller cannot choose whose folder it writes to. This used to send the literal
@@ -45,10 +48,19 @@ export const useUploadMutation = (editor: Editor | null, folder?: string) =>
           editor.chain().insertContentAt(doc.content.size, {type: 'paragraph'}).focus('end').run()
         }
       },
-      onError(error: any) {
-        toast.error(error.message ?? error)
+      onError(error: unknown) {
+        // Never the rejection itself. react-hot-toast renders what it is given as a React child, and
+        // an error object there throws "Objects are not valid as a React child" out of the toaster
+        // and takes the page down through the error boundary — which is what a Firebase Storage
+        // `retry-limit-exceeded` used to do here.
+        toast.error(
+          error instanceof Error && error.message
+            ? error.message
+            : t('editor.upload_failed', 'Could not upload that file. Please try again.'),
+        )
       },
     },
   )
+}
 
 export type UploadMutation = ReturnType<typeof useUploadMutation>

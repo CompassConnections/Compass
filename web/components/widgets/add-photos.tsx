@@ -71,7 +71,15 @@ export const AddPhotosWidget = (props: {
     const newUrls = await Promise.all(selectedFiles.map((f) => uploadImage(f, 'profiles'))).catch(
       (e) => {
         console.error(e)
-        toast.error(e)
+        // Only ever a string to the toast. react-hot-toast renders its argument as a React child, so
+        // handing it the rejection itself (a FirebaseError on, say, `storage/retry-limit-exceeded`)
+        // throws "Objects are not valid as a React child" out of the toaster's render and takes the
+        // whole page down through the error boundary.
+        toast.error(
+          e instanceof Error
+            ? e.message
+            : t('add_photos.upload_failed', 'Could not upload your photos. Please try again.'),
+        )
         return []
       },
     )

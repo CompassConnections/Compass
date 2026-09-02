@@ -148,7 +148,14 @@ function MyApp(props: AppProps<PageProps>) {
     // Comfortably above the ~60px the collapsing URL bar accounts for, well below any keyboard.
     const KEYBOARD_MIN_PX = 150
     const update = () => {
-      const hidden = window.innerHeight - (vv.height + vv.offsetTop)
+      // Height only, never `offsetTop`: the keyboard's height is the difference between the layout
+      // and visual viewports, and panning does not change it. On a page whose document cannot scroll
+      // (private messages locks it — see useVisualViewportHeight) the browser reveals the caret by
+      // panning the visual viewport instead, so tapping into the middle of a draft pushes `offsetTop`
+      // up towards the keyboard's own height. Subtracting it made `hidden` collapse to ~0 and the
+      // keyboard read as closed mid-typing, which put `--bnv` (the bottom nav's 61px) and the bottom
+      // safe-area inset back into the page height — the band of empty page above the keyboard.
+      const hidden = window.innerHeight - vv.height
       if (hidden > KEYBOARD_MIN_PX) onShow()
       else onHide()
     }

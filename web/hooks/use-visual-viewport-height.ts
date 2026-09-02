@@ -20,7 +20,16 @@ export const useVisualViewportHeight = () => {
     const vv = window.visualViewport
 
     const update = () => {
-      root.style.setProperty('--vvh', `${vv?.height ?? window.innerHeight}px`)
+      // `offsetTop` is how far the browser has *panned* the visual viewport down inside the layout
+      // viewport. It does that to reveal the caret when the document itself cannot scroll, which is
+      // exactly the case here (both overflows are hidden below) — tapping into the middle of an
+      // already-typed message is the usual trigger. The page starts at the layout viewport's top and
+      // is locked at scroll 0, so sizing it to `height` alone leaves its bottom `offsetTop` px short
+      // of the visible area: a strip of empty page sitting between the composer and the keyboard.
+      // Including the pan keeps the composer flush with the keyboard, and self-limits — the caret
+      // stays visible, so the browser has no reason to pan further.
+      const height = vv ? vv.height + vv.offsetTop : window.innerHeight
+      root.style.setProperty('--vvh', `${height}px`)
       // Undo any auto-scroll the browser did to reveal the focused input: with the page sized to the
       // visual viewport there is nothing to scroll to, and a leftover offset hides the header.
       if (document.scrollingElement) document.scrollingElement.scrollTop = 0

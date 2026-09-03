@@ -926,6 +926,101 @@ Please note: if the review device has Guided Access enabled, Sign in with Google
 The App Privacy declaration was deliberately left untouched for this round. It was never the problem,
 and changing it in the same submission would blur which fix worked.
 
+### 8.12 Rejection of 1.42.0 (16), 2 Sep 2026 — same citation, and the reply
+
+Submission `ba81d76a-4d4f-4db9-8616-ff14a96cbfe3`, reviewed 2 Sep 2026 on an iPhone 17 Pro Max and an
+iPad Air 11-inch (M3). Guidelines 4 and 2.1 were dropped — those fixes were accepted. **5.1.2(i) was
+cited again, in wording identical to the first round**: "displays a custom prompt that requests the user
+to allow tracking."
+
+What was checked before replying, so the reply could be factual rather than argumentative:
+
+| Where a tracking signal could come from | State in build 16                                                                                                                                        |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Linked SDKs' privacy manifests          | Every manifest under `ios/App/Pods` declares `NSPrivacyTracking = false`; no FBSDK; no `ASIdentifierManager` / `AppTrackingTransparency` symbol anywhere |
+| Our own `PrivacyInfo.xcprivacy`         | `NSPrivacyTracking = false`, empty `NSPrivacyTrackingDomains`                                                                                            |
+| App Store Connect → App Privacy label   | 15 data types, all "Linked to you", **none** marked "used for tracking" — the label has no "Data Used to Track You" section                              |
+| Consent banner / analytics toggle       | Gated behind `consentRequired()`, which is `false` on iOS since `0c4c8bc0`, an ancestor of build 16's commit `f8a9d633`                                  |
+| PostHog                                 | Never initialised on iOS (`posthogEnabled()` is `!isIosApp()`)                                                                                           |
+| Network, observed                       | See below — no analytics or advertising host contacted in a full session                                                                                 |
+
+**The network check is the new evidence.** iOS exposes a packet-capture service over USB, readable
+from Linux without a Mac: `pip install pymobiledevice3`, then `pymobiledevice3 pcap --out compass.pcap`
+while the phone is plugged in. Every packet is tagged with its sending process (`frame.comment` in
+Wireshark), so the app can be isolated: the native shell is `App`, the WKWebView's networking is
+`com.apple.WebKit`. Hosts per process, from TLS SNI (`tshark -r compass.pcap -Y 'tls.handshake.type==1'
+-T fields -e frame.comment -e tls.handshake.extensions_server_name`):
+
+- `App`: `api.compassmeet.com`, `www.compassmeet.com`, `*.supabase.co`, `identitytoolkit` /
+  `securetoken` / `oauth2.googleapis.com`, `firebaseinstallations` / `fcmtoken` /
+  `device-provisioning.googleapis.com`, `o4510975610060800.ingest.de.sentry.io`, Google Fonts.
+- `com.apple.WebKit`: the same first-party, Supabase, Firebase Auth and Sentry hosts, plus
+  `accounts.google.com`, `play.google.com`, `lh3.googleusercontent.com`, `www.gstatic.com` (Sign in
+  with Google and its avatar) and `mask.icloud.com` (Private Relay — Apple's, not ours).
+
+A raw grep of all 10 353 packets for `posthog`, `facebook`, `fbcdn`, `clarity.ms`, `app-measurement`,
+`doubleclick`, `google-analytics`, `appsflyer`, `adjust`, `branch.io` returns nothing. A 139-second
+first-launch session — install, onboarding, sign-in, feed, profile, settings — never left the list above.
+
+So nothing in the reviewed build performs, declares, or asks about tracking, and the citation has no
+reproducible basis on our side. Two candidate explanations remain, neither provable from here:
+
+1. **A template re-cite.** The text is boilerplate, names no screen, and survived alone after the other
+   two items were accepted — consistent with the item being carried forward rather than re-tested.
+2. **A static read of the web bundle.** Two things still ship as dead code inside `ios/App/App/public`:
+   the full `posthog-js` package (never initialised on iOS) and the `@capgo/capacitor-social-login`
+   _web_ implementation, which contains a `connect.facebook.net/<locale>/sdk.js` loader even though the
+   FBSDK pods are gone. Neither executes, but a scanner sees an analytics SDK and a Facebook SDK loader
+   in an app whose label says "no tracking" — the same vendor that caused round one.
+
+Also a latent fragility worth closing regardless: the iOS suppression is a _runtime_ check on
+`Capacitor.getPlatform()` inside the banner's mount effect. If the bridge is not up when that effect
+runs, `getPlatform()` answers `'web'` and the banner shows. The local `ios/App/App/public` was also
+found stale (built 31 Aug 12:50, before the gate landed) — CI rebuilds from git so the uploaded build is
+unaffected, but a locally archived build would have shipped the ungated banner. A build-time flag would
+remove both failure modes. None of this has been acted on yet; the reply below asks Apple for specifics
+first, so a build 17 can fix what they actually saw rather than what we guess.
+
+Do **not** implement ATT to make the item go away. The app does not track; presenting a system prompt
+asking permission to do so would misstate what the app does to the user, and step 1 of Apple's own
+"Next Steps" would then require declaring tracking on the label that does not happen.
+
+#### The reply sent
+
+Same format rule as [§8.11](#811-rejection-of-1420-11-31-aug-2026--and-the-reply): plain text, one
+line per paragraph, no Markdown.
+
+```text
+Hello,
+
+Thank you for the review. We would like to resolve Guideline 5.1.2(i), but after a thorough check of build 1.42.0 (16) we cannot find either a tracking behaviour to declare or a custom tracking prompt to remove, so we need your help identifying what was seen.
+
+The current state of the app, verifiable on the build you reviewed:
+
+The app does not track users as defined in the App Store Review Guidelines. It contains no advertising SDK, no attribution SDK, no data broker integration and no access to the advertising identifier. The Facebook SDK that was linked into build 11 by a login plugin has been removed; build 16 links no SDK whose privacy manifest declares tracking, and the app's own privacy manifest declares NSPrivacyTracking = false with no tracking domains.
+
+The App Privacy declaration in App Store Connect declares no data used to track. All collected data types are marked "linked to the user" for App Functionality and, for usage data and user ID, first-party Analytics; none is marked as used for tracking, and the label has no "Data Used to Track You" section.
+
+The consent notice from build 11 is disabled in the iOS app, together with the third-party analytics SDK it referred to. Neither is shown or initialised on iOS in build 16.
+
+We also captured the app's complete network traffic during a full first-launch session on an iPhone running build 16 (install, onboarding, sign-in, browsing, settings). The only hosts contacted are our own API (api.compassmeet.com), our database provider (Supabase), Firebase Authentication and Cloud Messaging, Sentry crash reporting, and Google Fonts. No analytics, advertising or attribution host is contacted at any point. We are happy to provide the packet capture.
+
+Because the app does not track, we cannot truthfully implement App Tracking Transparency — presenting a system prompt asking to track would misstate what the app does — nor declare tracking on the App Privacy label.
+
+Could you please tell us:
+
+1. Which screen displayed the prompt you refer to, ideally with a screenshot, and what it said?
+
+2. Which data you consider to be collected for tracking, and to which third party?
+
+3. Whether the rejection was based on testing build 16 specifically, or carried over from the review of build 11?
+
+With that information we can correct the build precisely. If the item was carried over from the previous review, we would be grateful if build 16 could be re-evaluated on the points above.
+
+Thank you,
+Martin
+```
+
 ---
 
 ## 9. Order of work

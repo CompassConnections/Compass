@@ -16,6 +16,10 @@ security vulnerabilities will be promptly addressed.
 
 Please do not publicly disclose the vulnerability until it has been resolved.
 
+**Out of scope**: the development credentials committed to this repository (see
+[Development credentials](#development-credentials) below). They are intentionally public and reach only
+throwaway test infrastructure. Reports about them will be acknowledged but not treated as vulnerabilities.
+
 - Response time: within 24 hours for critical issues
 - Disclosure policy: coordinated disclosure with a 90-day timeline
 
@@ -106,7 +110,40 @@ straight from it to signed-out visitors. Writes are constrained
 
 - **HTTPS/TLS** everywhere: Vercel terminates TLS for the web app, Google Cloud for the API.
 - **Encryption at rest** for the database and storage volumes, provided by Supabase and Google Cloud.
-- **Secrets** are held in environment variables / provider secret stores and are not committed.
+- **Production secrets** are held in environment variables / provider secret stores and are not
+  committed. Development credentials are, deliberately — see the next section.
+
+### Development credentials
+
+The credentials for the shared **development** stack are committed to this repository on purpose, so that
+anyone can clone the repo and run `yarn dev` against real services without asking for access:
+
+- the dev Supabase project's connection string, including its password
+  ([`common/src/envs/dev.ts`](common/src/envs/dev.ts), `scripts/dev_db_*.sh`);
+- a key for the `dev-contributors` Google Cloud service account
+  (`secrets/googleApplicationCredentials-dev.json.enc`, unlocked by the passphrase in
+  [`.env.example`](.env.example) — the encryption exists to keep automated secret scanners from disabling
+  the key, not to hide it).
+
+This is a considered trade-off in favour of contributor friction, and it rests on the following:
+
+- **Dev is a separate project on every provider** — its own Supabase instance, its own Google Cloud /
+  Firebase project (`compass-57c3c`), its own buckets. Production (`compass-130ba`) shares nothing with it,
+  and the dev service account holds no IAM bindings outside its own project.
+- **Dev holds only test data.** No real member data is ever loaded into it, so there is nothing to leak.
+  Treat it as a public sandbox that anyone may read, write, or wipe; if you need it in a known state, reseed
+  it (`scripts/dev_db_seed.sh`).
+- **Dev credentials are never reused** for production, provider dashboards, or personal accounts.
+- **Nothing in dev can send to real people**: no production email, push, or payment provider is wired to
+  the dev configuration.
+
+Contributors who would rather not touch the shared sandbox can run everything locally with
+`yarn dev:isolated` (local Supabase plus Firebase emulators), which needs no credentials at all.
+
+Rotating these credentials is pointless — they would be republished with the next commit — so please do
+not report them. A report is welcome, and in scope, if you find that any of the four assumptions above is
+false: a dev credential that reaches a production resource, real data in the dev stack, or a dev secret
+reused elsewhere.
 
 ### Development Practices
 

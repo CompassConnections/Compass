@@ -64,7 +64,7 @@ export const WelcomeEmail = ({
             first and the page that convinced them read as one product. */}
         {t(
           'email.welcome.intro.v2',
-          'Compass is a free, public directory for finding your people — friends, partners, or collaborators. Every profile is written by hand and fully searchable: values, interests, politics, diet, languages, and twenty-odd other filters, plus free-text search that reads what people actually wrote. No swiping, no ads. You decide who to write to. It’s built by volunteers, funded by donations, and governed by its members.',
+          'Compass is a free, public directory for finding your people — friends, partners, or collaborators. Every profile is written by hand and fully searchable: values, interests, politics, diet, languages, and twenty other filters, plus free-text search that reads what people wrote. No swiping, no ads. It’s built by volunteers, funded by donations, and governed by its members.',
         )}
       </Paragraph>
 
@@ -147,7 +147,7 @@ export const WelcomeEmail = ({
       <Paragraph style={{color: palette.ink900, marginTop: '0'}}>
         {t(
           'email.welcome.founder_note',
-          "I'm Martin, I started Compass, and this address reaches me directly. If you'd like, reply and tell me what brought you here as well as who you're hoping to find. I answer every one, and I can usually point you straight at two or three people worth writing to.",
+          "I'm Martin, and I started Compass. If you'd like, reply and tell me what brought you here as well as who you're hoping to find. I can usually point you straight at two or three people worth writing to.",
         )}
       </Paragraph>
 
@@ -160,7 +160,7 @@ export const WelcomeEmail = ({
       <Muted align="left" style={{...paragraph, fontSize: '13px', margin: '24px 0 0 0'}}>
         {t(
           'email.welcome.ps',
-          'P.S. — Compass is still small enough that this genuinely matters: it gets better for you with every person you bring, because even a friend who isn’t who you’re looking for brings their whole circle with them. If someone comes to mind, here’s your link: ',
+          'P.S. — Compass is still small enough that this genuinely matters: it gets better for you with every person you bring, because even a friend who isn’t who you’re looking for brings their circle with them. If someone comes to mind, here’s your link: ',
         )}
         <Link href={referralUrl} style={{...link, wordBreak: 'break-word'}}>
           {referralUrl.replace(/^https?:\/\//, '')}

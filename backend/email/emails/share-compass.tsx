@@ -108,7 +108,7 @@ export const ShareCompassEmail = ({
       <Paragraph>
         {t(
           'email.share.opening',
-          'I started Compass because I believe human connection can be so much more than swipes and small talk. You joined because you believe that too — and that means a lot to me.',
+          'I started Compass because I believe human connection can be so much more than swipes and small talk.',
         )}
       </Paragraph>
 
@@ -117,7 +117,7 @@ export const ShareCompassEmail = ({
           <Paragraph>
             {t(
               'email.share.growth_nearby',
-              'Right now, {count} members are within {radius} of {city}. People in reach of you, who chose depth over algorithms and values over vanity metrics.',
+              'Right now, {count} members are within {radius} of {city}. People in reach of you, who chose depth over vanity metrics.',
               {
                 count: String(nearbyCount),
                 radius,
@@ -137,7 +137,7 @@ export const ShareCompassEmail = ({
         <Paragraph>
           {t(
             'email.share.growth',
-            "In just 6 months, over 700 people have found their way here. That's 700 people who chose depth over algorithms, values over vanity metrics. It's a real signal — and it's only the beginning.",
+            "In just 6 months, over 800 people have found their way here, choosing depth over vanity metrics. It's a real signal — and it's only the beginning.",
           )}
         </Paragraph>
       )}
@@ -145,7 +145,7 @@ export const ShareCompassEmail = ({
       <Paragraph>
         {t(
           'email.share.network_effect',
-          'But Compass only becomes truly powerful when more people who share your values are on it. Every new member means more kindred spirits to discover, richer events, a stronger community, and more contributors keeping it free and ad-free.',
+          'But Compass only becomes truly useful when more people who share your values are on it. Every new member means more kindred spirits to discover and more contributors keeping it free and ad-free.',
         )}
       </Paragraph>
 
@@ -159,7 +159,7 @@ export const ShareCompassEmail = ({
       <Paragraph>
         {t(
           'email.share.reframe',
-          "Fair. Maybe the person you tell isn't someone you'd personally connect with on Compass. But think one step further: they bring their world with them — their friends, their colleagues, the thoughtful people in their circles. People you've never met, who might be exactly who you're looking for. Sharing with one friend isn't just a favour to them. It's an investment in your own future connections.",
+          "Fair. Maybe the person you tell isn't someone you'd personally connect with on Compass. But think one step further: they bring their world with them — their friends, their colleagues, the thoughtful people in their circles. People you've never met, who might be who you're looking for. Sharing with one friend isn't just a favour to them. It's an investment in your own future connections.",
         )}
       </Paragraph>
 
@@ -231,12 +231,12 @@ export const ShareCompassEmail = ({
         </CTAButton>
       </Actions>
 
-      <Muted style={{marginTop: '32px'}}>
-        {t(
-          'email.share.community_note',
-          "One share. One person. That's how communities like this are built — not by ads, but by people who believe in something ethical.",
-        )}
-      </Muted>
+      {/*<Muted style={{marginTop: '32px'}}>*/}
+      {/*  {t(*/}
+      {/*    'email.share.community_note',*/}
+      {/*    "One share. One person. That's how communities like this are built — not by ads, but by people who believe in something ethical.",*/}
+      {/*  )}*/}
+      {/*</Muted>*/}
 
       <Paragraph style={{marginTop: '28px'}}>
         {t('email.share.signature_thanks', 'Thank you for being part of it.')}

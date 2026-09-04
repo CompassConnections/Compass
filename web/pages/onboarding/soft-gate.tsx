@@ -1,4 +1,4 @@
-import {ArrowRightIcon, CheckIcon} from '@heroicons/react/24/outline'
+import {ArrowRightIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {ENV_CONFIG} from 'common/envs/constants'
 import Router from 'next/router'
@@ -14,23 +14,23 @@ import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 
 /** Same marker treatment as the onboarding steps, so the end of the flow matches its start. */
-function Bullets({items}: {items: string[]}) {
-  return (
-    <ul className="space-y-3">
-      {items.map((item) => (
-        <li key={item} className="flex items-start gap-3">
-          {/* bg-green-500/N rather than bg-green-200: the latter's light-theme value is a raw hex
-              string in globals.css, which breaks Tailwind's rgb(var(...) / alpha) composition and
-              renders invisibly. */}
-          <span className="mt-0.5 w-5 h-5 rounded-full bg-green-500/15 ring-1 ring-green-500/40 flex items-center justify-center flex-shrink-0">
-            <CheckIcon className="w-3 h-3 text-green-500" strokeWidth={2.5} />
-          </span>
-          <span className="text-ink-700">{item}</span>
-        </li>
-      ))}
-    </ul>
-  )
-}
+// function Bullets({items}: {items: string[]}) {
+//   return (
+//     <ul className="space-y-3">
+//       {items.map((item) => (
+//         <li key={item} className="flex items-start gap-3">
+//           {/* bg-green-500/N rather than bg-green-200: the latter's light-theme value is a raw hex
+//               string in globals.css, which breaks Tailwind's rgb(var(...) / alpha) composition and
+//               renders invisibly. */}
+//           <span className="mt-0.5 w-5 h-5 rounded-full bg-green-500/15 ring-1 ring-green-500/40 flex items-center justify-center flex-shrink-0">
+//             <CheckIcon className="w-3 h-3 text-green-500" strokeWidth={2.5} />
+//           </span>
+//           <span className="text-ink-700">{item}</span>
+//         </li>
+//       ))}
+//     </ul>
+//   )
+// }
 
 export default function SoftGatePage() {
   const user = useUser()
@@ -48,7 +48,7 @@ export default function SoftGatePage() {
   return (
     <PageBase trackPageView={'soft gate'}>
       <SEO
-        title={t('onboarding.soft-gate.seo.title', "You're ready to explore - Compass")}
+        title={t('onboarding.soft-gate.seo.title', 'Your profile is live - Compass')}
         description={t(
           'onboarding.soft-gate.seo.description',
           'Get started with Compass - transparent connections without algorithms',
@@ -57,7 +57,7 @@ export default function SoftGatePage() {
       <Col className="min-h-screen items-center justify-center px-5 py-10">
         <div className={clsx(surface, 'w-full max-w-xl p-6 sm:p-10')}>
           <h1 className="text-[clamp(26px,4vw,36px)] font-bold tracking-tight text-ink-900 text-balance mb-6">
-            {t('onboarding.soft-gate.title', "You're ready to explore")}
+            {t('onboarding.soft-gate.title', 'Your profile is live')}
           </h1>
 
           {profile && user && (
@@ -66,7 +66,7 @@ export default function SoftGatePage() {
               <p className="text-base text-ink-700 leading-relaxed">
                 {t(
                   'onboarding.soft-gate.profile_card',
-                  'You created a public values-based profile. Share it to attract people who think like you. Shared profiles are discovered much more often.',
+                  'This is your profile card. Sharing it is the quickest way to be found by the people you are looking for.',
                 )}
               </p>
               {user?.username && (
@@ -84,31 +84,33 @@ export default function SoftGatePage() {
             </Col>
           )}
 
-          <Col className="gap-4 text-base text-ink-700 leading-relaxed">
-            {/*<p>*/}
-            {/*  {t(*/}
-            {/*    'onboarding.soft-gate.intro',*/}
-            {/*    "You've answered your first compatibility questions and shared your top interests.",*/}
-            {/*  )}*/}
-            {/*</p>*/}
-            {/*<p>{t('onboarding.soft-gate.what_it_means', "Here's what that means for you:")}</p>*/}
+          {/*<Col className="gap-4 text-base text-ink-700 leading-relaxed">*/}
+          {/*  /!*<p>*!/*/}
+          {/*  /!*  {t(*!/*/}
+          {/*  /!*    'onboarding.soft-gate.intro',*!/*/}
+          {/*  /!*    "You've answered your first compatibility questions and shared your top interests.",*!/*/}
+          {/*  /!*  )}*!/*/}
+          {/*  /!*</p>*!/*/}
+          {/*  /!*<p>{t('onboarding.soft-gate.what_it_means', "Here's what that means for you:")}</p>*!/*/}
 
-            {/*<li>*/}
-            {/*  {t("onboarding.soft-gate.bullet1", "Compatibility scores now reflect your values and preferences")}*/}
-            {/*</li>*/}
-            <Bullets
-              items={[
-                t(
-                  'onboarding.soft-gate.bullet2',
-                  "You'll see match percentages that align closely with what you care about.",
-                ),
-                t(
-                  'onboarding.soft-gate.bullet3',
-                  'You can update your profile anytime to increase the chances of the right people reaching out.',
-                ),
-              ]}
-            />
-          </Col>
+          {/*  /!*<li>*!/*/}
+          {/*  /!*  {t("onboarding.soft-gate.bullet1", "Compatibility scores now reflect your values and preferences")}*!/*/}
+          {/*  /!*</li>*!/*/}
+          {/*  /!* Two things the three /onboarding steps did not already say. The previous bullets*/}
+          {/*      restated step 3 (what a score reflects), which a reader on Reddit flagged as padding. *!/*/}
+          {/*  <Bullets*/}
+          {/*    items={[*/}
+          {/*      t(*/}
+          {/*        'onboarding.soft-gate.bullet2',*/}
+          {/*        'Members can now find you through search and filters.',*/}
+          {/*      ),*/}
+          {/*      t(*/}
+          {/*        'onboarding.soft-gate.bullet3',*/}
+          {/*        'Edit your profile or answer more questions whenever you like. Both change who you match with.',*/}
+          {/*      ),*/}
+          {/*    ]}*/}
+          {/*  />*/}
+          {/*</Col>*/}
 
           <Col className="gap-4 mt-9">
             {/* primary-500 (not primary-50/900) for the tint: this ramp inverts between themes
@@ -122,7 +124,7 @@ export default function SoftGatePage() {
               color="none"
               className="w-full !rounded-xl gap-2 border border-primary-500/30 bg-primary-500/10 font-semibold text-primary-700 transition-colors hover:border-primary-500/50 hover:bg-primary-500/15"
             >
-              {t('onboarding.soft-gate.explore_button', 'Explore Profiles Now')}
+              {t('onboarding.soft-gate.explore_button', 'Browse members')}
               <ArrowRightIcon className="h-4 w-4" />
             </Button>
 
@@ -132,7 +134,7 @@ export default function SoftGatePage() {
               onClick={handleRefine}
               className="text-sm font-medium text-ink-700 hover:text-ink-900 underline underline-offset-4 transition-colors"
             >
-              {t('onboarding.soft-gate.refine_button', 'Refine Profile')}
+              {t('onboarding.soft-gate.refine_button', 'Edit my profile')}
             </button>
           </Col>
         </div>

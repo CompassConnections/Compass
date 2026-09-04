@@ -1,7 +1,7 @@
 import {ArrowRightIcon, CheckIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import Router from 'next/router'
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
@@ -73,16 +73,6 @@ function OnboardingScreen({
   welcomeTitle,
 }: OnboardingScreenProps) {
   const t = useT()
-  const [showWelcome, setShowWelcome] = useState(!!welcomeTitle)
-
-  useEffect(() => {
-    if (welcomeTitle) {
-      const timer = setTimeout(() => {
-        setShowWelcome(false)
-      }, 2000)
-      return () => clearTimeout(timer)
-    }
-  }, [welcomeTitle])
 
   return (
     <div className={clsx(surface, 'w-full max-w-2xl p-6 sm:p-10')}>
@@ -96,17 +86,13 @@ function OnboardingScreen({
         className="mb-8"
       />
 
-      {/* Keyed on the swap so the welcome-to-title change animates rather than snapping. */}
-      <h1
-        key={showWelcome ? 'welcome' : 'title'}
-        className={clsx(
-          'animate-fade-up font-bold tracking-tight text-balance mb-5',
-          showWelcome
-            ? 'text-[clamp(30px,5vw,44px)] text-primary-700'
-            : 'text-[clamp(26px,4vw,36px)] text-ink-900',
-        )}
-      >
-        {showWelcome && welcomeTitle ? welcomeTitle : title}
+      {/* The welcome used to replace the title for two seconds and then swap out. Now it is a
+          permanent line above the title, so the screen reads the same whenever you look at it. */}
+      {welcomeTitle && (
+        <p className="mb-2 text-base sm:text-lg font-semibold text-primary-700">{welcomeTitle}</p>
+      )}
+      <h1 className="font-bold tracking-tight text-balance mb-5 text-[clamp(26px,4vw,36px)] text-ink-900">
+        {title}
       </h1>
 
       <div className="text-base sm:text-lg text-ink-700 leading-relaxed space-y-4">{content}</div>
@@ -164,27 +150,24 @@ function OnboardingScreen({
 
 function Step1NoHiddenAlgorithms({onNext, onSkip}: OnboardingStepProps) {
   const t = useT()
+  // One idea per step, said once. The first draft of these screens restated each point three times
+  // (body, bold closer, footer) and previewed the next two steps' topics — a reader on Reddit called
+  // it out as padding. Step 1 is only: nobody ranks or picks for you. How you find people is step 2,
+  // how a score is built is step 3.
   const content = (
-    <>
-      <p>{t('onboarding.step1.body1', 'Compass does not decide who you should see.')}</p>
-      <p>
-        {t(
-          'onboarding.step1.body2',
-          'There is no engagement algorithm, no swipe-ranking, no boosted profiles, and no attention optimization. You can browse the full directory, apply your own filters, and see exactly why someone matches with you.',
-        )}
-      </p>
-      <p className="font-semibold text-ink-900">
-        {t('onboarding.step1.body3', 'You stay in control of discovery. Always.')}
-      </p>
-    </>
+    <p>
+      {t(
+        'onboarding.step1.body1',
+        'Compass is a directory. Every member is listed, no profile is ranked or boosted, and there is no algorithm choosing for you.',
+      )}
+    </p>
   )
 
   return (
     <OnboardingScreen
       step={1}
-      title={t('onboarding.step1.title', 'No black box. No manipulation.')}
+      title={t('onboarding.step1.title', 'No one decides who you see')}
       content={content}
-      footerText={t('onboarding.step1.footer', 'Transparency is a core principle, not a feature.')}
       onNext={onNext}
       onSkip={onSkip}
       welcomeTitle={t('onboarding.welcome', 'Welcome to Compass!')}
@@ -203,22 +186,13 @@ function Step2SearchBeatsSwiping({
       <p>
         {t(
           'onboarding.step2.body1',
-          'Instead of endless swiping, Compass lets you search intentionally.',
+          'Filter members by interests, values, location, and demographics, or search the words in their profiles.',
         )}
       </p>
-      <p>{t('onboarding.step2.body2', 'Look for people by:')}</p>
-      <Bullets
-        items={[
-          t('onboarding.step2.item1', 'Interests and keywords'),
-          t('onboarding.step2.item2', 'Values and ideas'),
-          t('onboarding.step2.item3', 'Compatibility answers'),
-          t('onboarding.step2.item4', 'Location and intent'),
-        ]}
-      />
       <p>
         {t(
-          'onboarding.step2.body3',
-          'You can save searches and get notified when new people match them. No need to check the app every day.',
+          'onboarding.step2.body2',
+          "Save a search and we'll notify you when someone new matches it.",
         )}
       </p>
     </>
@@ -227,9 +201,8 @@ function Step2SearchBeatsSwiping({
   return (
     <OnboardingScreen
       step={2}
-      title={t('onboarding.step2.title', "Search, don't scroll.")}
+      title={t('onboarding.step2.title', 'Search for the people you want to meet')}
       content={content}
-      footerText={t('onboarding.step2.footer', 'Less noise. More signal.')}
       onNext={onNext}
       onSkip={onSkip}
       onBack={onBack}
@@ -245,21 +218,23 @@ function Step3CompatibilityInspect({
   const t = useT()
   const content = (
     <>
-      <p>{t('onboarding.step3.body1', "Matches aren't magic or mysterious.")}</p>
       <p>
-        {t('onboarding.step3.body2', 'Your compatibility score comes from explicit questions:')}
+        {t(
+          'onboarding.step3.body1',
+          'Your score with someone comes from the compatibility questions, using three things you set yourself:',
+        )}
       </p>
       <Bullets
         items={[
-          t('onboarding.step3.item1', 'Your answer'),
-          t('onboarding.step3.item2', 'What answers you accept from others'),
-          t('onboarding.step3.item3', 'How important each question is to you'),
+          t('onboarding.step3.item1', 'Your own answer'),
+          t('onboarding.step3.item2', 'Which answers you would accept from them'),
+          t('onboarding.step3.item3', 'How much the question matters to you'),
         ]}
       />
       <p>
         {t(
-          'onboarding.step3.body3',
-          'You can inspect, question, and improve the system. The full math is open source.',
+          'onboarding.step3.body2',
+          'On any profile you can see, question by question, where you agree. The formula is open source, so you can read it and propose changes.',
         )}
       </p>
     </>
@@ -268,12 +243,8 @@ function Step3CompatibilityInspect({
   return (
     <OnboardingScreen
       step={3}
-      title={t('onboarding.step3.title', 'Compatibility you can understand.')}
+      title={t('onboarding.step3.title', 'A compatibility score you can check')}
       content={content}
-      footerText={t(
-        'onboarding.step3.footer',
-        'If you disagree with how it works, you can help change it.',
-      )}
       onNext={onNext}
       onSkip={onSkip}
       onBack={onBack}

@@ -14,10 +14,10 @@ export class OnboardingPage {
     this.backButton = page.getByRole('button', {name: 'Back'})
     this.getStartedButton = page.getByRole('button', {name: 'Get started'})
     this.exploreProfilesNowButton = page.getByRole('button', {
-      name: 'Explore Profiles Now',
+      name: 'Browse members',
       exact: true,
     })
-    this.refineProfileButton = page.getByRole('button', {name: 'Refine Profile', exact: true})
+    this.refineProfileButton = page.getByRole('button', {name: 'Edit my profile', exact: true})
   }
 
   async clickContinueButton() {

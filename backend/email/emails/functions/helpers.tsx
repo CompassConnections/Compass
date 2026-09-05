@@ -12,6 +12,7 @@ import {
 import EmptyRoomEmail from 'email/empty-room'
 import NewSearchAlertsEmail from 'email/new-search-alerts'
 import ShareCompassEmail, {hasNearbyCount, NEARBY_RADIUS_MILES} from 'email/share-compass'
+import UnfinishedSignupEmail from 'email/unfinished-signup'
 import WelcomeEmail from 'email/welcome'
 import * as admin from 'firebase-admin'
 import React from 'react'
@@ -369,6 +370,32 @@ export const sendEmptyRoomEmail = async (
       'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
       'List-ID': 'Compass <compassmeet.com>',
     },
+  })
+}
+
+/**
+ * The one notice for a login that never became an account. See `UnfinishedSignupEmail` for why it
+ * is plain, once, and from Compass. There is no `PrivateUser` to consult here — that row is exactly
+ * what does not exist — so no preference gate: the sweep's ledger is the only thing that decides
+ * whether this goes out, and it says once.
+ */
+export const sendUnfinishedSignupEmail = async (
+  email: string,
+  {createdAt, deleteUrl, locale}: {createdAt: Date; deleteUrl: string; locale?: string},
+) => {
+  const t = createT(locale)
+  return await sendEmail({
+    from: fromEmail,
+    subject: t('email.unfinished_signup.subject', 'Your unfinished Compass account'),
+    to: email,
+    html: await render(
+      <UnfinishedSignupEmail
+        email={email}
+        createdAt={createdAt}
+        deleteUrl={deleteUrl}
+        locale={locale}
+      />,
+    ),
   })
 }
 

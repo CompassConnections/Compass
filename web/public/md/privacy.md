@@ -32,6 +32,23 @@ out what to improve next.
 - Aggregate, non-identifying numbers — member counts, growth, activity — are published openly on
   [/stats](/stats), because a platform asking you to trust it should show its own figures.
 
+## Emails we send, and sign-ups that stop halfway
+
+Every email from Compass is one of two kinds. Most are things you asked to hear about — a new message, a
+match, a saved search that found someone — and each kind can be switched off on its own in
+[settings](/settings#1). A few are about the account itself: confirming your address, and the notice
+described next. Those are not marketing, and they go out regardless of the notification settings, because
+they are how we tell you what we hold about you.
+
+**If you start signing up and stop.** Signing up creates a login first and a profile second. If you create
+the login — with an email address, or through Google or Apple — and never finish the profile, we hold that
+address and nothing else: no profile, no name, nothing visible to anyone. Three days later we send **one**
+email saying so, with a link to finish and a link to delete the login on the spot. If nothing happens within
+**30 days** of that email, the login is deleted automatically, address included. Logins left unfinished for
+**six months** are deleted without an email, on the view that an unexpected message from a site you do not
+remember visiting is worse than none. There is no second reminder: the email exists so that no address sits
+with us that you have forgotten giving, not to bring you back.
+
 ## Cookies and local storage
 
 Cookies are the part of a privacy policy that is usually vaguest, so here is the complete list. Under EU rules
@@ -157,6 +174,8 @@ You can do all of this yourself, without asking us:
 - **Export** your data — settings gives you a download of what we hold.
 - **Delete your account**, from [/delete-account](/delete-account). Deletion removes your profile, messages, and
   content, and clears the analytics identity and local storage on your device.
+- **Delete an unfinished sign-up** from the link in the notice we send about it, or by emailing us. It goes on
+  its own after the period above in any case.
 
 If you are in the EU or UK you also have the right to access, correct, port, or erase your data, to object to
 processing, and to complain to your national data protection authority. Email

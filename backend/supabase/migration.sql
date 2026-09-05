@@ -80,4 +80,5 @@ BEGIN;
 \i backend/supabase/migrations/20260824_add_review_prompts.sql
 \i backend/supabase/migrations/20260826_raise_get_display_users_cap.sql
 \i backend/supabase/migrations/20260901_redact_member_only_profiles.sql
+\i backend/supabase/migrations/20260905_add_unfinished_signups.sql
 COMMIT;

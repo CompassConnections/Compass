@@ -37,6 +37,25 @@ comme vous, et à déterminer quoi améliorer ensuite.
   sur [/stats](/stats), parce qu'une plateforme qui demande votre confiance devrait montrer ses propres
   chiffres.
 
+## Les e-mails que nous envoyons, et les inscriptions interrompues
+
+Chaque e-mail de Compass est de l'un de deux types. La plupart concernent ce que vous avez demandé à suivre —
+un nouveau message, une correspondance, une recherche enregistrée qui a trouvé quelqu'un — et chacun se
+désactive séparément dans les [paramètres](/settings#1). Quelques-uns concernent le compte lui-même : la
+confirmation de votre adresse, et l'avis décrit ci-dessous. Ceux-là ne sont pas de la prospection et partent
+quels que soient vos réglages de notification, parce qu'ils sont le moyen de vous dire ce que nous détenons à
+votre sujet.
+
+**Si vous commencez une inscription sans la terminer.** S'inscrire crée d'abord un identifiant de connexion,
+puis un profil. Si vous créez l'identifiant — avec une adresse e-mail, ou via Google ou Apple — sans jamais
+terminer le profil, nous détenons cette adresse et rien d'autre : pas de profil, pas de nom, rien de visible
+pour qui que ce soit. Trois jours plus tard, nous envoyons **un** e-mail pour le dire, avec un lien pour
+terminer et un lien pour supprimer l'identifiant sur-le-champ. Si rien ne se passe dans les **30 jours**
+suivant cet e-mail, l'identifiant est supprimé automatiquement, adresse comprise. Les identifiants laissés
+inachevés depuis **six mois** sont supprimés sans e-mail, parce qu'un message inattendu d'un site dont vous ne
+vous souvenez pas est pire que pas de message du tout. Il n'y a pas de second rappel : cet e-mail existe pour
+qu'aucune adresse que vous avez oublié nous avoir donnée ne reste chez nous, pas pour vous faire revenir.
+
 ## Cookies et stockage local
 
 Les cookies sont la partie d'une politique de confidentialité qui reste d'ordinaire la plus vague : voici donc
@@ -177,6 +196,8 @@ Vous pouvez faire tout cela vous-même, sans nous le demander :
 - **Exporter** vos données — les paramètres proposent un téléchargement de tout ce que nous détenons.
 - **Supprimer votre compte**, depuis [/delete-account](/delete-account). La suppression retire votre profil,
   vos messages et vos contenus, et efface l'identité analytique ainsi que le stockage local sur votre appareil.
+- **Supprimer une inscription inachevée**, depuis le lien de l'avis que nous envoyons à son sujet, ou en nous
+  écrivant. Elle disparaît de toute façon d'elle-même à l'issue du délai ci-dessus.
 
 Si vous résidez dans l'UE ou au Royaume-Uni, vous disposez en outre du droit d'accès, de rectification, de
 portabilité et d'effacement, du droit d'opposition au traitement, et du droit de saisir votre autorité

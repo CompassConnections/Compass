@@ -508,6 +508,18 @@ export const API = (_apiTypeCheck = {
     summary: 'Update a notification preference for the user',
     tag: 'Notifications',
   },
+  'delete-unfinished-signup': {
+    method: 'POST',
+    authed: false,
+    rateLimited: true,
+    props: z.object({
+      // 32 random bytes, hex. Anything else is not a token we issued.
+      token: z.string().regex(/^[0-9a-f]{64}$/),
+    }),
+    returns: {} as {status: 'deleted' | 'gone' | 'has_account'},
+    summary: 'Delete a login that never became an account, using the token from its notice email',
+    tag: 'Users',
+  },
   'unsubscribe/:token': {
     method: 'POST',
     authed: false,

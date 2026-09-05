@@ -24,6 +24,7 @@ import {saveSubscriptionMobile} from 'api/save-subscription-mobile'
 import {sendCityNumberEmails} from 'api/send-city-number-emails'
 import {sendEmptyRoomEmails} from 'api/send-empty-room-emails'
 import {sendSearchNotifications} from 'api/send-search-notifications'
+import {sweepUnfinishedSignups} from 'api/sweep-unfinished-signups'
 import {localSendTestEmail} from 'api/test'
 import {unhideProfile} from 'api/unhide-profile'
 import {updateCompatibilityQuestionPin} from 'api/update-compatibility-question-pin'
@@ -72,6 +73,7 @@ import {createUserAndProfile} from './create-user-and-profile'
 import {deleteBookmarkedSearch} from './delete-bookmarked-search'
 import {deleteCompatibilityAnswer} from './delete-compatibility-answer'
 import {deleteMe} from './delete-me'
+import {deleteUnfinishedSignup} from './delete-unfinished-signup'
 import {getBlogPost} from './get-blog-post'
 import {getBlogPosts} from './get-blog-posts'
 import {getBlogPostsAdmin} from './get-blog-posts-admin'
@@ -713,6 +715,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'like-profile': likeProfile,
   'mark-all-notifs-read': markAllNotifsRead,
   'me/delete': deleteMe,
+  'delete-unfinished-signup': deleteUnfinishedSignup,
   'me/data': getUserDataExport,
   'me/private': getCurrentPrivateUser,
   'me/update': updateMe,
@@ -873,6 +876,18 @@ internalOutreachJob(
   '/internal/send-empty-room-emails',
   sendEmptyRoomEmails,
   'Failed to send empty-room (Contact #E) outreach emails...',
+)
+
+/**
+ * Not outreach, but the same shape — a batch-capped, dry-runnable, key-protected job — so it shares
+ * the wrapper. Daily: the grace period it enforces is a number quoted in an email, and a job that
+ * runs less often keeps that promise late. See `sweepUnfinishedSignups` and
+ * `common/unfinished-signups` for the rule.
+ */
+internalOutreachJob(
+  '/internal/sweep-unfinished-signups',
+  sweepUnfinishedSignups,
+  'Failed to sweep unfinished sign-ups (notice + retention job)...',
 )
 
 const responses = {

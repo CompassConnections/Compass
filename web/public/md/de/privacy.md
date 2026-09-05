@@ -36,6 +36,25 @@ und herauszufinden, was als Nächstes verbessert werden sollte.
 - Aggregierte, nicht personenbezogene Zahlen — Mitgliederzahlen, Wachstum, Aktivität — veröffentlichen wir
   offen auf [/stats](/stats), denn eine Plattform, die um Vertrauen bittet, sollte ihre eigenen Zahlen zeigen.
 
+## E-Mails, die wir senden, und abgebrochene Anmeldungen
+
+Jede E-Mail von Compass gehört zu einer von zwei Arten. Die meisten betreffen Dinge, über die Sie informiert
+werden wollten — eine neue Nachricht, ein Match, eine gespeicherte Suche, die jemanden gefunden hat — und jede
+Art lässt sich in den [Einstellungen](/settings#1) einzeln abschalten. Einige wenige betreffen das Konto
+selbst: die Bestätigung Ihrer Adresse und den unten beschriebenen Hinweis. Das ist keine Werbung, und diese
+E-Mails gehen unabhängig von den Benachrichtigungseinstellungen hinaus, denn sie sind der Weg, Ihnen zu sagen,
+was wir über Sie gespeichert haben.
+
+**Wenn Sie eine Anmeldung beginnen und abbrechen.** Die Anmeldung legt zuerst einen Login an und erst danach
+ein Profil. Wenn Sie den Login anlegen — mit einer E-Mail-Adresse oder über Google oder Apple — und das Profil
+nie fertigstellen, halten wir diese Adresse und sonst nichts: kein Profil, keinen Namen, nichts, das
+irgendjemand sieht. Drei Tage später senden wir **eine** E-Mail, die genau das sagt, mit einem Link zum
+Fertigstellen und einem Link, der den Login sofort löscht. Passiert innerhalb von **30 Tagen** nach dieser
+E-Mail nichts, wird der Login automatisch gelöscht, die Adresse eingeschlossen. Logins, die seit **sechs
+Monaten** unvollendet sind, werden ohne E-Mail gelöscht — eine unerwartete Nachricht von einer Website, an die
+man sich nicht erinnert, ist schlimmer als keine. Eine zweite Erinnerung gibt es nicht: Die E-Mail existiert,
+damit bei uns keine Adresse liegt, die Sie vergessen haben uns gegeben zu haben, nicht um Sie zurückzuholen.
+
 ## Cookies und lokaler Speicher
 
 Cookies sind der Teil einer Datenschutzrichtlinie, der meist am vagesten bleibt — hier ist deshalb die
@@ -174,6 +193,8 @@ All das können Sie selbst tun, ohne uns zu fragen:
 - **Exportieren** — die Einstellungen bieten einen Download all dessen, was wir gespeichert haben.
 - **Konto löschen** — über [/delete-account](/delete-account). Die Löschung entfernt Ihr Profil, Ihre
   Nachrichten und Ihre Inhalte und räumt die Analyse-Identität sowie den lokalen Speicher auf Ihrem Gerät auf.
+- **Eine abgebrochene Anmeldung löschen** — über den Link im Hinweis, den wir dazu senden, oder per E-Mail an
+  uns. Nach der oben genannten Frist verschwindet sie ohnehin von selbst.
 
 Wenn Sie in der EU oder im Vereinigten Königreich sind, haben Sie zusätzlich das Recht auf Auskunft,
 Berichtigung, Datenübertragbarkeit und Löschung, das Recht auf Widerspruch gegen die Verarbeitung und das

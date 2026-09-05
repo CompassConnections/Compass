@@ -569,6 +569,28 @@ curl -X POST https://api.compassmeet.com/internal/send-city-number-emails \
   -d '{"dryRun":true}'
 ```
 
+Set up the unfinished sign-up sweep. A Firebase login is created at the first step of sign-up and the
+`users` row only at the last, so anyone who stops in between leaves an email address in Firebase with
+nothing behind it. The sweep sends each such login one notice (after 3 days), deletes it 30 days after
+the notice, and deletes logins older than 6 months without a notice — the rule the privacy policy
+quotes, with the numbers in `common/src/unfinished-signups.ts`. Daily, because the grace period is a
+promise made in an email. `batchSize` caps notices per run, not deletions; the `unfinished_signups`
+ledger makes re-runs harmless.
+
+```bash
+gcloud scheduler jobs create http daily-unfinished-signups-sweep \
+  --schedule="0 14 * * *" \
+  --uri="https://api.compassmeet.com/internal/sweep-unfinished-signups" \
+  --http-method=POST \
+  --headers="x-api-key=<API_KEY>,Content-Type=application/json" \
+  --message-body='{"batchSize":50}' \
+  --time-zone="UTC" \
+  --location=us-west1
+```
+
+It takes the same `{"dryRun": true}`. Run that first and read the `stale` count before the first real
+run: on a project that has never been swept it is every login older than six months, deleted silently.
+
 ##### API Deploy CD
 
 ```shell

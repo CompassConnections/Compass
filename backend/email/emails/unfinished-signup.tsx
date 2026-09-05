@@ -71,7 +71,7 @@ export const UnfinishedSignupEmail = ({
       <Paragraph>
         {t(
           'email.unfinished_signup.what_exists',
-          'On {date}, someone — most likely you — signed in to Compass with this address but did not finish creating a profile. Nothing is visible to anyone: there is no profile and no name, only the login itself.',
+          'On {date}, you signed in to Compass with this address but did not finish creating a profile. Nothing is visible to anyone yet though.',
           {date},
         )}
       </Paragraph>
@@ -79,7 +79,7 @@ export const UnfinishedSignupEmail = ({
       <Paragraph>
         {t(
           'email.unfinished_signup.finish',
-          'If that was you and you would like to finish, the form picks up where you left off:',
+          'If you would like to finish, the form picks up where you left off:',
         )}
       </Paragraph>
 

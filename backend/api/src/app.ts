@@ -79,6 +79,7 @@ import {getBlogPosts} from './get-blog-posts'
 import {getBlogPostsAdmin} from './get-blog-posts-admin'
 import {getCompatibilityQuestions} from './get-compatibililty-questions'
 import {getConnectionInterestsEndpoint} from './get-connection-interests'
+import {getCountries} from './get-countries'
 import {getCurrentPrivateUser} from './get-current-private-user'
 import {getEvents} from './get-events'
 import {getLikesAndShips} from './get-likes-and-ships'
@@ -703,6 +704,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'update-spotlight': updateSpotlight,
   'get-profile-answers': getProfileAnswers,
   'get-profile-feed': getProfileFeed,
+  'get-countries': getCountries,
   'get-profiles': getProfiles,
   'get-supabase-token': getSupabaseToken,
   'get-user-journeys': getUserJourneys,

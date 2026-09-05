@@ -1,5 +1,6 @@
 - Seeking — the type of connection someone is looking for (friendship, relationship, collaboration, etc.).
-- Living — where someone currently lives, with a selectable search radius.
+- Living — where someone currently lives, with a selectable search radius, plus a country dropdown (the
+  countries members actually live in, from `get-countries`) for searches wider than the 500 mi radius cap.
 - Age — age range.
 - Gender — gender identity (multi-select with extended list hidden behind "Show more").
 - Orientation — sexual orientation (multi-select with extended list hidden behind "Show more").

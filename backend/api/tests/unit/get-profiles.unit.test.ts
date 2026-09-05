@@ -150,6 +150,32 @@ describe('loadProfiles', () => {
         expect(query).toContain(`High School`)
       })
 
+      it('that contains a country filter', async () => {
+        await profilesModule.loadProfiles({
+          country: 'USA',
+        })
+
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
+
+        expect(mockPg.map.mock.calls).toHaveLength(1)
+        expect(query).toContain(`profiles.country = `)
+        expect(query).toContain(`USA`)
+      })
+
+      it('that combines a country with a city radius', async () => {
+        await profilesModule.loadProfiles({
+          country: 'USA',
+          lat: 37.77,
+          lon: -122.44,
+          radius: 500,
+        })
+
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
+
+        expect(query).toContain(`profiles.country = `)
+        expect(query).toContain(`city_latitude BETWEEN`)
+      })
+
       it('that contains a prefer gender filter', async () => {
         await profilesModule.loadProfiles({
           pref_gender: ['female'],

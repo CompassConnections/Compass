@@ -10,6 +10,10 @@ export type FilterFields = {
   lat: number | null | undefined
   lon: number | null | undefined
   radius: number | null | undefined
+  // Exact match on `profiles.country` (the normalized spelling, see `normalizeCountry`). An alternative
+  // to the city + radius pair above — the UI sets one or the other — for searches like "anywhere in
+  // the US" that no radius can express.
+  country: string | null | undefined
   raised_in_lat: number | null | undefined
   raised_in_lon: number | null | undefined
   raised_in_radius: number | null | undefined
@@ -82,6 +86,7 @@ export const initialFilters: Partial<FilterFields> = {
   lat: undefined,
   lon: undefined,
   radius: undefined,
+  country: undefined,
   raised_in_lat: undefined,
   raised_in_lon: undefined,
   raised_in_radius: undefined,

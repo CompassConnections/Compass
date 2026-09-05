@@ -101,6 +101,8 @@ export type profileQueryType = {
   lat?: number | undefined
   lon?: number | undefined
   radius?: number | undefined
+  /** Exact match on `profiles.country`; see `FilterFields.country`. */
+  country?: string | undefined
   raised_in_lat?: number | undefined
   raised_in_lon?: number | undefined
   raised_in_radius?: number | undefined
@@ -464,6 +466,7 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     lat,
     lon,
     radius,
+    country,
     raised_in_lat,
     raised_in_lon,
     raised_in_radius,
@@ -832,6 +835,10 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
       }),
 
     geodbCityIds?.length && where(`geodb_city_id = ANY($(geodbCityIds))`, {geodbCityIds}),
+
+    // Equality, not ILIKE: the dropdown offers the stored spellings themselves (get-countries), and
+    // `country` is one of the text search fields already, so fuzzy matching lives in `name`.
+    country && where(`profiles.country = $(country)`, {country}),
 
     // miles par degree of lat: earth's radius (3950 miles) * pi / 180 = 69.0
     filterLocation &&

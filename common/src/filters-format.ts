@@ -26,6 +26,7 @@ import {capitalize} from 'lodash'
 const filterLabels: Record<string, string> = {
   geodbCityIds: '',
   location: '',
+  country: 'Country',
   name: 'Searching',
   genders: '',
   pref_gender: 'Gender they seek',

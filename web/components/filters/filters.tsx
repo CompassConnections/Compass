@@ -299,17 +299,25 @@ function Filters(props: {
         title={t('profile.optional.location', 'Living')}
         openFilter={openFilter}
         setOpenFilter={setOpenFilter}
-        isActive={!!locationFilterProps.location}
+        isActive={!!locationFilterProps.location || !!filters.country}
         selection={
           <LocationFilterText
             location={locationFilterProps.location}
             radius={locationFilterProps.radius}
+            country={filters.country}
             youProfile={youProfile}
             // highlightedClass={!locationFilterProps.location ? 'text-ink-900' : 'text-primary-600'}
           />
         }
       >
-        <LocationFilter youProfile={youProfile} locationFilterProps={locationFilterProps} />
+        <LocationFilter
+          youProfile={youProfile}
+          locationFilterProps={locationFilterProps}
+          countryFilterProps={{
+            country: filters.country,
+            setCountry: (country) => updateFilter({country}),
+          }}
+        />
       </FilterSection>
 
       {/* AGE RANGE - Always visible */}

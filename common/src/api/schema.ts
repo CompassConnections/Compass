@@ -50,7 +50,7 @@ import {
 } from 'common/profiles/spotlights'
 import {ReferralCount, ReferralTree} from 'common/referrals'
 import {REVIEW_MOMENTS, ReviewTrigger} from 'common/reviews/prompt'
-import {RepoStats, Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
+import {CountryCount, RepoStats, Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
 import {
@@ -900,6 +900,7 @@ export const API = (_apiTypeCheck = {
         lat: z.coerce.number().optional(),
         lon: z.coerce.number().optional(),
         radius: z.coerce.number().optional(),
+        country: z.string().optional(),
         raised_in_lat: z.coerce.number().optional(),
         raised_in_lon: z.coerce.number().optional(),
         raised_in_radius: z.coerce.number().optional(),
@@ -1252,6 +1253,22 @@ export const API = (_apiTypeCheck = {
     }),
     summary: 'Whether the current user has muted a proposal discussion',
     tag: 'Votes',
+  },
+  /**
+   * The countries members live in, as stored on `profiles.country`, most populous first. Backs the
+   * country dropdown of the location filter, so the options are exactly the values the `country`
+   * filter of `get-profiles` can match — a hardcoded ISO list would offer 200 countries nobody lives
+   * in and spell the ones they do live in differently.
+   */
+  'get-countries': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z.object({}),
+    cache: 'public, max-age=300',
+    returns: {} as {countries: CountryCount[]},
+    summary: 'List the countries members live in',
+    tag: 'Search',
   },
   'search-location': {
     method: 'POST',

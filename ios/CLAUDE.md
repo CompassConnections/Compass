@@ -7,6 +7,12 @@ See [README.md](README.md) for build, signing, TestFlight and debugging, and
 [`../docs/ios.md`](../docs/ios.md) for the plan and the remaining manual steps. Cross-package context
 is in the [root CLAUDE.md](../CLAUDE.md).
 
+**Assume Linux, not a Mac.** This app was developed, signed, submitted and published without one. Work
+locally on Linux — `project.pbxproj`, `Info.plist` and `App.entitlements` are text, `yarn build-sync-ios`
+runs fine (`pod install` and `xcodebuild` just no-op), and the phone is debuggable over USB. The only
+macOS is the `macos-15` runner in `ios-certs.yml` (certificates, run once) and `cd-ios.yml` (archive +
+upload). Don't propose "open it in Xcode" as a step; there is no Xcode here.
+
 ## What's here vs not here
 
 - Native scaffolding (`App/`, `Podfile`, `Info.plist`, `App.entitlements`, `AppDelegate.swift`).

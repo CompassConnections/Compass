@@ -1,7 +1,7 @@
 import {OptionTableKey} from 'common/profiles/constants'
 import {Profile, ProfileRow} from 'common/profiles/profile'
 import {filterDefined} from 'common/util/array'
-import {cloneDeep} from 'lodash'
+import {cloneDeep, pick} from 'lodash'
 
 export type FilterFields = {
   orderBy: 'last_online_time' | 'created_time' | 'compatibility_score'
@@ -18,6 +18,14 @@ export type FilterFields = {
   raised_in_lon: number | null | undefined
   raised_in_radius: number | null | undefined
   genders: string[] | null | undefined
+  // The band of "I would like to have kids" answers (the 0-4 agreement scale) this search accepts.
+  // A band rather than a single value: the question it answers is "close enough to mine?", which has
+  // two ends — see `getWantsKidsRange`.
+  wants_kids_range_min: number | null | undefined
+  wants_kids_range_max: number | null | undefined
+  // Two-way search: on top of everything else here, require that the searcher *also* passes what
+  // each candidate said they were looking for. Every other field in this type points one way.
+  twoWay: boolean | null | undefined
   cannabis: string[] | null | undefined
   psychedelics: string[] | null | undefined
   // Scalar on the profile, multi-select as a filter — same shape as `cannabis` above.
@@ -44,7 +52,6 @@ export type FilterFields = {
   [K in OptionTableKey]: string[]
 } & Pick<
     ProfileRow,
-    | 'wants_kids_strength'
     | 'pref_relation_styles'
     | 'pref_romantic_styles'
     | 'diet'
@@ -96,7 +103,9 @@ export const initialFilters: Partial<FilterFields> = {
   pref_age_max: undefined,
   pref_age_min: undefined,
   has_kids: undefined,
-  wants_kids_strength: undefined,
+  wants_kids_range_min: undefined,
+  wants_kids_range_max: undefined,
+  twoWay: undefined,
   is_smoker: undefined,
   exercise: undefined,
   psychedelics: undefined,
@@ -137,6 +146,18 @@ export const initialFilters: Partial<FilterFields> = {
 }
 
 export const FilterKeys = Object.keys(initialFilters) as (keyof FilterFields)[]
+
+/**
+ * Drops anything that is not a filter any more.
+ *
+ * A search outlives the code that wrote it: it is persisted in a browser's localStorage and in
+ * `bookmarked_searches.search_filters`, so a field removed from the app keeps arriving from old data
+ * indefinitely. `get-profiles` validates its props strictly, so a single stale key would fail the
+ * whole search rather than being quietly ignored.
+ */
+export const pickKnownFilters = (
+  filters: Partial<FilterFields> | null | undefined,
+): Partial<FilterFields> => pick(filters ?? {}, FilterKeys)
 
 /**
  * Filters that are set on every search and narrow nobody: sort order, and the flag that *widens* the

@@ -1,5 +1,6 @@
 import {type JSONContent} from '@tiptap/core'
 import {FEED_VISIBILITY_LEVELS} from 'common/feed/feed'
+import {MAX_PREF_MAX_DISTANCE, MIN_PREF_MAX_DISTANCE} from 'common/max-distance'
 import {MAX_PROFILE_AGE, MIN_PROFILE_AGE, STORED_BIRTH_DATE_REGEX} from 'common/profiles/birth-date'
 import {arrify} from 'common/util/array'
 import {z} from 'zod'
@@ -48,8 +49,7 @@ export const zBoolean = z
 
 const linkValueSchema = z.union([z.string(), z.array(z.string())]).nullable()
 
-// TODO: merge the two below when the deprecated /create-profile is deleted
-export const baseProfilesSchema = z.object({
+export const profileSchema = z.object({
   // `age` is derived from `birth_date` by the database and is only still accepted here for clients
   // that predate the column — whatever they send is overwritten from the date. New writers send
   // `birth_date` instead.
@@ -74,6 +74,14 @@ export const baseProfilesSchema = z.object({
   pref_age_max: z.number().min(18).max(100).optional().nullable(),
   pref_age_min: z.number().min(18).max(100).optional().nullable(),
   pref_gender: genderTypes.optional().nullable(),
+  // Miles between their city and someone else's, past which they don't want to be shown at all.
+  // `null` (the default) means no limit — see `PREF_MAX_DISTANCE_CHOICES`.
+  pref_max_distance: z
+    .number()
+    .min(MIN_PREF_MAX_DISTANCE)
+    .max(MAX_PREF_MAX_DISTANCE)
+    .optional()
+    .nullable(),
   pref_relation_styles: z.array(z.string()).optional().nullable(),
   referred_by_username: z.string().optional().nullable(),
   region_code: z.string().optional().nullable(),
@@ -83,10 +91,6 @@ export const baseProfilesSchema = z.object({
   // created before the column existed fall back to the 'basic' column default.
   feed_visibility: z.enum(FEED_VISIBILITY_LEVELS).optional(),
   wants_kids_strength: z.number().optional().nullable(),
-})
-
-const optionalProfilesSchema = z.object({
-  bio: contentSchema.optional().nullable(),
   big5_openness: z.number().min(0).max(100).optional().nullable(),
   big5_conscientiousness: z.number().min(0).max(100).optional().nullable(),
   big5_extraversion: z.number().min(0).max(100).optional().nullable(),
@@ -155,5 +159,3 @@ const optionalProfilesSchema = z.object({
   website: z.string().optional().nullable(),
   work: z.array(z.string()).optional().nullable(),
 })
-
-export const combinedProfileSchema = baseProfilesSchema.merge(optionalProfilesSchema)

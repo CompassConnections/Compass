@@ -1,12 +1,13 @@
 import {LOCALE_TO_LANGUAGE} from 'common/choices'
 import {MAX_INT, MIN_INT} from 'common/constants'
-import {FilterFields, initialFilters, OriginLocation} from 'common/filters'
+import {FilterFields, initialFilters, OriginLocation, pickKnownFilters} from 'common/filters'
 import {debug} from 'common/logger'
 import {kmToMiles} from 'common/measurement-utils'
 import {Profile, ProfileRow} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
+import {getWantsKidsRange} from 'common/wants-kids'
 import {debounce, isEqual, mapValues, omit, omitBy} from 'lodash'
-import {useCallback, useEffect, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
@@ -16,33 +17,93 @@ import {safeLocalStorage} from 'web/lib/util/local'
 // Set once we've seeded a browser's filters from the profile; see the seeding effect below.
 const SEEDED_FILTERS_KEY = 'profile-filters-seeded'
 
-// Comparable form of a filter set: unset values, emptied multi-selects and the sort order all drop out,
-// and multi-selects compare regardless of the order the user picked them in.
+// Comparable form of a filter set: unset values, emptied multi-selects, the sort order and the
+// two-way flag all drop out, and multi-selects compare regardless of the order the user picked them
+// in.
+//
+// `twoWay` is dropped for the same reason as `orderBy`: neither says anything about *who* you are
+// looking for. Two-way search is a mode laid over whatever search is running — it asks the other
+// side's criteria of every candidate — so turning it on next to the looking-for preferences leaves
+// them exactly as they were, and the chip has no business unticking itself.
 const normalize = (f: Partial<FilterFields>) =>
   mapValues(
     omitBy(
-      removeNullOrUndefinedProps({...f, orderBy: undefined}),
+      removeNullOrUndefinedProps({...f, orderBy: undefined, twoWay: undefined}),
       (v) => Array.isArray(v) && v.length === 0,
     ),
     (v) => (Array.isArray(v) ? [...v].sort() : v),
   )
 
-// Mirrors the "Who I'm looking for" section of the profile only — age, gender and connection type.
-// The rest of the profile describes who you are, not who you want to see, so copying it into the
-// search (diet, religion, politics, interests, ...) narrowed the results to people just like you.
+/**
+ * The "lives near" search a profile's own stated maximum distance amounts to: their city, at the
+ * radius they said they were willing to consider (`pref_max_distance`).
+ *
+ * Undefined unless they set a maximum — no limit is the default, and turning that into a radius
+ * would invent a constraint they declined to state. Undefined too without a `geodb_city_id`: the
+ * "Living" section searches and re-renders cities by that id, so a location without one lands in the
+ * filter as a point the UI can't show or edit.
+ *
+ * Separate from `getLookingForFilters` because a location is not a filter field but its own piece of
+ * state — the `location`/`radius` pair the "Living" section owns, which an effect then writes into
+ * the filters as `lat`/`lon`/`radius`.
+ */
+export const getLookingForLocation = (
+  profile: ProfileRow | undefined | null,
+): {location: OriginLocation; radius: number} | undefined => {
+  const radius = profile?.pref_max_distance
+  if (!radius || !profile?.geodb_city_id) return undefined
+  if (profile.city_latitude == null || profile.city_longitude == null) return undefined
+
+  return {
+    location: {
+      id: profile.geodb_city_id,
+      name: profile.city,
+      lat: profile.city_latitude,
+      lon: profile.city_longitude,
+    },
+    radius,
+  }
+}
+
+// Mirrors the "Who I'm looking for" section of the profile only — age, gender, connection type, kid
+// desire and the maximum distance — plus the language the app is being read in. The rest of the
+// profile describes who you are, not who you want to see, so copying it into the search (diet,
+// religion, politics, interests, ...) narrowed the results to people just like you.
 // Takes any profile, not just your own, so admins can run the search as another member sees it.
 export const getLookingForFilters = (
   profile: ProfileRow | undefined | null,
-): Partial<FilterFields> => ({
-  genders: profile?.pref_gender?.length ? profile.pref_gender : undefined,
-  pref_age_max: (profile?.pref_age_max ?? MAX_INT) < 100 ? profile?.pref_age_max : undefined,
-  pref_age_min: (profile?.pref_age_min ?? MIN_INT) > 18 ? profile?.pref_age_min : undefined,
-  pref_relation_styles: profile?.pref_relation_styles?.length
-    ? profile.pref_relation_styles
-    : undefined,
-})
+): Partial<FilterFields> => {
+  // Kid desire is the one entry here that isn't a stated preference but an answer about yourself:
+  // nobody fills in "which answers to the kids question I'll accept", so it is derived from their
+  // own answer as a band around it. Undefined when they never answered, or when their answer sits
+  // centrally enough that the band would exclude nobody.
+  const wantsKidsRange = getWantsKidsRange(profile?.wants_kids_strength)
+  // Carried here as well as in the location state so that `isLookingForFilters` compares against the
+  // same shape the location effect writes; whoever applies these has to set the location too, or the
+  // effect will clear the three keys straight back out again.
+  const lookingForLocation = getLookingForLocation(profile)
+  // The one entry not read off the profile at all: whichever language the app is being read in is
+  // the one the member can hold a conversation in, and a profile they cannot talk to is not a match
+  // however well the rest of it lines up. Same value the signup path already seeds.
+  const localeLanguage = LOCALE_TO_LANGUAGE[getLocale()]
 
-export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
+  return {
+    genders: profile?.pref_gender?.length ? profile.pref_gender : undefined,
+    pref_age_max: (profile?.pref_age_max ?? MAX_INT) < 100 ? profile?.pref_age_max : undefined,
+    pref_age_min: (profile?.pref_age_min ?? MIN_INT) > 18 ? profile?.pref_age_min : undefined,
+    pref_relation_styles: profile?.pref_relation_styles?.length
+      ? profile.pref_relation_styles
+      : undefined,
+    wants_kids_range_min: wantsKidsRange?.min,
+    wants_kids_range_max: wantsKidsRange?.max,
+    lat: lookingForLocation?.location.lat,
+    lon: lookingForLocation?.location.lon,
+    radius: lookingForLocation?.radius,
+    languages: localeLanguage && profile ? [localeLanguage] : undefined,
+  }
+}
+
+export const useFilters = (you: Profile | undefined) => {
   const isLooking = useIsLooking()
   const baseFilters = isLooking
     ? initialFilters
@@ -51,14 +112,21 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   const getInitialFilters = (): Partial<FilterFields> => {
     return {
       ...baseFilters,
-      languages: fromSignup ? [LOCALE_TO_LANGUAGE[getLocale()]] : undefined,
+      // languages: fromSignup ? [LOCALE_TO_LANGUAGE[getLocale()]] : undefined,
     }
   }
 
-  const [filters, setFilters] = usePersistentLocalState<Partial<FilterFields>>(
+  const [storedFilters, setFilters] = usePersistentLocalState<Partial<FilterFields>>(
     getInitialFilters(),
     'profile-filters-4',
   )
+
+  // What comes back out of localStorage was written by whichever release the browser last ran, and a
+  // bookmarked search can be older still. `get-profiles` validates its props strictly, so a filter
+  // that has since been removed from the app (the old single-value `wants_kids_strength`, say) would
+  // fail every search outright instead of being ignored. Memoized because this object is a `useEffect`
+  // dependency in the grid.
+  const filters = useMemo(() => pickKnownFilters(storedFilters), [storedFilters])
 
   // logger.log('filters', filters)
 
@@ -164,8 +232,16 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
   // exactly the case here whenever the extra filter was added *on top of* the looking-for ones, leaving
   // only the clear behind.
   const applyLookingForFilters = (profile: ProfileRow | undefined | null) => {
-    setFilters({...baseFilters, ...getLookingForFilters(profile)})
-    setLocation(undefined)
+    const lookingForLocation = getLookingForLocation(profile)
+    // Everything else here is replaced, but `twoWay` is carried across: it is a mode rather than a
+    // criterion (see `normalize`), so wiping it would switch off a toggle the member left on, at the
+    // one moment they were reaching for a *different* control.
+    setFilters({...baseFilters, ...getLookingForFilters(profile), twoWay: filters.twoWay})
+    // The "Living" section owns the location, and its effect overwrites lat/lon/radius from it on the
+    // next render — so setting the filter keys above without setting this would clear them again.
+    // `setRadius`, not the debounced one: this is a single deliberate write, not a slider drag.
+    setLocation(lookingForLocation?.location)
+    if (lookingForLocation) setRadius(lookingForLocation.radius)
     setRaisedInLocation(undefined)
   }
 
@@ -208,7 +284,19 @@ export const useFilters = (you: Profile | undefined, fromSignup?: boolean) => {
     if (hasSeededFilters.current || !you) return
     hasSeededFilters.current = true
     safeLocalStorage?.setItem(SEEDED_FILTERS_KEY, 'true')
-    updateFilter(lookingForFilters)
+    // Two-way on by default alongside them: a first page of people who cannot match back is the
+    // worst possible first impression, and someone who has just filled in a profile has said enough
+    // about themselves for the other side's criteria to be worth asking. It is a mode rather than a
+    // criterion, so this does not affect whether the looking-for chip reads as ticked (see
+    // `normalize`), and one click in the panel turns it off.
+    updateFilter({...lookingForFilters, twoWay: true})
+    // Merged into the search rather than replacing it, unlike applyLookingForFilters — but the
+    // location still has to go through its own state for the same reason as there.
+    const lookingForLocation = getLookingForLocation(you)
+    if (lookingForLocation) {
+      setLocation(lookingForLocation.location)
+      setRadius(lookingForLocation.radius)
+    }
   }, [you])
 
   return {

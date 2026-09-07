@@ -22,18 +22,26 @@ export function formatHeight(heightInInches: number, measurementSystem: Measurem
 
 /**
  * Format distance in miles according to the specified measurement system
+ *
+ * `roundToNearest` coarsens the displayed number without touching the stored one. Distances that are
+ * round in miles are not round in kilometres — a 100/250/500 mile ladder reads "161 km, 402 km,
+ * 805 km", which looks like five arbitrary measurements rather than the five options it is. Callers
+ * offering a picked-from-a-list distance pass 10; leave it at 1 for a measured one, where the extra
+ * precision is the point and rounding a short distance would distort it.
  */
 export function formatDistance(
   distanceInMiles: number,
   measurementSystem: MeasurementSystem,
+  roundToNearest = 1,
 ): string {
+  const round = (value: number) => Math.round(value / roundToNearest) * roundToNearest
   if (measurementSystem === 'metric') {
     // Convert to kilometers
-    const km = Math.round(distanceInMiles * MILES_TO_KM)
+    const km = round(distanceInMiles * MILES_TO_KM)
     return `${km} km`
   } else {
     // Show in miles
-    return `${Math.round(distanceInMiles)} miles`
+    return `${round(distanceInMiles)} miles`
   }
 }
 

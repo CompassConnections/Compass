@@ -33,15 +33,17 @@ import {
 import {DEFAULT_FEED_VISIBILITY, feedVisibilityForMembersOnly} from 'common/feed/feed'
 import {DEFAULT_GENDERS, EXTRA_GENDERS} from 'common/gender'
 import {debug} from 'common/logger'
+import {NO_MAX_DISTANCE, PREF_MAX_DISTANCE_CHOICES} from 'common/max-distance'
+import {formatDistance} from 'common/measurement-utils'
 import {isUrl} from 'common/parsing'
 import {ageFromBirthDate, MAX_PROFILE_AGE, MIN_PROFILE_AGE} from 'common/profiles/birth-date'
-import {MultipleChoiceOptions} from 'common/profiles/multiple-choice'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
 import {BaseUser} from 'common/user'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {concatJSONContent, parseJsonContentToText} from 'common/util/parse'
 import {urlize} from 'common/util/string'
 import {MINUTE_MS, sleep} from 'common/util/time'
+import {WANTS_KIDS_STRENGTH_NAMES} from 'common/wants-kids'
 import {invert, range} from 'lodash'
 import {useRef, useState} from 'react'
 import Textarea from 'react-expanding-textarea'
@@ -61,11 +63,11 @@ import {VoiceAutofillSection} from 'web/components/voice-autofill-section'
 import {Carousel} from 'web/components/widgets/carousel'
 import {ChoicesToggleGroup} from 'web/components/widgets/choices-toggle-group'
 import {Input} from 'web/components/widgets/input'
-import {RadioToggleGroup} from 'web/components/widgets/radio-toggle-group'
 import {Select} from 'web/components/widgets/select'
 import {ShowMoreOptions} from 'web/components/widgets/show-more-options'
 import {Slider} from 'web/components/widgets/slider'
 import {ChoiceMap, ChoiceSetter, useChoicesContext} from 'web/hooks/use-choices'
+import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {api} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
@@ -116,6 +118,71 @@ function PrefGenderCheckbox(props: {
         )
       }
     />
+  )
+}
+
+/**
+ * The absolute distance ceiling, in the "Who I'm looking for" section.
+ *
+ * Deliberately opt-in and deliberately nudged: the default is no limit, and the guidance says so,
+ * because a ceiling here does nothing but delete people from both sides of the search. Somebody two
+ * cities over who would have moved, or who travels, is exactly the match a casually-set 100 miles
+ * removes — so the field is worth setting only when distance really is a dealbreaker.
+ *
+ * Off entirely until a city is on file: the distance is measured from that city, so without one the
+ * control would collect an answer nothing could ever evaluate.
+ */
+function PrefMaxDistanceField(props: {
+  profile: ProfileWithoutUser
+  setProfile: <K extends keyof ProfileWithoutUser>(key: K, value: ProfileWithoutUser[K]) => void
+  t: (key: string, fallback: string) => string
+}) {
+  const {profile, setProfile, t} = props
+  const {measurementSystem} = useMeasurementSystem()
+  const hasCity = profile.city_latitude != null && profile.city_longitude != null
+
+  const choicesMap: Record<string, number> = {
+    ...Object.fromEntries(
+      // Rounded to the nearest 10: these are five options off a list, not measurements, and the
+      // kilometre conversion of a round mileage is not itself round.
+      PREF_MAX_DISTANCE_CHOICES.map((miles) => [
+        formatDistance(miles, measurementSystem, 10),
+        miles,
+      ]),
+    ),
+    [t('profile.optional.max_distance.any', 'Any distance')]: NO_MAX_DISTANCE,
+  }
+
+  return (
+    <Col className={clsx(colClassName)}>
+      <label className={clsx(labelClassName)}>
+        {t('profile.optional.max_distance', 'Who live at most this far from me')}
+      </label>
+      <label className={clsx('guidance')}>
+        {hasCity
+          ? t(
+              'profile.optional.max_distance_description',
+              'Leave this at "any distance" unless being far away is a real dealbreaker for you. A limit here hides you from everyone beyond it, and hides them from you, however well you match otherwise.',
+            )
+          : t(
+              'profile.optional.max_distance_no_city',
+              'Add the city you live in above to set a maximum distance.',
+            )}
+      </label>
+      <Carousel className="max-w-full">
+        <ChoicesToggleGroup
+          currentChoice={profile.pref_max_distance ?? NO_MAX_DISTANCE}
+          choicesMap={choicesMap}
+          disabled={!hasCity}
+          // "Any distance" is the empty state and is already an option of its own, so there is
+          // nothing for a second click to clear it to.
+          allowDeselect={false}
+          setChoice={(choice) =>
+            setProfile('pref_max_distance', !choice || choice === NO_MAX_DISTANCE ? null : choice)
+          }
+        />
+      </Carousel>
+    </Col>
   )
 }
 
@@ -844,6 +911,8 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
+        <PrefMaxDistanceField profile={profile} setProfile={setProfile} t={t} />
+
         <Category title={t('profile.optional.category.work', 'Work')} />
 
         <Col className={clsx(colClassName)}>
@@ -1023,20 +1092,30 @@ export const OptionalProfileUserForm = (props: {
 
             <Col className={clsx(colClassName)}>
               <label className={clsx(labelClassName)}>
-                {t('profile.optional.want_kids', 'I would like to have kids')}
+                {/* A heading, not the first-person statement it used to be: the options answer it in
+                    the third person now, because the profile page and the search filter print the
+                    same five strings and neither of those is the member speaking. */}
+                {t('profile.optional.want_kids', 'Desire for children')}
               </label>
-              <RadioToggleGroup
-                className={'w-44'}
+              {/* The same pills every other single-choice field on this form uses, rather than the
+                  five-dot agreement scale this used to be. That scale labelled only its two ends, so
+                  the three answers in between were unreadable dots; it tinted every dot on a
+                  red-to-teal ramp at low opacity, which made the two left-hand ones look chosen when
+                  nothing was; and "Strongly disagree" is not how the answer is written anywhere else
+                  — the profile page and the search filter both name the answers themselves. */}
+              <ChoicesToggleGroup
+                currentChoice={profile.wants_kids_strength ?? undefined}
                 choicesMap={Object.fromEntries(
-                  Object.entries(MultipleChoiceOptions).map(([k, v]) => [
-                    t(`profile.wants_kids_${v}`, k),
-                    v,
+                  Object.entries(WANTS_KIDS_STRENGTH_NAMES).map(([strength, name]) => [
+                    t(`profile.wants_kids_${strength}`, name),
+                    Number(strength),
                   ]),
                 )}
+                // -1 rather than null: that is what an unanswered kid-desire question has always been
+                // stored as, and what the filters read as "no preference".
                 setChoice={(choice) => {
-                  setProfile('wants_kids_strength', choice)
+                  setProfile('wants_kids_strength', choice ?? -1)
                 }}
-                currentChoice={profile.wants_kids_strength ?? -1}
               />
             </Col>
           </>

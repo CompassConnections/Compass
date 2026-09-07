@@ -19,6 +19,7 @@ import {
 } from 'common/choices'
 import {OptionTableKey} from 'common/profiles/constants'
 import {parseJsonContentToText} from 'common/util/parse'
+import {getWantsKidsRange} from 'common/wants-kids'
 import {compact} from 'lodash'
 import {log} from 'shared/monitoring/log'
 import {convertRow} from 'shared/profiles/supabase'
@@ -86,7 +87,17 @@ export type profileQueryType = {
   religion?: string[] | undefined
   orientation?: string[] | undefined
   neurotype?: string[] | undefined
-  wants_kids_strength?: number | undefined
+  /**
+   * Inclusive band of acceptable `wants_kids_strength` answers — see `getWantsKidsRange`.
+   *
+   * Replaces the single-value `wants_kids_strength` filter, which the endpoint's props still accept
+   * from stale clients (see the deprecated block in `common/src/api/schema.ts`) but which is
+   * deliberately absent here: it is ignored, not read.
+   */
+  wants_kids_range_min?: number | undefined
+  wants_kids_range_max?: number | undefined
+  /** Also apply the searcher's own profile against each candidate's stated preferences. Needs `userId`. */
+  twoWay?: boolean | undefined
   has_kids?: number | undefined
   is_smoker?: boolean | undefined
   exercise?: string[] | undefined
@@ -409,7 +420,97 @@ export const getProfileCols = async () => {
   return profileCols
 }
 
+/** The searcher's own answers, as the two-way filters below need to read them. */
+type TwoWayViewer = {
+  gender: string | null
+  age: number | null
+  city_latitude: number | null
+  city_longitude: number | null
+  pref_relation_styles: string[] | null
+  wants_kids_strength: number | null
+}
+
+const loadTwoWayViewer = (pg: SupabaseDirectClient, userId: string) =>
+  pg.oneOrNone<TwoWayViewer>(
+    `select gender, age, city_latitude, city_longitude, pref_relation_styles, wants_kids_strength
+     from profiles where user_id = $(userId)`,
+    {userId},
+  )
+
 /**
+ * The backward half of a two-way search.
+ *
+ * Every other filter in this file asks "does this candidate match what the searcher wants?". These
+ * ask the mirror question — "does the searcher match what the *candidate* said they want?" — by
+ * testing the searcher's own profile against each row's stated preferences. Only the fields where two
+ * answers can genuinely conflict are checked, which is the same list the profile's "Who I'm looking
+ * for" section collects.
+ *
+ * Silence passes. A candidate who never named a gender, an age range, a distance or a connection type
+ * has not rejected anybody, and treating an unfilled field as a rejection would empty the grid of
+ * exactly the newer profiles a member most wants to see. Each clause is also skipped outright when
+ * the *searcher* has nothing to compare with (no gender on file, no city, no kid-desire answer):
+ * there is no way to know whether they pass, and a guess in either direction is worse than the
+ * question not being asked.
+ */
+const twoWayWhereClauses = (viewer: TwoWayViewer) => {
+  // Symmetric, so the searcher's own band is also the set of answers that would accept the searcher —
+  // the same helper the forward `wants_kids_range_*` filter uses.
+  const kidsRange = getWantsKidsRange(viewer.wants_kids_strength)
+
+  return [
+    // Their "interested in connecting with" has to include the searcher's gender.
+    !!viewer.gender &&
+      where(
+        `profiles.pref_gender IS NULL OR profiles.pref_gender = '{}'
+         OR $(viewerGender) = ANY(profiles.pref_gender)`,
+        {viewerGender: viewer.gender},
+      ),
+
+    // The searcher's age has to fall inside their stated range.
+    viewer.age != null &&
+      where(
+        `(profiles.pref_age_min IS NULL OR profiles.pref_age_min <= $(viewerAge))
+         AND (profiles.pref_age_max IS NULL OR profiles.pref_age_max >= $(viewerAge))`,
+        {viewerAge: viewer.age},
+      ),
+
+    // The connection types have to overlap: someone who only wants friendship and someone who only
+    // wants a relationship are a mismatch however well the rest of the profile fits.
+    !!viewer.pref_relation_styles?.length &&
+      where(
+        `profiles.pref_relation_styles IS NULL OR profiles.pref_relation_styles = '{}'
+         OR profiles.pref_relation_styles && $(viewerStyles)`,
+        {viewerStyles: viewer.pref_relation_styles},
+      ),
+
+    // The searcher has to sit inside the maximum distance the candidate stated. Same flat-earth
+    // approximation as the `radius` filter below — 69 miles per degree of latitude, longitude scaled
+    // by cos(lat) — which is accurate well past the 2000 mi ceiling the field offers.
+    viewer.city_latitude != null &&
+      viewer.city_longitude != null &&
+      where(
+        `profiles.pref_max_distance IS NULL
+         OR profiles.city_latitude IS NULL OR profiles.city_longitude IS NULL
+         OR SQRT(
+              POWER(profiles.city_latitude - $(viewerLat), 2)
+            + POWER((profiles.city_longitude - $(viewerLon)) * COS(RADIANS($(viewerLat))), 2)
+            ) * 69.0 <= profiles.pref_max_distance`,
+        {viewerLat: viewer.city_latitude, viewerLon: viewer.city_longitude},
+      ),
+
+    // Kid desire, within the same tolerance as the forward filter. -1/NULL is "no preference".
+    !!kidsRange &&
+      where(
+        `profiles.wants_kids_strength IS NULL OR profiles.wants_kids_strength = -1
+         OR (profiles.wants_kids_strength >= $(kidsMin) AND profiles.wants_kids_strength <= $(kidsMax))`,
+        {kidsMin: kidsRange.min, kidsMax: kidsRange.max},
+      ),
+  ]
+}
+
+/**
+ * @param props Profile query parameters for filtering and pagination
  * @param db pass a client bound to a snapshot schema (see `withSchema` in `profile-snapshot.ts`) to
  *   evaluate the same filters against the profiles as they were at an earlier point in time.
  */
@@ -448,7 +549,9 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     religion,
     orientation,
     neurotype,
-    wants_kids_strength,
+    wants_kids_range_min,
+    wants_kids_range_max,
+    twoWay,
     has_kids,
     interests,
     causes,
@@ -645,6 +748,10 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     return where(clause, {min, max})
   }
 
+  // One extra round-trip, and only when two-way search is on: the backward filters compare each
+  // candidate against the searcher's own profile, which is not otherwise read here.
+  const twoWayViewer = twoWay && userId ? await loadTwoWayViewer(pg, userId) : undefined
+
   const filters = [
     where('looking_for_matches = true'),
     where(`profiles.disabled != true`),
@@ -775,15 +882,22 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
 
     work?.length && where(getManyToManyClause('work'), {values: work.map(Number)}),
 
-    !!wants_kids_strength &&
-      wants_kids_strength !== -1 &&
+    // The band of acceptable answers to "I would like to have kids". Set directly from the filter
+    // panel's range slider, or derived from the searcher's own answer by `getWantsKidsRange` when
+    // the looking-for bundle is applied. Profiles that never answered stay in — -1/NULL is "no
+    // preference", which is not a clash with anything.
+    (wants_kids_range_min != null || wants_kids_range_max != null) &&
       where(
-        'wants_kids_strength = -1 OR wants_kids_strength IS NULL OR ' +
-          (wants_kids_strength >= 2
-            ? `wants_kids_strength >= $(wants_kids_strength)`
-            : `wants_kids_strength <= $(wants_kids_strength)`),
-        {wants_kids_strength},
+        'wants_kids_strength IS NULL OR wants_kids_strength = -1 OR (' +
+          compact([
+            wants_kids_range_min != null && 'wants_kids_strength >= $(wants_kids_range_min)',
+            wants_kids_range_max != null && 'wants_kids_strength <= $(wants_kids_range_max)',
+          ]).join(' AND ') +
+          ')',
+        {wants_kids_range_min, wants_kids_range_max},
       ),
+
+    ...(twoWayViewer ? twoWayWhereClauses(twoWayViewer) : []),
 
     has_kids === 0 && where(`has_kids IS NULL OR has_kids = 0`),
     has_kids && has_kids > 0 && where(`has_kids > 0`),

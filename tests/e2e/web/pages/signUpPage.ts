@@ -129,11 +129,16 @@ export class SignUpPage {
     this.minAgeOption = page.getByTestId('pref-age-min')
     this.maxAgeOption = page.getByTestId('pref-age-max')
     this.currentNumberOfKidsField = page.getByTestId('current-number-of-kids')
-    this.stronglyDisagreeOnWantingKids = page.getByRole('radio', {name: 'Strongly disagree'})
-    this.disagreeOnWantingKids = page.getByRole('radio', {name: 'Disagree'})
-    this.neutralOnWantingKids = page.getByRole('radio', {name: 'Neutral'})
-    this.agreeOnWantingKids = page.getByRole('radio', {name: 'Agree'})
-    this.stronglyAgreeOnWantingKids = page.getByRole('radio', {name: 'Strongly agree'})
+    // Named after the answers themselves, which is what the form now offers in place of a
+    // Strongly-disagree-to-Strongly-agree scale (`WANTS_KIDS_STRENGTH_NAMES`). Exact matching: the
+    // five names share words, and `getByRole`'s default substring match would make "Wants children"
+    // pick up "Does not want children" as well.
+    const wantsKidsOption = (name: string) => page.getByRole('radio', {name, exact: true})
+    this.stronglyDisagreeOnWantingKids = wantsKidsOption('Does not want children')
+    this.disagreeOnWantingKids = wantsKidsOption('Leaning against')
+    this.neutralOnWantingKids = wantsKidsOption('Neutral')
+    this.agreeOnWantingKids = wantsKidsOption('Leaning towards')
+    this.stronglyAgreeOnWantingKids = wantsKidsOption('Wants children')
     // Scoped to their own section rather than picked off the page by index: Work Area, Causes and
     // Interests are all `AddOptionEntry`s with an identically-labelled "Search or add" field, and the
     // positional locators had interests and work the wrong way round — so custom interests were being

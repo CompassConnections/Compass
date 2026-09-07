@@ -81,4 +81,5 @@ BEGIN;
 \i backend/supabase/migrations/20260826_raise_get_display_users_cap.sql
 \i backend/supabase/migrations/20260901_redact_member_only_profiles.sql
 \i backend/supabase/migrations/20260905_add_unfinished_signups.sql
+\i backend/supabase/migrations/20260907_add_pref_max_distance.sql
 COMMIT;

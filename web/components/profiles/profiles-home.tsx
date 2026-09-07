@@ -80,7 +80,7 @@ export function ProfilesHome() {
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
-  } = useFilters(you ?? undefined, fromSignup)
+  } = useFilters(you ?? undefined)
 
   const {displayOptions, updateDisplayOptions} = useDisplayOptions()
 

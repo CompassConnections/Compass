@@ -1,9 +1,9 @@
 import {QuestionWithStats} from 'common/api/types' // mqp: very unscientific, just balancing our willingness to accept load
 import {
   arraybeSchema,
-  combinedProfileSchema,
   contentSchema,
   dateSchema,
+  profileSchema,
   zBoolean,
 } from 'common/api/zod-types'
 import {
@@ -368,7 +368,7 @@ export const API = (_apiTypeCheck = {
         locale: z.string().optional(),
         username: z.string().min(1),
         name: z.string().min(1),
-        profile: combinedProfileSchema,
+        profile: profileSchema,
         interests: arraybeSchema.optional(),
         causes: arraybeSchema.optional(),
         work: arraybeSchema.optional(),
@@ -464,7 +464,7 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: true,
-    props: combinedProfileSchema.partial(),
+    props: profileSchema.partial(),
     returns: {} as ProfileRow,
     summary: 'Update profile fields for the authenticated user',
     tag: 'Profiles',
@@ -884,7 +884,11 @@ export const API = (_apiTypeCheck = {
         relationship_status: arraybeSchema.optional(),
         languages: arraybeSchema.optional(),
         last_active: z.string().optional(),
-        wants_kids_strength: z.coerce.number().optional(),
+        // The band of acceptable answers to the profile's "I would like to have kids" question.
+        wants_kids_range_min: z.coerce.number().optional(),
+        wants_kids_range_max: z.coerce.number().optional(),
+        // Also require that the *searcher* passes what each candidate is looking for.
+        twoWay: zBoolean.optional(),
         has_kids: z.coerce.number().optional(),
         is_smoker: zBoolean.optional().optional(),
         exercise: arraybeSchema.optional(),
@@ -915,6 +919,18 @@ export const API = (_apiTypeCheck = {
         // rich-text `bio` with a truncated `bio_snippet`. Defaults to `full` so existing API
         // consumers keep getting the complete row.
         projection: z.enum(['card', 'full']).optional().default('card'),
+
+        // --- Deprecated: accepted, never read. ---
+        //
+        // A browser holds a cached JS bundle for a while after a deploy, and a bookmarked search can
+        // be older still, so a retired filter keeps arriving from clients long after the code that
+        // sent it is gone. These props are `.strict()`-validated, which means one such key would
+        // fail the entire search rather than being ignored — so retired filters are declared here
+        // and dropped on the floor instead of being deleted outright. Remove an entry once no old
+        // client can still be sending it.
+        //
+        /** @deprecated superseded by `wants_kids_range_min` / `wants_kids_range_max`. Ignored. */
+        wants_kids_strength: z.coerce.number().optional(),
       })
       .strict(),
     returns: {} as {

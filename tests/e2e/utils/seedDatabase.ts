@@ -80,6 +80,7 @@ export async function seedDbUser(
     pref_romantic_styles: romanticStyle ? [romanticStyle] : [],
     pref_age_min: userInfo.pref_age.min,
     pref_age_max: userInfo.pref_age.max,
+    pref_max_distance: userInfo.pref_max_distance,
     born_in_location: userInfo.born_in_location,
     company: userInfo.company,
     occupation_title: userInfo.occupation_title,

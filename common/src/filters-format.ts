@@ -20,7 +20,11 @@ import {
 import {FilterFields, initialFilters} from 'common/filters'
 import {hasKidsNames} from 'common/has-kids'
 import {milesToKm} from 'common/measurement-utils'
-import {wantsKidsNames} from 'common/wants-kids'
+import {
+  WANTS_KIDS_MAX_STRENGTH,
+  WANTS_KIDS_MIN_STRENGTH,
+  WANTS_KIDS_STRENGTH_NAMES,
+} from 'common/wants-kids'
 import {capitalize} from 'lodash'
 
 const filterLabels: Record<string, string> = {
@@ -35,7 +39,8 @@ const filterLabels: Record<string, string> = {
   pref_age_min: 'Min age',
   relationship_status: '',
   has_kids: '',
-  wants_kids_strength: '',
+  wants_kids_range: 'Desire for kids',
+  twoWay: '',
   is_smoker: '',
   exercise: 'Exercise',
   pref_relation_styles: '',
@@ -91,6 +96,9 @@ export const SKIPPED_FORMAT_FILTERS_KEYS = [
   // Drinks min/max keys are handled separately
   'drinks_min',
   'drinks_max',
+  // Kid-desire band keys are handled separately
+  'wants_kids_range_min',
+  'wants_kids_range_max',
 ]
 
 export function formatFilters(
@@ -134,6 +142,8 @@ export function formatFilters(
     if (SKIPPED_FORMAT_FILTERS_KEYS.includes(typedKey)) return
     if (Array.isArray(value) && value.length === 0) return
     if (initialFilters[typedKey] === value) return
+    // A boolean filter that is off is not a filter; only `true` is worth a chip.
+    if (typedKey === 'twoWay' && !value) return
 
     const label = filterLabels[typedKey] ?? key
 
@@ -148,10 +158,7 @@ export function formatFilters(
     let stringValue = value
     if (key === 'has_kids')
       stringValue = translate(`profile.has_kids.${value}`, hasKidsNames[value as number])
-    else if (key === 'wants_kids_strength') {
-      if (value === -1) return
-      stringValue = translate(`profile.wants_kids_${value}`, wantsKidsNames[value as number])
-    } else if (key === 'is_smoker')
+    else if (key === 'is_smoker')
       stringValue = translate(
         `profile.smoker.${value ? 'yes' : 'no'}`,
         value ? 'Smoker' : 'Non-smoker',
@@ -163,6 +170,7 @@ export function formatFilters(
       )
     else if (key === 'hasPhoto')
       stringValue = value && translate('filter.has_photo.title', 'Has photos')
+    else if (key === 'twoWay') stringValue = translate('filter.two_way.title', 'Two-way search')
 
     if (Array.isArray(value)) {
       if (choicesIdsToLabels[key]) {
@@ -301,13 +309,33 @@ export function formatFilters(
     entries.push(`${drinksLabel}: ${drinksText} ${perMonth}`)
   }
 
+  // Kid-desire band, spelled out with the answers themselves rather than the raw 0-4 strengths,
+  // which mean nothing outside the database.
+  const kidsMin = filters.wants_kids_range_min
+  const kidsMax = filters.wants_kids_range_max
+  if (kidsMin != null || kidsMax != null) {
+    const kidsLabel = translate('filter.label.wants_kids_range', filterLabels.wants_kids_range)
+    const answer = (v: number) =>
+      translate(`profile.wants_kids_${v}`, WANTS_KIDS_STRENGTH_NAMES[v] ?? String(v))
+    // An open end is spelled out as the answer it stops at rather than left implicit: "wants kids"
+    // and "leans toward wanting kids or more" are the same set, and the first one reads.
+    const lo = kidsMin ?? WANTS_KIDS_MIN_STRENGTH
+    const hi = kidsMax ?? WANTS_KIDS_MAX_STRENGTH
+    const kidsText = lo === hi ? answer(lo) : `${answer(lo)} - ${answer(hi)}`
+
+    entries.push(`${kidsLabel}: ${kidsText}`)
+  }
+
   if (location?.location?.name) {
     const radius = location?.radius || 0
+    // Nearest 10, matching every other place a picked distance is shown: the radius is chosen off a
+    // fixed ladder, so the miles→km conversion's last two digits are noise, not precision.
+    const round = (value: number) => Math.round(value / 10) * 10
     let formattedRadius: string
     if (measurementSystem === 'metric') {
-      formattedRadius = `${Math.round(milesToKm(radius))} km`
+      formattedRadius = `${round(milesToKm(radius))} km`
     } else {
-      formattedRadius = `${Math.round(radius)}mi`
+      formattedRadius = `${round(radius)}mi`
     }
     const locString = `${location?.location?.name} (${formattedRadius})`
     entries.push(locString)

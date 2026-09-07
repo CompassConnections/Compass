@@ -1425,6 +1425,7 @@ export type Database = {
           pref_age_max: number | null
           pref_age_min: number | null
           pref_gender: string[] | null
+          pref_max_distance: number | null
           pref_relation_styles: string[] | null
           pref_romantic_styles: string[] | null
           psychedelics: string | null
@@ -1515,6 +1516,7 @@ export type Database = {
           pref_age_max?: number | null
           pref_age_min?: number | null
           pref_gender?: string[] | null
+          pref_max_distance?: number | null
           pref_relation_styles?: string[] | null
           pref_romantic_styles?: string[] | null
           psychedelics?: string | null
@@ -1605,6 +1607,7 @@ export type Database = {
           pref_age_max?: number | null
           pref_age_min?: number | null
           pref_gender?: string[] | null
+          pref_max_distance?: number | null
           pref_relation_styles?: string[] | null
           pref_romantic_styles?: string[] | null
           psychedelics?: string | null
@@ -2412,6 +2415,7 @@ export type Database = {
           pref_age_max: number | null
           pref_age_min: number | null
           pref_gender: string[] | null
+          pref_max_distance: number | null
           pref_relation_styles: string[] | null
           pref_romantic_styles: string[] | null
           psychedelics: string | null

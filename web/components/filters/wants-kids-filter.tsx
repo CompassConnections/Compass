@@ -1,87 +1,62 @@
 import clsx from 'clsx'
 import {FilterFields} from 'common/filters'
-import {generateChoicesMap, KidLabel, wantsKidsLabels} from 'common/wants-kids'
-import {invert} from 'lodash'
-import {ReactNode} from 'react'
-import {MdNoStroller, MdOutlineStroller, MdStroller} from 'react-icons/md'
-import {DropdownOptions} from 'web/components/comments/dropdown-menu'
-import {Row} from 'web/components/layout/row'
+import {
+  WANTS_KIDS_MAX_STRENGTH,
+  WANTS_KIDS_MIN_STRENGTH,
+  WANTS_KIDS_STRENGTH_NAMES,
+  WANTS_KIDS_STRENGTH_SHORT_NAMES,
+} from 'common/wants-kids'
+import {RangeSlider} from 'web/components/widgets/slider'
 import {useT} from 'web/lib/locale'
 
-interface KidLabelWithIcon extends KidLabel {
-  icon: ReactNode
+/**
+ * A band over the five answers to "I would like to have kids" rather than a single value.
+ *
+ * The profile stores an answer on a five-point scale, so a search for one point of it ("wants kids")
+ * had to invent a rule for the other four — it used to sweep in everything above or below, which
+ * quietly made "neutral" and "wants kids" the same search. An interval says exactly which answers
+ * are in, and is the same shape the looking-for bundle derives from your own answer
+ * (`getWantsKidsRange`).
+ */
+export function getNoMinMaxWantsKids(
+  wants_kids_range_min: number | null | undefined,
+  wants_kids_range_max: number | null | undefined,
+) {
+  const noMin = wants_kids_range_min == null || wants_kids_range_min <= WANTS_KIDS_MIN_STRENGTH
+  const noMax = wants_kids_range_max == null || wants_kids_range_max >= WANTS_KIDS_MAX_STRENGTH
+  return [noMin, noMax]
 }
 
-interface KidsLabelsMapWithIcon {
-  [key: string]: KidLabelWithIcon
-}
-
-const DEFAULT_KEY = -1
-
-export const useWantsKidsLabelsWithIcon = () => {
-  const t = useT()
-  return {
-    no_preference: {
-      ...wantsKidsLabels.no_preference,
-      name: t('filter.wants_kids.any_preference', 'Either'),
-      shortName: t('filter.wants_kids.either', 'Either'),
-      icon: <MdOutlineStroller className="h-4 w-4" />,
-    },
-    wants_kids: {
-      ...wantsKidsLabels.wants_kids,
-      name: t('filter.wants_kids.wants_kids', 'Wants kids'),
-      shortName: t('common.yes', 'Yes'),
-      icon: <MdStroller className="h-4 w-4" />,
-    },
-    doesnt_want_kids: {
-      ...wantsKidsLabels.doesnt_want_kids,
-      name: t('filter.wants_kids.doesnt_want_kids', "Doesn't want kids"),
-      shortName: t('common.no', 'No'),
-      icon: <MdNoStroller className="h-4 w-4" />,
-    },
-  } as KidsLabelsMapWithIcon
-}
-
-export function WantsKidsIcon(props: {strength: number; className?: string}) {
-  const {strength, className} = props
-  const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
-
-  return (
-    <span className={className}>
-      {strength == wantsKidsLabelsWithIcon.no_preference.strength
-        ? wantsKidsLabelsWithIcon.no_preference.icon
-        : strength == wantsKidsLabelsWithIcon.wants_kids.strength
-          ? wantsKidsLabelsWithIcon.wants_kids.icon
-          : wantsKidsLabelsWithIcon.doesnt_want_kids.icon}
-    </span>
-  )
-}
-
-export function KidsLabel(props: {strength: number; highlightedClass?: string; mobile?: boolean}) {
-  const {highlightedClass} = props
-  const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
+/** The section's collapsed summary: the two answers the band runs between, or just the one. */
+export function WantsKidsFilterText(props: {
+  wants_kids_range_min: number | null | undefined
+  wants_kids_range_max: number | null | undefined
+  highlightedClass?: string
+}) {
+  const {wants_kids_range_min, wants_kids_range_max, highlightedClass} = props
+  const [noMin, noMax] = getNoMinMaxWantsKids(wants_kids_range_min, wants_kids_range_max)
   const t = useT()
 
-  const strength = props.strength != null ? Number(props.strength) : DEFAULT_KEY
-
-  return (
-    <Row className="items-center gap-0.5">
-      {/*<WantsKidsIcon strength={strength} className={clsx('')} />*/}
-      <span
-        className={clsx(
-          strength != wantsKidsLabelsWithIcon.no_preference.strength && 'font-semibold',
-          highlightedClass,
-        )}
-      >
-        {strength === DEFAULT_KEY
-          ? t('filter.label.wants_kids_strength', 'Desire for Kids')
-          : strength == wantsKidsLabelsWithIcon.no_preference.strength
-            ? wantsKidsLabelsWithIcon.no_preference.name
-            : strength == wantsKidsLabelsWithIcon.wants_kids.strength
-              ? wantsKidsLabelsWithIcon.wants_kids.name
-              : wantsKidsLabelsWithIcon.doesnt_want_kids.name}
+  if (noMin && noMax) {
+    return (
+      <span className={clsx('text-semibold', highlightedClass)}>
+        {t('filter.label.wants_kids_range', 'Desire for kids')}
       </span>
-    </Row>
+    )
+  }
+
+  const answer = (strength: number) =>
+    t(`profile.wants_kids_${strength}`, WANTS_KIDS_STRENGTH_NAMES[strength])
+
+  const low = wants_kids_range_min ?? WANTS_KIDS_MIN_STRENGTH
+  const high = wants_kids_range_max ?? WANTS_KIDS_MAX_STRENGTH
+
+  return (
+    <span className="font-semibold">
+      <span className={clsx(highlightedClass)}>
+        {low === high ? answer(low) : `${answer(low)} - ${answer(high)}`}
+      </span>
+    </span>
   )
 }
 
@@ -90,16 +65,29 @@ export function WantsKidsFilter(props: {
   updateFilter: (newState: Partial<FilterFields>) => void
 }) {
   const {filters, updateFilter} = props
-  const wantsKidsLabelsWithIcon = useWantsKidsLabelsWithIcon()
+  const t = useT()
+
+  const span = WANTS_KIDS_MAX_STRENGTH - WANTS_KIDS_MIN_STRENGTH
 
   return (
-    <DropdownOptions
-      items={invert(generateChoicesMap(wantsKidsLabelsWithIcon))}
-      activeKey={String(filters.wants_kids_strength ?? DEFAULT_KEY)}
-      translationPrefix="profile.wants_kids"
-      onClick={(key) => {
-        updateFilter({wants_kids_strength: Number(key) === DEFAULT_KEY ? undefined : key})
+    <RangeSlider
+      lowValue={filters.wants_kids_range_min ?? WANTS_KIDS_MIN_STRENGTH}
+      highValue={filters.wants_kids_range_max ?? WANTS_KIDS_MAX_STRENGTH}
+      setValues={(low: number, high: number) => {
+        // An end left at the edge of the scale is not a constraint, so it is dropped rather than
+        // stored — otherwise every search would carry a kid-desire filter that excludes nobody, and
+        // the panel would count it.
+        updateFilter({
+          wants_kids_range_min: low > WANTS_KIDS_MIN_STRENGTH ? Number(low) : undefined,
+          wants_kids_range_max: high < WANTS_KIDS_MAX_STRENGTH ? Number(high) : undefined,
+        })
       }}
+      min={WANTS_KIDS_MIN_STRENGTH}
+      max={WANTS_KIDS_MAX_STRENGTH}
+      marks={Object.entries(WANTS_KIDS_STRENGTH_SHORT_NAMES).map(([strength, shortName]) => ({
+        value: ((Number(strength) - WANTS_KIDS_MIN_STRENGTH) / span) * 100,
+        label: t(`filter.wants_kids.short.${strength}`, shortName),
+      }))}
     />
   )
 }

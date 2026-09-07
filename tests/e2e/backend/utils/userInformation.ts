@@ -19,6 +19,7 @@ import {
   SUBSTANCE_INTENTION_CHOICES,
   SUBSTANCE_PREFERENCE_CHOICES,
 } from 'common/choices'
+import {PREF_MAX_DISTANCE_CHOICES} from 'common/max-distance'
 
 class UserAccountInformationForSeeding {
   name = faker.person.fullName()
@@ -56,6 +57,9 @@ class UserAccountInformationForSeeding {
   is_smoker = faker.datatype.boolean()
   relationship_status = Object.values(RELATIONSHIP_STATUS_CHOICES)
   pref_relation_styles = Object.values(RELATIONSHIP_CHOICES)
+  // `null` — no limit — is the real-world default, so seeded profiles keep it rather than every one
+  // of them carrying a distance ceiling that two-way search would then test against.
+  pref_max_distance = faker.helpers.arrayElement([...PREF_MAX_DISTANCE_CHOICES, null])
   pref_romantic_styles = Object.values(ROMANTIC_CHOICES)
   languages = Object.values(LANGUAGE_CHOICES)
   political_beliefs = Object.values(POLITICAL_CHOICES)

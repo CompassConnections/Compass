@@ -2,7 +2,7 @@ import {XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {OriginLocation} from 'common/filters'
 import {UNITED_STATES} from 'common/geodb'
-import {formatDistance, kmToMiles, milesToKm} from 'common/measurement-utils'
+import {formatDistance, kmToMiles, MeasurementSystem, milesToKm} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
 import {buildArray} from 'common/util/array'
 import {uniqBy} from 'lodash'
@@ -53,7 +53,10 @@ export function LocationFilterText(props: {
     )
   }
 
-  const formattedDistance = formatDistance(radius, measurementSystem)
+  // Nearest 10, like everywhere else a picked distance is shown: the radius comes off a fixed ladder
+  // (`RADIUS_SNAP_VALUES`) or off a profile's stated maximum, and neither is measured to the mile —
+  // so "3219 km" reports a precision that was never chosen.
+  const formattedDistance = formatDistance(radius, measurementSystem, 10)
 
   return (
     <span className="font-semibold">
@@ -179,9 +182,9 @@ export function LocationFilter(props: {
 
 /**
  * Searchable dropdown over the countries members actually live in (see `get-countries`), so every
- * option is a value the `country` filter can match. A country widens the search to the whole country —
- * the radius slider tops out at 500 mi, which no large country fits in. It is either/or with the city:
- * the parent clears whichever of the two was set before.
+ * option is a value the `country` filter can match. A country widens the search to the whole country,
+ * which a circle drawn round one city cannot express however wide it is. It is either/or with the
+ * city: the parent clears whichever of the two was set before.
  */
 function CountrySelect(props: CountryFilterProps) {
   const {country, setCountry} = props
@@ -211,33 +214,49 @@ function CountrySelect(props: CountryFilterProps) {
   )
 }
 
+/**
+ * The stops the radius slider offers, in the unit being displayed — so both systems get round
+ * numbers, and only the stored value is a mileage.
+ *
+ * The ladder runs to the same ceiling a profile's own `pref_max_distance` can state, because the
+ * "Who I'm looking for" bundle seeds this search from exactly that: capping the slider lower would
+ * leave the thumb pinned past the end of the track, showing a narrower search than the one running.
+ */
+const RADIUS_SNAP_VALUES: Record<MeasurementSystem, number[]> = {
+  imperial: [10, 50, 100, 250, 500, 1000, 2000],
+  metric: [20, 100, 200, 500, 1000, 2000, 3000],
+}
+
 function DistanceSlider(props: {radius: number; setRadius: (radius: number) => void}) {
   const {radius, setRadius} = props
   const {measurementSystem} = useMeasurementSystem()
 
-  const snapValues = [10, 50, 100, 200, 300, 500]
+  const snapValues = RADIUS_SNAP_VALUES[measurementSystem]
 
-  const snapToValue = (value: number) => {
-    const closest = snapValues.reduce((prev, curr) =>
-      Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev,
-    )
-    // Convert back to miles if needed for internal storage
-    const closestMiles = measurementSystem === 'metric' ? kmToMiles(closest) : closest
-    setRadius(closestMiles)
-  }
-
-  const min = snapValues[0]
-  const max = snapValues[snapValues.length - 1]
+  // The slider runs over stop *indexes* rather than distances. Spacing the stops by value crowded
+  // 10 / 50 / 100 into the left tenth of a track the top stop stretched across the rest, which only
+  // gets worse the further the ladder reaches — and every stop is equally worth picking.
+  const displayed = measurementSystem === 'metric' ? milesToKm(radius) : radius
+  const closestIndex = snapValues.reduce(
+    (best, value, i) =>
+      Math.abs(value - displayed) < Math.abs(snapValues[best] - displayed) ? i : best,
+    0,
+  )
 
   return (
     <Slider
-      min={min}
-      max={max}
-      amount={measurementSystem === 'metric' ? milesToKm(radius) : radius}
-      onChange={snapToValue}
+      min={0}
+      max={snapValues.length - 1}
+      step={1}
+      amount={closestIndex}
+      onChange={(index) => {
+        const snapped = snapValues[index]
+        // Convert back to miles if needed for internal storage
+        setRadius(measurementSystem === 'metric' ? kmToMiles(snapped) : snapped)
+      }}
       className="mb-4 w-full"
-      marks={snapValues.map((value) => ({
-        value: value - min,
+      marks={snapValues.map((value, i) => ({
+        value: i,
         label: value.toString(),
       }))}
     />

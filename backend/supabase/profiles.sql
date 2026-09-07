@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS profiles
     pref_age_max              INTEGER                                                 NULL,
     pref_age_min              INTEGER                                                 NULL,
     pref_gender               TEXT[],
+    -- Miles; NULL means no limit. See 20260907_add_pref_max_distance.sql.
+    pref_max_distance         INTEGER,
     pref_relation_styles      TEXT[],
     pref_romantic_styles      TEXT[],
     raised_in_city            TEXT,
@@ -123,6 +125,7 @@ CREATE INDEX IF NOT EXISTS profiles_lat_lon_brin_idx ON profiles USING BRIN (cit
 CREATE INDEX IF NOT EXISTS profiles_lat_lon_brin_idx ON profiles USING BRIN (raised_in_lat, raised_in_lon) WITH (pages_per_range = 32);
 
 CREATE INDEX profiles_pref_gender_gin ON profiles USING GIN (pref_gender);
+CREATE INDEX IF NOT EXISTS idx_profiles_pref_max_distance ON profiles USING btree (pref_max_distance);
 CREATE INDEX profiles_pref_relation_styles_gin ON profiles USING GIN (pref_relation_styles);
 CREATE INDEX profiles_pref_romantic_styles_gin ON profiles USING GIN (pref_romantic_styles);
 CREATE INDEX profiles_diet_gin ON profiles USING GIN (diet);

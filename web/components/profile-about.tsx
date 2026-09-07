@@ -20,10 +20,11 @@ import {
 import {MAX_INT, MIN_INT} from 'common/constants'
 import {convertGender, convertGenderPlural, Gender} from 'common/gender'
 import {getGoogleMapsUrl, getLocationText} from 'common/geodb'
-import {formatHeight, MeasurementSystem} from 'common/measurement-utils'
+import {formatDistance, formatHeight, MeasurementSystem} from 'common/measurement-utils'
 import {Profile} from 'common/profiles/profile'
 import {Socials} from 'common/socials'
 import {UserActivity} from 'common/user'
+import {WANTS_KIDS_STRENGTH_NAMES} from 'common/wants-kids'
 import React, {ReactNode} from 'react'
 import {FaHeart} from 'react-icons/fa'
 import {TbBulb, TbCheck, TbMoodSad, TbUsers} from 'react-icons/tb'
@@ -183,7 +184,8 @@ function AboutRow(props: {
  */
 export function useConnectionGoals(profile: Profile) {
   const t = useT()
-  const seekingText = getCompactSeekingText(profile, t)
+  const {measurementSystem} = useMeasurementSystem()
+  const seekingText = getCompactSeekingText(profile, t, measurementSystem)
   const relationship_status = profile.relationship_status ?? []
   const relationshipTypes = profile.pref_relation_styles ?? []
 
@@ -381,7 +383,11 @@ export function getSeekingText(profile: Profile, t: any, short?: boolean | undef
  * as a value in a labelled column, where the label already supplies the grammar and the connecting
  * words are just length.
  */
-export function getCompactSeekingText(profile: Profile, t: any) {
+export function getCompactSeekingText(
+  profile: Profile,
+  t: any,
+  measurementSystem: MeasurementSystem = 'imperial',
+) {
   const prefGender = profile.pref_gender
   const min = profile.pref_age_min
   const max = profile.pref_age_max
@@ -419,7 +425,17 @@ export function getCompactSeekingText(profile: Profile, t: any) {
             ? t('profile.age_max_compact', 'under {max}', {max})
             : t('profile.age_range_compact', '{min}-{max}', {min, max})
 
-  return [connection, genderText, ageText].filter(Boolean).join(DOT_SEPARATOR)
+  // Only ever present when the member set a ceiling: no limit is the default, and "any distance"
+  // would restate the absence of a constraint in a slot meant for facts.
+  const distanceText = profile.pref_max_distance
+    ? t('profile.max_distance_compact', 'Within {distance}', {
+        // Nearest 10, matching the profile form: the member picked "2000 miles" off a list, so
+        // showing a reader "3219 km" reports a precision the answer never had.
+        distance: formatDistance(profile.pref_max_distance, measurementSystem, 10),
+      })
+    : null
+
+  return [connection, genderText, ageText, distanceText].filter(Boolean).join(DOT_SEPARATOR)
 }
 
 function capitalizeFirst(s: string) {
@@ -753,11 +769,11 @@ function Psychedelics(props: {profile: Profile}) {
 //     wantsKidsStrength == 0
 //       ? t('profile.wants_kids_0', 'Does not want children')
 //       : wantsKidsStrength == 1
-//         ? t('profile.wants_kids_1', 'Prefers not to have children')
+//         ? t('profile.wants_kids_1', 'Leaning against')
 //         : wantsKidsStrength == 2
-//           ? t('profile.wants_kids_2', 'Neutral or open to having children')
+//           ? t('profile.wants_kids_2', 'Neutral')
 //           : wantsKidsStrength == 3
-//             ? t('profile.wants_kids_3', 'Leaning towards wanting children')
+//             ? t('profile.wants_kids_3', 'Leaning towards')
 //             : t('profile.wants_kids_4', 'Wants children')
 //
 //   return (
@@ -803,17 +819,11 @@ function Children(props: {profile: Profile}) {
       : null
 
   const wantsKidsStrength = profile.wants_kids_strength
+  // Same five answers the profile form offers and the search panel filters on, from one place —
+  // three ladders of the same strings drifted apart every time one of them was reworded.
   const wantsKidsText =
     wantsKidsStrength != null && wantsKidsStrength >= 0
-      ? wantsKidsStrength == 0
-        ? t('profile.wants_kids_0', 'Does not want children')
-        : wantsKidsStrength == 1
-          ? t('profile.wants_kids_1', 'Prefers not to have children')
-          : wantsKidsStrength == 2
-            ? t('profile.wants_kids_2', 'Neutral or open to having children')
-            : wantsKidsStrength == 3
-              ? t('profile.wants_kids_3', 'Leaning towards wanting children')
-              : t('profile.wants_kids_4', 'Wants children')
+      ? t(`profile.wants_kids_${wantsKidsStrength}`, WANTS_KIDS_STRENGTH_NAMES[wantsKidsStrength])
       : null
 
   if (!hasKidsText && !wantsKidsText) return null

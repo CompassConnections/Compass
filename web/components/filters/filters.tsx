@@ -32,7 +32,11 @@ import {
 import {ReligionFilter, ReligionFilterText} from 'web/components/filters/religion-filter'
 import {RomanticFilter, RomanticFilterText} from 'web/components/filters/romantic-filter'
 import {SearchAsMemberFilter} from 'web/components/filters/search-as-member-filter'
-import {KidsLabel, WantsKidsFilter} from 'web/components/filters/wants-kids-filter'
+import {
+  getNoMinMaxWantsKids,
+  WantsKidsFilter,
+  WantsKidsFilterText,
+} from 'web/components/filters/wants-kids-filter'
 import {FilterGuide} from 'web/components/guidance'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -55,6 +59,7 @@ import {LookingForToggle} from './looking-for-toggle'
 import {PsychedelicsFilter, PsychedelicsFilterText} from './psychedelics-filter'
 import {RelationshipFilter, RelationshipFilterText} from './relationship-filter'
 import {SmokerFilter, SmokerFilterText} from './smoker-filter'
+import {TwoWayToggle} from './two-way-toggle'
 
 // Same count the open panel shows in its summary, so the collapsed hint and the panel can never
 // disagree about how narrowed the search is.
@@ -80,6 +85,9 @@ function countActiveFilters(
   if (locationFilterProps.location) count = count - 2
   if (raisedInLocationFilterProps.location) count = count - 2
   if (filters.pref_age_min && filters.pref_age_max) count--
+  // Always written as a pair, so the band is one filter and not two.
+  if (filters.wants_kids_range_min !== undefined && filters.wants_kids_range_max !== undefined)
+    count--
   const big5Count = countBig5Filters(filters)
   if (big5Count > 0) count++
   return count
@@ -166,6 +174,7 @@ function SelectedFiltersSummary(props: {
   formatAggregatedFields('pref_age')
   formatAggregatedFields('big5')
   formatAggregatedFields('drink')
+  formatAggregatedFields('wants_kids_range')
 
   if (filters.shortBio) {
     selectedFilters.push({
@@ -244,6 +253,10 @@ function Filters(props: {
   }
 
   const [noMinAge, noMaxAge] = getNoMinMaxAge(filters.pref_age_min, filters.pref_age_max)
+  const [noMinWantsKids, noMaxWantsKids] = getNoMinMaxWantsKids(
+    filters.wants_kids_range_min,
+    filters.wants_kids_range_max,
+  )
 
   return (
     <Col
@@ -271,6 +284,13 @@ function Filters(props: {
           checked={isLookingForFilters}
           hidden={!youProfile}
         />
+      </Row>
+
+      {/* Directly under the looking-for bundle: both answer "who should be in this grid at all?",
+          and this one is only meaningful once the member has a profile of their own to be matched
+          against. */}
+      <Row className="justify-between px-4 pt-1">
+        <TwoWayToggle filters={filters} updateFilter={updateFilter} hidden={!youProfile} />
       </Row>
 
       {/* ALWAYS VISIBLE FILTERS */}
@@ -453,15 +473,12 @@ function Filters(props: {
             title={t('filter.wants_kids.wants_kids', 'Wants kids')}
             openFilter={openFilter}
             setOpenFilter={setOpenFilter}
-            isActive={filters.wants_kids_strength != null && filters.wants_kids_strength !== -1}
+            childrenClassName={'pb-6'}
+            isActive={!noMinWantsKids || !noMaxWantsKids}
             selection={
-              <KidsLabel
-                strength={filters.wants_kids_strength ?? -1}
-                // highlightedClass={
-                //   filters.wants_kids_strength != null && filters.wants_kids_strength !== -1
-                //     ? 'text-primary-600'
-                //     : 'text-ink-900'
-                // }
+              <WantsKidsFilterText
+                wants_kids_range_min={filters.wants_kids_range_min}
+                wants_kids_range_max={filters.wants_kids_range_max}
               />
             }
           >

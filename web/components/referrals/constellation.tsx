@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import {ReferralTree, ReferralTreeNode} from 'common/referrals'
 import Link from 'next/link'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {optimizedImageUrl} from 'web/lib/image-url'
 import {useT} from 'web/lib/locale'
 
 import {
@@ -70,10 +71,25 @@ const mulberry32 = (seed: number) => () => {
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296
 }
 
+/**
+ * Source width asked of the image optimiser for a face, in px.
+ *
+ * The biggest star is 72 drawing units across and every other one is smaller, so 96 covers the
+ * centre of the sky on a retina screen and is generous for the rim. One width for all of them on
+ * purpose: a per-star width would be a different URL per star, and the browser cache — plus the
+ * optimiser's own — works best when the whole sky asks for the same thing twice.
+ *
+ * Must stay one of Next's `imageSizes`; see `optimizedImageUrl`.
+ */
+const AVATAR_PX = 96
+
 const avatarFor = (n: ReferralTreeNode) =>
-  n.avatarUrl && n.avatarUrl.length > 0
-    ? n.avatarUrl
-    : `https://ui-avatars.com/api/?name=${encodeURIComponent(n.username[0] ?? 'U')}`
+  optimizedImageUrl(
+    n.avatarUrl && n.avatarUrl.length > 0
+      ? n.avatarUrl
+      : `https://ui-avatars.com/api/?name=${encodeURIComponent(n.username[0] ?? 'U')}`,
+    AVATAR_PX,
+  )
 
 type View = {scale: number; tx: number; ty: number}
 const IDENTITY: View = {scale: 1, tx: 0, ty: 0}

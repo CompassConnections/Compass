@@ -24,10 +24,12 @@ export const ANDROID_APP_URL =
   'https://play.google.com/store/apps/details?id=com.compassconnections.app'
 /**
  * App Store listing. The numeric id is assigned by App Store Connect when the app record is
- * created, so this is a placeholder until the first submission — see `docs/ios.md` §7. Anything
- * linking here should be gated on `IOS_APP_URL` no longer containing `APPLE_ID`.
+ * created — see `docs/ios.md` §7. Left without a country segment on purpose: Apple redirects a
+ * bare `/app/…` link to the visitor's own storefront, which is what the localised app wants.
+ * Anything linking here should still be gated on `IOS_APP_URL` no longer containing `APPLE_ID`,
+ * so the placeholder can never reach a user if this is ever reset.
  */
-export const IOS_APP_URL = 'https://apps.apple.com/app/compass/idAPPLE_ID'
+export const IOS_APP_URL = 'https://apps.apple.com/app/compass-social-connections/id6804429364'
 export const IS_IOS_APP_PUBLISHED = !IOS_APP_URL.includes('APPLE_ID')
 
 /**

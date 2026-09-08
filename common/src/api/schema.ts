@@ -33,6 +33,7 @@ import {
 } from 'common/outreach/outreach'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {MAX_COMPATIBILITY_QUESTION_LENGTH, OPTION_TABLES} from 'common/profiles/constants'
+import {OptionNameVerdict, OptionSummary} from 'common/profiles/options'
 import {Profile, ProfileRow, ProfileWithoutUser} from 'common/profiles/profile'
 import {
   AdminSpotlight,
@@ -953,6 +954,135 @@ export const API = (_apiTypeCheck = {
       })
       .strict(),
     summary: 'Get profile options like interests',
+    tag: 'Utilities',
+  },
+  'search-options': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z
+      .object({
+        table: z.enum(OPTION_TABLES),
+        /** Absent or empty means "the default view": the most-used options, most-used first. */
+        q: z.string().optional(),
+        locale: z.string().optional(),
+        limit: z.coerce.number().int().min(1).max(100).optional(),
+        offset: z.coerce.number().int().min(0).optional(),
+        /**
+         * Ids to include in the response whatever else matches. The picker passes what is currently
+         * ticked, so a selected chip can never vanish just because it is unpopular enough to fall
+         * outside the default page — and so a bookmarked search can still render the name of a
+         * filter it was saved with.
+         */
+        ids: arraybeSchema.optional(),
+      })
+      .strict(),
+    returns: {} as {options: OptionSummary[]; total: number},
+    // Identical for every reader and only moves when someone edits a profile. `authed: false`
+    // because the people page and its filters are browsable logged out, which is exactly why the
+    // old client read these straight from PostgREST.
+    cache: 'public, max-age=60, stale-while-revalidate=300',
+    summary: 'Search profile options (interests, causes, work), most used first',
+    tag: 'Utilities',
+  },
+  'check-option-name': {
+    method: 'GET',
+    // Authed and rate-limited because a miss can spend an LLM call. Nothing is written either way.
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        table: z.enum(OPTION_TABLES),
+        name: z.string(),
+        locale: z.string().optional(),
+      })
+      .strict(),
+    returns: {} as {verdict: OptionNameVerdict},
+    summary: 'Resolve a typed option name to an existing option, a suggestion, or a new option',
+    tag: 'Utilities',
+  },
+  'get-options-admin': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        table: z.enum(OPTION_TABLES),
+        locale: z.string().optional(),
+      })
+      .strict(),
+    returns: {} as {options: (OptionSummary & {aliases: string[]})[]},
+    summary: 'Every option in one table with its usage count and aliases. Admins only.',
+    tag: 'Utilities',
+  },
+  'merge-options': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        table: z.enum(OPTION_TABLES),
+        /** The option that stops existing. Its name is kept as an alias of `intoId`. */
+        fromId: z.string(),
+        /** The option that survives and inherits the holders. */
+        intoId: z.string(),
+      })
+      .strict(),
+    returns: {} as {moved: number; alreadyHad: number; aliases: string[]},
+    summary: 'Fold one profile option into another, keeping the old name as an alias. Admins only.',
+    tag: 'Utilities',
+  },
+  'delete-option': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        table: z.enum(OPTION_TABLES),
+        optionId: z.string(),
+        /**
+         * How many profiles the caller believes hold this. Required, and rejected when it no longer
+         * matches: the only safeguard on an irreversible action is that whoever triggered it saw what
+         * it costs, and a count from a stale page is precisely the one that understates it.
+         */
+        expectedUsageCount: z.coerce.number().int().min(0),
+      })
+      .strict(),
+    returns: {} as {name: string; removedFrom: number},
+    summary: 'Delete a profile option, removing it from every profile holding it. Admins only.',
+    tag: 'Utilities',
+  },
+  'rename-option': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        table: z.enum(OPTION_TABLES),
+        optionId: z.string(),
+        name: z.string(),
+      })
+      .strict(),
+    /** `aliased` is the old name, now redirecting here; null when the change was only a re-spelling. */
+    returns: {} as {name: string; aliased: string | null},
+    summary: 'Rename a profile option, keeping the old name as an alias. Admins only.',
+    tag: 'Utilities',
+  },
+  'set-option-alias': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        table: z.enum(OPTION_TABLES),
+        optionId: z.string(),
+        alias: z.string(),
+        /** Removes the alias instead of adding it. */
+        remove: z.boolean().optional(),
+      })
+      .strict(),
+    returns: {} as {alias: string},
+    summary: 'Add or remove one alias of a profile option. Admins only.',
     tag: 'Utilities',
   },
   'update-options': {

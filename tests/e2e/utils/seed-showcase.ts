@@ -100,8 +100,12 @@ async function upsertOptionIds(
   const ids: number[] = []
   for (const name of names) {
     const row = await tx.one<{id: number}>(
+      // `on conflict (lower(name))` targets the unique expression index from
+      // 20260907_canonical_options.sql, which replaced the old `(name)` constraint — option identity
+      // is case-insensitive now. `do update` rather than `do nothing` so `returning` yields a row on
+      // conflict; setting the name to its existing value keeps the first spelling that was created.
       `insert into ${table} (name) values ($1)
-       on conflict (name) do update set name = excluded.name
+       on conflict (lower(name)) do update set name = ${table}.name
        returning id`,
       [name],
     )

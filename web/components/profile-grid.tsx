@@ -440,12 +440,16 @@ function ProfileDetailRail(props: {profile: Profile; className?: string}) {
       icon: <Briefcase className="h-4 w-4" />,
       text: profile.occupation_title,
     },
+    // `interests_names` travels with the profile and is aligned index-for-index with `interests`;
+    // the label map is only a fallback for profiles from a code path that has not caught up yet.
+    // Either way an unresolvable id is dropped rather than printed as a bare number.
     !!profile.interests?.length && {
       key: 'interests',
       icon: <Sparkles className="h-4 w-4" />,
       text: profile.interests
         .slice(0, 5)
-        .map((id) => choicesIdsToLabels['interests'][id])
+        .map((id, i) => profile.interests_names?.[i] ?? choicesIdsToLabels['interests'][id])
+        .filter(Boolean)
         .join(' • '),
     },
     !!profile.causes?.length && {
@@ -453,7 +457,8 @@ function ProfileDetailRail(props: {profile: Profile; className?: string}) {
       icon: <HandHeart className="h-4 w-4" />,
       text: profile.causes
         .slice(0, 5)
-        .map((id) => choicesIdsToLabels['causes'][id])
+        .map((id, i) => profile.causes_names?.[i] ?? choicesIdsToLabels['causes'][id])
+        .filter(Boolean)
         .join(' • '),
     },
     !!profile.diet?.length && {

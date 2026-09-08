@@ -473,7 +473,7 @@ function OccupationAndWork(props: {profile: Profile}) {
   const occupation_title = profile.occupation_title
   const company = profile.company
   const workAreas = profile.work
-    ?.map((id) => choices?.['work']?.[id])
+    ?.map((id, i) => profile.work_names?.[i] ?? choices?.['work']?.[id])
     .filter(Boolean)
     .sort((a, b) => a.localeCompare(b, locale)) as string[]
 
@@ -890,23 +890,37 @@ function RaisedIn(props: {profile: Profile}) {
  * label-then-rule — two heading systems stacked against each other. Each is now a peer of Details and
  * Links, and gets that same treatment from `RailSection`.
  */
-function useSortedChoices(ids: string[] | null | undefined, group: 'interests' | 'causes') {
+/**
+ * Labels come with the profile now (`interests_names`, aligned index-for-index with `interests`),
+ * so rendering three tags no longer depends on the browser holding a map of every option in the
+ * product. The map is still consulted as a fallback for profiles fetched by an older code path that
+ * has not been redeployed yet; when neither has the label, the id is dropped rather than shown raw.
+ */
+function useSortedChoices(
+  ids: string[] | null | undefined,
+  names: string[] | null | undefined,
+  group: 'interests' | 'causes',
+) {
   const choices = useChoicesContext()
   const {locale} = useLocale()
   return (ids
-    ?.map((id) => choices?.[group]?.[id])
+    ?.map((id, i) => names?.[i] ?? choices?.[group]?.[id])
     .filter(Boolean)
     .sort((a, b) => a.localeCompare(b, locale)) ?? []) as string[]
 }
 
 export function ProfileInterests(props: {profile: Profile}) {
-  const interests = useSortedChoices(props.profile.interests, 'interests')
+  const interests = useSortedChoices(
+    props.profile.interests,
+    props.profile.interests_names,
+    'interests',
+  )
   if (!interests.length) return null
   return <TagList items={interests} />
 }
 
 export function ProfileCauses(props: {profile: Profile}) {
-  const causes = useSortedChoices(props.profile.causes, 'causes')
+  const causes = useSortedChoices(props.profile.causes, props.profile.causes_names, 'causes')
   if (!causes.length) return null
   return <TagList items={causes} />
 }

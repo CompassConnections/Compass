@@ -361,45 +361,62 @@ export class SignUpPage {
     }
   }
 
+  /**
+   * Picks an option in one `AddOptionEntry` section, adding it only if it does not already exist.
+   *
+   * Always types into the field first. The picker's default view is the most-used options rather
+   * than the whole table, so an option that exists but is uncommon is simply not on screen until it
+   * is searched for — checking for the chip before typing would send every such option down the
+   * "create" path.
+   *
+   * `Add` then goes through /check-option-name, which may answer with a "did you mean" panel instead
+   * of adding anything. That is the point of the feature, so the helper answers it explicitly: the
+   * fixtures name the option they want, so "add it anyway" is the correct response.
+   */
+  private async pickOrAddOption(section: Locator, field: Locator, addButton: Locator, name: string) {
+    await expect(field).toBeVisible()
+    await field.fill(name)
+    // Debounced remote search, plus the round trip.
+    await this.page.waitForTimeout(700)
+
+    const checkbox = optionChipInput(section, name)
+    if ((await checkbox.count()) > 0) {
+      await clickCheckbox(checkbox)
+      await field.fill('')
+    } else {
+      await expect(addButton).toBeVisible()
+      await addButton.click()
+      const addAnyway = section.getByRole('button', {name: new RegExp('add "' + name + '"', 'i')})
+      if (await addAnyway.isVisible().catch(() => false)) await addAnyway.click()
+    }
+
+    await expect(checkbox).toBeVisible()
+    await expect(checkbox).toBeChecked()
+  }
+
   async setInterests(interest: (Interests | string)[] | undefined) {
     if (!interest || interest.length === 0) return
 
-    for (let i = 0; i < interest.length; i++) {
-      const checkbox = this.interestsSection.getByRole('checkbox', {name: `${interest[i]}`})
-      const isExisting = (await checkbox.count()) > 0
-
-      if (isExisting) {
-        await expect(checkbox).toBeVisible()
-        await clickCheckbox(checkbox)
-      } else {
-        await expect(this.addInterestsField).toBeVisible()
-        await expect(this.addInterestsButton).toBeVisible()
-        await this.addInterestsField.fill(interest[i])
-        await this.addInterestsButton.click()
-      }
-      await expect(checkbox).toBeVisible()
-      await expect(checkbox).toBeChecked()
+    for (const name of interest) {
+      await this.pickOrAddOption(
+        this.interestsSection,
+        this.addInterestsField,
+        this.addInterestsButton,
+        name,
+      )
     }
   }
 
   async setCauses(cause: (Causes | string)[] | undefined) {
     if (!cause || cause?.length === 0) return
 
-    for (let i = 0; i < cause.length; i++) {
-      const checkbox = this.causesSection.getByRole('checkbox', {name: `${cause[i]}`})
-      const isExisting = (await checkbox.count()) > 0
-
-      if (isExisting) {
-        await expect(checkbox).toBeVisible()
-        await clickCheckbox(checkbox)
-      } else {
-        await expect(this.addCausesField).toBeVisible()
-        await expect(this.addCausesButton).toBeVisible()
-        await this.addCausesField.fill(cause[i])
-        await this.addCausesButton.click()
-      }
-      await expect(checkbox).toBeVisible()
-      await expect(checkbox).toBeChecked()
+    for (const name of cause) {
+      await this.pickOrAddOption(
+        this.causesSection,
+        this.addCausesField,
+        this.addCausesButton,
+        name,
+      )
     }
   }
 
@@ -431,23 +448,13 @@ export class SignUpPage {
   async setWorkArea(workArea: string[] | undefined) {
     if (!workArea || workArea?.length === 0) return
 
-    for (let i = 0; i < workArea.length; i++) {
-      const chip = optionChip(this.workAreaSection, workArea[i])
-      const isExisting = (await chip.count()) > 0
-
-      if (isExisting) {
-        await expect(chip).toBeVisible()
-        await chip.click()
-        await this.page.waitForTimeout(500)
-      } else {
-        await expect(this.addWorkAreaField).toBeVisible()
-        await expect(this.addWorkAreaButton).toBeVisible()
-        await this.addWorkAreaField.fill(workArea[i])
-        await this.addWorkAreaButton.click()
-        await this.page.waitForTimeout(500)
-      }
-      await expect(chip).toBeVisible()
-      await expect(optionChipInput(this.workAreaSection, workArea[i])).toBeChecked()
+    for (const name of workArea) {
+      await this.pickOrAddOption(
+        this.workAreaSection,
+        this.addWorkAreaField,
+        this.addWorkAreaButton,
+        name,
+      )
     }
   }
 

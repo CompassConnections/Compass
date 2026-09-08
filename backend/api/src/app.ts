@@ -1,10 +1,12 @@
 import path from 'node:path'
 import {hrtime} from 'node:process'
 
+import {checkOptionName} from 'api/check-option-name'
 import {contact} from 'api/contact'
 import {createVote} from 'api/create-vote'
 import {createVoteComment} from 'api/create-vote-comment'
 import {deleteMessage} from 'api/delete-message'
+import {deleteOption} from 'api/delete-option'
 import {editMessage} from 'api/edit-message'
 import {editVoteComment} from 'api/edit-vote-comment'
 import {getChannelMemberships} from 'api/get-channel-memberships'
@@ -14,16 +16,21 @@ import {getHiddenProfiles} from 'api/get-hidden-profiles'
 import {getLastMessages} from 'api/get-last-messages'
 import {getMessagesCountEndpoint} from 'api/get-messages-count'
 import {getOptionsEndpoint} from 'api/get-options'
+import {getOptionsAdmin} from 'api/get-options-admin'
 import {getPinnedCompatibilityQuestions} from 'api/get-pinned-compatibility-questions'
 import {getChannelMessagesEndpoint} from 'api/get-private-messages'
 import {getUser} from 'api/get-user'
 import {hideProfile} from 'api/hide-profile'
+import {mergeOptionsEndpoint} from 'api/merge-options'
 import {reactToMessage} from 'api/react-to-message'
+import {renameOption} from 'api/rename-option'
 import {saveSubscription} from 'api/save-subscription'
 import {saveSubscriptionMobile} from 'api/save-subscription-mobile'
+import {searchOptionsEndpoint} from 'api/search-options'
 import {sendCityNumberEmails} from 'api/send-city-number-emails'
 import {sendEmptyRoomEmails} from 'api/send-empty-room-emails'
 import {sendSearchNotifications} from 'api/send-search-notifications'
+import {setOptionAlias} from 'api/set-option-alias'
 import {sweepUnfinishedSignups} from 'api/sweep-unfinished-signups'
 import {localSendTestEmail} from 'api/test'
 import {unhideProfile} from 'api/unhide-profile'
@@ -680,6 +687,13 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-channels-count': getChannelsCountEndpoint,
   'get-notifications': getNotifications,
   'get-options': getOptionsEndpoint,
+  'search-options': searchOptionsEndpoint,
+  'check-option-name': checkOptionName,
+  'get-options-admin': getOptionsAdmin,
+  'merge-options': mergeOptionsEndpoint,
+  'delete-option': deleteOption,
+  'rename-option': renameOption,
+  'set-option-alias': setOptionAlias,
   'get-outreach-queue': getOutreachQueue,
   'get-outreach-stats': getOutreachStats,
   'get-my-referrals': getMyReferrals,

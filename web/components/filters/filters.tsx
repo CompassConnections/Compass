@@ -4,7 +4,6 @@ import clsx from 'clsx'
 import {FilterFields} from 'common/filters'
 import {formatFilters, SKIPPED_FORMAT_FILTERS_KEYS} from 'common/filters-format'
 import {Gender} from 'common/gender'
-import {OptionTableKey} from 'common/profiles/constants'
 import {Profile, ProfileRow} from 'common/profiles/profile'
 import {nullifyDictValues, removeNullOrUndefinedProps, sampleDictByPrefix} from 'common/util/object'
 import {ReactNode, useState} from 'react'
@@ -43,7 +42,7 @@ import {Row} from 'web/components/layout/row'
 import {NewBadge} from 'web/components/new-badge'
 import {ResetFiltersButton} from 'web/components/searches/button'
 import {useAdmin} from 'web/hooks/use-admin'
-import {useChoicesContext} from 'web/hooks/use-choices'
+import {useChoicesContext, useEnsureChoiceLabels} from 'web/hooks/use-choices'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useT} from 'web/lib/locale'
 import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-types'
@@ -107,6 +106,7 @@ function SelectedFiltersSummary(props: {
 
   const filters = removeNullOrUndefinedProps({...props.filters, orderBy: undefined})
   const filterCount = countActiveFilters(filters, locationFilterProps, raisedInLocationFilterProps)
+  useEnsureChoiceLabels(props.filters)
 
   if (filterCount === 0) return null
 
@@ -227,7 +227,6 @@ function Filters(props: {
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
-  choices: Record<OptionTableKey, Record<string, string>>
 }) {
   const t = useT()
   const {
@@ -241,7 +240,6 @@ function Filters(props: {
     locationFilterProps,
     raisedInLocationFilterProps,
     includeRelationshipFilters,
-    choices,
   } = props
 
   const isAdmin = useAdmin()
@@ -526,12 +524,7 @@ function Filters(props: {
             />
           }
         >
-          <InterestFilter
-            filters={filters}
-            updateFilter={updateFilter}
-            choices={choices.work}
-            label="work"
-          />
+          <InterestFilter filters={filters} updateFilter={updateFilter} label="work" />
         </FilterSection>
 
         <FilterSection
@@ -597,12 +590,7 @@ function Filters(props: {
             />
           }
         >
-          <InterestFilter
-            filters={filters}
-            updateFilter={updateFilter}
-            choices={choices.interests}
-            label="interests"
-          />
+          <InterestFilter filters={filters} updateFilter={updateFilter} label="interests" />
         </FilterSection>
 
         <FilterSection
@@ -767,12 +755,7 @@ function Filters(props: {
             />
           }
         >
-          <InterestFilter
-            filters={filters}
-            updateFilter={updateFilter}
-            choices={choices.causes}
-            label="causes"
-          />
+          <InterestFilter filters={filters} updateFilter={updateFilter} label="causes" />
         </FilterSection>
       </FilterGroup>
 
@@ -1038,8 +1021,6 @@ export function FiltersElement(props: {
     raisedInLocationFilterProps,
   } = props
   const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
-  const _choices = useChoicesContext()
-  const choices = {interests: _choices.interests, causes: _choices.causes, work: _choices.work}
   return (
     <Filters
       filters={filters}
@@ -1052,7 +1033,6 @@ export function FiltersElement(props: {
       locationFilterProps={locationFilterProps}
       raisedInLocationFilterProps={raisedInLocationFilterProps}
       includeRelationshipFilters={youSeekingRelationship}
-      choices={choices}
     />
   )
 }

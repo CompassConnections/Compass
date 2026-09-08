@@ -26,6 +26,7 @@ import {
 import {normalizeCountry, UNITED_STATES} from 'common/geodb'
 import {debug} from 'common/logger'
 import {ageFromBirthDate, birthDateFromStated} from 'common/profiles/birth-date'
+import {OPTION_TABLES} from 'common/profiles/constants'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {SITE_ORDER} from 'common/socials'
 import {cleanUsername} from 'common/util/clean-username'
@@ -36,6 +37,7 @@ import {createHash} from 'crypto'
 import {promises as fs} from 'fs'
 import {tmpdir} from 'os'
 import {join} from 'path'
+import {callGemini as callGeminiShared} from 'shared/llm/gemini'
 import {log} from 'shared/monitoring/log'
 import {
   convertToJSONContent,
@@ -67,6 +69,8 @@ import {
   ResponseTooLargeError,
   safeFetch,
 } from 'shared/safe-fetch'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {resolveOptionName} from 'shared/supabase/options'
 import {getUser, getUserByUsername} from 'shared/utils'
 
 const MAX_CONTEXT_LENGTH = 7 * 10 * 30 * 50
@@ -456,61 +460,58 @@ async function processAndCache(
   }
 }
 
-async function callGemini(text: string) {
-  const apiKey = process.env.GEMINI_API_KEY
+/**
+ * The extractor cannot do anything useful without a model, so unlike other callers it turns a
+ * missing key or an empty completion into an error rather than degrading. The HTTP call itself lives
+ * in `shared/llm/gemini` so `check-option-name` can reuse it.
+ */
+/**
+ * How many option names of each taxonomy the extraction prompt carries.
+ *
+ * These tables are user-creatable and only grow, and they used to be pasted in whole — so the prompt
+ * expanded without limit and the least-used options crowded out the instructions. The most-used ones
+ * are also the ones an extracted profile should be landing on.
+ */
+const TAXONOMY_PROMPT_LIMIT = 300
 
-  if (!apiKey) {
-    log('GEMINI_API_KEY not configured')
+/**
+ * Maps the model's taxonomy answers onto real options, dropping the ones that match nothing.
+ *
+ * The model answers with names; the profile stores ids. Resolution is case-insensitive and goes
+ * through the alias table, so "video games" finds "Video games" and "Gaming" finds whatever it was
+ * merged into — both of which the previous exact-string whitelist silently discarded.
+ *
+ * Nothing is created here. An extracted name that matches no existing option is dropped rather than
+ * minted: an import is exactly the situation where a near-duplicate would be created with nobody
+ * looking at it, and the reader can still add it by hand through the picker, which asks first.
+ */
+async function resolveTaxonomies(
+  parsed: Partial<ProfileWithoutUser>,
+): Promise<Partial<ProfileWithoutUser>> {
+  const pg = createSupabaseDirectClient()
+  const result = {...parsed}
+
+  for (const table of OPTION_TABLES) {
+    const names = result[table]
+    if (!Array.isArray(names) || !names.length) continue
+
+    const resolved: string[] = []
+    for (const name of names) {
+      const match = await resolveOptionName(pg, table, String(name))
+      if (match && !resolved.includes(match.option.id)) resolved.push(match.option.id)
+    }
+    result[table] = resolved.length ? resolved : undefined
+  }
+
+  return result
+}
+
+async function callGemini(text: string) {
+  const outputText = await callGeminiShared(text, {maxContextLength: MAX_CONTEXT_LENGTH})
+  if (outputText == null) {
     throw APIErrors.internalServerError('Profile extraction service is not configured')
   }
-
-  const models = [
-    'gemini-2.5-flash',
-    'gemini-3-flash-preview',
-    'gemini-2.5-flash-lite',
-    'gemini-3.1-flash-preview',
-  ]
-
-  for (const model of models) {
-    debug(`Calling Gemini ${model}...`)
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: text.slice(0, MAX_CONTEXT_LENGTH),
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0,
-            topP: 0.95,
-            topK: 40,
-            responseMimeType: 'application/json',
-          },
-        }),
-      },
-    )
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      log(`Gemini API error with ${model}`, {status: response.status, error: errorText})
-      if (model !== models[models.length - 1]) continue
-      throw APIErrors.internalServerError('Failed to extract profile data')
-    }
-
-    const data = await response.json()
-    const outputText = data.candidates?.[0]?.content?.parts?.[0]?.text
-    return outputText
-  }
+  return outputText
 }
 
 async function _callClaude(text: string) {
@@ -559,15 +560,16 @@ export async function callLLM(
 ): Promise<Partial<ProfileWithoutUser>> {
   const isVoice = source === 'voice'
   const [INTERESTS, CAUSE_AREAS, WORK_AREAS] = await Promise.all([
-    getOptions('interests', locale),
-    getOptions('causes', locale),
-    getOptions('work', locale),
+    getOptions('interests', locale, TAXONOMY_PROMPT_LIMIT),
+    getOptions('causes', locale, TAXONOMY_PROMPT_LIMIT),
+    getOptions('work', locale, TAXONOMY_PROMPT_LIMIT),
   ])
 
+  // The taxonomies are deliberately absent from `validChoices`: it filters by exact string, and an
+  // exact-string whitelist over a capped list would silently drop both "video games" (right option,
+  // wrong casing) and every legitimate option past the cap. `resolveTaxonomies` below does that job
+  // against the whole table instead, case-insensitively and through the alias table.
   const validChoices: Partial<Record<keyof ProfileWithoutUser, string[]>> = {
-    interests: INTERESTS,
-    causes: CAUSE_AREAS,
-    work: WORK_AREAS,
     diet: Object.values(DIET_CHOICES),
     ethnicity: Object.values(RACE_CHOICES),
     languages: Object.values(LANGUAGE_CHOICES),
@@ -686,10 +688,13 @@ export async function callLLM(
       'String. Practical things that help someone meet them well — access needs, energy levels, sensory preferences, venue preferences. Only if mentioned; never infer a disability, and keep their own framing and wording.',
     links: `Object. Key is any of: ${SITE_ORDER.join(', ')}.`,
 
-    // Taxonomies — match existing labels first, only add new if truly no close match exists
-    interests: `Array. Prefer existing labels, only add new if no close match. Any of: ${validChoices.interests?.join(', ')}`,
-    causes: `Array. Prefer existing labels, only add new if no close match. Any of: ${validChoices.causes?.join(', ')}`,
-    work: `Array. Use only existing labels, do not add new if no close match. Any of: ${validChoices.work?.join(', ')}`,
+    // Taxonomies. Anything that does not resolve to an existing option is dropped after parsing (see
+    // `resolveTaxonomies`), so asking for a new label would only produce a field that disappears.
+    // The lists are the most-used options, not all of them — matching is case-insensitive and goes
+    // through aliases, so an answer that is merely differently cased still lands.
+    interests: `Array. Use only existing labels. Any of: ${INTERESTS.join(', ')}`,
+    causes: `Array. Use only existing labels. Any of: ${CAUSE_AREAS.join(', ')}`,
+    work: `Array. Use only existing labels. Any of: ${WORK_AREAS.join(', ')}`,
   }
 
   // For text and URL sources the bio is the source material itself, stored verbatim. A speech
@@ -717,7 +722,7 @@ TASK: Extract structured profile data and return it as a single valid JSON objec
 RULES:
 - Only extract information that is EXPLICITLY stated — do not infer, guess, or hallucinate
 - Omit the key in the output for missing fields
-- For taxonomy fields (interests, causes, work): match existing labels first; only add a new label if truly no existing one is close
+- For taxonomy fields (interests, causes, work): use only labels from the lists given; do not invent new ones
 - For big5 scores: only populate if the person explicitly states a test result — never infer from personality description
 - Never answer a multi-choice field by selecting every option it offers. An expression of openness or indifference ("gender doesn't matter to me", "I'm open to anything") is not a selection of all values — omit the field, which already means "no preference"
 - Return valid JSON only — no markdown, no explanation, no extra text${
@@ -751,6 +756,7 @@ ${isVoice ? 'TRANSCRIPT TO ANALYZE' : 'TEXT TO ANALYZE'}:
   try {
     parsed = typeof outputText === 'string' ? JSON.parse(outputText) : outputText
     parsed = await validateProfileFields(parsed, validChoices)
+    parsed = await resolveTaxonomies(parsed)
     // The bio column holds rich text; the model answers with plain prose.
     if (typeof parsed.bio === 'string') {
       parsed.bio = parsed.bio.trim() ? textToJSONContent(parsed.bio) : undefined

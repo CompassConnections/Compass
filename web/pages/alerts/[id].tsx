@@ -1,5 +1,6 @@
 import {FilterFields} from 'common/filters'
 import {formatFilters, locationType} from 'common/filters-format'
+import {collectOptionIds} from 'common/profiles/options'
 import {useRouter} from 'next/router'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -8,7 +9,7 @@ import {PageBase} from 'web/components/page-base'
 import {ProfilePreview} from 'web/components/profile-grid'
 import {Title} from 'web/components/widgets/title'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
-import {useChoicesContext} from 'web/hooks/use-choices'
+import {useChoicesContext, useEnsureChoiceLabels} from 'web/hooks/use-choices'
 import {useGetter} from 'web/hooks/use-getter'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useUser} from 'web/hooks/use-user'
@@ -33,6 +34,8 @@ export default function SearchAlertPage() {
 
   const id = parseInt(String(router.query.id ?? ''))
   const {data, error} = useAPIGetter('get-search-alert', isNaN(id) ? undefined : {id})
+  // The alert describes what was searched, so it needs a label for every option id in it.
+  useEnsureChoiceLabels(collectOptionIds((data?.searches ?? []).map((s) => s.filters)))
 
   const {data: starredUsers, refresh: refreshStars} = useGetter('star', user?.id, getStars)
   const starredUserIds = starredUsers?.map((u: {id: string}) => u.id)

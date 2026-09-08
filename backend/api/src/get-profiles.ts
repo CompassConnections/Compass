@@ -616,12 +616,20 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
   const joinCauses = true // !!causes?.length
   const joinWork = true // !!work?.length
 
-  // Pre-aggregated interests per profile
+  // Pre-aggregated interests per profile.
+  //
+  // Names travel with the ids, aggregated in the same `ORDER BY` so the two arrays line up index for
+  // index. Before this, a profile carried bare ids and every render site resolved them through a
+  // client-side map of the *entire* options table — and `profile-about.tsx` dropped any id missing
+  // from that map with a silent `.filter(Boolean)`. That coupling is what made it impossible to stop
+  // shipping the whole taxonomy to the browser: doing so would have made profile tags quietly
+  // disappear rather than fail loudly. Carrying the labels here breaks it.
   function getManyToManyJoin(label: OptionTableKey) {
     return `(
         SELECT 
             profile_${label}.profile_id,
-            ARRAY_AGG(${label}.id ORDER BY ${label}.id) AS ${label}
+            ARRAY_AGG(${label}.id ORDER BY ${label}.id) AS ${label},
+            ARRAY_AGG(${label}.name ORDER BY ${label}.id) AS ${label}_names
         FROM profile_${label}
         JOIN ${label} ON ${label}.id = profile_${label}.option_id
         GROUP BY profile_${label}.profile_id
@@ -1076,9 +1084,18 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
   } else if (orderByParam === 'last_online_time' || last_active) {
     selectCols += ', user_activity.last_online_time'
   }
-  if (joinInterests) selectCols += `, COALESCE(profile_interests.interests, '{}') AS interests`
-  if (joinCauses) selectCols += `, COALESCE(profile_causes.causes, '{}') AS causes`
-  if (joinWork) selectCols += `, COALESCE(profile_work.work, '{}') AS work`
+  if (joinInterests)
+    selectCols +=
+      `, COALESCE(profile_interests.interests, '{}') AS interests` +
+      `, COALESCE(profile_interests.interests_names, '{}') AS interests_names`
+  if (joinCauses)
+    selectCols +=
+      `, COALESCE(profile_causes.causes, '{}') AS causes` +
+      `, COALESCE(profile_causes.causes_names, '{}') AS causes_names`
+  if (joinWork)
+    selectCols +=
+      `, COALESCE(profile_work.work, '{}') AS work` +
+      `, COALESCE(profile_work.work_names, '{}') AS work_names`
 
   const query = renderSql(
     select(selectCols),

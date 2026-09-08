@@ -12,7 +12,20 @@ import {User} from 'common/user'
  * `common/profiles/birth-date`), so reads are unchanged and nothing outside the form writes it.
  */
 export type ProfileRow = Row<'profiles'> & {birth_date?: BirthDateString | null}
-export type ProfileWithoutUser = ProfileRow & {[K in OptionTableKey]?: string[]}
+/**
+ * The option taxonomies are stored as ids, and carried with their labels.
+ *
+ * `interests` holds `interests.id` values (what the form submits and what the filters compare); the
+ * matching `interests_names` holds the labels, index for index. The labels ride along because the
+ * alternative — the browser holding a map of every option ever created just to render three tags —
+ * is what forced the whole taxonomy down the wire on every page load, and made a missing entry
+ * disappear silently rather than fail.
+ */
+export type ProfileOptions = {[K in OptionTableKey]?: string[]} & {
+  [K in OptionTableKey as `${K}_names`]?: string[]
+}
+
+export type ProfileWithoutUser = ProfileRow & ProfileOptions
 export type Profile = ProfileWithoutUser & {
   user: User
   /**
@@ -40,7 +53,16 @@ export const getProfileRowWithFrontendSupabase = async (
   // `redactMemberOnlyProfile`) — and PostgREST turns `eq('profile_id', undefined)` into the literal
   // `profile_id=eq.null`, which the server rejects with `22P02: invalid input syntax for type
   // bigint`. Three failed requests for tags that were deliberately withheld anyway.
-  if (profile.id == null) return {...profile, interests: [], causes: [], work: []}
+  if (profile.id == null)
+    return {
+      ...profile,
+      interests: [],
+      causes: [],
+      work: [],
+      interests_names: [],
+      causes_names: [],
+      work_names: [],
+    }
 
   // Parallel instead of sequential
   const [interestsRes, causesRes, workRes] = await Promise.all([
@@ -49,11 +71,17 @@ export const getProfileRowWithFrontendSupabase = async (
     run(db.from('profile_work').select('work(name, id)').eq('profile_id', profile.id)),
   ])
 
+  // The names were already being selected and thrown away here. They are kept now so this path
+  // produces the same shape as the API's `get-profiles`, and so rendering a profile's tags needs no
+  // separate lookup table.
   const result = {
     ...profile,
     interests: interestsRes.data?.map((r: any) => String(r.interests.id)) ?? [],
     causes: causesRes.data?.map((r: any) => String(r.causes.id)) ?? [],
     work: workRes.data?.map((r: any) => String(r.work.id)) ?? [],
+    interests_names: interestsRes.data?.map((r: any) => r.interests.name as string) ?? [],
+    causes_names: causesRes.data?.map((r: any) => r.causes.name as string) ?? [],
+    work_names: workRes.data?.map((r: any) => r.work.name as string) ?? [],
   }
 
   // console.debug(result)

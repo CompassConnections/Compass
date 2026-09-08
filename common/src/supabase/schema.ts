@@ -4,7 +4,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '13.0.4'
+    PostgrestVersion: '14.5'
   }
   public: {
     Tables: {
@@ -110,16 +110,19 @@ export type Database = {
           creator_id: string | null
           id: number
           name: string
+          usage_count: number
         }
         Insert: {
           creator_id?: string | null
           id?: never
           name: string
+          usage_count?: number
         }
         Update: {
           creator_id?: string | null
           id?: never
           name?: string
+          usage_count?: number
         }
         Relationships: [
           {
@@ -127,6 +130,32 @@ export type Database = {
             columns: ['creator_id']
             isOneToOne: false
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      causes_aliases: {
+        Row: {
+          alias: string
+          created_time: string
+          option_id: number
+        }
+        Insert: {
+          alias: string
+          created_time?: string
+          option_id: number
+        }
+        Update: {
+          alias?: string
+          created_time?: string
+          option_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'causes_aliases_option_id_fkey'
+            columns: ['option_id']
+            isOneToOne: false
+            referencedRelation: 'causes'
             referencedColumns: ['id']
           },
         ]
@@ -667,16 +696,19 @@ export type Database = {
           creator_id: string | null
           id: number
           name: string
+          usage_count: number
         }
         Insert: {
           creator_id?: string | null
           id?: never
           name: string
+          usage_count?: number
         }
         Update: {
           creator_id?: string | null
           id?: never
           name?: string
+          usage_count?: number
         }
         Relationships: [
           {
@@ -684,6 +716,32 @@ export type Database = {
             columns: ['creator_id']
             isOneToOne: false
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      interests_aliases: {
+        Row: {
+          alias: string
+          created_time: string
+          option_id: number
+        }
+        Insert: {
+          alias: string
+          created_time?: string
+          option_id: number
+        }
+        Update: {
+          alias?: string
+          created_time?: string
+          option_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'interests_aliases_option_id_fkey'
+            columns: ['option_id']
+            isOneToOne: false
+            referencedRelation: 'interests'
             referencedColumns: ['id']
           },
         ]
@@ -1910,6 +1968,36 @@ export type Database = {
           },
         ]
       }
+      unfinished_signups: {
+        Row: {
+          auth_created_at: string
+          created_at: string
+          delete_reason: string | null
+          deleted_at: string | null
+          firebase_uid: string
+          notified_at: string | null
+          token: string
+        }
+        Insert: {
+          auth_created_at: string
+          created_at?: string
+          delete_reason?: string | null
+          deleted_at?: string | null
+          firebase_uid: string
+          notified_at?: string | null
+          token: string
+        }
+        Update: {
+          auth_created_at?: string
+          created_at?: string
+          delete_reason?: string | null
+          deleted_at?: string | null
+          firebase_uid?: string
+          notified_at?: string | null
+          token?: string
+        }
+        Relationships: []
+      }
       user_activity: {
         Row: {
           last_online_time: string
@@ -2266,16 +2354,19 @@ export type Database = {
           creator_id: string | null
           id: number
           name: string
+          usage_count: number
         }
         Insert: {
           creator_id?: string | null
           id?: never
           name: string
+          usage_count?: number
         }
         Update: {
           creator_id?: string | null
           id?: never
           name?: string
+          usage_count?: number
         }
         Relationships: [
           {
@@ -2283,6 +2374,32 @@ export type Database = {
             columns: ['creator_id']
             isOneToOne: false
             referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      work_aliases: {
+        Row: {
+          alias: string
+          created_time: string
+          option_id: number
+        }
+        Insert: {
+          alias: string
+          created_time?: string
+          option_id: number
+        }
+        Update: {
+          alias?: string
+          created_time?: string
+          option_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'work_aliases_option_id_fkey'
+            columns: ['option_id']
+            isOneToOne: false
+            referencedRelation: 'work'
             referencedColumns: ['id']
           },
         ]
@@ -2504,6 +2621,7 @@ export type Database = {
         Returns: string
       }
       millis_to_ts: {Args: {millis: number}; Returns: string}
+      normalize_option_name: {Args: {raw: string}; Returns: string}
       profile_age: {Args: {birth_date: string}; Returns: number}
       random_alphanumeric: {Args: {length: number}; Returns: string}
       rebuild_profile_search: {

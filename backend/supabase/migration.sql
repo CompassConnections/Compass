@@ -25,10 +25,12 @@ BEGIN;
 \i backend/supabase/bookmarked_searches.sql
 \i backend/supabase/causes.sql
 \i backend/supabase/causes_translations.sql
+\i backend/supabase/causes_aliases.sql
 \i backend/supabase/contact.sql
 \i backend/supabase/hidden_profiles.sql
 \i backend/supabase/interests.sql
 \i backend/supabase/interests_translations.sql
+\i backend/supabase/interests_aliases.sql
 \i backend/supabase/push_subscriptions.sql
 \i backend/supabase/push_subscriptions_mobile.sql
 \i backend/supabase/user_activity.sql
@@ -36,6 +38,7 @@ BEGIN;
 \i backend/supabase/vote_results.sql
 \i backend/supabase/work.sql
 \i backend/supabase/work_translations.sql
+\i backend/supabase/work_aliases.sql
 \i backend/supabase/profile_causes.sql
 \i backend/supabase/profile_interests.sql
 \i backend/supabase/profile_work.sql
@@ -82,4 +85,5 @@ BEGIN;
 \i backend/supabase/migrations/20260901_redact_member_only_profiles.sql
 \i backend/supabase/migrations/20260905_add_unfinished_signups.sql
 \i backend/supabase/migrations/20260907_add_pref_max_distance.sql
+\i backend/supabase/migrations/20260907_canonical_options.sql
 COMMIT;

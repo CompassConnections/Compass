@@ -394,6 +394,13 @@ export class PeoplePage {
     if (background.work) {
       await expect(this.backgroundWork).toBeVisible()
       await this.backgroundWork.click()
+      // The work rail now shows the most-used options rather than all of them, and has a search box
+      // for the rest — so search for the one we want instead of assuming it is on the first page.
+      const search = this.page.getByRole('textbox', {name: 'Search'}).last()
+      if (await search.isVisible().catch(() => false)) {
+        await search.fill(background.work)
+        await this.page.waitForTimeout(700)
+      }
       const work = this.optionChip(background.work)
       await expect(work).toBeVisible()
       await work.click()

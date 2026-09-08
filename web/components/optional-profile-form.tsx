@@ -66,7 +66,7 @@ import {Input} from 'web/components/widgets/input'
 import {Select} from 'web/components/widgets/select'
 import {ShowMoreOptions} from 'web/components/widgets/show-more-options'
 import {Slider} from 'web/components/widgets/slider'
-import {ChoiceMap, ChoiceSetter, useChoicesContext} from 'web/hooks/use-choices'
+import {ChoiceMap, useChoicesContext} from 'web/hooks/use-choices'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {api} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
@@ -212,9 +212,6 @@ export const OptionalProfileUserForm = (props: {
   const {locale} = useLocale()
 
   const choices = useChoicesContext()
-  const [interestChoices, setInterestChoices] = useState(choices.interests)
-  const [causeChoices, setCauseChoices] = useState(choices.causes)
-  const [workChoices, setWorkChoices] = useState(choices.work)
 
   const [keywordsString, setKeywordsString] = useState<string>(profile.keywords?.join(', ') || '')
 
@@ -296,31 +293,18 @@ export const OptionalProfileUserForm = (props: {
       for (const data of Object.entries(extractedProfile)) {
         const key = data[0] as keyof ProfileWithoutUser
         let value = data[1]
-        let choices: ChoiceMap | undefined
-        let setChoices: ChoiceSetter | undefined
-        if (key === 'interests') {
-          choices = interestChoices
-          setChoices = setInterestChoices
-        } else if (key === 'causes') {
-          choices = causeChoices
-          setChoices = setCauseChoices
-        } else if (key === 'work') {
-          choices = workChoices
-          setChoices = setWorkChoices
-        }
-        if (choices && setChoices) {
-          const newFields: string[] = []
-          const converter = invert(choices)
-          value = (value as string[]).map((interest: string) => {
-            if (!converter[interest]) newFields.push(interest)
-            return converter[interest] ?? interest
-          })
-          if (newFields.length) {
-            setChoices((prev: any) => ({
-              ...prev,
-              ...Object.fromEntries(newFields.map((e) => [e, e])),
-            }))
-          }
+        // The extractor answers taxonomy fields with names. Names that match something the picker
+        // already has loaded are swapped for their id so the chip shows the canonical spelling
+        // straight away; the rest are left as names and resolved on save by `setProfileOptions`,
+        // which matches case-insensitively and through the alias table — so an extracted "video
+        // games" lands on the existing "Video games" rather than creating a second one. There is
+        // no longer a local copy of the table to graft unknown names onto: `OptionPicker` renders
+        // a not-yet-created name as its own chip.
+        const optionChoices: ChoiceMap | undefined =
+          key === 'interests' || key === 'causes' || key === 'work' ? choices[key] : undefined
+        if (optionChoices) {
+          const converter = invert(optionChoices)
+          value = (value as string[]).map((name: string) => converter[name] ?? name)
           debug({value, converter})
         } else if (key === 'keywords') setKeywordsString((value as string[]).join(', '))
         ;(extractedProfile as Record<string, unknown>)[key] = value
@@ -949,8 +933,6 @@ export const OptionalProfileUserForm = (props: {
 
         <AddOptionEntry
           title={t('profile.optional.work', 'Work Area')}
-          choices={workChoices}
-          setChoices={setWorkChoices}
           profile={profile}
           setProfile={setProfile}
           label={'work'}
@@ -1172,8 +1154,6 @@ export const OptionalProfileUserForm = (props: {
         <Category title={t('profile.optional.category.morality', 'Morality')} />
         <AddOptionEntry
           title={t('profile.optional.causes', 'Causes')}
-          choices={causeChoices}
-          setChoices={setCauseChoices}
           profile={profile}
           setProfile={setProfile}
           label={'causes'}
@@ -1182,8 +1162,6 @@ export const OptionalProfileUserForm = (props: {
         <Category title={t('profile.optional.interests', 'Interests')} />
         <AddOptionEntry
           // title={t('profile.optional.interests', 'Interests')}
-          choices={interestChoices}
-          setChoices={setInterestChoices}
           profile={profile}
           setProfile={setProfile}
           label={'interests'}

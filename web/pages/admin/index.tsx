@@ -4,6 +4,7 @@ import {
   MapIcon,
   PencilSquareIcon,
   SparklesIcon,
+  TagIcon,
 } from '@heroicons/react/24/outline'
 import {IS_LOCAL} from 'common/hosting/constants'
 import Link from 'next/link'
@@ -49,6 +50,13 @@ const ADMIN_PAGES: {
     description:
       'Write, edit and publish posts for /blog. Publishing can announce the post to every member — once.',
     icon: PencilSquareIcon,
+  },
+  {
+    href: '/admin/options',
+    name: 'Options',
+    description:
+      'Interests, causes and work areas. Merge the near-duplicates members create, and curate the aliases that keep them merged.',
+    icon: TagIcon,
   },
   {
     href: '/admin/spotlights',

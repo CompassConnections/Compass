@@ -34,7 +34,12 @@ describe('getOptions', () => {
 
       expect(result.names).toContain(mockData[0].name)
       expect(mockPg.manyOrNone).toBeCalledTimes(1)
-      expect(mockPg.manyOrNone).toBeCalledWith('SELECT name FROM causes ORDER BY id', [])
+      // Ordered by popularity, not by id: the extractor pastes a capped slice of this list into its
+      // prompt, so which options come first has to mean something.
+      expect(mockPg.manyOrNone).toBeCalledWith(
+        'SELECT name FROM causes ORDER BY usage_count DESC, name',
+        [],
+      )
       expect(tryCatch).toBeCalledTimes(1)
     })
   })

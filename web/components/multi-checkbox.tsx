@@ -64,9 +64,56 @@ export const MultiCheckbox = (props: {
   //  - string: the stored value for the new option; label will be the input text
   //  - { key, value }: explicit label (key) and stored value
   //  - null/undefined to indicate failure/cancellation
-  addOption?: (label: string) => string | {key: string; value: string} | null | undefined
+  // May be async: a parent that has to ask the server whether the name is a duplicate returns a
+  // promise, and `null` from it means "handled, don't add anything here".
+  addOption?: (
+    label: string,
+  ) =>
+    | string
+    | {key: string; value: string}
+    | null
+    | undefined
+    | Promise<string | {key: string; value: string} | null | undefined>
   addPlaceholder?: string
   translationPrefix?: string
+  /**
+   * Whether to show the text field at all.
+   *
+   * Defaults to `!!addOption`, which is how this used to be wired — and that coupling was a bug on
+   * the filter rail. `InterestFilter` cannot pass `addOption` (creating an option that no profile
+   * holds and then filtering by it returns nothing, and writes a permanent row into the taxonomy
+   * from a context where the reader is describing someone else), so it got no way to search either,
+   * leaving interests as an unsearchable alphabetical wall. Searching and creating are separate
+   * permissions.
+   */
+  searchable?: boolean
+  /**
+   * Whether typing filters `choices` in the browser.
+   *
+   * True for the static choice fields, whose options are all present locally. False when a parent is
+   * driving `choices` from a server query: there, filtering again on the client would hide exactly
+   * the results the server was asked for — a search for "AI" that correctly returns "Artificial
+   * intelligence" contains no substring "ai".
+   */
+  filterLocally?: boolean
+  /**
+   * Makes the search field controlled by the parent. Needed when the parent can resolve a typed name
+   * to an existing option (the "did you mean" path): after it selects that option on the reader's
+   * behalf, the field has to empty itself, and it cannot if the text lives only in here.
+   */
+  searchValue?: string
+  /** Notifies the parent on every keystroke, so it can run a remote search. */
+  onSearchChange?: (query: string) => void
+  /** Rendered under the input row — where the "did you mean" panel and the create button go. */
+  searchFooter?: React.ReactNode
+  /**
+   * Keeps ticked options visible in the default (empty query) view even when they are not in
+   * `choices`. A chip the reader has selected must never vanish just because it is too rare to be on
+   * the popular first page.
+   */
+  pinSelected?: boolean
+  /** Labels for pinned values that are not in `choices`. */
+  selectedLabels?: Record<string, string>
   /**
    * Rendered as the last item of the chip row, so it wraps with the chips instead of claiming a line
    * below them. Where a `ShowMoreOptions` link goes.
@@ -82,6 +129,13 @@ export const MultiCheckbox = (props: {
     addOption,
     addPlaceholder,
     translationPrefix,
+    searchable = !!addOption,
+    filterLocally = true,
+    searchValue,
+    onSearchChange,
+    searchFooter,
+    pinSelected,
+    selectedLabels,
     trailing,
   } = props
 
@@ -95,10 +149,22 @@ export const MultiCheckbox = (props: {
     })
   }, [choices])
 
-  const entries = useMemo(() => Object.entries(localChoices), [localChoices])
+  // With local filtering, `localChoices` is the accumulating source of truth so an optimistic add
+  // survives a `choices` refresh. Without it, the parent's `choices` *is* the list to show, and
+  // accumulating would be wrong: search results would pile up in the map and then all reappear the
+  // moment the query was cleared, instead of the default view coming back.
+  const entries = useMemo(
+    () => Object.entries(filterLocally ? localChoices : choices),
+    [filterLocally, localChoices, choices],
+  )
 
-  // Add-new option state
-  const [newLabel, setNewLabel] = useState('')
+  // Add-new option state. `searchValue`, when given, takes over as the source of truth.
+  const [uncontrolledLabel, setUncontrolledLabel] = useState('')
+  const newLabel = searchValue ?? uncontrolledLabel
+  const setNewLabel = (value: string) => {
+    setUncontrolledLabel(value)
+    onSearchChange?.(value)
+  }
   const [adding, setAdding] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -109,14 +175,26 @@ export const MultiCheckbox = (props: {
     return t(`${translationPrefix}.${toKey(value)}`, key)
   }
 
-  // Filter visible options while typing a new option (case-insensitive label match)
+  const query = newLabel.trim()
+
   const filteredEntries = useMemo(() => {
-    if (!addOption) return entries
-    let q = newLabel.trim()
-    q = translateOption(q, q).toLowerCase()
-    if (!q) return entries
-    return entries.filter(([key, value]) => translateOption(key, value).toLowerCase().includes(q))
-  }, [addOption, entries, newLabel])
+    let visible = entries
+    if (searchable && filterLocally && query) {
+      const q = translateOption(query, query).toLowerCase()
+      visible = entries.filter(([key, value]) =>
+        translateOption(key, value).toLowerCase().includes(q),
+      )
+    }
+    if (!pinSelected || query) return visible
+
+    // Pinned values that the current page of `choices` does not contain, prepended so a rare ticked
+    // option leads the list rather than being absent from it.
+    const present = new Set(visible.map(([, value]) => value))
+    const pinned = selected
+      .filter((value) => !present.has(value))
+      .map((value) => [selectedLabels?.[value] ?? value, value] as [string, string])
+    return [...pinned, ...visible]
+  }, [entries, searchable, filterLocally, query, pinSelected, selected, selectedLabels])
 
   const submitAdd = async () => {
     if (!addOption) return
@@ -142,9 +220,10 @@ export const MultiCheckbox = (props: {
     }
     setAdding(true)
     try {
-      const result = addOption(label)
+      const result = await addOption(label)
       if (!result) {
-        setError(t('multi-checkbox.could_not_add', 'Could not add option.'))
+        // A parent that took over (to show a "did you mean" panel, or to reject the name) reports
+        // its own outcome through `searchFooter`, so there is nothing to say here.
         setAdding(false)
         return
       }
@@ -162,11 +241,16 @@ export const MultiCheckbox = (props: {
 
   return (
     <div className={clsx('space-y-2', className)}>
-      {addOption && (
+      {searchable && (
         <Row className="items-center gap-2">
           <Input
             value={newLabel}
-            placeholder={addPlaceholder ?? t('multi-checkbox.search_or_add', 'Search or add')}
+            placeholder={
+              addPlaceholder ??
+              (addOption
+                ? t('multi-checkbox.search_or_add', 'Search or add')
+                : t('multi-checkbox.search', 'Search'))
+            }
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setNewLabel(e.target.value)
               setError(null)
@@ -180,17 +264,21 @@ export const MultiCheckbox = (props: {
             className="h-10"
             searchIcon
           />
-          <Button size="sm" onClick={submitAdd} loading={adding} disabled={adding}>
-            {t('common.add', 'Add')}
-          </Button>
+          {addOption && (
+            <Button size="sm" onClick={submitAdd} loading={adding} disabled={adding}>
+              {t('common.add', 'Add')}
+            </Button>
+          )}
           {error && <span className="text-sm text-error">{error}</span>}
         </Row>
       )}
 
+      {searchFooter}
+
       <Row className={clsx('flex-wrap gap-2', optionsClassName)}>
         {filteredEntries.map(([key, value]) => (
           <OptionChip
-            key={key}
+            key={value}
             label={translateOption(key, value)}
             checked={selected.includes(value)}
             toggle={(checked: boolean) => {
@@ -204,7 +292,7 @@ export const MultiCheckbox = (props: {
         ))}
         {trailing}
       </Row>
-      {addOption && newLabel.trim() && filteredEntries.length === 0 && (
+      {addOption && query && filteredEntries.length === 0 && !searchFooter && (
         <div className="px-2 text-sm text-ink-500">
           {t('multi-checkbox.no_matching_options', 'No matching options, feel free to add it.')}
         </div>

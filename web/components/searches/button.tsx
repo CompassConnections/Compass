@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
 import {FilterFields, OriginLocation} from 'common/filters'
 import {formatFilters, locationType} from 'common/filters-format'
+import {collectOptionIds} from 'common/profiles/options'
 import {User} from 'common/user'
 import {Users} from 'lucide-react'
 import Link from 'next/link'
@@ -14,7 +15,7 @@ import {Modal, MODAL_CLASS, SCROLLABLE_MODAL_CLASS} from 'web/components/layout/
 import {Row} from 'web/components/layout/row'
 import {Avatar} from 'web/components/widgets/avatar'
 import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
-import {useChoicesContext} from 'web/hooks/use-choices'
+import {useChoicesContext, useEnsureChoiceLabels} from 'web/hooks/use-choices'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
@@ -89,6 +90,8 @@ function ButtonModal(props: {
   const t = useT()
   const choicesIdsToLabels = useChoicesContext()
   const {measurementSystem} = useMeasurementSystem()
+  // A search bookmarked around a rare interest still has to be able to describe itself.
+  useEnsureChoiceLabels(collectOptionIds((bookmarkedSearches ?? []).map((s) => s.search_filters)))
   return (
     <Modal
       open={open}

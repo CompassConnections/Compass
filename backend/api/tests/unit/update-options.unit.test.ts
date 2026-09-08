@@ -1,11 +1,13 @@
 import {AuthedUser} from 'api/helpers/endpoint'
-import {updateOptions} from 'api/update-options'
+import {setProfileOptions, updateOptions} from 'api/update-options'
 import {sqlMatch} from 'common/test-utils'
 import {tryCatch} from 'common/util/try-catch'
 import * as supabaseInit from 'shared/supabase/init'
+import * as options from 'shared/supabase/options'
 
 jest.mock('common/util/try-catch')
 jest.mock('shared/supabase/init')
+jest.mock('shared/supabase/options')
 
 describe('updateOptions', () => {
   let mockPg = {} as any
@@ -23,6 +25,13 @@ describe('updateOptions', () => {
       tx: jest.fn(async (cb) => await cb(mockTx)),
     }
     ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
+    // Names now go through the shared resolver rather than a raw INSERT in this file, so that pair
+    // is what the happy path asserts against.
+    ;(options.resolveOptionName as jest.Mock).mockResolvedValue(null)
+    ;(options.createOption as jest.Mock).mockImplementation(async (_tx, _table, name: string) => ({
+      id: '100',
+      name,
+    }))
   })
   afterEach(() => {
     jest.restoreAllMocks()
@@ -37,12 +46,6 @@ describe('updateOptions', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
       const mockProfileIdResult = {id: 123}
-      const mockRow1 = {
-        id: 1234,
-      }
-      const mockRow2 = {
-        id: 12345,
-      }
 
       jest.spyOn(Array.prototype, 'includes').mockReturnValue(true)
       ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockProfileIdResult)
@@ -54,7 +57,9 @@ describe('updateOptions', () => {
           return {data: null, error}
         }
       })
-      ;(mockTx.one as jest.Mock).mockResolvedValueOnce(mockRow1).mockResolvedValueOnce(mockRow2)
+      ;(options.createOption as jest.Mock)
+        .mockResolvedValueOnce({id: '1234', name: mockProps.values[0]})
+        .mockResolvedValueOnce({id: '12345', name: mockProps.values[1]})
       ;(mockTx.manyOrNone as jest.Mock).mockResolvedValue([])
 
       const result: any = await updateOptions(mockProps, mockAuth, mockReq)
@@ -66,16 +71,22 @@ describe('updateOptions', () => {
         [mockAuth.uid],
       )
       expect(tryCatch).toBeCalledTimes(1)
-      expect(mockTx.one).toBeCalledTimes(2)
-      expect(mockTx.one).toHaveBeenNthCalledWith(
+      expect(options.createOption).toBeCalledTimes(2)
+      // Passed through unchanged: these fixtures already carry a capital, and normalisation only
+      // uppercases the first character of a name typed entirely in lower case.
+      expect(options.createOption).toHaveBeenNthCalledWith(
         1,
-        sqlMatch(`INSERT INTO ${mockProps.table} (name, creator_id)`),
-        [mockProps.values[0], mockAuth.uid],
+        mockTx,
+        mockProps.table,
+        mockProps.values[0],
+        mockAuth.uid,
       )
-      expect(mockTx.one).toHaveBeenNthCalledWith(
+      expect(options.createOption).toHaveBeenNthCalledWith(
         2,
-        sqlMatch(`INSERT INTO ${mockProps.table} (name, creator_id)`),
-        [mockProps.values[1], mockAuth.uid],
+        mockTx,
+        mockProps.table,
+        mockProps.values[1],
+        mockAuth.uid,
       )
       expect(mockTx.none).toBeCalledTimes(2)
       expect(mockTx.none).toHaveBeenNthCalledWith(
@@ -89,10 +100,11 @@ describe('updateOptions', () => {
         2,
         sqlMatch(`INSERT INTO profile_${mockProps.table} (profile_id, option_id)
                         VALUES`),
-        [mockProfileIdResult.id, mockRow1.id, mockRow2.id],
+        [mockProfileIdResult.id, 1234, 12345],
       )
     })
   })
+
   describe('when an error occurs', () => {
     it('should throw if the table param is invalid', async () => {
       const mockProps = {
@@ -132,7 +144,7 @@ describe('updateOptions', () => {
       expect(updateOptions(mockProps, mockAuth, mockReq)).rejects.toThrow('Profile not found')
     })
 
-    it('should update user', async () => {
+    it('should throw if the transaction fails', async () => {
       const mockProps = {
         table: 'causes' as const,
         values: ['mockNamesOne', 'mockNamesTwo'],
@@ -140,23 +152,105 @@ describe('updateOptions', () => {
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
       const mockProfileIdResult = {id: 123}
-      const mockRow1 = {
-        id: 1234,
-      }
-      const mockRow2 = {
-        id: 12345,
-      }
 
       jest.spyOn(Array.prototype, 'includes').mockReturnValue(true)
       ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockProfileIdResult)
       ;(tryCatch as jest.Mock).mockResolvedValue({data: null, error: Error})
       ;(mockPg.tx as jest.Mock).mockResolvedValue(null)
-      ;(mockTx.one as jest.Mock).mockResolvedValueOnce(mockRow1).mockResolvedValueOnce(mockRow2)
-      ;(mockTx.none as jest.Mock).mockResolvedValueOnce(null).mockResolvedValueOnce(null)
 
       expect(updateOptions(mockProps, mockAuth, mockReq)).rejects.toThrow(
         'Error updating profile options',
       )
     })
+  })
+})
+
+/**
+ * These cover the write path, which is where de-duplication is actually enforced.
+ *
+ * The picker's "did you mean" step is a nudge and can be walked past; the profile extractor never
+ * goes through the picker at all. So whatever else happens, a name reaching `setProfileOptions` has
+ * to be normalised and resolved here or it becomes a permanent duplicate.
+ */
+describe('setProfileOptions', () => {
+  const PROFILE_ID = 7
+  const USER_ID = 'user-1'
+  let mockPg = {} as any
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+    mockPg = {
+      manyOrNone: jest.fn().mockResolvedValue([]),
+      none: jest.fn().mockResolvedValue(null),
+    }
+    ;(options.resolveOptionName as jest.Mock).mockResolvedValue(null)
+    ;(options.createOption as jest.Mock).mockImplementation(async (_tx, _t, name: string) => ({
+      id: '100',
+      name,
+    }))
+  })
+
+  it('normalises a typed name before it is created', async () => {
+    await setProfileOptions(mockPg, PROFILE_ID, USER_ID, 'interests', ['  video   games  '])
+
+    expect(options.createOption).toHaveBeenCalledWith(mockPg, 'interests', 'Video games', USER_ID)
+  })
+
+  it('reuses an existing option instead of creating a second one', async () => {
+    ;(options.resolveOptionName as jest.Mock).mockResolvedValue({
+      option: {id: '42', name: 'Video games', usageCount: 9},
+      matchedOn: 'alias',
+    })
+
+    await setProfileOptions(mockPg, PROFILE_ID, USER_ID, 'interests', ['Gaming'])
+
+    expect(options.createOption).not.toHaveBeenCalled()
+    expect(mockPg.none).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO'), [
+      PROFILE_ID,
+      42,
+    ])
+  })
+
+  it('collapses two spellings of the same name in one submission', async () => {
+    // Both normalise to the same identity. Inserting both would violate the
+    // (profile_id, option_id) unique constraint and fail the whole save.
+    await setProfileOptions(mockPg, PROFILE_ID, USER_ID, 'interests', ['AI', 'ai'])
+
+    expect(options.createOption).toHaveBeenCalledTimes(1)
+  })
+
+  it('drops a name that is not fit to be an option', async () => {
+    await setProfileOptions(mockPg, PROFILE_ID, USER_ID, 'interests', [
+      'hiking, cooking',
+      'a'.repeat(200),
+      '   ',
+      'Chess',
+    ])
+
+    expect(options.createOption).toHaveBeenCalledTimes(1)
+    expect(options.createOption).toHaveBeenCalledWith(mockPg, 'interests', 'Chess', USER_ID)
+  })
+
+  it('never inserts the same option id twice', async () => {
+    ;(options.resolveOptionName as jest.Mock).mockResolvedValue({
+      option: {id: '5', name: 'Chess', usageCount: 1},
+      matchedOn: 'name',
+    })
+
+    // The id is already ticked, and the same option arrives again as a typed name.
+    await setProfileOptions(mockPg, PROFILE_ID, USER_ID, 'interests', ['5', 'chess'])
+
+    expect(mockPg.none).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO'), [
+      PROFILE_ID,
+      5,
+    ])
+  })
+
+  it('does nothing when the ids are unchanged and no names were typed', async () => {
+    mockPg.manyOrNone.mockResolvedValue([{id: 3}, {id: 4}])
+
+    await setProfileOptions(mockPg, PROFILE_ID, USER_ID, 'interests', ['3', '4'])
+
+    expect(mockPg.none).not.toHaveBeenCalled()
   })
 })

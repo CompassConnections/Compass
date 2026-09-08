@@ -92,3 +92,33 @@ ends up in root `package.json`.
 Every `CHANGELOG.md` entry must start with `## <version>` matching root `package.json` exactly — the
 awk in `scripts/release.sh` parses on that boundary. See the header of `CHANGELOG.md` for the entry
 format, including the `<!--tech-->` marker that `/news` splits on.
+
+### Promoting to production by hand
+
+CI stops at Play's internal track and at TestFlight. Promoting either to production is a console step,
+and both consoles ask for release notes there — which is why each `CHANGELOG.md` entry ends with a
+ready-to-paste block, written with the entry rather than improvised in the console. It sits inside an
+HTML comment, so it stays out of the GitHub release body and `/news`; copy it from the raw file.
+
+1. **Play Console** — _Release > Production > Create new release_, promote the internal build, then
+   paste the whole tagged block into _Release notes_:
+
+   ```
+   <en-US>
+   ...
+   </en-US>
+   <fr-FR>
+   ...
+   </fr-FR>
+   ```
+
+   500 characters per language, tags excluded. Locales with no block of their own (`de` today) fall
+   back to `en-US`.
+
+2. **App Store Connect** — _App Store > iOS App > + Version_, pick the TestFlight build, then fill
+   _What's New in This Version_ once per localisation (English (U.S.), French). No tags there: paste
+   the text inside each pair of tags into its own field. 4000-character limit.
+
+Same copy on both stores unless a change is genuinely platform-specific, and **no price references** —
+"free", "no subscriptions", "donations", any figure. Guideline 2.3.7 exempts the description only; see
+[`app-store-listing.md`](app-store-listing.md) for the 1.42.0 rejection that made the point.

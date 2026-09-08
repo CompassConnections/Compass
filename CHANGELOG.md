@@ -17,10 +17,51 @@ Each entry:
   is what `web/pages/news.tsx` splits on. An entry without the marker (e.g. old releases before this
   convention) just renders as-is on `/news`, with no expandable section — keep that in mind while
   backfilling.
+- Ends with a **store release notes** block (see below) — the copy pasted into Play and App Store Connect
+  when the build is promoted to production by hand.
 
 To edit an already-published release's notes to match this convention, use
 `gh release edit <tag> --notes-file <(sed ...)` or paste manually in the GitHub UI — `scripts/release.sh`
 only runs at tag-creation time, so it won't touch releases that already exist.
+
+## Store release notes
+
+CI ships Android to Play's internal track and iOS to TestFlight; promoting either to production is a
+manual step in the console, and both ask for release notes in that moment. Writing them at the same time
+as the changelog entry — rather than improvising them in the console — is what keeps the two consistent,
+so every entry ends with a ready-to-paste block:
+
+- It lives inside an **HTML comment**, so it never reaches the GitHub release body or `/news` (the
+  `react-markdown` on that page renders no raw HTML, and GitHub hides comments). Copy it out of the raw
+  file, not the rendered page.
+- **Play** takes all languages in one field, tagged. Paste the whole `<en-US>…</fr-FR>` block into
+  _Release notes_ on the production release; **500 characters per language**, tags excluded. Play falls
+  back to `en-US` for locales with no block of their own — which is what `de` gets until a German
+  listing exists.
+- **App Store Connect** has no tagged format: _What's New in This Version_ is one field per localisation
+  (English (U.S.), French), each up to **4000 characters**. Same copy, pasted twice, without the tags.
+- Keep the two stores' text identical unless a platform genuinely differs — a line about an iOS-only fix
+  has no business in the Play notes.
+- **No price references anywhere in it** — "free", "no subscriptions", "donations", any figure. The
+  description is the only field where Apple permits it (guideline 2.3.7, and the 1.42.0 rejection that
+  established it: see [`docs/app-store-listing.md`](docs/app-store-listing.md)).
+- User-facing voice, one line per item, no internals. Six to eight lines fits 500 characters; the
+  changelog's "New features" section is the source to cut down from, not a section to reproduce.
+
+Template for a new entry, at the end of that entry:
+
+```
+<!-- Store release notes. Play: paste the tagged block whole (500 chars/language).
+     App Store Connect: paste each language into "What's New in This Version" without the tags.
+
+<en-US>
+Enter or paste your release notes for en-US here
+</en-US>
+<fr-FR>
+Enter or paste your release notes for fr-FR here
+</fr-FR>
+-->
+```
 
 ---
 
@@ -193,6 +234,29 @@ only runs at tag-creation time, so it won't touch releases that already exist.
 - E2E: explicit consent checkbox on registration; CI cache fixed across operating systems
 
 **Full Changelog**: https://github.com/CompassConnections/Compass/compare/1.15.0...1.44.0
+
+<!-- Store release notes. Play: paste the tagged block whole (500 chars/language).
+     App Store Connect: paste each language into "What's New in This Version" without the tags.
+
+<en-US>
+• Compass is now on iPhone and iPad, alongside Android and the web
+• Two-way search: results only show people who would also be open to you
+• Say once how far is too far, instead of setting a radius every search
+• Filter by country, and search interests, causes and work as you type
+• Your referral constellation, a blog, and a full guide to meeting safely
+• Search your conversations, and find members by name
+• Steadier sign-in, a new share panel, and clearer emails
+</en-US>
+<fr-FR>
+• Compass est sur iPhone et iPad, en plus d'Android et du web
+• Recherche réciproque : seules les personnes ouvertes à vous apparaissent
+• Indiquez une fois votre distance maximale, au lieu d'un rayon à chaque fois
+• Filtrez par pays ; intérêts, causes et métiers sont enfin cherchables
+• Votre constellation de parrainage, un blog et un guide de sécurité
+• Cherchez dans vos conversations et trouvez des membres par nom
+• Connexion plus fiable, nouveau panneau de partage et e-mails plus clairs
+</fr-FR>
+-->
 
 ---
 

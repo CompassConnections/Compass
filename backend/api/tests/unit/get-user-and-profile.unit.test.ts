@@ -33,9 +33,15 @@ describe('getUserAndProfile', () => {
         city: 'Mock city',
       }
 
-      const mockInterests = [{id: '1'}, {id: '2'}]
-      const mockCauses = [{id: '3'}]
-      const mockWork = [{id: '4'}, {id: '5'}]
+      const mockInterests = [
+        {id: '1', name: 'Chess'},
+        {id: '2', name: 'Hiking'},
+      ]
+      const mockCauses = [{id: '3', name: 'Climate'}]
+      const mockWork = [
+        {id: '4', name: 'Teaching'},
+        {id: '5', name: 'Research'},
+      ]
 
       mockPg.oneOrNone.mockResolvedValueOnce(mockUser).mockResolvedValueOnce(mockProfile)
 
@@ -53,6 +59,12 @@ describe('getUserAndProfile', () => {
           interests: mockInterests.map((e) => e.id),
           causes: mockCauses.map((e) => e.id),
           work: mockWork.map((e) => e.id),
+          // The labels ride along with the ids, index for index. The browser only holds the
+          // most-used slice of each taxonomy now, so a tag whose id it cannot name is dropped —
+          // which is every option a member has just created.
+          interests_names: mockInterests.map((e) => e.name),
+          causes_names: mockCauses.map((e) => e.name),
+          work_names: mockWork.map((e) => e.name),
           // Anyone can ask this endpoint for anyone's profile, so the date behind the age is blanked
           // out here — only `age`, which the database derives from it, ever reaches a reader.
           birth_date: null,

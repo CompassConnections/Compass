@@ -413,7 +413,7 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       username: z.string().min(1),
     }),
-    returns: {} as {user: User | null | undefined; profile: ProfileRow | null | undefined},
+    returns: {} as {user: User | null | undefined; profile: ProfileWithoutUser | null | undefined},
     summary: 'Get user and profile data by username (members-only profiles are redacted)',
     tag: 'Users',
   },
@@ -432,7 +432,7 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       username: z.string().min(1),
     }),
-    returns: {} as {user: User | null | undefined; profile: ProfileRow | null | undefined},
+    returns: {} as {user: User | null | undefined; profile: ProfileWithoutUser | null | undefined},
     summary: 'Get full user and profile data by username, for signed-in members',
     tag: 'Users',
   },

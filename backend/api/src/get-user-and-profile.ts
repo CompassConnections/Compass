@@ -43,26 +43,35 @@ export async function getUserAndProfile(username: string, viewerId?: string) {
   }
 
   // Parallel instead of sequential (like getProfileRow does in frontend)
+  //
+  // The names come back with the ids, index for index, the same way `get-profiles` sends them. The
+  // browser no longer holds a map of the whole taxonomy — only the most-used slice — so a profile
+  // carrying bare ids rendered its rarer tags as nothing at all (`profile-about.tsx` drops an id it
+  // cannot name). A freshly created option is never in the popular slice, so a tag someone had just
+  // typed was exactly the case that disappeared.
   const [interestsRes, causesRes, workRes] = await Promise.all([
     pg.any(
-      `SELECT interests.id 
+      `SELECT interests.id, interests.name 
             FROM profile_interests 
             JOIN interests ON profile_interests.option_id = interests.id 
-            WHERE profile_interests.profile_id = $1`,
+            WHERE profile_interests.profile_id = $1
+            ORDER BY interests.id`,
       [profileRes.id],
     ),
     pg.any(
-      `SELECT causes.id 
+      `SELECT causes.id, causes.name 
             FROM profile_causes 
             JOIN causes ON profile_causes.option_id = causes.id 
-            WHERE profile_causes.profile_id = $1`,
+            WHERE profile_causes.profile_id = $1
+            ORDER BY causes.id`,
       [profileRes.id],
     ),
     pg.any(
-      `SELECT work.id 
+      `SELECT work.id, work.name 
             FROM profile_work 
             JOIN work ON profile_work.option_id = work.id 
-            WHERE profile_work.profile_id = $1`,
+            WHERE profile_work.profile_id = $1
+            ORDER BY work.id`,
       [profileRes.id],
     ),
   ])
@@ -76,6 +85,9 @@ export async function getUserAndProfile(username: string, viewerId?: string) {
     interests: interestsRes.map((r: any) => String(r.id)),
     causes: causesRes.map((r: any) => String(r.id)),
     work: workRes.map((r: any) => String(r.id)),
+    interests_names: interestsRes.map((r: any) => r.name as string),
+    causes_names: causesRes.map((r: any) => r.name as string),
+    work_names: workRes.map((r: any) => r.name as string),
   }
 
   return {user, profile: profileWithItems}

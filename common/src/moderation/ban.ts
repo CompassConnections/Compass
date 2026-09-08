@@ -1,7 +1,7 @@
 // Max number of new conversations a user may start within a rolling 24h window.
 // Creating one more than this auto-bans them for suspected spam (see
 // `backend/api/src/create-private-user-message-channel.ts`).
-export const MAX_NEW_CHANNELS_PER_DAY = 5
+export const MAX_NEW_CHANNELS_PER_DAY = 10
 
 // Machine-readable marker on the APIError details, so the frontend can tell an automatic
 // "account on hold, pending human review" ban apart from a deliberate admin ban and show the

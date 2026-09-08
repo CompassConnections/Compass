@@ -20,15 +20,15 @@ This is more defensible here than in a typical multi-platform project. Android a
 shells around the _same_ `web/` static export, so the same version really is the same product code —
 not three codebases that happen to release together.
 
-### Reconciling the current split
+### Reconciling a split
 
-They have drifted: root `package.json` is at `1.15.0` while both mobile shells are at `1.42.0`. The
-mobile numbers cannot go backwards — Apple requires `CFBundleShortVersionString` to increase across App
-Store releases — so converging means bringing the root up.
+Reconciled at `1.44.0`: root `package.json` had sat at `1.15.0` while both mobile shells reached
+`1.43.0`, so converging meant bringing the root up. The mobile numbers could not come down — Apple
+requires `CFBundleShortVersionString` to increase across App Store releases — and the one-off cost was
+a gap in the tag history (`1.15.0` → `1.44.0`), which is cosmetic.
 
-Do it at the next release: set root `package.json` to the mobile number and carry on from there. The
-one-off cost is a gap in the tag history (`1.15.0` → `1.42.0`), which is cosmetic; the alternative is
-permanently divorced numbering for a single codebase.
+Should they drift again, the same rule applies, and `scripts/bump-version.sh` applies it for you: it
+derives the next version from the _highest_ of the three, never the root alone.
 
 ### What is _not_ synced
 
@@ -52,6 +52,32 @@ The goal is that a version number is _meaningful_, not that the three are byte-i
 instant.
 
 ## Releasing
+
+### Bumping the version
+
+```bash
+yarn bump              # minor step everywhere (1.44.0 -> 1.45.0), plus one on each build counter
+yarn bump --dry-run    # print the five numbers it would change, write nothing
+yarn bump 2.0.0        # bump to an explicit version instead of the next minor
+```
+
+`scripts/bump-version.sh` writes all five numbers a release moves: `version` in root `package.json`,
+`versionName` + `versionCode` in `android/app/build.gradle`, and `MARKETING_VERSION` +
+`CURRENT_PROJECT_VERSION` in `project.pbxproj` (both build configurations of each). The version is one
+minor step up from the highest of the three currently on disk; the two counters advance by one from
+their own current values, independently, because they are not shared.
+
+It edits files and stops there — no commit, no tag, no push. It refuses a version that is not higher
+than what is already on disk, since both stores reject an upload that goes backwards, and it reads
+every number back after writing rather than trusting the substitutions: a regex that quietly matched
+nothing is the silent half-bump the script exists to prevent. It also warns when `CHANGELOG.md` has no
+entry for the new version, because `scripts/release.sh` would then fall back to `--generate-notes` and
+that fallback is what `/news` would show.
+
+Write the `CHANGELOG.md` entry first, then bump, then push — the entry has to name the version that
+ends up in root `package.json`.
+
+### What each push triggers
 
 - **Web / GitHub release / announcements** — bump root `package.json`, push to `main`. `cd.yml` runs
   `scripts/release.sh`, which tags, creates the release from the `CHANGELOG.md` entry, then fans out to

@@ -24,6 +24,178 @@ only runs at tag-creation time, so it won't touch releases that already exist.
 
 ---
 
+## 1.44.0 — 2026-09-08
+
+> Version numbers converge here: web, Android and iOS now share one number (see
+> [`docs/releases.md`](docs/releases.md)). The jump from `1.15.0` is the one-off cost of bringing the
+> root up to the mobile shells — nothing was released as `1.16.0`–`1.43.0`.
+
+### New features
+
+- **Compass is on iPhone and iPad.** The iOS app is live on the App Store, alongside Android and the
+  web. A new download page gives every device the right store — with a QR code for anyone reading on a
+  laptop
+- **Two-way search**: results now only include people who would also be open to you, matching on gender,
+  age, distance, connection type and kid desire. Anything someone left blank still passes — silence
+  isn't a rejection. On by default, and you can turn it off any time
+- Say how far away is too far, once, in "Who I'm looking for" — and be left out of searches beyond that
+  instead of turning a radius dial on every search. No limit is the default
+- The kid-desire filter is now a band across the five answers rather than a single value that quietly
+  swept in everything above or below it
+- Filter by country
+- Interests, causes and work are searchable and no longer duplicated: "Gaming", "gaming" and "GAMING"
+  were three separate options, and typing "computer programming" found nothing. Search now ranks over
+  names, translations and former names, the picker leads with the most-used options, and it shows you an
+  existing option before offering to create a new one
+- **Your referral constellation**: a star map of who joined through your link, and who joined through
+  them
+- **Blog**: posts on Compass, with a listing and individual post pages
+- **Safety guide**: a full page on meeting people safely, in English, French and German, linked from
+  help, onboarding and the messages view
+- Search your conversations, and search members by name or username when starting a new message
+- A redesigned share panel with ready-made messages and LinkedIn and X support
+- Separate consent for being featured on Compass's own social media, nested under the existing spotlight
+  toggle — and worded honestly about what withdrawing it can and can't undo
+- Start signing up and never finish, and you now get one email about it, with a page to delete the
+  leftover login yourself
+- Fill your profile from a Setup Sheet link, alongside the existing Notion and Firefly imports
+- Admins now carry a visible badge
+
+### Improvements
+
+- Search returns up to 500 profiles instead of 100
+- Signing in is steadier: Google always offers the account chooser, cancelling a social sign-in no longer
+  looks like an error, and failures say what to actually do
+- Photos imported with your profile are rehosted on Compass instead of hotlinked, and the first one can
+  become your profile picture
+- The referral constellation loads its faces through the image optimiser — a star used to pull the full
+  ~1 MB original to draw a face a few dozen pixels across
+- Compass may ask you to rate it in the App Store or Play Store — at sensible moments, rarely, and
+  capped for good
+- Redesigned emails on one shared template, with dark-mode rendering fixed across mail clients
+- Clearer onboarding copy and button labels; shorter share and welcome emails
+- US locations read consistently as "USA" everywhere — search, storage and display
+- Better mobile keyboard and scroll behaviour: the view no longer jumps around the on-screen keyboard,
+  the chat composer and editor stop stealing drags, and the iOS bottom bar sits where it should
+- Home page spotlights are now a carousel and show six members
+- Proposal pages get proper link previews and search metadata
+- Upload failures explain what went wrong instead of failing silently
+- The delete-account survey is down to six options
+- Admins can message members who have direct messages turned off
+- Profile write-up import reports backend errors instead of a generic failure
+
+### Trust & safety
+
+- Members-only profiles were reaching logged-out visitors in full — the page showed a placeholder while
+  the row itself travelled to the browser. Redaction now happens in the database function every browser
+  can reach, not in the component
+- Uploads are confined to per-user storage paths, enforced by the storage rules rather than by the
+  client picking a folder
+- Links you paste for profile import are fetched through a hardened fetcher with scheme, redirect and
+  size limits
+- The admin badge can't be forged, and staff names and usernames can't be impersonated
+- Outreach emails skip members who only just signed up
+- Logins that never became accounts are now tracked and swept, after one notice
+- iOS ships a privacy manifest, with tracking compliance checked in CI
+
+<!--tech-->
+
+### Database
+
+- New migrations: `20260822_add_blog_posts.sql`, `20260822_add_referred_by_user_id.sql`,
+  `20260822_add_social_media_consent.sql`, `20260824_add_review_prompts.sql`,
+  `20260826_raise_get_display_users_cap.sql`, `20260901_redact_member_only_profiles.sql`,
+  `20260905_add_unfinished_signups.sql`, `20260907_add_pref_max_distance.sql`,
+  `20260907_canonical_options.sql`
+- `get_profile_by_user_id()` redacts `visibility = 'member'` rows for `anon` down to
+  `user_id`/`visibility`/`disabled`; the two client reads that legitimately need the whole row moved to
+  the authenticated `get-profile` endpoint
+- Options gained a canonical identity: `UNIQUE (lower(name))` replaces the misnamed `idx_*_name_ci`
+  indexes, per-table `*_aliases` records the names that lose a merge, `usage_count` breaks ranking ties,
+  and an `AFTER UPDATE OF name` trigger rebuilds holders' `search_text` on rename
+- `profiles.pref_max_distance` (miles, `NULL` = no limit) with a btree index; `wants_kids_strength` is
+  replaced by the `wants_kids_range_min`/`_max` band
+- `get_display_users` row cap raised 100 → 500
+- `unfinished_signups` deliberately stores no email address and no FK to `users`; `review_prompts`
+  records asks, not reviews, since the store APIs report nothing back
+
+### Backend & API
+
+- New endpoints: `search-options`, `check-option-name`, `rename-option`, `merge-options`,
+  `set-option-alias`, `delete-option`, `get-options-admin`, `get-countries`, `get-blog-post(s)`,
+  `get-blog-posts-admin`, `create-blog-post`, `update-blog-post`, `get-referral-tree`,
+  `get-my-referral-count`, `request-review-prompt`, `sweep-unfinished-signups`,
+  `delete-unfinished-signup`
+- `twoWay` search costs one extra query, only when the toggle is on; each mutual check is skipped when
+  the searcher has nothing to compare with. `pickKnownFilters` strips the retired
+  `wants_kids_strength` out of cached localStorage and bookmarked searches so neither can 400 a strict
+  props check
+- `llm-extract-profile` gained Setup Sheet extraction (`recordId` → record fetch → per-heading
+  `JSONContent`), `rehostExternalImages` with username-based foldering, and an `error` field on cached
+  results
+- `safeFetch` (`backend/api/src/helpers/safe-fetch.ts`) for user-supplied URLs; documented alongside
+- `normalizeCountry` applied across search, DB writes and display, with `UNITED_STATES` centralised in
+  the GeoDB module
+- `OUTREACH_MIN_DAYS_SINCE_SIGNUP` shared by the `city-number` and `empty-room` jobs
+- Discord hooks on new releases and new proposals; report descriptions included in report notifications
+- API version 1.66.0 → 1.77.0
+
+### Web
+
+- New pages: `blog/index`, `blog/[slug]`, `admin/blog`, `admin/options`, `constellation`, `download`,
+  `safety`, `delete-unfinished-signup`
+- `optimizedImageUrl` addresses the Next image optimiser by hand for surfaces that must build a URL
+  themselves (SVG `<image href>` in the constellation); media viewer switched to plain `<img>` where
+  `next/image` blocked external hosts
+- Webview image loader (`next.config.ts`) routes app-build images through the deployed web app so static
+  export keeps optimisation
+- Visual-viewport keyboard handling extended across components; `overscroll-behavior` containment in the
+  chat composer, editor and scroll panel
+- `SaveReferral` captures referrals app-wide; `invalidateProfilesCache` / `removeProfileFromCache`;
+  `clampQuestionIndex` guards a shrinking question list
+- `SharePanel` / `ShareCompassButton` replace `ShareCTAButton`; `AdminBadge`; searchable select reused by
+  the country filter and the option pickers
+- Compatibility answers fetch in one consolidated request with an explicit refresh
+- Locale and consent persist in `localStorage` for WKWebView; diagnostics generalised from Android-only
+  to `NativeApp` with per-platform labels
+
+### iOS
+
+- The shell landed this cycle: `NextExportRouter` / `NextExportViewController` resolve extension-less
+  static and dynamic export paths; `ios_plugin_classlist.mjs` fails the build when plugins don't
+  register; deployment target raised to 15.0; app name `Compass Meet`; `contentInset = never`
+- `initializeAuth` instead of `getAuth` to dodge the gapi iframe on `capacitor://localhost`; Google
+  sign-in presenter patched idempotently via `postinstall` for the iOS 15+ window lookup
+- `cd-ios.yml` builds on `macos-15` and uploads to TestFlight; Ruby setup reordered for Capacitor 7's
+  `cap sync`; WebView debugging off by default for App Store builds
+- Privacy manifest plus `verify_ios_privacy.sh`; App Review replies documented in
+  `docs/app-review-reply.md`
+- `MARKETING_VERSION` 1.44.0, `CURRENT_PROJECT_VERSION` 20
+
+### Android
+
+- versionCode 157 → 175, versionName 1.39.0 → 1.44.0
+- Native deep-link handling removed in favour of the Capacitor solution, with an external-redirects
+  handler for deep-linked paths
+- Live-update scripts removed from the build pipeline
+
+### Tooling, scripts & docs
+
+- `capture-store.mjs` / `render-store.mjs` automate App Store and Play screenshots (iPad canvas
+  included); `make-x-ad.py` renders 1080×1080 feed creatives from demographic stats
+- `scripts/cap.sh`, `sync_ios.sh`, `build_sync_ios.sh`, `webview-eval.mjs` for WKWebView evaluation via
+  `ios-webkit-debug-proxy`
+- New docs: `releases.md`, `app-store-reviews.md`, `app-store-listing.md` (+ `fr-FR` listing JSON),
+  `app-review-reply.md`, `git-stash.md`, `feature-ideas.md`, the relationship-science module drafts, and
+  the Sign in with Apple design note. Removed the stale `dev-rules.mdc`, `guidelines.md` and `rules`
+- Store assets scrubbed of price wording for App Store guideline 2.3.7; `sharp` pinned to `^0.34.5` with
+  install troubleshooting written up
+- E2E: explicit consent checkbox on registration; CI cache fixed across operating systems
+
+**Full Changelog**: https://github.com/CompassConnections/Compass/compare/1.15.0...1.44.0
+
+---
+
 ## 1.15.0 — 2026-08-17
 
 ### New features

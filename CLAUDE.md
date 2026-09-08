@@ -68,6 +68,16 @@ Every new migration must also be appended to `backend/supabase/migration.sql` (`
 backend/supabase/migrations/<file>.sql`, before the closing `COMMIT;`) — that ordered list is what rebuilds
 the schema from scratch.
 
+Releases:
+
+```bash
+yarn bump                                             # version + build counters, all three platforms
+yarn bump --dry-run                                   # show the five numbers it would change
+```
+
+Bump, don't hand-edit: web, Android and iOS share one version number, and the two store build counters
+must each advance on their own. Details in [`docs/releases.md`](docs/releases.md).
+
 ## Adding an API endpoint (3 files across 2 packages)
 
 1. **Schema** — add entry (method, `authed`, Zod `props`, `returns`) in `common/src/api/schema.ts`.

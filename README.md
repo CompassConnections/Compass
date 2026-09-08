@@ -120,7 +120,6 @@ just ask us on [Discord](https://discord.gg/8Vd7jzqjun).
 - [x] Add better onboarding (tooltips, modals, etc.)
 - [ ] Add modules to learn more about each other (personality test, conflict style, love languages, etc.)
 - [ ] Add modules to improve interpersonal skills (active listening, nonviolent communication, etc.)
-- [ ] Add calendar integration and scheduling
 - [x] Add events (group calls, in-person meetups, etc.)
 
 #### Secondary To Do
@@ -147,6 +146,7 @@ contributors.
 - [ ] Add automated dependency and secret scanning to CI
 - [x] Make `deploy-api.sh` run automatically on push to `main` branch
 - [x] Create settings page (change email, password, delete account, etc.)
+- [ ] Add calendar integration and scheduling
 - [ ] Improve [financials](web/public/md/financials.md) page (donor / acknowledgments, etc.)
 - [x] Improve loading sign (e.g., animation of a compass moving around)
 - [x] Show compatibility score in profile page

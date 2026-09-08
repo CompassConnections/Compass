@@ -39,7 +39,6 @@ import {useCompatibleProfiles} from 'web/hooks/use-profiles'
 import {useCompatibilityQuestionGroups, useUserCompatibilityAnswers} from 'web/hooks/use-questions'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
-import {db} from 'web/lib/supabase/db'
 
 import {CompatibilityScoreBar} from '../widgets/compatible-badge'
 import {Subtitle} from '../widgets/profile-subtitle'
@@ -122,11 +121,20 @@ export function CompatibilityQuestionsDisplay(props: {
   const [searchTerm, setSearchTerm] = useState('')
 
   const comparedUserId = fromProfilePage?.user_id ?? currentUser?.id
-  const {compatibilityAnswers: comparedAnswers} = useUserCompatibilityAnswers(comparedUserId)
+  const {
+    compatibilityAnswers: comparedAnswers,
+    refreshCompatibilityAnswers: refreshComparedAnswers,
+  } = useUserCompatibilityAnswers(comparedUserId)
+
+  // One lookup built once for the whole list. Each row used to fetch its own compared answer, which
+  // meant one request per rendered prompt on every profile visit.
+  const questionIdToComparedAnswer = useMemo(
+    () => keyBy(comparedAnswers, 'question_id'),
+    [comparedAnswers],
+  )
 
   const sortedAndFilteredAnswers = useMemo(() => {
     debug('Refreshing sortedAndFilteredAnswers')
-    const questionIdToComparedAnswer = keyBy(comparedAnswers, 'question_id')
     return sortBy(
       answers.filter((a) => {
         // if (a.question_id < 10) console.log({a, sort})
@@ -162,7 +170,7 @@ export function CompatibilityQuestionsDisplay(props: {
       // Then by whether they wrote an explanation.
       (a) => (a.explanation ? 0 : 1),
     )
-  }, [answers, compatibilityQuestions, comparedAnswers, searchTerm, sort])
+  }, [answers, compatibilityQuestions, questionIdToComparedAnswer, searchTerm, sort])
 
   // Each list scrolls to its own top, not to a shared one — paging the pinned list must not yank the
   // reader down to the main list, or vice versa.
@@ -214,6 +222,8 @@ export function CompatibilityQuestionsDisplay(props: {
               <CompatibilityAnswerBlock
                 key={`pinned-${answer.question_id}`}
                 answer={answer}
+                comparedAnswer={questionIdToComparedAnswer[answer.question_id]}
+                refreshComparedAnswers={refreshComparedAnswers}
                 yourQuestions={answeredQuestions}
                 user={user}
                 isCurrentUser={isCurrentUser}
@@ -304,6 +314,8 @@ export function CompatibilityQuestionsDisplay(props: {
                 <CompatibilityAnswerBlock
                   key={answer.question_id}
                   answer={answer}
+                  comparedAnswer={questionIdToComparedAnswer[answer.question_id]}
+                  refreshComparedAnswers={refreshComparedAnswers}
                   yourQuestions={answeredQuestions}
                   user={user}
                   isCurrentUser={isCurrentUser}
@@ -383,6 +395,10 @@ export function CompatibilityQuestionsDisplay(props: {
 
 export function CompatibilityAnswerBlock(props: {
   answer?: rowFor<'compatibility_answers'>
+  // The compared profile's answer to this same question, resolved by the list that owns the whole set
+  // of them — never fetched here, one row at a time.
+  comparedAnswer?: rowFor<'compatibility_answers'>
+  refreshComparedAnswers?: () => void
   yourQuestions: QuestionWithStats[]
   question?: QuestionWithStats
   user: User
@@ -395,6 +411,8 @@ export function CompatibilityAnswerBlock(props: {
 }) {
   const {
     answer,
+    comparedAnswer,
+    refreshComparedAnswers,
     yourQuestions,
     user,
     profile,
@@ -497,6 +515,8 @@ export function CompatibilityAnswerBlock(props: {
                 question={question}
                 profile1={profile}
                 answer1={answer}
+                answer2={comparedAnswer}
+                refreshAnswer2={refreshComparedAnswers}
                 profile2={comparedProfile as Profile}
                 currentUserIsComparedProfile={!fromProfilePage}
                 currentUser={currentUser}
@@ -655,6 +675,8 @@ export function CompatibilityAnswerBlock(props: {
               question={question}
               profile1={profile}
               answer1={answer}
+              answer2={comparedAnswer}
+              refreshAnswer2={refreshComparedAnswers}
               profile2={comparedProfile as Profile}
               currentUserIsComparedProfile={!fromProfilePage}
               currentUser={currentUser}
@@ -717,35 +739,25 @@ function CompatibilityDisplay(props: {
   profile1?: Profile
   profile2: Profile
   answer1: rowFor<'compatibility_answers'>
+  // Handed down from the list, which loads every compared answer in a single request.
+  answer2?: rowFor<'compatibility_answers'>
+  refreshAnswer2?: () => void
   currentUserIsComparedProfile: boolean
   currentUser: User | null | undefined
   className?: string
 }) {
-  const {question, profile1, profile2, answer1, currentUserIsComparedProfile, currentUser} = props
+  const {
+    question,
+    profile1,
+    profile2,
+    answer1,
+    answer2,
+    refreshAnswer2,
+    currentUserIsComparedProfile,
+    currentUser,
+  } = props
 
   const t = useT()
-
-  const [answer2, setAnswer2] = useState<rowFor<'compatibility_answers'> | null | undefined>(
-    undefined,
-  )
-
-  async function getComparedProfileAnswer() {
-    db.from('compatibility_answers')
-      .select()
-      .eq('creator_id', profile2.user_id)
-      .eq('question_id', question.id)
-      .then((res) => {
-        if (res.error) {
-          console.error(res.error)
-          return
-        }
-        setAnswer2(res.data[0] ?? null)
-      })
-  }
-
-  useEffect(() => {
-    getComparedProfileAnswer()
-  }, [])
 
   const [open, setOpen] = useState(false)
 
@@ -773,7 +785,7 @@ function CompatibilityDisplay(props: {
         <AnswerCompatibilityQuestionButton
           user={currentUser}
           otherQuestions={[question]}
-          refreshCompatibilityAll={getComparedProfileAnswer}
+          refreshCompatibilityAll={refreshAnswer2 ?? (() => {})}
           size="sm"
         />
       ) : (

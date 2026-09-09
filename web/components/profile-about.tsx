@@ -985,7 +985,7 @@ export function ProfileAccessibility(props: {profile: Profile}) {
 
   return (
     <div
-      className="text-primary-900"
+      className="text-ink-600"
       style={{fontSize: '15px', lineHeight: '1.55', whiteSpace: 'pre-wrap'}}
     >
       {notes}

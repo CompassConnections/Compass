@@ -80,6 +80,26 @@ const scrollListIntoView = (ref: RefObject<HTMLDivElement | null>) => {
   el.scrollIntoView({block: 'start', behavior: 'smooth'})
 }
 
+/**
+ * Reciprocity: you read someone's answer to a prompt once you've answered it yourself, and until then the
+ * row shows the question and a way to answer it instead. Front-end only — the answer is already in the
+ * payload; this is a nudge, not a privacy boundary. A skipped answer counts as unanswered, the same way
+ * scoring and `showCreateAnswer` already treat it. Only applies when the comparison is against the reader:
+ * `fromProfilePage` compares two other people, and there is nobody to nudge there.
+ */
+const isPromptHiddenUntilYouAnswer = (
+  comparedAnswer: rowFor<'compatibility_answers'> | undefined,
+  opts: {
+    isCurrentUser: boolean
+    fromProfilePage?: Profile
+    currentUser: User | null | undefined
+  },
+) =>
+  !opts.isCurrentUser &&
+  !opts.fromProfilePage &&
+  !!opts.currentUser &&
+  (!comparedAnswer || comparedAnswer.importance === -1)
+
 export function CompatibilityQuestionsDisplay(props: {
   isCurrentUser: boolean
   user: User
@@ -140,7 +160,18 @@ export function CompatibilityQuestionsDisplay(props: {
         // if (a.question_id < 10) console.log({a, sort})
         const question = compatibilityQuestions.find((q) => q.id === a.question_id)
         const comparedAnswer = questionIdToComparedAnswer[a.question_id]
-        if (question && !isMatchingSearch({...question, answer: a}, searchTerm)) return false
+        // A covered answer must not be findable by its own text either, so a locked prompt is searched
+        // by its question alone.
+        const isHidden = isPromptHiddenUntilYouAnswer(comparedAnswer, {
+          isCurrentUser,
+          fromProfilePage,
+          currentUser,
+        })
+        if (
+          question &&
+          !isMatchingSearch({...question, answer: isHidden ? undefined : a}, searchTerm)
+        )
+          return false
         if (sort === 'disagree') {
           // Answered and not skipped.
           if (!comparedAnswer || comparedAnswer.importance < 0) return false
@@ -170,7 +201,16 @@ export function CompatibilityQuestionsDisplay(props: {
       // Then by whether they wrote an explanation.
       (a) => (a.explanation ? 0 : 1),
     )
-  }, [answers, compatibilityQuestions, questionIdToComparedAnswer, searchTerm, sort])
+  }, [
+    answers,
+    compatibilityQuestions,
+    currentUser,
+    fromProfilePage,
+    isCurrentUser,
+    questionIdToComparedAnswer,
+    searchTerm,
+    sort,
+  ])
 
   // Each list scrolls to its own top, not to a shared one — paging the pinned list must not yank the
   // reader down to the main list, or vice versa.
@@ -474,6 +514,12 @@ export function CompatibilityAnswerBlock(props: {
   const isAnswered = answer && answer.multiple_choice > -1
   const isSkipped = answer && answer.importance == -1
 
+  const isHiddenUntilYouAnswer = isPromptHiddenUntilYouAnswer(comparedAnswer, {
+    isCurrentUser,
+    fromProfilePage,
+    currentUser,
+  })
+
   const shortenedPopularity = question.answer_count ? shortenNumber(question.answer_count) : null
 
   return (
@@ -520,6 +566,7 @@ export function CompatibilityAnswerBlock(props: {
                 profile2={comparedProfile as Profile}
                 currentUserIsComparedProfile={!fromProfilePage}
                 currentUser={currentUser}
+                isHiddenUntilYouAnswer={isHiddenUntilYouAnswer}
               />
             </div>
           )}
@@ -602,7 +649,7 @@ export function CompatibilityAnswerBlock(props: {
       {/* The chosen answer is the value of the question above it, exactly as "Student" is the value of
           "Work" — so it gets the value treatment rather than a pill. Pills in this design mean
           "clickable", and this one never was. */}
-      {answerText && (
+      {answerText && !isHiddenUntilYouAnswer && (
         <div
           className="text-primary-900 mt-1"
           style={{fontSize: '16px', lineHeight: '1.35'}}
@@ -613,7 +660,7 @@ export function CompatibilityAnswerBlock(props: {
       )}
       {/* Free text the member wrote themselves — the only sentence in the block that is theirs, so it
           keeps the serif italic the tagline uses. The keyline it used to hang off is gone. */}
-      {answer?.explanation && (
+      {answer?.explanation && !isHiddenUntilYouAnswer && (
         <div
           className="font-heading text-ink-500 italic"
           style={{fontSize: '15px', lineHeight: '1.55'}}
@@ -622,7 +669,7 @@ export function CompatibilityAnswerBlock(props: {
           <Linkify text={`“${answer.explanation}”`} />
         </div>
       )}
-      {distinctPreferredAnswersText.length > 0 && (
+      {distinctPreferredAnswersText.length > 0 && !isHiddenUntilYouAnswer && (
         <div
           className="text-ink-500 mt-1"
           style={{fontSize: '14px', lineHeight: '1.55'}}
@@ -647,6 +694,32 @@ export function CompatibilityAnswerBlock(props: {
             </span>
           ))}
         </div>
+      )}
+      {/* Takes the place of the answer, so the row still has a value under its question — here the
+          value is what the reader has to do to see it. */}
+      {isHiddenUntilYouAnswer && (
+        <Row
+          className="mt-1 flex-wrap items-center gap-x-3 gap-y-2"
+          data-testid="profile-compatibility-question-hidden"
+        >
+          <span
+            className="text-ink-400 font-dm-sans uppercase"
+            style={{fontSize: '10px', letterSpacing: '0.16em'}}
+          >
+            {t('answers.display.hidden', 'Hidden')}
+          </span>
+          <span className="text-ink-500" style={{fontSize: '15px', lineHeight: '1.35'}}>
+            {t('answers.display.answer_to_reveal', "Answer this prompt to see {name}'s answer", {
+              name: shortenName(user.name),
+            })}
+          </span>
+          <AnswerCompatibilityQuestionButton
+            user={currentUser}
+            otherQuestions={[question]}
+            refreshCompatibilityAll={refreshComparedAnswers ?? (() => {})}
+            size="sm"
+          />
+        </Row>
       )}
       {!isAnswered && (
         <Row className="flex-wrap gap-2 mt-0">
@@ -680,6 +753,7 @@ export function CompatibilityAnswerBlock(props: {
               profile2={comparedProfile as Profile}
               currentUserIsComparedProfile={!fromProfilePage}
               currentUser={currentUser}
+              isHiddenUntilYouAnswer={isHiddenUntilYouAnswer}
             />
           </Row>
         )}
@@ -744,6 +818,10 @@ function CompatibilityDisplay(props: {
   refreshAnswer2?: () => void
   currentUserIsComparedProfile: boolean
   currentUser: User | null | undefined
+  // This prompt's answer is covered until the reader answers it themselves: the block already carries
+  // the nudge, so the badge row drops its duplicate button, and the comparison modal — reachable from
+  // the importance badge, which stays visible — shows the nudge instead of their accepted answers.
+  isHiddenUntilYouAnswer?: boolean
   className?: string
 }) {
   const {
@@ -755,6 +833,7 @@ function CompatibilityDisplay(props: {
     refreshAnswer2,
     currentUserIsComparedProfile,
     currentUser,
+    isHiddenUntilYouAnswer,
   } = props
 
   const t = useT()
@@ -782,12 +861,14 @@ function CompatibilityDisplay(props: {
       <ImportanceButton importance={importanceScore} onClick={() => setOpen(true)} />
 
       {showCreateAnswer || answerCompatibility === undefined || !answer2 ? (
-        <AnswerCompatibilityQuestionButton
-          user={currentUser}
-          otherQuestions={[question]}
-          refreshCompatibilityAll={refreshAnswer2 ?? (() => {})}
-          size="sm"
-        />
+        isHiddenUntilYouAnswer ? null : (
+          <AnswerCompatibilityQuestionButton
+            user={currentUser}
+            otherQuestions={[question]}
+            refreshCompatibilityAll={refreshAnswer2 ?? (() => {})}
+            size="sm"
+          />
+        )
       ) : (
         <>
           {/* Still a button, still opens the comparison modal — only the weight changed. Outlined
@@ -826,7 +907,28 @@ function CompatibilityDisplay(props: {
                 <ImportanceDisplay importance={answer1.importance} />
               </span>
             </div>
-            {!answer2 && <PreferredListNoComparison question={question} answer={answer1} />}
+            {!answer2 &&
+              (isHiddenUntilYouAnswer ? (
+                <Col className="items-start gap-3">
+                  <div className="text-ink-500 text-sm">
+                    {t(
+                      'answers.display.answer_to_reveal',
+                      "Answer this prompt to see {name}'s answer",
+                      {
+                        name: shortenName(user1.name),
+                      },
+                    )}
+                  </div>
+                  <AnswerCompatibilityQuestionButton
+                    user={currentUser}
+                    otherQuestions={[question]}
+                    refreshCompatibilityAll={refreshAnswer2 ?? (() => {})}
+                    size="sm"
+                  />
+                </Col>
+              ) : (
+                <PreferredListNoComparison question={question} answer={answer1} />
+              ))}
             {answer2 && (
               <>
                 <PreferredList

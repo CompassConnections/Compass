@@ -99,6 +99,7 @@ import {getOutreachStats} from './get-outreach-stats'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfileFeed} from './get-profile-feed'
 import {getProfiles} from './get-profiles'
+import {getReferralLeaderboardHandler} from './get-referral-leaderboard'
 import {getReferralTreeHandler} from './get-referral-tree'
 import {getSearchAlert} from './get-search-alert'
 import {getSpotlights} from './get-spotlights'
@@ -699,6 +700,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-my-referrals': getMyReferrals,
   'get-my-referral-count': getMyReferralCount,
   'get-referral-tree': getReferralTreeHandler,
+  'get-referral-leaderboard': getReferralLeaderboardHandler,
   'update-outreach-contact': updateOutreachContact,
   'create-outreach-search': createOutreachSearch,
   'get-search-alert': getSearchAlert,

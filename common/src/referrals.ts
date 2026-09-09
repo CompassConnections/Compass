@@ -72,3 +72,51 @@ export const MAX_REFERRAL_TREE_DEPTH = 8
  * `stats.truncated` tells the page to say so out loud rather than quietly showing a partial sky.
  */
 export const MAX_REFERRAL_TREE_NODES = 2000
+
+/**
+ * One row of the direct-referral leaderboard.
+ *
+ * **`direct` only, never the whole tree.** The board ranks people by who they personally brought,
+ * which is the only part of a constellation a member actually did. Ranking on the recursive total
+ * would mean the top of the board was decided by what the people you invited went on to do — a
+ * quantity nobody can influence, that compounds fastest for whoever joined earliest, and that would
+ * make the board a seniority list wearing a contest's clothes.
+ */
+export type ReferralLeaderboardEntry = {
+  /**
+   * Competition rank: equal counts share a rank and the next one skips (1, 2, 2, 4). Assigned by the
+   * query rather than the row's position, so the caller's own row carries a true rank even when it is
+   * appended from far down the board.
+   */
+  rank: number
+  userId: string
+  name: string
+  username: string
+  avatarUrl: string | null
+  /** People who signed up with this member recorded as their referrer. */
+  direct: number
+  /** When the most recent of those signed up. Doubles as the tiebreak within a rank. */
+  latestReferralTime: string
+}
+
+export type ReferralLeaderboard = {
+  /** The top of the board, best first. At most `REFERRAL_LEADERBOARD_LIMIT` rows. */
+  entries: ReferralLeaderboardEntry[]
+  /**
+   * The caller's own row, whether or not it is in `entries` — that is the whole point of the board for
+   * the person reading it. `null` when they have referred nobody, which is not a rank-zero position but
+   * an absence from the ranking altogether.
+   */
+  you: ReferralLeaderboardEntry | null
+  /** How many members have brought at least one person. The denominator behind "#12 of 340". */
+  totalReferrers: number
+}
+
+/**
+ * How many rows the board shows.
+ *
+ * Long enough that reaching it is a real threshold and short enough that the page is still a page.
+ * The caller's own row is fetched regardless of this, so raising it would add names, not usefulness,
+ * for anyone below it.
+ */
+export const REFERRAL_LEADERBOARD_LIMIT = 100

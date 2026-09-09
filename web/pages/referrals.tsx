@@ -211,14 +211,29 @@ function ConstellationHero() {
           </dl>
         )}
 
-        <Link
-          href="/constellation"
-          className={clsx(buttonClass('xl', 'cta'), 'group mt-8 w-fit gap-2')}
-        >
-          <SparklesIcon className="h-5 w-5" />
-          {t('referrals.cta.button', 'See your constellation')}
-          <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 ease-out group-hover:translate-x-1" />
-        </Link>
+        {/* Two destinations, one emphasis. The constellation is what this member made and keeps the
+            filled button; the leaderboard is a comparison against everyone else, which is worth
+            offering and not worth pushing, so it is a quiet link beside it rather than a second
+            button competing with the first. */}
+        <Row className="mt-8 flex-wrap items-center gap-x-6 gap-y-3">
+          <Link
+            href="/constellation"
+            className={clsx(buttonClass('xl', 'cta'), 'group w-fit gap-2')}
+          >
+            <SparklesIcon className="h-5 w-5" />
+            {t('referrals.cta.button', 'See your constellation')}
+            <ArrowRightIcon className="h-4 w-4 transition-transform duration-200 ease-out group-hover:translate-x-1" />
+          </Link>
+
+          <Link
+            href="/leaderboard"
+            className="text-ink-600 hover:text-ink-900 group flex items-center gap-1.5 text-sm font-medium"
+          >
+            {/*<TrophyIcon className="text-primary-600 h-4 w-4" />*/}
+            {t('referrals.cta.leaderboard', 'Who has invited the most people')}
+            <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover:translate-x-1" />
+          </Link>
+        </Row>
       </div>
     </section>
   )

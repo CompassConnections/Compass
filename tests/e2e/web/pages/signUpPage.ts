@@ -373,7 +373,12 @@ export class SignUpPage {
    * of adding anything. That is the point of the feature, so the helper answers it explicitly: the
    * fixtures name the option they want, so "add it anyway" is the correct response.
    */
-  private async pickOrAddOption(section: Locator, field: Locator, addButton: Locator, name: string) {
+  private async pickOrAddOption(
+    section: Locator,
+    field: Locator,
+    addButton: Locator,
+    name: string,
+  ) {
     await expect(field).toBeVisible()
     await field.fill(name)
     // Debounced remote search, plus the round trip.

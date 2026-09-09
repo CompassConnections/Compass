@@ -1,8 +1,12 @@
 import {Notification} from 'common/notifications'
+import {isProfileVisibleTo} from 'common/profiles/visibility'
 import {
   MAX_REFERRAL_TREE_DEPTH,
   MAX_REFERRAL_TREE_NODES,
+  REFERRAL_LEADERBOARD_LIMIT,
   ReferralCount,
+  ReferralLeaderboard,
+  ReferralLeaderboardEntry,
   ReferralTree,
   ReferralTreeNode,
 } from 'common/referrals'
@@ -284,5 +288,110 @@ export const notifyReferrerOfSignup = async (
     } catch (error) {
       log.error(`Failed to push referral signup to ${referrer.id}`, {error})
     }
+  }
+}
+
+/**
+ * The direct-referral leaderboard, plus the caller's own place on it.
+ *
+ * One statement, not two. The board and "where am I" are the same ranking asked two questions, and
+ * splitting them would rank the whole table twice per page load — and, worse, could rank it twice
+ * against two different snapshots, so a member could be shown at #11 on a board whose eleventh row is
+ * someone else.
+ *
+ * **`rank` and `rn` are both needed and are not the same thing.** `rank` is what a reader is shown:
+ * equal counts share it, so two members who each brought nine people are both third. `rn` is a strict
+ * ordinal used only to cut the board at `limit` — cutting on `rank` would return every member of a tie
+ * that straddles the boundary, which for a large tie at the bottom is unbounded.
+ *
+ * **Who is left out.** Banned members and disabled profiles are excluded from the ranking entirely —
+ * this is the one referral surface that is a public celebration rather than a private record, and the
+ * standing rule that credit survives what someone did afterwards (see `getReferralTree`) is about not
+ * docking a count, not about putting that person on a podium. Their referrals still count towards
+ * everyone else's trees; it is only the row that goes. Members with no profile row are kept, via the
+ * left join: `create-user-and-profile` writes both together, so an absent profile is a data fault, not
+ * a deactivation, and it should not silently cost someone their place.
+ *
+ * **`viewerId` is optional, and decides two things.** The endpoint is public, so it is undefined for
+ * an anonymous caller: they get no `you` row, and every member whose profile is members-only comes
+ * back without a photo. That is the site's existing rule for a gated profile, not a new one invented
+ * for this board — name and username stay, the photo is profile content and goes (see
+ * `redactMemberOnlyUser`). It is applied here rather than in the page because a component that merely
+ * hides a field has still shipped it, in the response and in the props built from it.
+ */
+export const getReferralLeaderboard = async (
+  viewerId: string | undefined,
+  limit = REFERRAL_LEADERBOARD_LIMIT,
+  pg?: SupabaseDirectClient,
+): Promise<ReferralLeaderboard> => {
+  pg = pg ?? createSupabaseDirectClient()
+
+  const rows = await pg.manyOrNone<
+    ReferralLeaderboardEntry & {rn: string; totalReferrers: string; visibility: string | null}
+  >(
+    `with counts as (select p.referred_by_user_id as user_id,
+                            count(*)             as direct,
+                            max(u.created_time)  as latest_referral_time
+                     from profiles p
+                              join users u on u.id = p.user_id
+                     where p.referred_by_user_id is not null
+                     group by p.referred_by_user_id),
+          ranked as (select c.user_id,
+                            u.name,
+                            u.username,
+                            u.avatar_url,
+                            c.direct,
+                            c.latest_referral_time,
+                            rp.visibility,
+                            rank() over (order by c.direct desc)                                as rank,
+                            row_number() over (order by c.direct desc, c.latest_referral_time)  as rn,
+                            count(*) over ()                                                    as total_referrers
+                     from counts c
+                              join users u on u.id = c.user_id
+                              left join profiles rp on rp.user_id = u.id
+                     where not u.is_banned_from_posting
+                       and coalesce(rp.disabled, false) = false)
+     select user_id              as "userId",
+            name,
+            username,
+            avatar_url           as "avatarUrl",
+            direct::int          as direct,
+            latest_referral_time as "latestReferralTime",
+            rank::int            as rank,
+            visibility,
+            rn,
+            total_referrers      as "totalReferrers"
+     from ranked
+     where rn <= $2
+        or user_id = $1
+     order by rn`,
+    // `?? null` rather than leaving it undefined: an anonymous caller must produce a parameter that
+    // matches no row, and `user_id = null` is null — never true — which is exactly that.
+    [viewerId ?? null, limit],
+  )
+
+  // `count(*) over ()` is per-row, so an empty board carries the total nowhere. Zero is the only
+  // possible answer in that case anyway: the window counted the rows that would have been ranked.
+  const totalReferrers = rows.length ? Number(rows[0].totalReferrers) : 0
+
+  // Drops the two bookkeeping columns and `visibility`, which is an input to the redaction and not
+  // something a caller should be told about a member.
+  const strip = ({
+    rn: _rn,
+    totalReferrers: _total,
+    visibility,
+    ...entry
+  }: (typeof rows)[number]): ReferralLeaderboardEntry => ({
+    ...entry,
+    avatarUrl: isProfileVisibleTo({visibility}, viewerId) ? entry.avatarUrl : null,
+  })
+
+  const entries = rows.map(strip)
+
+  return {
+    entries: entries.filter((_, i) => Number(rows[i].rn) <= limit),
+    // `viewerId` guards the lookup so an undefined caller cannot be matched by an undefined column.
+    you: (viewerId && entries.find((r) => r.userId === viewerId)) || null,
+    totalReferrers,
   }
 }

@@ -49,7 +49,12 @@ import {
   SPOTLIGHT_STATUSES,
   SpotlightCandidate,
 } from 'common/profiles/spotlights'
-import {ReferralCount, ReferralTree} from 'common/referrals'
+import {
+  REFERRAL_LEADERBOARD_LIMIT,
+  ReferralCount,
+  ReferralLeaderboard,
+  ReferralTree,
+} from 'common/referrals'
 import {REVIEW_MOMENTS, ReviewTrigger} from 'common/reviews/prompt'
 import {CountryCount, RepoStats, Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
@@ -1755,6 +1760,33 @@ export const API = (_apiTypeCheck = {
     props: z.object({}).strict(),
     returns: {} as ReferralTree,
     summary: 'Everyone who is on Compass because of you, recursively.',
+    tag: 'Users',
+  },
+  'get-referral-leaderboard': {
+    method: 'GET',
+    // Public. A signed-in caller still sends their token (`typedAPICall` attaches it whatever the
+    // endpoint's `authed` says), which is what fills in the `you` row — so signing in adds to the
+    // response rather than unlocking it.
+    //
+    // What being public does *not* do is widen who may see a members-only profile. `visibility`
+    // defaults to 'member', so most rows on this board belong to gated profiles; an anonymous caller
+    // gets them under the same rule the rest of the site applies — name and username, no photo (see
+    // `redactMemberOnlyUser`). The handler enforces that, not the page.
+    authed: false,
+    rateLimited: true,
+    props: z
+      .object({
+        limit: z.coerce.number().min(1).max(REFERRAL_LEADERBOARD_LIMIT).optional(),
+      })
+      .strict(),
+    returns: {} as ReferralLeaderboard,
+    // `private` despite being a public endpoint, and that is not a contradiction: the response varies
+    // by caller — the `you` row, and whether avatars are redacted — so a shared cache holding one
+    // copy would serve someone else's place on the board, or hand an anonymous visitor the photos.
+    // Two minutes: long enough that opening the page from three places in a session costs one query,
+    // short enough that a member who just brought someone sees it move.
+    cache: 'private, max-age=120',
+    summary: 'The members who have personally invited the most people, and where you rank.',
     tag: 'Users',
   },
   'update-outreach-contact': {

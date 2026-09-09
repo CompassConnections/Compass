@@ -50,7 +50,7 @@ export const POLITICAL_CHOICES = {
   Technocratic: 'technocratic',
   Libertarian: 'libertarian',
   'Effective Accelerationism': 'e/acc',
-  'Pause AI / Tech Skeptic': 'pause ai',
+  'Pause AI': 'pause ai',
   'Independent / Other': 'other',
 } as const
 

@@ -4,7 +4,7 @@ import {AuthedUser} from 'api/helpers/endpoint'
 import * as privateMessageModules from 'api/helpers/private-messages'
 import {sendDiscordMessage} from 'common/discord/core'
 import * as constants from 'common/envs/constants'
-import {AUTO_BAN_UNDER_REVIEW_CODE} from 'common/moderation/ban'
+import {AUTO_BAN_UNDER_REVIEW_CODE, MAX_NEW_CHANNELS_PER_DAY} from 'common/moderation/ban'
 import {sqlMatch} from 'common/test-utils'
 import * as utilArrayModules from 'common/util/array'
 import * as admin from 'firebase-admin'
@@ -187,9 +187,9 @@ describe('createPrivateUserMessageChannel', () => {
       ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(null)
     })
 
-    it('bans the user and notifies admins on the 6th conversation within 24h', async () => {
-      // Already created 5 channels in the last 24h → this new one is over the limit.
-      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({count: '5'})
+    it('bans the user and notifies admins on the conversation past the daily limit', async () => {
+      // Already at the limit in the last 24h → this new one is over it.
+      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({count: `${MAX_NEW_CHANNELS_PER_DAY}`})
       ;(sendDiscordMessage as jest.Mock).mockResolvedValue(null)
 
       await expect(
@@ -211,7 +211,7 @@ describe('createPrivateUserMessageChannel', () => {
     })
 
     it('tags the error so the client can show the "under review" explanation', async () => {
-      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({count: '5'})
+      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({count: `${MAX_NEW_CHANNELS_PER_DAY}`})
       ;(sendDiscordMessage as jest.Mock).mockResolvedValue(null)
 
       const error = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq).catch(
@@ -223,7 +223,7 @@ describe('createPrivateUserMessageChannel', () => {
     })
 
     it('still bans when the Discord notification fails', async () => {
-      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({count: '5'})
+      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({count: `${MAX_NEW_CHANNELS_PER_DAY}`})
       ;(sendDiscordMessage as jest.Mock).mockRejectedValue(new Error('Discord down'))
       const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
@@ -259,9 +259,9 @@ describe('createPrivateUserMessageChannel', () => {
     })
 
     it('does not ban when still under the limit', async () => {
-      // 4 channels so far → this 5th one is allowed; second pg.one is the channel insert.
+      // One short of the limit → this one is still allowed; second pg.one is the channel insert.
       ;(mockPg.one as jest.Mock)
-        .mockResolvedValueOnce({count: '4'})
+        .mockResolvedValueOnce({count: `${MAX_NEW_CHANNELS_PER_DAY - 1}`})
         .mockResolvedValueOnce({id: '333'})
 
       const results = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq)

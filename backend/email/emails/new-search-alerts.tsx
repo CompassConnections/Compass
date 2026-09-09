@@ -1,11 +1,12 @@
 import {Img, Link, Section, Text} from '@react-email/components'
-import {DEPLOYED_WEB_URL, DOMAIN} from 'common/envs/constants'
+import {DOMAIN} from 'common/envs/constants'
 import {FilterFields} from 'common/filters'
 import {formatFilters, locationType} from 'common/filters-format'
 import {MatchesType} from 'common/profiles/bookmarked_searches'
 import {type User} from 'common/user'
 import {
   Actions,
+  avatarSrc,
   CTAButton,
   Divider,
   EmailShell,
@@ -123,12 +124,13 @@ export const NewSearchAlertsEmail = ({
                 >
                   <tbody>
                     <tr>
-                      {/* Always an avatar, falling back to the same placeholder the web app uses.
-                          Rendering the picture only when there is one left avatarless members sitting a
-                          line higher than their neighbours, since the row's height is the photo's. */}
+                      {/* Always an avatar, falling back to the same initial placeholder the web app
+                          draws. Rendering the picture only when there is one left avatarless members
+                          sitting a line higher than their neighbours, since the row's height is the
+                          photo's. */}
                       <td style={{paddingRight: '10px', verticalAlign: 'middle'}}>
                         <Img
-                          src={p.avatarUrl ?? `${DEPLOYED_WEB_URL}/images/default-avatar.png`}
+                          src={avatarSrc(p.avatarUrl, p.name || p.username)}
                           alt={`${p.username} avatar`}
                           width={40}
                           height={40}

@@ -208,24 +208,18 @@ Ja.
 
 ### Auf welchen Plattformen läuft Compass?
 
-Derzeit ist Compass überwiegend **webbasiert**. Die gute Nachricht: Die Plattform ist **vollständig responsiv**
-gestaltet und funktioniert auch im mobilen Browser reibungslos — du kannst sie auf deinem Smartphone wie eine App
-nutzen.
+Compass läuft in jedem Browser unter [compassmeet.com](https://www.compassmeet.com/) und als native App auf beiden
+Smartphone-Plattformen: [Android](https://play.google.com/store/apps/details?id=com.compassconnections.app) (ab Android
+6.0) und [iPhone](https://apps.apple.com/app/compass-social-connections/id6804429364) (ab iOS 15). Überall dasselbe
+Konto und dieselben Daten — [die Download-Seite](/download) leitet dein Telefon direkt in den passenden Store.
 
-Wenn dir jemand eine Nachricht sendet, kannst du sofortige Push-Benachrichtigungen auf deinem Telefon erhalten, indem du
-Compass als Progressive Web App (PWA) installierst.
+Die Apps sind der einfachste Weg zu Push-Benachrichtigungen, wenn dir jemand schreibt: installieren, anmelden und die
+Benachrichtigungsberechtigung erteilen.
 
-- **Android**: Öffne Compass in Chrome, tippe auf das Menü (⋮) und wähle „Zum Startbildschirm hinzufügen“. Öffne
-  anschließend die App vom Startbildschirm und erlaube Benachrichtigungen — du erhältst dann Hinweise auch bei
-  geschlossener App.
-- **iPhone**: Öffne Compass in Safari (nicht in Chrome), tippe auf das Teilen-Symbol und wähle „Zum Home-Bildschirm“.
-  Öffne danach die App vom Home-Bildschirm und erteile die Berechtigung für Benachrichtigungen. iOS unterstützt
-  Push-Benachrichtigungen nur für Safari-PWAs, die dem Home-Bildschirm hinzugefügt wurden; bei Installation über Chrome
-  funktionieren sie nicht.
-
-Dedizierte native iOS- und Android-Apps sind für die kommenden Monate geplant. Sie werden entwickelt, sobald sich ein:e
-Mitwirkende:r (oder das Kernteam) darum kümmert. Wenn du helfen möchtest, das zu beschleunigen, schau auf GitHub vorbei
-oder melde dich in der Discord-Community.
+Wenn du nichts installieren möchtest: Die Website ist **vollständig responsiv** und lässt sich stattdessen als
+Progressive Web App (PWA) zum Startbildschirm hinzufügen. Auf dem iPhone geht das nur über Safari (nicht Chrome):
+Teilen-Symbol antippen, „Zum Home-Bildschirm“ wählen und Compass über dieses Symbol öffnen — iOS liefert
+Push-Benachrichtigungen nur an Safari-PWAs, die so hinzugefügt wurden.
 
 ### Was bedeutet Open Source?
 

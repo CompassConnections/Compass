@@ -182,18 +182,19 @@ Oui.
 
 ### Sur quelles plateformes Compass fonctionne-t-il ?
 
-Compass est disponible à la fois sous forme de [site web](https://www.compassmeet.com/) et
-d’application [Android](https://play.google.com/store/apps/details?id=com.compassconnections.app).
+Compass fonctionne dans n’importe quel navigateur sur [compassmeet.com](https://www.compassmeet.com/), et sous forme
+d’application native sur les deux plateformes mobiles :
+[Android](https://play.google.com/store/apps/details?id=com.compassconnections.app) (Android 6.0 et plus) et
+[iPhone](https://apps.apple.com/app/compass-social-connections/id6804429364) (iOS 15 et plus). C’est le même compte et
+les mêmes données partout — [la page de téléchargement](/download) redirige votre téléphone vers la bonne boutique.
 
-Sur iPhone, vous pouvez installer Compass en tant qu’application web progressive (PWA). Ouvrez Compass dans Safari (et
-non Chrome), appuyez sur l’icône de partage, puis sélectionnez « Ajouter à l’écran d’accueil ». Une fois l’installation
-terminée, ouvrez l’application depuis votre écran d’accueil et acceptez l’autorisation des notifications. iOS ne prend
-en charge les notifications que pour les PWA Safari ajoutées à l’écran d’accueil ; si vous installez via Chrome, les
-notifications push ne fonctionneront pas.
+Les applications sont le moyen le plus simple de recevoir des notifications push lorsqu’une personne vous écrit :
+installez-les, connectez-vous et acceptez l’autorisation des notifications.
 
-Une application iOS est prévue dans les mois à venir. Elle sera développée dès qu’un contributeur (ou l’équipe
-cœur) s’en chargera. Si vous souhaitez aider à accélérer ce développement, consultez le dépôt GitHub ou contactez la
-communauté sur Discord.
+Si vous préférez ne rien installer, le site est entièrement responsive et peut être ajouté à votre écran d’accueil en
+tant qu’application web progressive (PWA). Sur iPhone, cela ne fonctionne que depuis Safari (et non Chrome) : appuyez sur
+l’icône de partage, choisissez « Ajouter à l’écran d’accueil », puis ouvrez Compass depuis cette icône — iOS ne distribue
+les notifications push qu’aux PWA Safari ajoutées de cette façon.
 
 ### Qu’est-ce que l’open source ?
 

@@ -196,17 +196,13 @@ Yes.
 
 ### What platforms does Compass run on?
 
-Compass is both a [website](https://www.compassmeet.com/)
-and an [android](https://play.google.com/store/apps/details?id=com.compassconnections.app) application.
+Compass runs in any browser at [compassmeet.com](https://www.compassmeet.com/), and as a native app on both phones:
+[Android](https://play.google.com/store/apps/details?id=com.compassconnections.app) (Android 6.0 and up) and
+[iPhone](https://apps.apple.com/app/compass-social-connections/id6804429364) (iOS 15 and up). It is the same account and
+the same data everywhere — [the download page](/download) sends your phone straight to the right store.
 
-On iPhone, you can install Compass as a Progressive Web App (PWA). Open Compass in Safari (not Chrome), tap the Share
-icon, then choose “Add to Home Screen.” After installing, open the app from your home screen and accept the notification
-permission. iOS only supports notifications for Safari PWAs added to the home screen, so if you install via Chrome, push
-notifications will not work.
-
-A dedicated, native iOS app is planned for the coming months. It’ll be built as soon as one of our contributors (or the
-core team) tackles it. If you’re interested in helping speed that up, check out the GitHub or reach out in the Discord
-community.
+The apps are the simplest way to get push notifications when someone writes to you: install, sign in, and accept the
+notification permission.
 
 ### What is open source?
 

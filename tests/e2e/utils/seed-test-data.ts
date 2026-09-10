@@ -40,6 +40,11 @@ async function seedCompatibilityPrompts(userId: string | null = null) {
         question: compatibilityPrompts[i].question,
         answer_type: 'compatibility_multiple_choice',
         multiple_choice_options: compatibilityPrompts[i].options,
+        // Descending and non-zero, mirroring production: `get-compatibility-questions` orders by
+        // this DESC, so the highest is asked first. Left at the default 0 these are all non-core,
+        // and onboarding drops into the "no core questions" fallback — a path real members never
+        // take, which made the E2E green while testing the wrong flow.
+        importance_score: compatibilityPrompts.length - i,
       }),
     )
     console.log('Compatibility prompts created', {data, error})

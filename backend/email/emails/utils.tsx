@@ -79,6 +79,20 @@ export const fonts = {
   wordmark: "'Cormorant Garamond', Georgia, serif",
 } as const
 
+/**
+ * The picture to show for a member, falling back to the same placeholder the web app draws when someone
+ * has no photo (`web/components/widgets/avatar.tsx`): their initial on a flat ground, served as a PNG by
+ * ui-avatars.
+ *
+ * Mail clients render `<img>` and essentially nothing else reliably — a CSS-drawn initial is not an
+ * option — so the fallback has to be an image too. It used to be `/images/default-avatar.png`, a blank
+ * silhouette that reads as an empty circle sitting next to members who do have a photo.
+ */
+export const avatarSrc = (avatarUrl: string | null | undefined, name?: string | null) =>
+  avatarUrl && avatarUrl.length > 0
+    ? avatarUrl
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent((name || 'U')[0])}&size=128&format=png`
+
 // ─── Shell ────────────────────────────────────────────────────────────────────
 
 /**

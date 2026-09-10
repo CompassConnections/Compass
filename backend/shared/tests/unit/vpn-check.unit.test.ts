@@ -86,7 +86,7 @@ describe('vpn lookup', () => {
       const entry = byAsn[asn]
       if (entry === 'fail') throw new Error('network down')
       if (entry === 'hang') await new Promise(() => {}) // never resolves
-      const prefixes = entry === 'empty' || !entry ? [] : entry
+      const prefixes = entry === 'empty' || entry === 'hang' || !entry ? [] : entry
       return {
         ok: true,
         json: async () => ({data: {prefixes: prefixes.map((prefix) => ({prefix}))}}),

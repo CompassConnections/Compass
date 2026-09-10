@@ -132,7 +132,7 @@ function Hero() {
         <p className="text-ink-500 mt-6 text-sm">
           {t(
             'download.requirements',
-            'Free, no ads, no tracking beyond what the website already does. Android 6.0 and up; iPhone on iOS 14 and up.',
+            'Free, no ads, no tracking beyond analytics. Android 6.0 and up; iPhone on iOS 15 and up.',
           )}
         </p>
       </div>
@@ -348,7 +348,7 @@ function PlatformRows() {
       icon: FaApple,
       name: t('download.rows.ios', 'iPhone'),
       sub: IS_IOS_APP_PUBLISHED
-        ? t('download.rows.ios_sub', 'App Store · iOS 14 and up')
+        ? t('download.rows.ios_sub', 'App Store · iOS 15 and up')
         : t('download.rows.ios_sub_pending', 'App Store · in review'),
     },
     {

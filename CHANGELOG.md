@@ -1,9 +1,14 @@
 # Changelog
 
 Release notes for Compass. `scripts/release.sh` reads the entry for the version being tagged straight out
-of this file and uses it as the GitHub release body (falls back to `gh release --generate-notes` if no
-entry matches). That release body is what the [/news](/news) page reads, via the GitHub Releases API — so
-an entry here only reaches users once its version is actually tagged and released.
+of this file and uses it as the GitHub release body. That release body is what the [/news](/news) page
+reads, via the GitHub Releases API — so an entry here only reaches users once its version is actually
+tagged and released.
+
+**Landing an entry on `main` is what releases that version.** Between releases root `package.json`
+already carries the next, unreleased version (see [docs/releases.md](docs/releases.md)), so the version
+number cannot be the trigger — the entry is. A version with no entry here is never tagged and never
+announced.
 
 Each entry:
 

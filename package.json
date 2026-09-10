@@ -15,6 +15,7 @@
     "build-sync-ios": "./scripts/build_sync_ios.sh",
     "build-web-view": "./scripts/build_web_view.sh",
     "bump": "./scripts/bump-version.sh",
+    "bump:build": "./scripts/bump-version.sh --build",
     "clean-install": "./scripts/install.sh",
     "dev": "./scripts/run_local.sh dev",
     "dev:db:reset": "./scripts/dev_db_reset.sh",

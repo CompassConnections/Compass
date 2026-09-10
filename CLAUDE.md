@@ -71,12 +71,16 @@ the schema from scratch.
 Releases:
 
 ```bash
-yarn bump                                             # version + build counters, all three platforms
+yarn bump                                             # open the next version, all three platforms
+yarn bump:build                                       # advance the two store build counters only
 yarn bump --dry-run                                   # show the five numbers it would change
 ```
 
 Bump, don't hand-edit: web, Android and iOS share one version number, and the two store build counters
-must each advance on their own. Details in [`docs/releases.md`](docs/releases.md).
+must each advance on their own. The two commands are deliberately separate — `main` carries the _next,
+unreleased_ version between releases (Apple closes a version's TestFlight train once it ships), so dev
+builds in between are `yarn bump:build` alone, and a release is triggered by landing the `CHANGELOG.md`
+entry. Details in [`docs/releases.md`](docs/releases.md).
 
 ## Adding an API endpoint (3 files across 2 packages)
 

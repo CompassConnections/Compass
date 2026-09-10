@@ -6,6 +6,11 @@ on:
   push:
     branches: [main, master]
     paths:
+      # The CHANGELOG entry is the release trigger: `main` carries the next, unreleased version between
+      # releases, so the entry landing — not the version bump — is what says "ship this". package.json
+      # stays on the list as a safety net for the case where the entry is already in place when the
+      # version moves; scripts/release.sh exits without tagging when there is no entry to release.
+      - 'CHANGELOG.md'
       - 'package.json'
       - '.github/workflows/cd.yml'
 

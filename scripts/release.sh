@@ -2,7 +2,12 @@
 
 # Release script for release.yaml (a GitHub Action)
 # Can be run locally as well if desired
-# It creates a tag based on the version in pyproject.toml and creates a GitHub release based on the tag
+# It creates a tag based on the version in package.json and creates a GitHub release based on the tag
+#
+# The trigger for a release is the CHANGELOG.md entry, not the version number. Between releases `main`
+# sits on the *next*, unreleased version (see docs/releases.md): bumping it is what opens the next
+# TestFlight train, and that must not tag or announce anything. So a version with no `## <version>`
+# entry is a version still being built — this exits without tagging.
 
 set -e
 cd "$(dirname "$0")"/..
@@ -20,47 +25,47 @@ set_output() {
 set_output "tag=$tag"
 
 tagged=$(git tag -l $tag)
-if [ -z "$tagged" ]; then
-  git tag -a "$tag" -m "Release $tag"
-  git push origin "$tag"
-  echo "Tagged release $tag"
-
-  # Pull this version's entry out of CHANGELOG.md (see the file header for the format: a user-facing
-  # summary, a `<!--tech-->` marker, then technical details). An entry ends at the next `## ` heading or a
-  # `---` separator line. Falls back to --generate-notes when the version has no hand-written entry yet, so
-  # releases without a changelog entry still get created.
-  notes_file=$(mktemp)
-  awk -v tag="$tag" '
-    /^## / {
-      if (found) exit
-      if ($0 ~ ("^## " tag "([^0-9.]|$)")) { found=1; next }
-      next
-    }
-    found {
-      if ($0 == "---") exit
-      print
-    }
-  ' CHANGELOG.md | sed -e '/./,$!d' > "$notes_file"
-
-  if [ -s "$notes_file" ]; then
-    gh release create "$tag" \
-        --repo="$GITHUB_REPOSITORY" \
-        --title="$tag" \
-        --notes-file "$notes_file"
-    echo "Created release from CHANGELOG.md entry"
-  else
-    gh release create "$tag" \
-        --repo="$GITHUB_REPOSITORY" \
-        --title="$tag" \
-        --generate-notes
-    echo "Created release (no CHANGELOG.md entry found for $tag, used --generate-notes)"
-  fi
-  rm -f "$notes_file"
-  set_output "released=true"
-
-# Release to ...
-
-else
+if [ -n "$tagged" ]; then
   echo "Tag $tag already exists"
   set_output "released=false"
+  exit 0
 fi
+
+# Pull this version's entry out of CHANGELOG.md (see the file header for the format: a user-facing
+# summary, a `<!--tech-->` marker, then technical details). An entry ends at the next `## ` heading or a
+# `---` separator line.
+notes_file=$(mktemp)
+awk -v tag="$tag" '
+  /^## / {
+    if (found) exit
+    if ($0 ~ ("^## " tag "([^0-9.]|$)")) { found=1; next }
+    next
+  }
+  found {
+    if ($0 == "---") exit
+    print
+  }
+' CHANGELOG.md | sed -e '/./,$!d' > "$notes_file"
+
+# No entry means this version is not being released yet — the usual case for the version bump that
+# follows a release and opens the next one. Nothing to tag, nothing to announce.
+if [ ! -s "$notes_file" ]; then
+  rm -f "$notes_file"
+  echo "No '## $tag' entry in CHANGELOG.md — $tag is not ready to release yet, skipping."
+  set_output "released=false"
+  exit 0
+fi
+
+git tag -a "$tag" -m "Release $tag"
+git push origin "$tag"
+echo "Tagged release $tag"
+
+gh release create "$tag" \
+    --repo="$GITHUB_REPOSITORY" \
+    --title="$tag" \
+    --notes-file "$notes_file"
+echo "Created release from CHANGELOG.md entry"
+rm -f "$notes_file"
+set_output "released=true"
+
+# Release to ...

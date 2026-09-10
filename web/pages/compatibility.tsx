@@ -1,9 +1,11 @@
 import clsx from 'clsx'
 import {debug} from 'common/logger'
+import {presentCompatibilityCategories} from 'common/profiles/compatibility-categories'
 import {User} from 'common/user'
 import {debounce} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CompatibilityAnswerBlock} from 'web/components/answers/compatibility-questions-display'
+import {CompatibilityCategoryFilter, matchesCategory} from 'web/components/compatibility/category'
 import {
   compareBySort,
   CompatibilitySort,
@@ -42,6 +44,7 @@ export default function CompatibilityPage() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
   const [sort, setSort] = useState<CompatibilitySort>('random')
   const [pinnedOnly, setPinnedOnly] = useState(false)
+  const [category, setCategory] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const {compatibilityAnswers, refreshCompatibilityAnswers} = useUserCompatibilityAnswers(user?.id)
   const {compatibilityQuestions, refreshCompatibilityQuestions, isLoading} =
@@ -74,7 +77,7 @@ export default function CompatibilityPage() {
       .filter((qna) => {
         const matchesSearch = isMatchingSearch(qna, debouncedSearchTerm)
         const isPinned = pinnedQuestionIds?.includes(qna.id)
-        return matchesSearch && (!pinnedOnly || isPinned)
+        return matchesSearch && matchesCategory(qna, category) && (!pinnedOnly || isPinned)
       })
 
     return withAnswers.sort((a, b) => {
@@ -87,7 +90,15 @@ export default function CompatibilityPage() {
     debouncedSearchTerm,
     pinnedQuestionIds,
     pinnedOnly,
+    category,
   ])
+
+  // Built from every question, not from the filtered list, so picking one domain does not remove
+  // the others from the control you picked it in.
+  const categories = useMemo(
+    () => presentCompatibilityCategories(compatibilityQuestions ?? []),
+    [compatibilityQuestions],
+  )
 
   const {answered, notAnswered, skipped} = useMemo(() => {
     const answered: QuestionWithAnswer[] = []
@@ -151,6 +162,12 @@ export default function CompatibilityPage() {
               label={t('compatibility.pinned_only', 'Pinned only')}
               checked={pinnedOnly}
               toggle={setPinnedOnly}
+            />
+            <CompatibilityCategoryFilter
+              className="text-sm mt-4 sm:mt-0"
+              category={category}
+              setCategory={setCategory}
+              categories={categories}
             />
             <CompatibilitySortWidget
               className="text-sm sm:flex mt-4 mr-4 ml-auto"
@@ -294,6 +311,7 @@ function QuestionList({
             yourQuestions={questions}
             user={user}
             isCurrentUser={true}
+            showCategory
             refreshCompatibilityAll={refreshCompatibilityAll}
           />
         </div>

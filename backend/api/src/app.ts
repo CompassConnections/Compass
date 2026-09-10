@@ -5,6 +5,7 @@ import {checkOptionName} from 'api/check-option-name'
 import {contact} from 'api/contact'
 import {createVote} from 'api/create-vote'
 import {createVoteComment} from 'api/create-vote-comment'
+import {deleteCompatibilityPrompt} from 'api/delete-compatibility-prompt'
 import {deleteMessage} from 'api/delete-message'
 import {deleteOption} from 'api/delete-option'
 import {editMessage} from 'api/edit-message'
@@ -12,6 +13,7 @@ import {editVoteComment} from 'api/edit-vote-comment'
 import {getChannelMemberships} from 'api/get-channel-memberships'
 import {getLastSeenChannelTime, setChannelLastSeenTime} from 'api/get-channel-seen-time'
 import {getChannelsCountEndpoint} from 'api/get-channels-count'
+import {getCompatibilityQuestionDegeneracy} from 'api/get-compatibility-question-degeneracy'
 import {getHiddenProfiles} from 'api/get-hidden-profiles'
 import {getLastMessages} from 'api/get-last-messages'
 import {getMessagesCountEndpoint} from 'api/get-messages-count'
@@ -23,6 +25,7 @@ import {getUser} from 'api/get-user'
 import {hideProfile} from 'api/hide-profile'
 import {mergeOptionsEndpoint} from 'api/merge-options'
 import {reactToMessage} from 'api/react-to-message'
+import {recomputeAllCompatibilityScoresHandler} from 'api/recompute-all-compatibility-scores'
 import {renameOption} from 'api/rename-option'
 import {saveSubscription} from 'api/save-subscription'
 import {saveSubscriptionMobile} from 'api/save-subscription-mobile'
@@ -690,6 +693,9 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-options': getOptionsEndpoint,
   'search-options': searchOptionsEndpoint,
   'check-option-name': checkOptionName,
+  'delete-compatibility-prompt': deleteCompatibilityPrompt,
+  'recompute-all-compatibility-scores': recomputeAllCompatibilityScoresHandler,
+  'get-compatibility-question-degeneracy': getCompatibilityQuestionDegeneracy,
   'get-options-admin': getOptionsAdmin,
   'merge-options': mergeOptionsEndpoint,
   'delete-option': deleteOption,

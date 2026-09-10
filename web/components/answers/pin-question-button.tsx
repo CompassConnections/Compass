@@ -11,9 +11,16 @@ interface PinQuestionButtonProps {
   questionId: number
   onPinChange?: (pinnedQuestionIds: number[]) => void
   className?: string
+  /** Size the glyph to whatever it sits beside — the default suits a prompt row's controls. */
+  iconClassName?: string
 }
 
-export function PinQuestionButton({questionId, onPinChange, className}: PinQuestionButtonProps) {
+export function PinQuestionButton({
+  questionId,
+  onPinChange,
+  className,
+  iconClassName = 'h-5 w-5',
+}: PinQuestionButtonProps) {
   const t = useT()
   const {pinnedQuestionIds, setPinnedQuestionIds, refreshPinnedQuestionIds} = usePinnedQuestionIds()
   const isPinned = (pinnedQuestionIds ?? []).includes(questionId)
@@ -46,7 +53,10 @@ export function PinQuestionButton({questionId, onPinChange, className}: PinQuest
     >
       <button
         className={clsx(
-          'rounded transition-colors',
+          // An SVG is inline, so without this the glyph sits on the button's text baseline with the
+          // font's descender space under it — the box is taller than the icon and it lands low
+          // against the icons beside it, whatever the row aligns.
+          'flex items-center rounded transition-colors',
           isPinned ? 'text-primary-700' : 'text-ink-400 hover:text-ink-700',
           className,
         )}
@@ -58,9 +68,9 @@ export function PinQuestionButton({questionId, onPinChange, className}: PinQuest
         }
       >
         {isPinned ? (
-          <PinSolid className="h-5 w-5 text-primary-600" />
+          <PinSolid className={clsx(iconClassName, 'text-primary-600')} />
         ) : (
-          <PinOutline className="h-5 w-5 text-ink-500" />
+          <PinOutline className={clsx(iconClassName, 'text-ink-500')} />
         )}
       </button>
     </Tooltip>

@@ -1,8 +1,6 @@
 import {IS_PROD} from 'common/envs/constants'
 
-export const compassUserId = IS_PROD
-  ? 'tRZZ6ihugZQLXPf6aPRneGpWLmz1'
-  : 'RlXR2xa4EFfAzdCbSe45wkcdarh1'
+export const compassUserId = IS_PROD ? 'todo' : 'todo'
 
 export const MAX_COMPATIBILITY_QUESTION_LENGTH = 240
 

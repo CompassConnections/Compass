@@ -18,7 +18,10 @@ const isPreferredGender = (
   return preferredGenders.includes(gender) || gender === 'non-binary'
 }
 
-export const areGenderCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
+/** Widened to the two columns it reads, so callers holding only those need not fake a whole row. */
+export type GenderFields = Pick<ProfileRow, 'gender' | 'pref_gender'>
+
+export const areGenderCompatible = (profile1: GenderFields, profile2: GenderFields) => {
   // console.debug('areGenderCompatible', isPreferredGender(profile1.pref_gender, profile2.gender), isPreferredGender(profile2.pref_gender, profile1.gender))
   return (
     isPreferredGender(profile1.pref_gender, profile2.gender) &&

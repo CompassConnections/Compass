@@ -1,4 +1,5 @@
 import {
+  ChartBarIcon,
   ChatBubbleBottomCenterTextIcon,
   EnvelopeIcon,
   MapIcon,
@@ -57,6 +58,13 @@ const ADMIN_PAGES: {
     description:
       'Interests, causes and work areas. Merge the near-duplicates members create, and curate the aliases that keep them merged.',
     icon: TagIcon,
+  },
+  {
+    href: '/admin/compatibility-questions',
+    name: 'Compatibility questions',
+    description:
+      'Which prompts have stopped discriminating — the share on the most-picked answer, and on the most-picked accepted set.',
+    icon: ChartBarIcon,
   },
   {
     href: '/admin/spotlights',

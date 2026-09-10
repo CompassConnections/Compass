@@ -3,6 +3,7 @@ import {UserIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {QuestionWithStats} from 'common/api/types'
 import {debug} from 'common/logger'
+import {presentCompatibilityCategories} from 'common/profiles/compatibility-categories'
 import {
   getAnswerCompatibility,
   getScoredAnswerCompatibility,
@@ -17,6 +18,12 @@ import {RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'reac
 import toast from 'react-hot-toast'
 import {AddCompatibilityQuestionButton} from 'web/components/answers/add-compatibility-question-button'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
+import {
+  CompatibilityCategoryFilter,
+  CompatibilityCategoryTag,
+  matchesCategory,
+} from 'web/components/compatibility/category'
+import {CommunityImportance} from 'web/components/compatibility/community-importance'
 import {
   compareBySort,
   CompatibilitySort,
@@ -48,6 +55,7 @@ import {
   CompatibilityPageButton,
 } from './answer-compatibility-question-button'
 import {
+  ANSWER_MODAL_PANEL_CLASS,
   AnswerCompatibilityQuestionContent,
   CompatibilityAnswerSubmitType,
   deleteCompatibilityAnswer,
@@ -139,6 +147,7 @@ export function CompatibilityQuestionsDisplay(props: {
     `compatibility-sort-${user.id}`,
   )
   const [searchTerm, setSearchTerm] = useState('')
+  const [category, setCategory] = useState<string | null>(null)
 
   const comparedUserId = fromProfilePage?.user_id ?? currentUser?.id
   const {
@@ -160,6 +169,9 @@ export function CompatibilityQuestionsDisplay(props: {
         // if (a.question_id < 10) console.log({a, sort})
         const question = compatibilityQuestions.find((q) => q.id === a.question_id)
         const comparedAnswer = questionIdToComparedAnswer[a.question_id]
+        // The category itself is not shown on a profile, but filtering by it is the fastest way to
+        // read one: "what does this person think about money" over a hundred answered prompts.
+        if (!matchesCategory(question, category)) return false
         // A covered answer must not be findable by its own text either, so a locked prompt is searched
         // by its question alone.
         const isHidden = isPromptHiddenUntilYouAnswer(comparedAnswer, {
@@ -203,6 +215,7 @@ export function CompatibilityQuestionsDisplay(props: {
     )
   }, [
     answers,
+    category,
     compatibilityQuestions,
     currentUser,
     fromProfilePage,
@@ -211,6 +224,18 @@ export function CompatibilityQuestionsDisplay(props: {
     searchTerm,
     sort,
   ])
+
+  // Only the prompts this member has actually answered can appear in the list, so offering a domain
+  // they have nothing in would be a filter that empties the page.
+  const categories = useMemo(
+    () =>
+      presentCompatibilityCategories(
+        answers
+          .map((a) => compatibilityQuestions.find((q) => q.id === a.question_id))
+          .filter((q): q is QuestionWithStats => !!q),
+      ),
+    [answers, compatibilityQuestions],
+  )
 
   // Each list scrolls to its own top, not to a shared one — paging the pinned list must not yank the
   // reader down to the main list, or vice versa.
@@ -249,6 +274,10 @@ export function CompatibilityQuestionsDisplay(props: {
   useEffect(() => {
     setPinnedPage(0)
   }, [user.id])
+
+  useEffect(() => {
+    setPage(0)
+  }, [category])
 
   if (!isCurrentUser && !answeredQuestions.length) return null
 
@@ -315,13 +344,21 @@ export function CompatibilityQuestionsDisplay(props: {
                 searchIcon
               />
             </div>
-            <CompatibilitySortWidget
-              className="text-sm sm:flex"
-              sort={sort}
-              setSort={setSort}
-              user={user}
-              profile={profile}
-            />
+            <Row className="items-center gap-6">
+              <CompatibilityCategoryFilter
+                className="text-sm"
+                category={category}
+                setCategory={setCategory}
+                categories={categories}
+              />
+              <CompatibilitySortWidget
+                className="text-sm sm:flex"
+                sort={sort}
+                setSort={setSort}
+                user={user}
+                profile={profile}
+              />
+            </Row>
           </>
         )}
       </Row>
@@ -447,6 +484,10 @@ export function CompatibilityAnswerBlock(props: {
   refreshCompatibilityAll: () => void
   fromProfilePage?: Profile
   showCommunityInfo?: boolean
+  // Off by default: a profile shows what this person answered, and the domain a prompt was filed
+  // under is house metadata that says nothing about them. `/compatibility` is the one place where
+  // the reader is working over the whole question set, so it is the one place it earns its space.
+  showCategory?: boolean
   className?: string
 }) {
   const {
@@ -459,6 +500,7 @@ export function CompatibilityAnswerBlock(props: {
     isCurrentUser,
     refreshCompatibilityAll,
     fromProfilePage,
+    showCategory,
     className,
   } = props
 
@@ -537,6 +579,9 @@ export function CompatibilityAnswerBlock(props: {
         className,
       )}
     >
+      {showCategory && question.category && (
+        <CompatibilityCategoryTag category={question.category} />
+      )}
       <Row className="items-baseline justify-between gap-4">
         {/* Body sans, not the serif. The serif marks text a person wrote — the tagline, the bio, the
             explanation below — and this question is platform boilerplate that reads identically on
@@ -718,6 +763,7 @@ export function CompatibilityAnswerBlock(props: {
             otherQuestions={[question]}
             refreshCompatibilityAll={refreshComparedAnswers ?? (() => {})}
             size="sm"
+            singlePrompt
           />
         </Row>
       )}
@@ -762,10 +808,12 @@ export function CompatibilityAnswerBlock(props: {
             <ImportanceButton importance={answer.importance} onClick={() => setEditOpen(true)} />
           </Row>
         )}
-        {/*{question.importance_score == 0 && <div className="text-ink-500 text-sm">Core Question</div>}*/}
+        {/*{question.importance_score > 0 && <div className="text-ink-500 text-sm">Core Question</div>}*/}
       </Col>
       {showCommunityInfo && (
-        <Row className={''}>
+        // The two stats used to be a short count and a spelled-out sentence, which separated
+        // themselves. Now they are both icon-and-number, so they need the gap.
+        <Row className={'gap-3'}>
           {shortenedPopularity && (
             <Tooltip
               text={t(
@@ -780,16 +828,14 @@ export function CompatibilityAnswerBlock(props: {
               </Row>
             </Tooltip>
           )}
-          {isFinite(question.community_importance_percent) && (
-            <span className={'text-sm ml-auto guidance'}>
-              {t('compatibility.question.community_importance', 'Community Importance')}:{' '}
-              {Math.round(question.community_importance_percent)}%
-            </span>
-          )}
+          <CommunityImportance
+            className="ml-auto"
+            percent={question.community_importance_percent}
+          />
         </Row>
       )}
-      <Modal open={editOpen} setOpen={setEditOpen}>
-        <Col className={MODAL_CLASS}>
+      <Modal open={editOpen} setOpen={setEditOpen} size="lg">
+        <Col className={clsx(MODAL_CLASS, ANSWER_MODAL_PANEL_CLASS)}>
           <AnswerCompatibilityQuestionContent
             key={`edit answer.id`}
             question={question}
@@ -867,6 +913,7 @@ function CompatibilityDisplay(props: {
             otherQuestions={[question]}
             refreshCompatibilityAll={refreshAnswer2 ?? (() => {})}
             size="sm"
+            singlePrompt
           />
         )
       ) : (

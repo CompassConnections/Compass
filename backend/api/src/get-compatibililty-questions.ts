@@ -68,7 +68,9 @@ export const getCompatibilityQuestions: APIHandler<'get-compatibility-questions'
                  cpt.question,
                  cpt.multiple_choice_options
 
-        ORDER BY cp.importance_score
+        --- Core prompts (importance_score <> 0) first -- false sorts before true -- then by serving
+        --- priority, highest score first. Everything outside the core set trails, unordered.
+        ORDER BY (cp.importance_score = 0), cp.importance_score DESC
     `,
     params,
   )

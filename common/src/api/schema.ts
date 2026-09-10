@@ -1,4 +1,4 @@
-import {QuestionWithStats} from 'common/api/types' // mqp: very unscientific, just balancing our willingness to accept load
+import {PromptDegeneracy, QuestionWithStats, RecomputeAllResult} from 'common/api/types' // mqp: very unscientific, just balancing our willingness to accept load
 import {
   arraybeSchema,
   contentSchema,
@@ -717,6 +717,40 @@ export const API = (_apiTypeCheck = {
       questions: QuestionWithStats[]
     },
     summary: 'Retrieve compatibility questions and stats',
+    tag: 'Compatibility',
+  },
+  'get-compatibility-question-degeneracy': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as {questions: PromptDegeneracy[]},
+    summary:
+      'Answer concentration for every compatibility prompt: the share on the most-picked self-answer and on the most-picked accepted set. Admins only.',
+    tag: 'Compatibility',
+  },
+  'delete-compatibility-prompt': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        questionId: z.number(),
+        expectedAnswerCount: z.number().int().nonnegative(),
+      })
+      .strict(),
+    returns: {} as {question: string; removedAnswers: number},
+    summary:
+      'Delete a compatibility question and every answer to it. Leaves cached pair scores stale on purpose — follow with recompute-all-compatibility-scores. Admins only.',
+    tag: 'Compatibility',
+  },
+  'recompute-all-compatibility-scores': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as RecomputeAllResult,
+    summary: 'Rebuild the cached compatibility score of every pair. Admins only.',
     tag: 'Compatibility',
   },
   'delete-compatibility-answer': {

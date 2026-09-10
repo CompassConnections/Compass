@@ -1,5 +1,5 @@
 import {type JSONContent} from '@tiptap/core'
-import {APIErrors} from 'api/helpers/endpoint'
+import {APIErrors, assertCanWrite} from 'api/helpers/endpoint'
 import {isSuspiciousId} from 'common/moderation/suspicious'
 import {getUser} from 'shared/utils'
 
@@ -14,7 +14,7 @@ export const validateCommentAuthor = async (creatorId: string, content: JSONCont
   const creator = await getUser(creatorId)
 
   if (!creator) throw APIErrors.unauthorized('Your account was not found')
-  if (creator.isBannedFromPosting) throw APIErrors.forbidden('You are banned')
+  assertCanWrite(creator)
   if (isSuspiciousId(creator.id)) throw APIErrors.forbidden('Suspicious users cannot send messages')
 
   if (JSON.stringify(content).length > MAX_COMMENT_JSON_LENGTH) {

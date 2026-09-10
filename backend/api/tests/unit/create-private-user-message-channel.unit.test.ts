@@ -319,7 +319,7 @@ describe('createPrivateUserMessageChannel', () => {
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)
 
       expect(createPrivateUserMessageChannel(mockBody, mockAuth, mockReq)).rejects.toThrowError(
-        'You are banned',
+        'Your account has been suspended',
       )
     })
 

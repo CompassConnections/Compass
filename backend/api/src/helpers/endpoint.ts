@@ -8,6 +8,7 @@ import {
 } from 'common/api/schema'
 import {APIErrors} from 'common/api/utils'
 import {debug} from 'common/logger'
+import {bannedFromWritingError, type BanReason} from 'common/moderation/ban'
 import {PrivateUser} from 'common/user'
 import {NextFunction, Request, Response} from 'express'
 import * as admin from 'firebase-admin'
@@ -333,4 +334,20 @@ const deepConvertBigIntToNumber = (obj: any): any => {
     }
   }
   return obj
+}
+
+/**
+ * Blocks a banned member from writing, with copy that fits which kind of ban it is.
+ *
+ * Every write path calls this rather than testing `isBannedFromPosting` itself: the three that did
+ * so all threw a bare "You are banned", and a member on a provisional hold met that message on
+ * every attempt without ever being told it was provisional.
+ */
+export const assertCanWrite = (creator: {
+  isBannedFromPosting?: boolean
+  banReason?: BanReason | null
+}) => {
+  if (!creator.isBannedFromPosting) return
+  const {message, details} = bannedFromWritingError(creator.banReason)
+  throw APIErrors.forbidden(message, details)
 }

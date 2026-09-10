@@ -7,6 +7,7 @@ import {ErrorRequestHandler} from 'express'
 import * as admin from 'firebase-admin'
 import {getServiceAccountCredentials} from 'shared/firebase-utils'
 import {initAdmin} from 'shared/init-admin'
+import {startVpnRangeRefresh} from 'shared/moderation/vpn-check'
 import {log} from 'shared/utils'
 import {listen as webSocketListen} from 'shared/websockets/server'
 
@@ -62,5 +63,11 @@ const startupProcess = async () => {
   })
 
   webSocketListen(httpServer, '/ws')
+
+  // Which prefixes a VPN network announces changes week to week, so the signup check reads live BGP
+  // data rather than whatever was true when the image was built. Not awaited: the server is already
+  // serving, and until the first refresh lands the check runs on the prefixes compiled into the
+  // build. See shared/moderation/vpn-check.ts.
+  startVpnRangeRefresh()
 }
 startupProcess().then((_r) => log('Server started successfully'))

@@ -254,7 +254,9 @@ describe('createComment', () => {
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValueOnce(mockCreator)
 
-      expect(createComment(mockProps, mockAuth, mockReq)).rejects.toThrowError('You are banned')
+      expect(createComment(mockProps, mockAuth, mockReq)).rejects.toThrowError(
+        'Your account has been suspended',
+      )
     })
 
     it('throw if the other user is not found', async () => {

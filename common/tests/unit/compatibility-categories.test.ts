@@ -21,23 +21,23 @@ describe('presentCompatibilityCategories', () => {
   it('returns only categories the questions actually carry, in vocabulary order', () => {
     expect(
       presentCompatibilityCategories([
-        {category: 'money_work'},
+        {category: 'work'},
         {category: 'kids_family'},
-        {category: 'money_work'},
+        {category: 'money'},
         {category: null},
         {},
       ]),
-    ).toEqual(['kids_family', 'money_work'])
+    ).toEqual(['kids_family', 'money', 'work'])
   })
 
   it('puts unrecognised categories after the known ones', () => {
     expect(
       presentCompatibilityCategories([
         {category: 'zzz-legacy'},
-        {category: 'money_work'},
+        {category: 'money'},
         {category: 'aaa-legacy'},
       ]),
-    ).toEqual(['money_work', 'aaa-legacy', 'zzz-legacy'])
+    ).toEqual(['money', 'aaa-legacy', 'zzz-legacy'])
   })
 
   it('is empty when nothing is categorised', () => {

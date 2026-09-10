@@ -1,6 +1,6 @@
 import {MAX_COMMENT_JSON_LENGTH} from 'api/create-comment'
 import {assertNotBlocked} from 'api/helpers/blocks'
-import {APIErrors, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler, assertCanWrite} from 'api/helpers/endpoint'
 import {createPrivateUserMessageMain} from 'api/helpers/private-messages'
 import {isSuspiciousId} from 'common/moderation/suspicious'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
@@ -17,7 +17,7 @@ export const createPrivateUserMessage: APIHandler<'create-private-user-message'>
 
   const creator = await getUser(auth.uid)
   if (!creator) throw APIErrors.unauthorized('Your account was not found')
-  if (creator.isBannedFromPosting) throw APIErrors.forbidden('You are banned')
+  assertCanWrite(creator)
   if (isSuspiciousId(creator.id)) throw APIErrors.forbidden('Suspicious users cannot send messages')
 
   const pg = createSupabaseDirectClient()

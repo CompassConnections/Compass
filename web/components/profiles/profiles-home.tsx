@@ -1,6 +1,7 @@
 import {XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {debug} from 'common/logger'
+import {isFullyBanned} from 'common/moderation/ban'
 import {Profile} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {DAY_MS} from 'common/util/time'
@@ -150,7 +151,7 @@ export function ProfilesHome() {
   const id = useRef(0)
   useEffect(() => {
     if (!user) return
-    if (user.isBannedFromPosting) {
+    if (isFullyBanned(user)) {
       setProfiles([])
       setProfileCount(0)
       return
@@ -193,7 +194,7 @@ export function ProfilesHome() {
 
   const loadMore = useCallback(async () => {
     if (!user) return false
-    if (user.isBannedFromPosting) {
+    if (isFullyBanned(user)) {
       setProfiles([])
       setProfileCount(0)
       return false

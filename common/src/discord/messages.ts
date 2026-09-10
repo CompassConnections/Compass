@@ -59,3 +59,24 @@ export const newProposalDiscordMessage = (
     (body ? `\n${body}` : '')
   )
 }
+
+/**
+ * The #reports post for a signup that was automatically put on hold for coming through a VPN.
+ *
+ * Written for the person who has to act on it: the network and the raw IP are there so a moderator
+ * can sanity-check the call, and the profile link is there because the decision is nearly always
+ * made by looking at the profile. It says the hold is provisional and names the ASN, because most of
+ * these will be genuine members who value their privacy and the reviewer should start from that
+ * assumption rather than from "caught one".
+ */
+export const vpnSignupDiscordMessage = (
+  member: DiscordMember,
+  network: {asn: number; name: string},
+  ip: string,
+): string =>
+  `🔒 **Signup behind a VPN — on hold pending review**\n` +
+  `**Member:** ${profileLink(member)} (@${member.username})\n` +
+  `**Network:** ${network.name} (AS${network.asn})\n` +
+  `**IP:** \`${ip}\`\n` +
+  `They can browse but not message anyone until someone lifts the hold. ` +
+  `Most VPN users are genuine — check the profile before deciding.`

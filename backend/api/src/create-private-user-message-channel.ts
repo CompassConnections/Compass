@@ -1,5 +1,5 @@
 import {getConnectionInterests} from 'api/get-connection-interests'
-import {APIErrors, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler, assertCanWrite} from 'api/helpers/endpoint'
 import {addUsersToPrivateMessageChannel} from 'api/helpers/private-messages'
 import {sendDiscordMessage} from 'common/discord/core'
 import {DOMAIN, isAdminId, isModUsername} from 'common/envs/constants'
@@ -33,7 +33,7 @@ export const createPrivateUserMessageChannel: APIHandler<
 
   const creator = await getUser(creatorId)
   if (!creator) throw APIErrors.unauthorized('Your account was not found')
-  if (creator.isBannedFromPosting) throw APIErrors.forbidden('You are banned')
+  assertCanWrite(creator)
   const toPrivateUsers = filterDefined(await Promise.all(userIds.map((id) => getPrivateUser(id))))
 
   if (toPrivateUsers.length !== userIds.length)

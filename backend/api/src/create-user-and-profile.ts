@@ -3,8 +3,9 @@ import {setProfileOptions} from 'api/update-options'
 import {APIErrors} from 'common/api/utils'
 import {defaultLocale} from 'common/constants'
 import {sendDiscordMessage} from 'common/discord/core'
-import {newMemberDiscordMessage} from 'common/discord/messages'
+import {newMemberDiscordMessage, vpnSignupDiscordMessage} from 'common/discord/messages'
 import {debug} from 'common/logger'
+import {BanReason} from 'common/moderation/ban'
 import {trimStrings} from 'common/parsing'
 import {convertPrivateUser, convertUser} from 'common/supabase/users'
 import {PrivateUser} from 'common/user'
@@ -16,9 +17,12 @@ import * as admin from 'firebase-admin'
 import {getIp, track} from 'shared/analytics'
 import {getBucket} from 'shared/firebase-utils'
 import {generateAvatarUrl} from 'shared/helpers/generate-and-update-avatar-urls'
+import {isApplePrivateEmail} from 'shared/moderation/vpn-asns'
+import {lookupVpnNetwork} from 'shared/moderation/vpn-check'
 import {getReferrer, notifyReferrerOfSignup} from 'shared/outreach/referrals'
 import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {updateUser} from 'shared/supabase/users'
 import {insert} from 'shared/supabase/utils'
 import {getUserByUsername, log} from 'shared/utils'
 
@@ -194,6 +198,38 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
       await sendDiscordMessage(newMemberDiscordMessage(user, referrer), 'members')
     } catch (e) {
       console.error('Failed to send discord new profile', e)
+    }
+    // Signing up from behind a commercial VPN is the strongest signal we have at the moment of
+    // registration: in the September 2026 audit these networks carried 12 of our 13 confirmed-abuse
+    // accounts. It is nowhere near proof — plenty of members run a VPN for perfectly good reasons —
+    // so it buys a provisional hold and a nudge to a human, never a ban. What counts as a VPN, and
+    // why, is in backend/shared/src/moderation/vpn-asns.ts.
+    //
+    // Done here rather than inline in the signup because the prefix tables are fetched from RIPE
+    // and a cold instance can take ten seconds to load them — far too long to hold up a person
+    // creating an account, and nothing is lost by holding them a moment later. They cannot message
+    // anyone in the meantime without first finding someone and opening a channel.
+    //
+    // Someone arriving on an Apple Hide My Email address is exempt: that means Apple's privacy
+    // plumbing, which is the opposite of a fraud signal, and it travels with iCloud Private Relay.
+    try {
+      const vpnNetwork = isApplePrivateEmail(email) ? null : await lookupVpnNetwork(ip, 60_000)
+      if (vpnNetwork) {
+        await updateUser(user.id, {
+          isBannedFromPosting: true,
+          banReason: 'under_review' satisfies BanReason,
+        })
+        // #reports rather than #members: a queue item for a moderator, not an announcement. A failed
+        // webhook must not undo the hold — the account is held either way, it just waits longer for
+        // someone to notice.
+        try {
+          await sendDiscordMessage(vpnSignupDiscordMessage(user, vpnNetwork, ip), 'reports')
+        } catch (e) {
+          console.error('Failed to send discord vpn signup', e)
+        }
+      }
+    } catch (e) {
+      console.error('Failed to run the VPN check on signup', e)
     }
     try {
       // The one moment a sharer can be told their share worked. Miss it and `?referrer=` stays a

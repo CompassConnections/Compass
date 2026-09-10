@@ -105,8 +105,30 @@ describe('createPrivateUserMessage', () => {
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)
 
       expect(createPrivateUserMessage(mockBody, mockAuth, mockReq)).rejects.toThrowError(
-        `You are banned`,
+        `Your account has been suspended`,
       )
+    })
+
+    // The point of splitting the copy: someone on an automatic hold meets this message on every
+    // attempt, and must not be told they are suspended when nobody has judged the account yet.
+    it('tells a member on a provisional hold that it is a hold, not a verdict', async () => {
+      const mockBody = {
+        content: {mockJson: 'mockJsonContent'},
+        channelId: 123,
+      }
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue({
+        isBannedFromPosting: true,
+        banReason: 'auto_rate_limit',
+      })
+
+      const err = await createPrivateUserMessage(mockBody, mockAuth, mockReq).catch(
+        (e: unknown) => e as Error,
+      )
+      expect(err.message).toContain('on hold')
+      expect(err.message).toContain("isn't a decision about you")
+      expect(err.message).not.toContain('suspended')
     })
 
     // The channel-creation guard only runs once. Before this, blocking someone you had already

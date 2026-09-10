@@ -4,6 +4,7 @@ import {INVERTED_DIET_CHOICES, INVERTED_LANGUAGE_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
 import {formatFilters, locationType} from 'common/filters-format'
 import {Gender} from 'common/gender'
+import {isFullyBanned} from 'common/moderation/ban'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
 import {CardSize, DisplayOptions, GridLayout} from 'common/profiles-rendering'
@@ -330,6 +331,12 @@ export const ProfileGrid = (props: {
 
   return (
     <div className="relative" data-testid="people-profile-grid">
+      {/* A provisional hold still browses, so it needs saying somewhere they'll see it — otherwise
+          the first they learn of it is a message that won't send. Compact: it sits above the grid on
+          every visit until a moderator lifts the hold. */}
+      {user?.isBannedFromPosting && !isFullyBanned(user) && (
+        <AccountOnHoldNotice reason={user.banReason} className="mb-4" compact />
+      )}
       {isUniform ? (
         // Every tile the same size: `auto-rows-fr` makes each row as tall as its tallest card, so
         // the shorter ones end in empty space. Tidier than masonry, at that cost.
@@ -362,7 +369,7 @@ export const ProfileGrid = (props: {
         <ProfileGridSkeleton count={columnCount} cardSize={cardSize} gridLayout={gridLayout} />
       )}
 
-      {user?.isBannedFromPosting ? (
+      {user && isFullyBanned(user) ? (
         <Col className="items-center py-8">
           <AccountOnHoldNotice reason={user.banReason} className="max-w-xl" />
         </Col>

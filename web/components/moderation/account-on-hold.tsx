@@ -62,7 +62,7 @@ export function AccountOnHoldNotice(props: {
         )
       : t(
           'account_on_hold.why',
-          'We pause accounts automatically when activity looks like spam, scams or harassment, so we can check before anyone gets hurt.',
+          "We pause accounts automatically when activity looks like spam, scams or harassment, so we can check before anyone gets hurt. You won't be able to message others.",
         )
 
   const reassurance = t(

@@ -23,6 +23,8 @@ jest.mock('common/util/try-catch')
 jest.mock('common/util/time')
 jest.mock('api/validate-username')
 jest.mock('common/logger')
+jest.mock('shared/moderation/vpn-check')
+jest.mock('shared/supabase/users')
 
 import {createUserAndProfile} from 'api/create-user-and-profile'
 import {AuthedUser} from 'api/helpers/endpoint'
@@ -39,8 +41,10 @@ import * as firebaseAdmin from 'firebase-admin'
 import * as sharedAnalytics from 'shared/analytics'
 import * as firebaseUtils from 'shared/firebase-utils'
 import * as avatarHelpers from 'shared/helpers/generate-and-update-avatar-urls'
+import * as vpnCheck from 'shared/moderation/vpn-check'
 import * as parsePhotos from 'shared/profiles/parse-photos'
 import * as supabaseInit from 'shared/supabase/init'
+import * as sharedSupabaseUsers from 'shared/supabase/users'
 import * as supabaseUtils from 'shared/supabase/utils'
 import * as sharedUtils from 'shared/utils'
 
@@ -66,6 +70,7 @@ describe('createUserAndProfile', () => {
       getUser: jest.fn().mockResolvedValue({email: 'test@test.com'}),
     })
     ;(sharedUtils.getUserByUsername as jest.Mock).mockResolvedValue(false)
+    ;(vpnCheck.lookupVpnNetwork as jest.Mock).mockResolvedValue(null)
     // `common/util/object` is auto-mocked, which leaves `removeUndefinedProps` returning `undefined`.
     // It is a pure helper that always returns an object, so `undefined` is not a stand-in for
     // anything the real one can do — it is a state the handler cannot reach in production, and a test
@@ -370,6 +375,113 @@ describe('createUserAndProfile', () => {
           is_banned_from_posting: true,
         }),
       )
+    })
+  })
+
+  describe('when the signup comes from behind a VPN', () => {
+    // A real M247 address one of our confirmed-abuse accounts signed up from, and an address on an
+    // ordinary network. Which one is a VPN comes from the mocked lookup — the prefix tables are
+    // fetched at runtime, and covered on their own in backend/shared/tests/unit/vpn-check.
+    const VPN_IP = '37.120.236.26'
+    const ISP_IP = '8.8.8.8'
+    const M247 = {asn: 9009, name: 'M247'}
+
+    const runSignup = async (opts: {ip: string; email?: string}) => {
+      const mockProps = {
+        deviceToken: 'someUnbannedDeviceToken',
+        username: 'mockUsername',
+        name: 'mockName',
+        link: {},
+        profile: {
+          city: 'mockCity',
+          gender: 'mockGender',
+          visibility: 'public' as 'public' | 'member',
+        },
+      }
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {get: jest.fn()} as any
+      const mockNewUserRow = {
+        created_time: 'mockCreatedTime',
+        id: 'mockNewUserId',
+        name: 'mockName',
+        username: 'mockUsername',
+      }
+
+      ;(firebaseAdmin.auth as jest.Mock).mockReturnValue({
+        getUser: jest.fn().mockResolvedValue({email: opts.email ?? 'test@test.com'}),
+      })
+      ;(sharedAnalytics.getIp as jest.Mock).mockReturnValue(opts.ip)
+      ;(vpnCheck.lookupVpnNetwork as jest.Mock).mockResolvedValue(opts.ip === VPN_IP ? M247 : null)
+      ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue('mockName')
+      ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue({} as any)
+      ;(avatarHelpers.generateAvatarUrl as jest.Mock).mockResolvedValue('mockAvatarUrl')
+      ;(validateUsernameModule.validateUsername as jest.Mock).mockResolvedValue({valid: true})
+      ;(parsePhotos.removePinnedUrlFromPhotoUrls as jest.Mock).mockReturnValue(mockProps.profile)
+      ;(mockPg.tx as jest.Mock).mockImplementation(async (cb: any) => {
+        const mockTx = {
+          oneOrNone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(null),
+          one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
+        }
+        return cb(mockTx)
+      })
+      ;(supabaseUtils.insert as jest.Mock)
+        .mockResolvedValueOnce(mockNewUserRow)
+        .mockResolvedValueOnce({data: {}, id: 'mockPrivateUserId'})
+        .mockResolvedValueOnce({id: 'mockProfileId', user_id: 'mockUserId'})
+      ;(supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow)
+      ;(supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue({})
+
+      return createUserAndProfile(mockProps, mockAuth, mockReq)
+    }
+
+    const runAndContinue = async (opts: {ip: string; email?: string}) => {
+      const {continue: continuation} = (await runSignup(opts)) as any
+      await continuation()
+    }
+
+    const holdApplied = () => (sharedSupabaseUsers.updateUser as jest.Mock).mock.calls[0]
+    const reportsPost = () =>
+      (sendDiscordMessage as jest.Mock).mock.calls.find((c) => c[1] === 'reports')
+
+    it('never makes the person creating the account wait on the check', async () => {
+      await runSignup({ip: VPN_IP})
+      // The lookup can take ten seconds on a cold instance; it belongs after the response.
+      expect(vpnCheck.lookupVpnNetwork).not.toHaveBeenCalled()
+      expect(sharedSupabaseUsers.updateUser).not.toHaveBeenCalled()
+    })
+
+    it('puts the account on hold under review', async () => {
+      await runAndContinue({ip: VPN_IP})
+      expect(holdApplied()).toEqual([
+        'mockNewUserId',
+        {isBannedFromPosting: true, banReason: 'under_review'},
+      ])
+    })
+
+    it('posts to the reports channel so a human picks it up', async () => {
+      await runAndContinue({ip: VPN_IP})
+      const post = reportsPost()
+      expect(post).toBeDefined()
+      expect(post[0]).toContain('M247')
+      expect(post[0]).toContain(VPN_IP)
+    })
+
+    it('leaves an ordinary ISP signup alone', async () => {
+      await runAndContinue({ip: ISP_IP})
+      expect(sharedSupabaseUsers.updateUser).not.toHaveBeenCalled()
+      expect(reportsPost()).toBeUndefined()
+    })
+
+    it('never holds an Apple Hide My Email signup, whatever the IP says', async () => {
+      await runAndContinue({ip: VPN_IP, email: 'xyz123@privaterelay.appleid.com'})
+      expect(sharedSupabaseUsers.updateUser).not.toHaveBeenCalled()
+      expect(reportsPost()).toBeUndefined()
+    })
+
+    it('still creates the account when the hold cannot be written', async () => {
+      ;(sharedSupabaseUsers.updateUser as jest.Mock).mockRejectedValue(new Error('db down'))
+      await expect(runAndContinue({ip: VPN_IP})).resolves.toBeUndefined()
     })
   })
 

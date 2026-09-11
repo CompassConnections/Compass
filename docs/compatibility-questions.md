@@ -484,8 +484,8 @@ purpose, which is what makes batching safe.
 
 ### What is left
 
+- [x] Clear proposal
+- [x] Write blog article
 - [ ] **Settle the shares that are still guesses.** Every modal-answer estimate in the scoring pass was
       an LLM's judgement; `/admin/compatibility-questions` measures the real thing once members answer.
       That is guideline #5's actual test, and nothing before it substitutes.
-- [ ] Write blog article
-- [ ] Clear proposal

@@ -70,6 +70,149 @@ Enter or paste your release notes for fr-FR here
 
 ---
 
+## 1.45.0 — 2026-09-11
+
+### New features
+
+- **The compatibility questions are rebuilt from scratch.** The inherited OKCupid corpus is gone,
+  replaced by a curated set of about 300 written for this — and they now arrive in a deliberate
+  order: films and sleep schedules first, addiction history and anger last, so nobody is asked for an
+  admission before they have any reason to give one
+- Every question is filed under a domain — kids & family, money, work, politics, religion, sex &
+  intimacy, health, and the rest — and **you can filter a profile's answers by one**. "What does this
+  person think about money" over a hundred answers is now one tap rather than a scroll
+- **You read someone's answer once you've answered the question yourself.** Until then the row shows
+  the question and a way to answer it
+- **A redesigned answer screen**: your own answer and what you'd accept sit side by side in two
+  aligned columns, and importance is a scale that fills as you hover, so you can see what a click
+  means before making it
+- Finishing the core questions now says so, and offers to keep going, instead of quietly closing
+- **A referral leaderboard** at [/leaderboard](https://www.compassmeet.com/leaderboard): who has
+  personally brought the most people to Compass, with your own row always on the page — highlighted
+  where you rank, or pinned to the bottom if you're further down
+
+### Improvements
+
+- Rarer interests, causes and jobs no longer vanish from a profile. Anything outside the most-used
+  slice — including an option someone had just created — was being dropped from the page entirely
+- Emails now show a member's initial where they have no photo, instead of a blank silhouette sitting
+  next to the members who do
+- You can start ten new conversations a day before the anti-spam limit trips, up from five — it was
+  catching people who were simply busy
+- The FAQ covers the iPhone app rather than the PWA workaround it replaced, and the platforms answer
+  now names both stores and the minimum OS versions
+- "Pause AI / Tech Skeptic" is just "Pause AI" — the two aren't the same position
+- Clearer contrast on profile notes
+
+### Trust & safety
+
+- **An account on hold can still browse.** A provisional hold is not a verdict — nobody has looked at
+  it yet, and most turn out to be genuine — so it now takes away only what can hurt other people.
+  Every attempt to write says plainly that it's automatic, that a person will review it within a day,
+  and that nothing already written has been lost
+- Signups arriving through a commercial VPN network are held for that review. In the September 2026
+  audit those networks carried 12 of the 13 confirmed-abuse accounts; it is a signal, never proof, so
+  it buys a hold and a moderator's attention rather than a ban. Apple's Hide My Email is exempt —
+  that's privacy plumbing, the opposite of a fraud signal
+
+<!--tech-->
+
+### Database
+
+- New migrations: `20260909_categorize_compatibility_prompts.sql`,
+  `20260910_recategorize_compatibility_prompts.sql`
+- `compatibility_prompts.category` is populated for the whole live corpus against
+  `common/src/profiles/compatibility-categories.ts`. The column existed but was effectively unused — 187 of
+  220 prompts null, the other 33 carrying a mix of answer _shapes_ and domains, sometimes several
+  semicolon-joined in one field. The second migration supersedes the first for the 130 prompts in the
+  2026-09-10 export: the taxonomy was reshaped between them (`politics_religion`, `money_work`,
+  `health_rhythm`, `conflict_communication`, `growth_emotions` and `care_obligation` split or merged),
+  and applying the first alone would write 101 rows matching nothing the filter offers
+- `importance_score` becomes the **serving order**, not a weight: `get-compatibility-questions` orders
+  by it `DESC`, so the core 67 run 67 down to 1 and everything else sits at 0 after the ramp. A low
+  number means "ask this later", never "this counts less"
+
+### Backend & API
+
+- New endpoints: `get-referral-leaderboard`, `get-compatibility-question-degeneracy`,
+  `delete-compatibility-prompt`, `recompute-all-compatibility-scores`
+- `get-referral-leaderboard` is public but `cache: 'private'` — the response varies by caller (the
+  `you` row, and whether avatars are redacted), so a shared cache would serve someone else's place on
+  the board. The handler, not the page, applies `redactMemberOnlyUser`
+- VPN check at signup: `shared/moderation/vpn-check.ts` resolves an IP against prefixes announced by
+  known VPN/hosting ASNs, fetched from RIPEstat at boot and refreshed daily (`startVpnRangeRefresh` in
+  `serve.ts`, cached in tmpdir so a dev restart doesn't re-ask). Run after the user row exists, not
+  inline in the signup, because a cold instance can take ten seconds to load the tables; a hit sets
+  `isBannedFromPosting` with `banReason: 'under_review'` and posts to Discord `#reports`
+- `canBrowseWhileBanned` / `isFullyBanned` / `bannedFromWritingError` in `common/moderation/ban.ts`,
+  with `assertCanWrite` in `helpers/endpoint.ts` — the three write paths that tested
+  `isBannedFromPosting` themselves all threw a bare "You are banned"
+- `MAX_NEW_CHANNELS_PER_DAY` 5 → 10
+- `get-user-and-profile` returns option **names** alongside ids, index for index, as `get-profiles`
+  already did; queries `ORDER BY id` so the two arrays stay aligned
+- `avatarSrc` in `backend/email/emails/utils.tsx`, replacing `/images/default-avatar.png`;
+  `DEPLOYED_WEB_URL` dropped as unused
+- API version 1.78.0 → 1.79.0
+
+### Web
+
+- New pages: `leaderboard`, `admin/compatibility-questions`
+- The admin dashboard shows the two independent ways a prompt stops discriminating — the share on the
+  most-picked self-answer and on the most-picked accepted set — greyed below 20 answers, flagged at
+  70% and 85%, with delete + recompute wired to the new endpoints
+- `web/components/compatibility/category.tsx` (`CompatibilityCategoryFilter`,
+  `CompatibilityCategoryTag`, `matchesCategory`) and `community-importance.tsx`, which replaces the
+  spelled-out "Community Importance: 35%" that wrapped to two lines on a phone
+- `isPromptHiddenUntilYouAnswer` is front-end only — the answer is already in the payload, so this is
+  a nudge, not a privacy boundary. A hidden prompt is searched by its question alone, so a covered
+  answer isn't findable by its own text
+- The answer dialog sizes to content on desktop instead of inheriting `MODAL_CLASS`'s fixed height,
+  and the core run is ordered (sort control hidden) while everything after it is shuffled
+- `ProfileGrid` shows a compact hold notice above the grid for a member who can still browse
+- fr/de translations for all of the above
+
+### Tooling, scripts & docs
+
+- `scripts/bump-version.sh` rewritten: `yarn bump` moves the three versions only, `yarn bump:build`
+  (new) moves the two store counters independently, both read every number back after writing and
+  refuse a version that isn't higher than what's on disk
+- `scripts/release.sh` and `docs/releases.md` reworked around the split between "open the next
+  version" and "release it"; `cd.yml` now triggers on `CHANGELOG.md`, since the entry — not the
+  version bump — is what says ship
+- `docs/compatibility-questions.md`: how to write a prompt that screens, the coverage table the
+  category keys derive from, and what to retire
+- `backend/scripts/2026-09-10-import-selected-compatibility-prompts.ts` (validation + dry run) and
+  `2026-09-10-vpn-asn-dry-run.ts` (read-only: what the VPN rule would have done to existing members)
+- E2E seed sets `importance_score` descending so onboarding takes the real core-questions path
+  instead of the "no core questions" fallback
+
+**Full Changelog**: https://github.com/CompassConnections/Compass/compare/1.44.0...1.45.0
+
+<!-- Store release notes. Play: paste the tagged block whole (500 chars/language).
+     App Store Connect: paste each language into "What's New in This Version" without the tags.
+
+<en-US>
+• A rebuilt set of compatibility questions: 300 curated prompts, asked lightest first
+• Filter someone's answers by topic — money, kids, politics, work and more
+• You see an answer once you've answered that question yourself
+• A clearer answer screen: your answer and what you'd accept, side by side
+• A leaderboard of who has brought the most people to Compass
+• Rarer interests and jobs no longer vanish from profiles
+• Accounts under review can keep browsing while a person checks them
+</en-US>
+<fr-FR>
+• 300 questions de compatibilité choisies, des plus légères aux plus engageantes
+• Filtrez les réponses par thème : argent, enfants, politique, travail…
+• Vous voyez une réponse une fois que vous avez répondu vous-même
+• Un écran plus clair : votre réponse et ce que vous acceptez, côte à côte
+• Un classement des membres qui ont amené le plus de monde sur Compass
+• Les intérêts et métiers rares ne disparaissent plus des profils
+• Les comptes en vérification peuvent continuer à naviguer
+</fr-FR>
+-->
+
+---
+
 ## 1.44.0 — 2026-09-08
 
 > Version numbers converge here: web, Android and iOS now share one number (see

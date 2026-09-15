@@ -115,7 +115,7 @@ export function ConversationSafetyTip({className}: {className?: string}) {
             'safety.tip.new_conversation',
             'New conversation? Keep it on Compass until you trust them, get on a video call before you meet, and never send money — however good the reason sounds.',
           )}{' '}
-          <SafetyLink section="short-version" source="conversation banner" />
+          <SafetyLink source="conversation banner" />
         </p>
       </div>
     </div>

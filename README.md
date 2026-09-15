@@ -10,7 +10,7 @@ platonic, romantic, or collaborative.
 **[Open the app](https://compassmeet.com)** · [About](https://www.compassmeet.com/about) ·
 [FAQ](https://www.compassmeet.com/faq) · [Chat with us on Discord](https://discord.gg/8Vd7jzqjun)
 
-[![Users](https://img.shields.io/badge/Users-800%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
+[![Users](https://img.shields.io/badge/Users-900%2B-blue?logo=myspace)](https://www.compassmeet.com/stats)
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/CompassConnections/assets/refs/heads/main/assets/store/play/01-search.png" width="22%">

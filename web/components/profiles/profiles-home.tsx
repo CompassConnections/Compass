@@ -360,7 +360,7 @@ export function ProfilesHome() {
             <p className="text-sm font-medium text-ink-900 sm:text-[15px]">
               {t(
                 'profiles.early_growth',
-                `Compass is in its early growth phase — 800+ members and ~100 new people joining every month. Build a strong profile now and be visible as the community expands.`,
+                `Compass is in its early growth phase — 900+ members and ~100 new people joining every month. Build a strong profile now and be visible as the community expands.`,
               )}
             </p>
           </ProfileBanner>

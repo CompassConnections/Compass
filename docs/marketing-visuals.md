@@ -343,7 +343,7 @@ The icon tiles do the job actually needed here, which is rhythm and scannability
 
 ### H3 — Replace the fabricated avatars — **done (option 2)**
 
-`SocialProof` (`home.tsx`) rendered four gradient circles lettered S/R/T/L next to "800+ **real** people
+`SocialProof` (`home.tsx`) rendered four gradient circles lettered S/R/T/L next to "900+ **real** people
 worldwide". Fabricated avatars next to the word _real_, on a platform selling radical transparency, was the
 one visual on the page that actively cost trust.
 
@@ -379,7 +379,7 @@ The one used — "Require email verification before interacting with other peopl
 1 Against, `Implemented ✔️` — satisfies all three, and is verifiable by a reader: the shipped behaviour is
 enforced in `backend/api/src/create-private-user-message-channel.ts`.
 
-**Turnout is the honest tension.** Twelve voters is a small number to place near "800+ members". It is not
+**Turnout is the honest tension.** Twelve voters is a small number to place near "900+ members". It is not
 a reason to fake anything; it is a reason to keep the tally off any screen that also shows the member
 count, which is why this lives on the about page and not the home page.
 

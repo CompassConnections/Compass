@@ -45,7 +45,7 @@ describe('contact', () => {
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
-      const mockDbUser = {name: 'Humphrey Mocker'}
+      const mockDbUser = {name: 'Humphrey Mocker', username: 'humphrey'}
       const mockReturnData = {} as any
 
       ;(tryCatch as jest.Mock).mockResolvedValue({data: mockReturnData, error: null})
@@ -65,12 +65,13 @@ describe('contact', () => {
       await results.continue()
 
       expect(mockPg.oneOrNone).toBeCalledTimes(1)
-      expect(mockPg.oneOrNone).toBeCalledWith(sqlMatch('select name from users where id = $1'), [
-        mockProps.userId,
-      ])
+      expect(mockPg.oneOrNone).toBeCalledWith(
+        sqlMatch('select name, username from users where id = $1'),
+        [mockProps.userId],
+      )
       expect(sendDiscordMessage).toBeCalledTimes(1)
       expect(sendDiscordMessage).toBeCalledWith(
-        expect.stringContaining(`New message from ${mockDbUser.name}`),
+        expect.stringContaining(`New message from [@${mockDbUser.name}](https://`),
         'contact',
       )
     })
@@ -125,7 +126,7 @@ describe('contact', () => {
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
-      const mockDbUser = {name: 'Humphrey Mocker'}
+      const mockDbUser = {name: 'Humphrey Mocker', username: 'humphrey'}
       const mockReturnData = {} as any
 
       ;(tryCatch as jest.Mock).mockResolvedValue({data: mockReturnData, error: null})

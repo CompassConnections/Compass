@@ -1,4 +1,5 @@
 import {sendDiscordMessage} from 'common/discord/core'
+import {DOMAIN} from 'common/envs/constants'
 import {jsonToMarkdown} from 'common/md'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
@@ -25,10 +26,12 @@ export const contact: APIHandler<'contact'> = async ({content, userId}, _auth) =
     try {
       let user = null
       if (userId) {
-        user = await pg.oneOrNone(` select name from users where id = $1 `, [userId])
+        user = await pg.oneOrNone(` select name, username from users where id = $1 `, [userId])
       }
       const md = jsonToMarkdown(content)
-      const tile = user ? `New message from ${user.name}` : 'New message'
+      const tile = user
+        ? `New message from [@${user.name}](https://${DOMAIN}/${user.username})`
+        : 'New message'
       const message: string = `**${tile}**\n${md}`
       await sendDiscordMessage(message, 'contact')
     } catch (e) {

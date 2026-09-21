@@ -41,6 +41,7 @@ import {
   useSortedPrivateMessageMemberships,
 } from 'web/hooks/use-private-messages'
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
+import {useReviewPromptOnConversationExit} from 'web/hooks/use-review-prompt'
 import {isBlocked, usePrivateUser, useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {useVisualViewportHeight} from 'web/hooks/use-visual-viewport-height'
@@ -198,6 +199,15 @@ export const PrivateChat = (props: {
         id: m.id,
       }) as ChatMessage,
   )
+
+  // Someone else wrote in here, and it isn't a join/leave notice. The whole of what this page claims
+  // to know: there was something in this thread worth feeling good about, and they have just read it.
+  // Whether the exchange is two-way enough to earn an ask is decided server-side, against every
+  // conversation rather than this one.
+  const sawReply = (messages ?? []).some(
+    (m) => m.userId !== user.id && m.visibility !== 'system_status',
+  )
+  useReviewPromptOnConversationExit(sawReply)
 
   const loadMoreMessages = useCallback(
     (beforeId: number) => {

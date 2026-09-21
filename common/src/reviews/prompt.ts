@@ -12,6 +12,9 @@ import {ANDROID_APP_URL, IOS_APP_URL, IS_IOS_APP_PUBLISHED} from 'common/constan
  * rendered at all because the member's per-year quota was spent. Nothing downstream can react to the
  * outcome, so every rule here is a decision made up front, and every one of them errs towards not
  * asking.
+ *
+ * TODO: consider simplifying the logic. There are many safeguards / conditions before prompting,
+ * each of which is a potential point of failure and harder to maintain for little additional value.
  */
 
 /** The behavioural moment that earned the ask. Mirrored by a CHECK constraint on `review_prompts`. */
@@ -27,11 +30,18 @@ export type ReviewTrigger = (typeof REVIEW_TRIGGERS)[number]
 /**
  * Where the app was when it asked, which is all the client claims to know.
  *
- * Deliberately not the same list as `REVIEW_TRIGGERS`: `inbox` is a place, `got-reply` is a fact about
- * the member's conversations that only the server can check. Keeping them apart is what stops the
- * client from asserting it has earned a prompt.
+ * Deliberately not the same list as `REVIEW_TRIGGERS`: `conversation-exit` is a place, `got-reply` is
+ * a fact about the member's conversations that only the server can check. Keeping them apart is what
+ * stops the client from asserting it has earned a prompt.
+ *
+ * `inbox` is retired and still here. The current app asks on `conversation-exit` instead — the inbox
+ * list turned out to be a corridor rather than a moment, and the ask was cancelled by the tap that
+ * followed it more often than it fired. But builds already on people's phones still send `inbox`, and
+ * dropping it from this enum would 400 them for as long as they go without updating. It maps to the
+ * same trigger, so honouring it costs nothing.
  */
 export const REVIEW_MOMENTS = [
+  'conversation-exit',
   'inbox',
   'testimonial-submitted',
   'profile-from-notification',
@@ -43,17 +53,17 @@ export type ReviewMoment = (typeof REVIEW_MOMENTS)[number]
 export type ReviewPlatform = 'ios' | 'android'
 
 /**
- * Lifetime cap and cooldown, set to the tighter of the two platforms so that no rule has to branch on
- * one. Apple hard-caps at 3 prompts per device per 365 days and silently no-ops past that; Play's
- * quota is undocumented but similarly small. Asking a fourth time would not reach anyone anyway — it
- * would only cost us the record of having tried.
+ * Lifetime cap and cooldown. Apple hard-caps at 3 prompts per device per 365 days and silently no-ops past that; Play's
+ * quota is undocumented but similarly small. Set to less than every 60 days instead of 120 since people may not use
+ * the app for a whole year, so it's better to get a review within the first months, even if we reach the cap for the
+ * people who stay for more than 6 months.
  */
 export const REVIEW_PROMPT_MAX_ATTEMPTS = 3
-export const REVIEW_PROMPT_COOLDOWN_DAYS = 120
+export const REVIEW_PROMPT_COOLDOWN_DAYS = 60
 
 /** Never in the first session, and never on the day of install. */
 export const REVIEW_PROMPT_MIN_SESSIONS = 3
-export const REVIEW_PROMPT_MIN_DAYS_INSTALLED = 2
+export const REVIEW_PROMPT_MIN_DAYS_INSTALLED = 0 // TODO: put back to 2
 
 /**
  * Backfill is a one-shot for members whose qualifying moment happened before the feature existed, so
@@ -72,7 +82,7 @@ export const REVIEW_SUPPRESSION_DAYS = 14
 export const REVIEW_REPLY_INBOUND_MIN = 2
 export const REVIEW_CONVERSATION_TOTAL_MIN = 4
 
-/** How recently that exchange has to have happened for the inbox to still be the right moment. */
+/** How recently that exchange has to have happened for leaving the thread to still be the moment. */
 export const REVIEW_REPLY_RECENT_DAYS = 7
 
 /**
@@ -153,6 +163,7 @@ export function evaluateReviewPrompt(
   }
 
   switch (moment) {
+    case 'conversation-exit':
     case 'inbox':
       return facts.hasRecentReply ? 'got-reply' : null
     case 'testimonial-submitted':

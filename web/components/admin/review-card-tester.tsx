@@ -64,6 +64,24 @@ export function ReviewCardTester() {
         )}
       </Row>
 
+      {/*
+        The install-local half of the rules, which the real prompt fails on silently. Shown here
+        because it is the only way to read it without a USB cable: `sessions` below
+        REVIEW_PROMPT_MIN_SESSIONS, or an install younger than REVIEW_PROMPT_MIN_DAYS_INSTALLED,
+        means no moment on this device can reach the server yet, however many replies are waiting.
+      */}
+      {env && (
+        <div className={'text-ink-400 font-mono text-xs break-all'}>
+          {env.install
+            ? `sessions ${env.install.sessions} · ${env.daysInstalled}d installed · quietAsked ${!!env
+                .install.quietAsked}`
+            : 'no install record on this device'}
+          {` · askedThisSession ${env.askedThisSession} · ${
+            env.calmBlocker ? `blocked by ${env.calmBlocker}` : 'calm'
+          }`}
+        </div>
+      )}
+
       {state === 'resolved' && env && <Resolved platform={env.platform} />}
       {state === 'failed' && <Failed platform={env?.platform} error={error} />}
     </Col>

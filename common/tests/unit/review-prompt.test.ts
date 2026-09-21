@@ -63,6 +63,7 @@ describe('isInstallEligible', () => {
 
 describe('evaluateReviewPrompt', () => {
   const moments: ReviewMoment[] = [
+    'conversation-exit',
     'inbox',
     'testimonial-submitted',
     'profile-from-notification',
@@ -70,14 +71,29 @@ describe('evaluateReviewPrompt', () => {
   ]
 
   it('maps each moment to its trigger when the evidence is there', () => {
+    expect(evaluateReviewPrompt('conversation-exit', facts({hasRecentReply: true}))).toBe(
+      'got-reply',
+    )
     expect(evaluateReviewPrompt('inbox', facts({hasRecentReply: true}))).toBe('got-reply')
     expect(evaluateReviewPrompt('testimonial-submitted', facts())).toBe('testimonial')
     expect(evaluateReviewPrompt('profile-from-notification', facts())).toBe('notification-profile')
     expect(evaluateReviewPrompt('quiet', facts({hasPreCutoffEvidence: true}))).toBe('backfill')
   })
 
-  it('stays quiet on the inbox when nobody has written back', () => {
+  it('stays quiet leaving a conversation when nobody has written back', () => {
+    expect(evaluateReviewPrompt('conversation-exit', facts({hasRecentReply: false}))).toBeNull()
     expect(evaluateReviewPrompt('inbox', facts({hasRecentReply: false}))).toBeNull()
+  })
+
+  // Builds shipped before the ask moved off the inbox list still send the old moment, and will for as
+  // long as those phones go without updating.
+  it('still honours the retired inbox moment from older builds', () => {
+    expect(evaluateReviewPrompt('inbox', facts({hasRecentReply: true}))).toBe('got-reply')
+  })
+
+  it('waits for the same install age leaving a conversation as it did on the inbox', () => {
+    expect(isInstallEligible('conversation-exit', install({sessions: 1}))).toBe(false)
+    expect(isInstallEligible('conversation-exit', install())).toBe(true)
   })
 
   it('suppresses every moment for a member who is upset with us', () => {

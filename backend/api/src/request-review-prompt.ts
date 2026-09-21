@@ -3,11 +3,15 @@ import {
   evaluateReviewPrompt,
   REVIEW_BACKFILL_CUTOFF,
   REVIEW_CONVERSATION_TOTAL_MIN,
+  REVIEW_PROMPT_COOLDOWN_DAYS,
+  REVIEW_PROMPT_MAX_ATTEMPTS,
   REVIEW_REPLY_INBOUND_MIN,
   REVIEW_REPLY_RECENT_DAYS,
   REVIEW_SUPPRESSION_DAYS,
   ReviewAccountFacts,
+  ReviewMoment,
 } from 'common/reviews/prompt'
+import {log} from 'shared/monitoring/log'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -36,6 +40,14 @@ export const requestReviewPrompt: APIHandler<'request-review-prompt'> = async (p
     recently_upset: boolean
     has_recent_reply: boolean
     has_pre_cutoff_evidence: boolean
+    // Diagnostics only — nothing below branches on these. They exist because `has_recent_reply: false`
+    // on a member who plainly has conversations is otherwise unfalsifiable from outside the database,
+    // and `got-reply` is the trigger that has to clear two thresholds *and* a recency window.
+    conversations: number
+    max_inbound: number | null
+    max_total: number | null
+    last_two_way_at: Date | null
+    last_message_at: Date | null
   }>(
     `with attempts as (select count(*)::int as n, max(prompted_at) as last_at
                        from review_prompts
@@ -69,7 +81,12 @@ export const requestReviewPrompt: APIHandler<'request-review-prompt'> = async (p
                 or exists (select 1
                            from testimonials
                            where author_id = $(uid)
-                             and created_time < $(cutoff)))               as has_pre_cutoff_evidence`,
+                             and created_time < $(cutoff)))               as has_pre_cutoff_evidence,
+            (select count(*)::int from conversations)                      as conversations,
+            (select max(inbound)::int from conversations)                  as max_inbound,
+            (select max(total)::int from conversations)                    as max_total,
+            (select max(last_time) from two_way)                           as last_two_way_at,
+            (select max(last_time) from conversations)                     as last_message_at`,
     {
       uid: auth.uid,
       minInbound: REVIEW_REPLY_INBOUND_MIN,
@@ -90,11 +107,40 @@ export const requestReviewPrompt: APIHandler<'request-review-prompt'> = async (p
   }
 
   const trigger = evaluateReviewPrompt(props.moment, facts)
+
+  // One line per ask, granted or not, with every input the decision was made from. Logged at `info`
+  // rather than `debug` because the question this answers — "why has this member never been asked" —
+  // is only ever asked about production, where `debug` is off.
+  log.info('review prompt evaluated', {
+    userId: auth.uid,
+    moment: props.moment,
+    platform: props.platform,
+    trigger,
+    declinedBecause: trigger ? null : declineReason(props.moment, facts),
+    attempts: facts.attempts,
+    lastPromptedAt: facts.lastPromptedAt,
+    recentlyUpset: facts.recentlyUpset,
+    hasRecentReply: facts.hasRecentReply,
+    hasPreCutoffEvidence: facts.hasPreCutoffEvidence,
+    // The two-way test, shown as the numbers it compares: a member with conversations but
+    // `maxInbound` of 1 and `maxTotal` of 3 is talking into the void, and a `lastTwoWayAt` older
+    // than REVIEW_REPLY_RECENT_DAYS is a real exchange that the recency window has since expired.
+    conversations: row.conversations,
+    maxInbound: row.max_inbound,
+    maxTotal: row.max_total,
+    lastTwoWayAt: row.last_two_way_at,
+    lastMessageAt: row.last_message_at,
+    thresholds: {
+      minInbound: REVIEW_REPLY_INBOUND_MIN,
+      minTotal: REVIEW_CONVERSATION_TOTAL_MIN,
+      recentDays: REVIEW_REPLY_RECENT_DAYS,
+      replySince: new Date(now.getTime() - REVIEW_REPLY_RECENT_DAYS * DAY_MS),
+      backfillCutoff: REVIEW_BACKFILL_CUTOFF,
+    },
+  })
+
   if (!trigger) return {trigger: null}
 
-  // Raw SQL rather than the typed `insert` helper from shared/supabase/utils: that one is typed
-  // against common/src/supabase/schema.ts, which is regenerated from the live database and does not
-  // know about this table until the migration has been applied and the types re-pulled.
   await pg.none(
     `insert into review_prompts (user_id, prompt_trigger, platform, attempt_no)
      values ($(uid), $(trigger), $(platform), $(attemptNo))`,
@@ -106,5 +152,39 @@ export const requestReviewPrompt: APIHandler<'request-review-prompt'> = async (p
     },
   )
 
+  log.info('review prompt granted and recorded', {
+    userId: auth.uid,
+    trigger,
+    platform: props.platform,
+    attemptNo: facts.attempts + 1,
+  })
+
   return {trigger}
+}
+
+/**
+ * Which rule said no, for the log line only.
+ *
+ * Deliberately a separate read of the same facts rather than something `evaluateReviewPrompt` returns:
+ * the policy has one home and one signature, and a diagnostic string is not worth widening it. The
+ * order mirrors the real function, so the first match is the one that actually decided.
+ */
+function declineReason(moment: ReviewMoment, facts: ReviewAccountFacts): string {
+  if (facts.recentlyUpset) {
+    return 'recently-upset (banned, or wrote to support / filed a report inside the suppression window)'
+  }
+  if (facts.attempts >= REVIEW_PROMPT_MAX_ATTEMPTS) return 'lifetime cap reached'
+  if (
+    facts.lastPromptedAt &&
+    (facts.now.getTime() - facts.lastPromptedAt.getTime()) / DAY_MS < REVIEW_PROMPT_COOLDOWN_DAYS
+  ) {
+    return 'still inside the cooldown'
+  }
+  if (moment === 'inbox') return 'no two-way conversation inside the recency window'
+  if (moment === 'quiet') {
+    return facts.attempts > 0
+      ? 'backfill skipped: already asked at least once'
+      : 'backfill skipped: no evidence predating the cutoff'
+  }
+  return 'unknown'
 }

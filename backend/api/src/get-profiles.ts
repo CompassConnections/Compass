@@ -17,6 +17,7 @@ import {
   RELIGION_CHOICES,
   ROMANTIC_CHOICES,
 } from 'common/choices'
+import {MIN_BIO_LENGTH} from 'common/constants'
 import {OptionTableKey} from 'common/profiles/constants'
 import {parseJsonContentToText} from 'common/util/parse'
 import {getWantsKidsRange} from 'common/wants-kids'
@@ -679,13 +680,13 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
 
   /** "Has this profile picked any option at all?" — the `array_length(...) > 0` test on the
    *  aggregate join, expressed so it does not need the join. */
-  function getManyToManyAnyClause(label: OptionTableKey) {
-    return `EXISTS (
-      SELECT 1 FROM profile_${label}
-      JOIN ${label} ON ${label}.id = profile_${label}.option_id
-      WHERE profile_${label}.profile_id = profiles.id
-      )`
-  }
+  // function getManyToManyAnyClause(label: OptionTableKey) {
+  //   return `EXISTS (
+  //     SELECT 1 FROM profile_${label}
+  //     JOIN ${label} ON ${label}.id = profile_${label}.option_id
+  //     WHERE profile_${label}.profile_id = profiles.id
+  //     )`
+  // }
 
   function getOptionClauseKeyword(label: OptionTableKey) {
     return `EXISTS (
@@ -999,15 +1000,7 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
 
     // Deliberately EXISTS rather than `array_length(profile_work.work, 1) > 0`: reading the aggregate
     // joins here would tie this filter to joins that are only there to shape the output.
-    !shortBio &&
-      where(
-        `bio_length >= ${100}
-       OR headline IS NOT NULL
-       OR ${getManyToManyAnyClause('work')}
-       OR ${getManyToManyAnyClause('interests')}
-       OR occupation_title IS NOT NULL
-       `,
-      ),
+    !shortBio && where(`bio_length >= ${MIN_BIO_LENGTH} OR headline IS NOT NULL `),
 
     hasPhoto && where("pinned_url IS NOT NULL AND pinned_url != ''"),
 

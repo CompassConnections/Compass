@@ -1,5 +1,6 @@
-import {EyeSlashIcon, LockClosedIcon} from '@heroicons/react/24/outline'
+import {EyeSlashIcon, FunnelIcon, LockClosedIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
+import {MIN_BIO_LENGTH} from 'common/constants'
 import {isAdminUserId} from 'common/envs/constants'
 import {Profile} from 'common/profiles/profile'
 import {User, UserActivity} from 'common/user'
@@ -54,6 +55,11 @@ export default function ProfileHero(props: {
 
   const photos = useProfilePhotos(profile)
 
+  // Mirrors the `shortBio` filter in the backend's `get-profiles`: keep the two in sync.
+  const isFilteredFromSearch = !(
+    (profile.bio_length ?? 0) >= MIN_BIO_LENGTH || profile.headline != null
+  )
+
   // The photo is matched to the height of the text, so both are measured rather than guessed.
   const bandRef = useRef<HTMLDivElement>(null)
   const textRef = useRef<HTMLDivElement>(null)
@@ -104,6 +110,14 @@ export default function ProfileHero(props: {
           {t(
             'profile.header.disabled_notice',
             'You disabled your profile, so no one else can access it.',
+          )}
+        </Notice>
+      )}
+      {currentUser && isCurrentUser && !profile.disabled && isFilteredFromSearch && (
+        <Notice icon={<FunnelIcon className="h-4 w-4 flex-none" />} tone="danger">
+          {t(
+            'profile.bio.too_short_tooltip',
+            "Since you have no headline and your bio is too short, Compass' algorithm filters out your profile from search results by default. This ensures searches show meaningful profiles.",
           )}
         </Notice>
       )}

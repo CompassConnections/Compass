@@ -65,7 +65,7 @@ export const FINANCIALS = {
 
 export const IS_MAINTENANCE = false // set to true to enable the maintenance mode banner
 
-export const MIN_BIO_LENGTH = 250
+export const MIN_BIO_LENGTH = 100
 
 export const WEB_GOOGLE_CLIENT_ID =
   '253367029065-khkj31qt22l0vc3v754h09vhpg6t33ad.apps.googleusercontent.com'

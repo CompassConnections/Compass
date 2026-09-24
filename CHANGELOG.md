@@ -70,6 +70,70 @@ Enter or paste your release notes for fr-FR here
 
 ---
 
+## 1.46.0 — 2026-09-24
+
+### Improvements
+
+- **Your profile now tells you when it's hidden from search, and why.** A profile with no headline
+  and a bio under 100 characters is left out of search results by default (unless the searcher
+  includes incomplete profiles). The notice now sits at the top of your profile and matches the rule
+  search actually applies — before, it warned from 250 characters, well past where search stopped
+  hiding anyone
+- The rule itself is simpler: a headline or a 100-character bio is what counts. Listing a job or
+  interests no longer stands in for saying anything about yourself
+- The app asks for a store review when you leave a conversation someone has replied in, rather than
+  on the inbox list, where the next tap usually cancelled it before it appeared. Still at most three
+  times a year, and never in your first sessions
+- 900+ members, and the counters now say so
+
+<!--tech-->
+
+### Backend & API
+
+- `get-profiles`: the `shortBio` filter is `bio_length >= MIN_BIO_LENGTH OR headline IS NOT NULL`; the
+  work / interests / `occupation_title` exemptions are dropped (`getManyToManyAnyClause` commented
+  out). `MIN_BIO_LENGTH` 250 → 100, now shared by the query and `ProfileHero`'s `isFilteredFromSearch`
+- `request-review-prompt`: new `conversation-exit` moment, mapped to the `got-reply` trigger. `inbox`
+  stays in `REVIEW_MOMENTS` so builds already installed don't 400. Evaluation refactored into shared
+  functions with per-rule diagnostics in the logs
+- Review prompt rules: `REVIEW_PROMPT_COOLDOWN_DAYS` 120 → 60; `REVIEW_PROMPT_MIN_DAYS_INSTALLED`
+  temporarily 0 (was 2) while the sequence is tried on real members
+- Contact-form messages to Discord link the sender's username
+- API version 1.79.0 → 1.80.0
+
+### Web
+
+- `useReviewPromptOnConversationExit` in `use-review-prompt.ts`, wired into `messages/[channelId]`;
+  the inbox page no longer asks
+- The too-short-bio notice moves from `ProfileBio` (`TooShortBio` removed) to a `Notice` in
+  `ProfileHero`; `profile.bio.too_short` key dropped, `too_short_tooltip` reworded in fr/de
+- The admin review-card tester shows the install-local half of the rules (sessions, days installed,
+  calm blocker), which the real prompt fails on silently
+
+### Tooling, scripts & docs
+
+- `backend/scripts/2026-09-24-review-prompt-dry-run.ts`: read-only, what the review-prompt rules
+  would decide for existing members
+
+**Full Changelog**: https://github.com/CompassConnections/Compass/compare/1.45.0...1.46.0
+
+<!-- Store release notes. Play: paste the tagged block whole (500 chars/language).
+     App Store Connect: paste each language into "What's New in This Version" without the tags.
+
+<en-US>
+• Your profile now tells you when it's hidden from search, and why
+• A headline or a 100-character bio is all it takes to show up in search
+• Small fixes and polish
+</en-US>
+<fr-FR>
+• Votre profil vous indique s'il est masqué des recherches, et pourquoi
+• Un titre ou une bio de 100 caractères suffit pour apparaître dans les recherches
+• Petites corrections et améliorations
+</fr-FR>
+-->
+
+---
+
 ## 1.45.0 — 2026-09-11
 
 ### New features

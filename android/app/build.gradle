@@ -11,7 +11,7 @@ android {
         applicationId "com.compassconnections.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 179
+        versionCode 180
         versionName "1.46.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {

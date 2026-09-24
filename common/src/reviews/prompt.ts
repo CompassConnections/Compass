@@ -61,7 +61,12 @@ export type ReviewPlatform = 'ios' | 'android'
 export const REVIEW_PROMPT_MAX_ATTEMPTS = 3
 export const REVIEW_PROMPT_COOLDOWN_DAYS = 60
 
-/** Never in the first session, and never on the day of install. */
+/**
+ * Never in the first session, and never on the day of install.
+ *
+ * The install-age gate is off for now (0 days) while the full prompt sequence is being tried on real
+ * members, so they reach the card without waiting. Put it back to 2 once the sequence holds up.
+ */
 export const REVIEW_PROMPT_MIN_SESSIONS = 3
 export const REVIEW_PROMPT_MIN_DAYS_INSTALLED = 0 // TODO: put back to 2
 

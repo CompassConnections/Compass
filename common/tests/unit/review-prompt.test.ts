@@ -56,9 +56,15 @@ describe('isInstallEligible', () => {
     expect(isInstallEligible('inbox', install({sessions}))).toBe(false)
   })
 
-  it('rejects an install younger than the minimum age, however many sessions it has', () => {
-    expect(isInstallEligible('inbox', install({sessions: 20, firstSeen: daysAgo(1)}))).toBe(false)
-  })
+  // The install-age gate is disabled (`REVIEW_PROMPT_MIN_DAYS_INSTALLED = 0`) while the prompt sequence
+  // is tried on real members. This runs again on its own once the constant is put back above 0.
+  const itWhenAgeGated = REVIEW_PROMPT_MIN_DAYS_INSTALLED > 0 ? it : it.skip
+  itWhenAgeGated(
+    'rejects an install younger than the minimum age, however many sessions it has',
+    () => {
+      expect(isInstallEligible('inbox', install({sessions: 20, firstSeen: daysAgo(1)}))).toBe(false)
+    },
+  )
 })
 
 describe('evaluateReviewPrompt', () => {

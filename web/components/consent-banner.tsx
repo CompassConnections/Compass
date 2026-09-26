@@ -61,7 +61,7 @@ export function ConsentBanner() {
         'fixed right-3 z-40 w-[min(21rem,calc(100vw-1.5rem))]',
         // Clears the mobile bottom nav (`--bnv`) and the device's own home indicator; on `lg` the nav
         // is gone, so it sits at the corner proper.
-        'bottom-[calc(var(--bnv)+env(safe-area-inset-bottom)+0.75rem)] lg:bottom-4',
+        'bottom-[calc(var(--bnv)+env(safe-area-inset-bottom)+0.75rem)] lg:bottom-4 follows-bottom-nav',
         'rounded-2xl bg-canvas-50 p-4 ring-1 ring-canvas-200',
         'shadow-[0_1px_2px_rgb(44_36_22/0.06),0_16px_40px_-20px_rgb(44_36_22/0.45)]',
         'dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]',

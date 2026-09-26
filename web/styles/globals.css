@@ -55,6 +55,34 @@
   display: none;
 }
 
+/* useHideBottomNavOnScroll(): the bar slides out while scrolling down and back on the way up.
+   `translateY(100%)` is its whole border box, safe-area padding included, so in the native apps the
+   page shows through behind the system navigation bar / home indicator while it is hidden.
+   `.follows-bottom-nav` is for things floating just above the bar (sign-up CTA, consent banner, the
+   profile form's submit button): they drop by the bar's height so no gap opens up under them. Only
+   below `lg`, where the bar exists — on desktop those elements sit at the corner proper. */
+@media (width < 1024px) {
+  .bottom-nav,
+  .follows-bottom-nav {
+    transition: transform 200ms ease-out;
+  }
+
+  .bottom-nav-hidden .bottom-nav {
+    transform: translateY(100%);
+  }
+
+  .bottom-nav-hidden .follows-bottom-nav {
+    transform: translateY(var(--bnv));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav,
+  .follows-bottom-nav {
+    transition: none;
+  }
+}
+
 /* When keyboard is open, remove safe area offset */
 .keyboard-open .safe-bottom {
   padding-bottom: 0;

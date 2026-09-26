@@ -726,7 +726,7 @@ export function LoggedOutHome() {
           `pointer-events-none` so the transparent upper half does not swallow taps, with the button
           itself opting back in. */}
       {user === null && (
-        <div className="lg:hidden fixed left-0 right-0 bottom-[calc(55px+env(safe-area-inset-bottom))] z-20 px-4 pb-3 pt-8 pointer-events-none bg-gradient-to-t from-canvas-100 via-canvas-100/90 to-transparent">
+        <div className="lg:hidden follows-bottom-nav fixed left-0 right-0 bottom-[calc(55px+env(safe-area-inset-bottom))] z-20 px-4 pb-3 pt-8 pointer-events-none bg-gradient-to-t from-canvas-100 via-canvas-100/90 to-transparent">
           <SignUpButton className="pointer-events-auto" size="xl" />
         </div>
       )}

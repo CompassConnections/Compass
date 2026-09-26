@@ -7,6 +7,7 @@ import {useRouter} from 'next/router'
 import {Fragment, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {Avatar} from 'web/components/widgets/avatar'
+import {useHideBottomNavOnScroll} from 'web/hooks/use-hide-bottom-nav-on-scroll'
 import {useIsIframe} from 'web/hooks/use-is-iframe'
 import {useProfile} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
@@ -31,6 +32,8 @@ export function BottomNavBar(props: {navigationOptions: Item[]; sidebarNavigatio
 
   const user = useUser()
   const t = useT()
+
+  useHideBottomNavOnScroll()
 
   const isIframe = useIsIframe()
   if (isIframe) {

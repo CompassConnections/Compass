@@ -1749,7 +1749,7 @@ export const OptionalProfileUserForm = (props: {
             className={clsx(
               'fixed lg:bottom-6 right-4 lg:right-32 z-50 text-xl',
               bottomNavBarVisible
-                ? 'bottom-[calc(90px+var(--bnh))]'
+                ? 'bottom-[calc(90px+var(--bnh))] follows-bottom-nav'
                 : 'bottom-[calc(30px+var(--bnh))]',
             )}
             disabled={isSubmitting || uploadingImages}

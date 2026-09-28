@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {InputHTMLAttributes, ReactNode} from 'react'
+import {Children, InputHTMLAttributes, ReactNode} from 'react'
 
 // Shared building blocks for the /register and /signin pages so the two stay in
 // visual lockstep. Mirrors the home page design language: warm tokens, a soft
@@ -118,13 +118,23 @@ export function AuthSubmitButton({
       type="submit"
       disabled={isLoading}
       className={clsx(
-        'group relative w-full flex justify-center py-3.5 px-4 text-[15px] font-bold rounded-xl text-white bg-cta shadow-[0_4px_16px_rgba(193,127,62,0.35)] transition-all duration-150 hover:bg-cta-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(193,127,62,0.4)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500',
+        'group relative w-full flex items-center justify-center h-12 px-4 text-[15px] font-bold rounded-xl text-white bg-cta shadow-[0_4px_16px_rgba(193,127,62,0.35)] transition-all duration-150 hover:bg-cta-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(193,127,62,0.4)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500',
         isLoading && 'opacity-70 cursor-not-allowed hover:translate-y-0',
       )}
     >
       {children}
     </button>
   )
+}
+
+/**
+ * Google and Apple, side by side from `sm` up and stacked on phones, where the full labels no longer
+ * fit in half the width. Side by side halves the white area the pair takes on the dark canvas, and it
+ * keeps the two exactly equal, which Apple requires. With only one provider it spans the full width.
+ */
+export function AuthSocialButtons({children}: {children: ReactNode}) {
+  const count = Children.toArray(children).length
+  return <div className={clsx('grid gap-3', count > 1 && 'sm:grid-cols-2')}>{children}</div>
 }
 
 /** Centered error message. Renders nothing when empty. */

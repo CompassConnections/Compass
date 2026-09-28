@@ -86,4 +86,5 @@ BEGIN;
 \i backend/supabase/migrations/20260905_add_unfinished_signups.sql
 \i backend/supabase/migrations/20260907_add_pref_max_distance.sql
 \i backend/supabase/migrations/20260907_canonical_options.sql
+\i backend/supabase/migrations/20260928_add_share_prompts.sql
 COMMIT;

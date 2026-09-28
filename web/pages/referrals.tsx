@@ -2,6 +2,7 @@ import {ArrowRightIcon} from '@heroicons/react/24/outline'
 import {SparklesIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {ENV_CONFIG} from 'common/envs/constants'
+import {SHARE_VIDEO_AVAILABLE} from 'common/share/prompt'
 import Link from 'next/link'
 import {ReactNode, useEffect, useState} from 'react'
 import {buttonClass} from 'web/components/buttons/button'
@@ -9,6 +10,7 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {PageBase} from 'web/components/page-base'
 import {SEO} from 'web/components/SEO'
+import {ShareAskReferralsBlock} from 'web/components/share-prompt'
 import {Input} from 'web/components/widgets/input'
 import {QRCode} from 'web/components/widgets/qr-code'
 import {Reveal} from 'web/components/widgets/reveal'
@@ -62,72 +64,116 @@ export default function ReferralsPage() {
       <Col className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6">
         {user && <ConstellationHero />}
 
-        <Section label={t('referrals.invite.label', 'Bring someone')} first={!user} title={title}>
-          {/* Two columns from lg up — link on the left, QR on the right — the shape `/download`'s
-              hero uses for the same pair of things. Stacked, the QR sat under a `max-w-2xl` input
-              row with the whole right half of the section empty beside it; moving it there fills
-              that space with the one element that was already competing for the reader's attention
-              from below. Below lg it goes back to sitting under the link, which is the only
-              sensible order on a narrow screen. */}
-          <div className="lg:flex lg:items-start lg:justify-between lg:gap-12">
-            <div className="min-w-0 lg:flex-1">
-              <p className="text-ink-600 mt-3 max-w-xl text-base leading-relaxed">
-                {t(
-                  'referrals.invite.body',
-                  'Anyone who opens this link is credited to you for good — whether they join today or in a year.',
-                )}
-              </p>
+        {/* Invite and Martin's video as two columns from lg up. The hairline under the hero lives on
+            this wrapper rather than on either section, so it spans both columns. */}
+        <div
+          className={clsx(
+            user && 'border-canvas-200/70 mt-14 border-t pt-6',
+            SHARE_VIDEO_AVAILABLE &&
+              'lg:grid lg:grid-cols-[minmax(0,34rem)_auto] lg:items-start lg:gap-20',
+          )}
+        >
+          <Section first title={title}>
+            {/* Two columns from lg up — link on the left, QR on the right — the shape `/download`'s
+                hero uses for the same pair of things. Stacked, the QR sat under a `max-w-2xl` input
+                row with the whole right half of the section empty beside it; moving it there fills
+                that space with the one element that was already competing for the reader's attention
+                from below. Below lg it goes back to sitting under the link, which is the only
+                sensible order on a narrow screen. Once Martin's video takes the page's right-hand
+                column, the QR stacks under the link at every width — there is no room for both. */}
+            <div
+              className={clsx(
+                !SHARE_VIDEO_AVAILABLE && 'lg:flex lg:items-start lg:justify-between lg:gap-12',
+              )}
+            >
+              <div className="min-w-0 lg:flex-1">
+                <p className="text-ink-600 mt-3 max-w-xl text-base leading-relaxed">
+                  {t(
+                    'referrals.invite.body',
+                    'Anyone who opens this link is credited to you for good — whether they join today or in a year.',
+                  )}
+                </p>
 
-              <div className="mt-6 flex max-w-2xl flex-col gap-3 sm:flex-row sm:items-center">
-                <Input
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="min-w-0 flex-1"
-                  aria-label={t('referrals.link_label', 'Your referral link')}
-                />
-                {/* Same share control and copy as the /about closing block — only the URL differs, carrying
-                    this user's ?referrer= tag so the share is credited to them. */}
-                <ShareCompassButton
+                <div className="mt-6 flex max-w-2xl flex-col gap-3 sm:flex-row sm:items-center">
+                  <Input
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    className="min-w-0 flex-1"
+                    aria-label={t('referrals.link_label', 'Your referral link')}
+                  />
+                  {/* Same share control and copy as the /about closing block — only the URL differs, carrying
+                      this user's ?referrer= tag so the share is credited to them. */}
+                  <ShareCompassButton
+                    url={url}
+                    // `self-start`: the row stacks on mobile, and a flex column stretches its children
+                    // to full width by default — which turned the share button into a full-bleed bar wider
+                    // than the heading above it. It should be the size of its own label.
+                    className="shrink-0 self-start sm:self-center"
+                  />
+                </div>
+              </div>
+
+              {/* The QR is for handing your phone to someone standing in front of you. Kept modest and
+                  captioned: at the 200px it used to be, it outweighed everything else on the page — but it
+                  still has to be comfortably scannable from across a table.
+
+                  Unframed, unlike `/download`'s equivalent panel. That page frames things; this one
+                  deliberately doesn't (see the "No cards" note at the top of this file), and a
+                  `surface` around a QR — which is already a white plate — would be a frame inside a
+                  frame either way. */}
+              <div
+                className={clsx(
+                  'mt-7 flex flex-col items-start gap-4',
+                  !SHARE_VIDEO_AVAILABLE &&
+                    'lg:mt-0 lg:w-56 lg:flex-shrink-0 lg:items-center lg:gap-0 lg:text-center',
+                )}
+              >
+                {/* Sized in CSS, not by the `width` prop, because the two contexts want different
+                    things. On a phone this is the working end of the page — you hold the screen up
+                    for someone to scan across a table — so it gets 250px, and the caption sits under
+                    it rather than stealing half the row. In the desktop column it is a secondary
+                    option beside the link, so 160px. The props stay as the intrinsic size for a
+                    no-CSS render; `max-w-full` keeps it from overflowing a sub-282px viewport, which
+                    degrades better than a horizontal scrollbar. */}
+                <QRCode
                   url={url}
-                  // `self-start`: the row stacks on mobile, and a flex column stretches its children
-                  // to full width by default — which turned the share button into a full-bleed bar wider
-                  // than the heading above it. It should be the size of its own label.
-                  className="shrink-0 self-start sm:self-center"
+                  width={250}
+                  height={250}
+                  className={clsx(
+                    'h-auto w-[250px] max-w-full rounded-lg',
+                    !SHARE_VIDEO_AVAILABLE && 'lg:w-40',
+                  )}
                 />
+                <span
+                  className={clsx(
+                    'text-ink-500 max-w-sm text-sm',
+                    !SHARE_VIDEO_AVAILABLE && 'lg:mt-4 lg:max-w-[14rem]',
+                  )}
+                >
+                  {t(
+                    'referrals.qr_caption',
+                    'Or let someone scan this, if they’re standing next to you.',
+                  )}
+                </span>
               </div>
             </div>
+          </Section>
 
-            {/* The QR is for handing your phone to someone standing in front of you. Kept modest and
-                captioned: at the 200px it used to be, it outweighed everything else on the page — but it
-                still has to be comfortably scannable from across a table.
-
-                Unframed, unlike `/download`'s equivalent panel. That page frames things; this one
-                deliberately doesn't (see the "No cards" note at the top of this file), and a
-                `surface` around a QR — which is already a white plate — would be a frame inside a
-                frame either way. */}
-            <div className="mt-7 flex flex-col items-start gap-4 lg:mt-0 lg:w-56 lg:flex-shrink-0 lg:items-center lg:gap-0 lg:text-center">
-              {/* Sized in CSS, not by the `width` prop, because the two contexts want different
-                  things. On a phone this is the working end of the page — you hold the screen up
-                  for someone to scan across a table — so it gets 250px, and the caption sits under
-                  it rather than stealing half the row. In the desktop column it is a secondary
-                  option beside the link, so 160px. The props stay as the intrinsic size for a
-                  no-CSS render; `max-w-full` keeps it from overflowing a sub-282px viewport, which
-                  degrades better than a horizontal scrollbar. */}
-              <QRCode
-                url={url}
-                width={250}
-                height={250}
-                className="h-auto w-[250px] max-w-full rounded-lg lg:w-40"
-              />
-              <span className="text-ink-500 max-w-sm text-sm lg:mt-4 lg:max-w-[14rem]">
-                {t(
-                  'referrals.qr_caption',
-                  'Or let someone scan this, if they’re standing next to you.',
-                )}
-              </span>
-            </div>
-          </div>
-        </Section>
+          {/* Martin's ask, kept here for good once the prompt has shown it. Beside the invite from lg up
+              (the video is portrait, so stacked it left the width beside it empty), below it on phones —
+              after the link, so someone arriving from the prompt lands on the tools, not the video. */}
+          {SHARE_VIDEO_AVAILABLE && (
+            <Section
+              className="lg:mt-0 lg:border-t-0 lg:pt-8"
+              // One line: the column is sized by this title, while the video below keeps its own
+              // fixed width (see `ShareAskReferralsBlock`).
+              titleClassName="lg:whitespace-nowrap"
+              title={t('share_prompt.title', "Let's grow Compass together")}
+            >
+              <ShareAskReferralsBlock />
+            </Section>
+          )}
+        </div>
 
         {user && <InvitedList />}
       </Col>
@@ -135,15 +181,30 @@ export default function ReferralsPage() {
   )
 }
 
-/** Eyebrow, heading and the hairline that separates one block from the last. */
-function Section(props: {label: string; title?: string; first?: boolean; children: ReactNode}) {
-  const {label, title, first, children} = props
+/** Eyebrow (optional), heading and the hairline that separates one block from the last. */
+function Section(props: {
+  label?: string
+  title?: string
+  titleClassName?: string
+  first?: boolean
+  className?: string
+  children: ReactNode
+}) {
+  const {label, title, titleClassName, first, className, children} = props
   return (
-    <section className={clsx(first ? 'pt-8' : 'mt-14 border-t border-canvas-200/70 pt-14')}>
+    <section
+      className={clsx(first ? 'pt-8' : 'mt-14 border-t border-canvas-200/70 pt-14', className)}
+    >
       <Reveal>
-        <p className={clsx(eyebrow, 'text-primary-700')}>{label}</p>
+        {label && <p className={clsx(eyebrow, 'text-primary-700')}>{label}</p>}
         {title && (
-          <h2 className="font-heading text-ink-900 mt-3 max-w-3xl text-[clamp(22px,3vw,32px)] leading-[1.15] tracking-tight text-balance">
+          <h2
+            className={clsx(
+              'font-heading text-ink-900 max-w-3xl text-[clamp(22px,3vw,32px)] leading-[1.15] tracking-tight text-balance',
+              label && 'mt-3',
+              titleClassName,
+            )}
+          >
             {title}
           </h2>
         )}
@@ -181,9 +242,9 @@ function ConstellationHero() {
       />
 
       <div className="relative">
-        <p className={clsx(eyebrow, 'text-primary-700')}>
-          {t('referrals.hero.label', 'Your constellation')}
-        </p>
+        {/*<p className={clsx(eyebrow, 'text-primary-700')}>*/}
+        {/*  {t('referrals.hero.label', 'Your constellation')}*/}
+        {/*</p>*/}
 
         <h1 className="font-heading text-ink-900 mt-3 max-w-3xl text-[clamp(30px,5.2vw,52px)] leading-[1.06] tracking-tight text-balance">
           {empty ? (

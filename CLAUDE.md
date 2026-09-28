@@ -136,4 +136,5 @@ compatibility prompts), [`docs/feed.md`](docs/feed.md),
 [`docs/troubleshooting.md`](docs/troubleshooting.md).
 Mobile: [`android/README.md`](android/README.md), [`ios/README.md`](ios/README.md),
 [`docs/ios.md`](docs/ios.md) (iOS plan and remaining manual steps),
-[`docs/app-store-reviews.md`](docs/app-store-reviews.md) (when to ask for a store review).
+[`docs/app-store-reviews.md`](docs/app-store-reviews.md) (when to ask for a store review),
+[`docs/share-prompt.md`](docs/share-prompt.md) (when to show the share-or-donate video).

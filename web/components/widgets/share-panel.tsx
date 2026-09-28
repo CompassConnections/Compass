@@ -61,6 +61,12 @@ export function SharePanel(props: {
   trackingProps?: Record<string, string>
   className?: string
   triggerClassName?: string
+  /**
+   * Which edge the phone sheet hangs from. `top` suits a trigger in a page's top bar (the profile
+   * header); `bottom` suits one low on the screen, like the share-video dialog's button, so the sheet
+   * rises towards the thumb that tapped it.
+   */
+  mobileSheet?: 'top' | 'bottom'
   /** Trigger contents — the button's icon and label. */
   children: ReactNode
 }) {
@@ -74,8 +80,11 @@ export function SharePanel(props: {
     trackingProps,
     className,
     triggerClassName,
+    mobileSheet = 'top',
     children,
   } = props
+  const fromBottom = mobileSheet === 'bottom'
+  const sheetOffset = fromBottom ? 'translate-y-4' : '-translate-y-4'
   const t = useT()
   const canNativeShare = useCanNativeShare()
   const isMobile = useIsMobile()
@@ -122,11 +131,11 @@ export function SharePanel(props: {
               as={Fragment}
               show={open}
               enter="transition ease-out duration-200"
-              enterFrom={isMobile ? 'opacity-0 -translate-y-4' : 'opacity-0 scale-95'}
+              enterFrom={isMobile ? `opacity-0 ${sheetOffset}` : 'opacity-0 scale-95'}
               enterTo={isMobile ? 'opacity-100 translate-y-0' : 'opacity-100 scale-100'}
               leave="transition ease-in duration-150"
               leaveFrom={isMobile ? 'opacity-100 translate-y-0' : 'opacity-100 scale-100'}
-              leaveTo={isMobile ? 'opacity-0 -translate-y-4' : 'opacity-0 scale-95'}
+              leaveTo={isMobile ? `opacity-0 ${sheetOffset}` : 'opacity-0 scale-95'}
             >
               <PopoverPanel
                 static
@@ -134,11 +143,18 @@ export function SharePanel(props: {
                 className={clsx(
                   'bg-canvas-50 border-ink-200 focus:outline-none',
                   isMobile
-                    ? // pt keeps the first row clear of the phone's status bar / notch.
-                      'fixed inset-x-0 top-0 z-[60] rounded-b-2xl border-b p-3 pt-[calc(0.75rem+var(--tnh))] shadow-2xl'
+                    ? fromBottom
+                      ? // pb keeps the last row clear of the home indicator.
+                        'fixed inset-x-0 bottom-0 z-[60] rounded-t-2xl border-t p-3 pb-[calc(0.75rem+var(--bnh))] shadow-2xl'
+                      : // pt keeps the first row clear of the phone's status bar / notch.
+                        'fixed inset-x-0 top-0 z-[60] rounded-b-2xl border-b p-3 pt-[calc(0.75rem+var(--tnh))] shadow-2xl'
                     : 'z-50 w-80 rounded-xl border p-2 shadow-lg',
                 )}
               >
+                {/* On a bottom sheet the grabber goes on top — its free edge. */}
+                {isMobile && fromBottom && (
+                  <div className="bg-ink-300 mx-auto mb-3 h-1 w-10 rounded-full" />
+                )}
                 <CopyLinkRow
                   url={url}
                   eventTrackingName={eventTrackingName ?? 'share'}
@@ -203,8 +219,10 @@ export function SharePanel(props: {
                 )}
 
                 {/* Grabber: the one cue that says "this is a sheet, you can dismiss it". Sits at the
-                    sheet's free edge — the bottom one, now that the sheet hangs from the top. */}
-                {isMobile && <div className="bg-ink-300 mx-auto mt-3 h-1 w-10 rounded-full" />}
+                    sheet's free edge — the bottom one when the sheet hangs from the top. */}
+                {isMobile && !fromBottom && (
+                  <div className="bg-ink-300 mx-auto mt-3 h-1 w-10 rounded-full" />
+                )}
               </PopoverPanel>
             </Transition>
           </>

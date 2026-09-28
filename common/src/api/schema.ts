@@ -56,6 +56,7 @@ import {
   ReferralTree,
 } from 'common/referrals'
 import {REVIEW_MOMENTS, ReviewTrigger} from 'common/reviews/prompt'
+import {SHARE_MOMENTS, SHARE_PLATFORMS, ShareTrigger} from 'common/share/prompt'
 import {CountryCount, RepoStats, Stats} from 'common/stats' // mqp: very unscientific, just balancing our willingness to accept load
 import {PrivateMessageChannel} from 'common/supabase/private-messages'
 import {Row} from 'common/supabase/utils'
@@ -2170,6 +2171,23 @@ export const API = (_apiTypeCheck = {
     // is an attempt that can be lost, and two moments a second apart would both be told yes.
     returns: {} as {trigger: ReviewTrigger | null},
     summary: 'Decide whether to show the native store review card now, recording the ask if so.',
+    tag: 'Reviews',
+  },
+  'request-share-prompt': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        /** Where the app is, not what it thinks it has earned — the server decides that. */
+        moment: z.enum(SHARE_MOMENTS),
+        platform: z.enum(SHARE_PLATFORMS),
+      })
+      .strict(),
+    // Read and write in one call, like `request-review-prompt`: a yes is recorded as it is given, so
+    // two moments a second apart can't both be told yes.
+    returns: {} as {trigger: ShareTrigger | null},
+    summary: 'Decide whether to show the share-or-donate video now, recording the ask if so.',
     tag: 'Reviews',
   },
 } as const)

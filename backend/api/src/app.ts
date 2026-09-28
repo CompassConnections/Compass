@@ -125,6 +125,7 @@ import {removePinnedPhoto} from './remove-pinned-photo'
 import {repoStats} from './repo-stats'
 import {report} from './report'
 import {requestReviewPrompt} from './request-review-prompt'
+import {requestSharePrompt} from './request-share-prompt'
 import {rsvpEvent} from './rsvp-event'
 import {searchLocationEndpoint} from './search-location'
 import {searchNearCity} from './search-near-city'
@@ -635,7 +636,7 @@ Commit: ${git.revision} (${git.commitDate})`,
     {
       name: 'Reviews',
       description:
-        'Deciding when to show the native App Store / Play Store review card — see docs/app-store-reviews.md',
+        'Deciding when to show the native App Store / Play Store review card (docs/app-store-reviews.md) and the share-or-donate video',
     },
     {
       name: 'Moderation',
@@ -720,6 +721,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'create-blog-post': createBlogPost,
   'update-blog-post': updateBlogPost,
   'request-review-prompt': requestReviewPrompt,
+  'request-share-prompt': requestSharePrompt,
   'get-spotlights': getSpotlights,
   'get-spotlights-admin': getSpotlightsAdmin,
   'create-spotlight': createSpotlight,

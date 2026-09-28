@@ -2338,5 +2338,11 @@
   "delete_unfinished.done": "C'est fait. L'identifiant et votre adresse e-mail ont été retirés. Vous n'entendrez plus parler de nous, sauf si vous vous inscrivez à nouveau.",
   "delete_unfinished.gone": "Il n'y a plus rien à supprimer : cet identifiant a déjà disparu, ou le lien a expiré.",
   "delete_unfinished.has_account": "Cet identifiant est depuis devenu un compte complet, ce lien ne s'applique donc plus. Vous pouvez supprimer le compte depuis la page Paramètres.",
-  "delete_unfinished.error": "Quelque chose s'est mal passé. Réessayez dans un instant, ou écrivez à hello@compassmeet.com et une personne s'en chargera."
+  "delete_unfinished.error": "Quelque chose s'est mal passé. Réessayez dans un instant, ou écrivez à hello@compassmeet.com et une personne s'en chargera.",
+  "share_prompt.title": "Un mot de Martin, qui a créé Compass",
+  "share_prompt.share": "Partager Compass",
+  "share_prompt.donate": "Faire un don",
+  "share_prompt.later": "Plus tard",
+  "share_prompt.founder_contact": "Des questions ou des idées ? Écrivez-moi depuis mon profil",
+  "share_prompt.tap_for_sound": "Touchez pour le son"
 }

@@ -28,6 +28,7 @@ import {UnseenMessageChannelsProvider} from 'web/components/messaging/messages-i
 import {PrivateMessageMembershipsProvider} from 'web/components/messaging/private-message-memberships-context'
 import {ReviewPrompts} from 'web/components/review-prompts'
 import {SaveReferral} from 'web/components/save-referral'
+import {SharePrompts} from 'web/components/share-prompt'
 import {ChoicesProvider} from 'web/hooks/use-choices'
 import {useFontPreferenceManager} from 'web/hooks/use-font-preference'
 import {useHasLoaded} from 'web/hooks/use-has-loaded'
@@ -355,6 +356,7 @@ function MyApp(props: AppProps<PageProps>) {
                               <WebPush />
                               <NativePush />
                               <ReviewPrompts />
+                              <SharePrompts />
                               <SaveReferral />
                               <Component {...pageProps} />
                             </PrivateMessageMembershipsProvider>

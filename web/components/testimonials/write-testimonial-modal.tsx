@@ -2,6 +2,7 @@ import {CheckCircleIcon} from '@heroicons/react/24/solid'
 import {APIError} from 'common/api/utils'
 import {useState} from 'react'
 import {requestReviewPrompt} from 'web/hooks/use-review-prompt'
+import {requestSharePrompt} from 'web/hooks/use-share-prompt'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
@@ -121,6 +122,9 @@ export function WriteTestimonialModal({
       // Keyed on having submitted at all, never on the rating — routing only the happy answers to a
       // store card is review gating, which both stores prohibit. See docs/app-store-reviews.md §3.
       requestReviewPrompt('testimonial-submitted', 800)
+      // The share video, by contrast, may look at the rating — it is our dialog, not a store card —
+      // and the server reads it from the testimonial itself.
+      void requestSharePrompt('testimonial-submitted', 800)
     }
   }
 

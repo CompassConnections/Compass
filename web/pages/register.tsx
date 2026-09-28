@@ -15,6 +15,7 @@ import {
   AuthHeader,
   AuthInput,
   AuthShell,
+  AuthSocialButtons,
   AuthSubmitButton,
 } from 'web/components/auth/auth-form'
 import {AppleButton, GoogleButton} from 'web/components/buttons/sign-up-button'
@@ -251,7 +252,7 @@ function RegisterComponent() {
           <>
             <AuthHeader
               title={t('register.get_started', 'Get Started')}
-              subtitle={t('register.subtitle', 'Create your free account — no algorithms, no ads.')}
+              subtitle={t('register.subtitle', 'Create your free account.')}
             />
             <AuthForm onSubmit={handleSubmit}>
               <AuthFieldGroup>
@@ -315,7 +316,10 @@ function RegisterComponent() {
                   about the act rather than a first-person claim with nothing behind it. The
                   checkbox wording lives on under `register.agreement.checkbox_prefix`, which the
                   commented-out clickwrap above still uses. */}
-              <div>
+              {/* Fine print, not body copy: small, muted and centred under the fields, with only the two
+                  links in the accent colour. At full size and full-contrast white it outweighed the
+                  form it sits in. */}
+              <div className="text-ink-500 text-center text-sm leading-relaxed text-balance">
                 <span className={'custom-link'}>
                   {t('register.agreement.prefix', 'By signing up, you agree to the ')}
                   <NewTabLink href="/terms">
@@ -336,21 +340,23 @@ function RegisterComponent() {
                     : t('register.button.email', 'Sign up with Email')}
                 </AuthSubmitButton>
                 <AuthDivider label={t('register.or_sign_up_with', 'Or')} />
-                <GoogleButton
-                  onClick={requireAgreement(googleSigninSignup)}
-                  isLoading={isLoading}
-                  label="Sign up with Google"
-                />
-                {/* App Store guideline 4.8 — see the same block in signin.tsx. */}
-                {showApple && (
-                  <AppleButton
-                    onClick={requireAgreement(appleSigninSignup)}
+                <AuthSocialButtons>
+                  <GoogleButton
+                    onClick={requireAgreement(googleSigninSignup)}
                     isLoading={isLoading}
-                    // "Sign up with Apple" rather than the default "Sign in with Apple": both are
-                    // Apple's own permitted strings, and this page creates an account.
-                    label="Sign up with Apple"
+                    label="Sign up with Google"
                   />
-                )}
+                  {/* App Store guideline 4.8 — see the same block in signin.tsx. */}
+                  {showApple && (
+                    <AppleButton
+                      onClick={requireAgreement(appleSigninSignup)}
+                      isLoading={isLoading}
+                      // "Sign up with Apple" rather than the default "Sign in with Apple": both are
+                      // Apple's own permitted strings, and this page creates an account.
+                      label="Sign up with Apple"
+                    />
+                  )}
+                </AuthSocialButtons>
               </div>
             </AuthForm>
             <AuthFooter>

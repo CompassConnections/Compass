@@ -24,8 +24,12 @@ export function ShareCompassButton(props: {
   label?: string
   /** Layout classes for the trigger's wrapper — the CTA's own styling is fixed. */
   className?: string
+  /** Extra props on every `sharecompass` event, to tell where the share started. */
+  trackingProps?: Record<string, string>
+  /** Which edge the phone sheet hangs from — see `SharePanel`. */
+  mobileSheet?: 'top' | 'bottom'
 }) {
-  const {url, label, className} = props
+  const {url, label, className, trackingProps, mobileSheet} = props
   const t = useT()
 
   return (
@@ -37,6 +41,8 @@ export function ShareCompassButton(props: {
       xShareUrl={getXShareCompassUrl(t, url)}
       linkedinUrl={getLinkedInShareCompassUrl(t, url)}
       eventTrackingName="sharecompass"
+      trackingProps={trackingProps}
+      mobileSheet={mobileSheet}
       shareData={{
         title: t('about.share.title', 'Compass — Find your people'),
         text: getShareCompassText(t),

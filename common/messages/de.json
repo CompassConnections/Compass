@@ -2339,5 +2339,11 @@
   "delete_unfinished.done": "Erledigt. Der Login und Ihre E-Mail-Adresse wurden entfernt. Sie hören nichts mehr von uns, es sei denn, Sie melden sich neu an.",
   "delete_unfinished.gone": "Es gibt nichts mehr zu löschen: Dieser Login ist bereits weg, oder der Link ist abgelaufen.",
   "delete_unfinished.has_account": "Aus diesem Login ist inzwischen ein vollständiges Konto geworden, dieser Link gilt daher nicht mehr. Das Konto können Sie in den Einstellungen löschen.",
-  "delete_unfinished.error": "Etwas ist schiefgelaufen. Versuchen Sie es gleich noch einmal, oder schreiben Sie an hello@compassmeet.com — ein Mensch kümmert sich darum."
+  "delete_unfinished.error": "Etwas ist schiefgelaufen. Versuchen Sie es gleich noch einmal, oder schreiben Sie an hello@compassmeet.com — ein Mensch kümmert sich darum.",
+  "share_prompt.title": "Ein Wort von Martin, der Compass gebaut hat",
+  "share_prompt.share": "Compass teilen",
+  "share_prompt.donate": "Spenden",
+  "share_prompt.later": "Vielleicht später",
+  "share_prompt.founder_contact": "Fragen oder Ideen? Schreib mir über mein Profil",
+  "share_prompt.tap_for_sound": "Tippen für Ton"
 }

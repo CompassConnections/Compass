@@ -82,6 +82,11 @@ for page in "${SSG_PAGES[@]}"; do
   fi
 done
 
+# Web-only media: played from the deployed site, never bundled (see WEB_ONLY in
+# web/scripts/fetch-media.mjs). A copy left in public/ by an earlier web build would otherwise ride
+# into out/ and from there into both app packages.
+rm -f out/videos/share-ask-v1.mp4
+
 # rename proxy to _proxy
 mv proxy.ts _proxy.ts
 

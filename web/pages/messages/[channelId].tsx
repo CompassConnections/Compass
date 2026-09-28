@@ -42,6 +42,7 @@ import {
 } from 'web/hooks/use-private-messages'
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {useReviewPromptOnConversationExit} from 'web/hooks/use-review-prompt'
+import {useSharePromptOnConversationExit} from 'web/hooks/use-share-prompt'
 import {isBlocked, usePrivateUser, useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {useVisualViewportHeight} from 'web/hooks/use-visual-viewport-height'
@@ -208,6 +209,8 @@ export const PrivateChat = (props: {
     (m) => m.userId !== user.id && m.visibility !== 'system_status',
   )
   useReviewPromptOnConversationExit(sawReply)
+  // Same moment, every platform; in the app it waits for the review card to have its turn first.
+  useSharePromptOnConversationExit(sawReply)
 
   const loadMoreMessages = useCallback(
     (beforeId: number) => {

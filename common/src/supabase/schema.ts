@@ -1893,6 +1893,41 @@ export type Database = {
           },
         ]
       }
+      share_prompts: {
+        Row: {
+          attempt_no: number
+          id: number
+          platform: string
+          prompt_trigger: string
+          prompted_at: string
+          user_id: string
+        }
+        Insert: {
+          attempt_no: number
+          id?: never
+          platform: string
+          prompt_trigger: string
+          prompted_at?: string
+          user_id: string
+        }
+        Update: {
+          attempt_no?: number
+          id?: never
+          platform?: string
+          prompt_trigger?: string
+          prompted_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'share_prompts_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       testimonials: {
         Row: {
           author_avatar_url: string | null

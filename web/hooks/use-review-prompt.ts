@@ -11,6 +11,7 @@ import {useEffect, useRef} from 'react'
 import {api} from 'web/lib/api'
 import {track} from 'web/lib/service/analytics'
 import {safeLocalStorage} from 'web/lib/util/local'
+import {markPromptShown, promptShownThisSession} from 'web/lib/util/prompt-session'
 import {isNativeApp, nativePlatform} from 'web/lib/util/webview'
 
 import {useUser} from './use-user'
@@ -257,6 +258,12 @@ export async function requestReviewPrompt(moment: ReviewMoment, delayMs = 0) {
     reviewLog('stopped: a moment already claimed this session', {moment})
     return
   }
+  const otherPrompt = promptShownThisSession()
+  if (otherPrompt) {
+    // The share video already played this session; one ask per launch covers both.
+    reviewLog('stopped: another prompt was shown this session', {moment, otherPrompt})
+    return
+  }
   const blocker = calmBlocker()
   if (blocker) {
     reviewLog('stopped: not a calm moment', {moment, blocker})
@@ -301,6 +308,7 @@ export async function requestReviewPrompt(moment: ReviewMoment, delayMs = 0) {
     // if (!isCalmMoment()) return
 
     reviewLog('server granted; a review_prompts row now exists', {moment, trigger, platform})
+    markPromptShown('review')
     debug('Requesting store review', {moment, trigger, platform})
     track('review prompt shown', {trigger, platform})
     await InAppReview.requestReview()

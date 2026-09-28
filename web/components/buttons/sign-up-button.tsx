@@ -25,27 +25,24 @@ import {Button} from './button'
  * dark button, and these two fills are in substance their light and dark themes.
  */
 const SOCIAL_BUTTON_CLASSES = clsx(
-  // gap 12px: Apple's rendered button puts 0.273 of the control's height between mark and label,
-  // which is 12px at 44px tall.
-  'w-full flex items-center justify-center gap-3 py-2 px-4 min-h-[44px]',
+  // gap 10px: Apple's rendered button puts about a quarter of the control's height between mark and
+  // label. `h-12` (48px) is the height `AuthSubmitButton` uses too, so the three sign-in buttons read
+  // as one set — and it clears Apple's 44px floor.
+  'w-full flex items-center justify-center gap-2.5 px-4 h-12 whitespace-nowrap',
   // `rounded-xl`, matching `AuthSubmitButton` — the email button directly above these two. Apple
   // permits any radius from square to fully rounded, so the constraint here is ours: three sign-up
   // buttons stacked in a column look like three unrelated controls if only one of them is a pill.
-  // 19px semibold. Both numbers are measured off Apple's own rendered button rather than picked:
-  // the stem-to-height ratio of its label is 0.111, which is SF Pro Semibold territory, and its
-  // label block is 0.386 of the button's height — 17px in the 44px control Apple ships in the HIG.
-  // Our label renders at 0.887 of its font-size, so 17 / 0.887 ≈ 19px.
+  // 15px bold, the same as the amber `AuthSubmitButton` ("Sign in with Email") above the pair, so the
+  // three ways in read as one set. Earlier it was sized from the proportions of Apple's own rendered
+  // button (19px, then 17px), which made the pair louder than the page's primary action. Equal size
+  // still meets the guideline: the Apple button may not be *less* prominent than any other option.
   //
-  // This is the one place the pair is *larger* than `AuthSubmitButton` above it, which uses 15px.
-  // Deliberate: matching Apple's proportion was the ask, and the guideline runs the same direction
-  // anyway — the Apple button may not be less prominent than the other ways in.
-  //
-  // `leading-[1.15]` because Tailwind's arbitrary font sizes do not carry a line-height, and the
-  // inherited 1.5 would push the control past 44px and make `min-h-[44px]` stop being the thing
-  // that sets the height.
-  'rounded-xl shadow-sm text-[19px] leading-[1.15] font-semibold',
+  // `leading-none` because Tailwind's arbitrary font sizes do not carry a line-height, and the height
+  // is set by `h-12`, not by the text.
+  'rounded-xl text-[15px] leading-none font-bold',
   'bg-black text-white border border-black',
   'dark:bg-white dark:text-black dark:border-white',
+  'transition-colors duration-150',
   'hover:bg-neutral-900 dark:hover:bg-neutral-100',
   'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500',
   'disabled:opacity-70 disabled:cursor-not-allowed',

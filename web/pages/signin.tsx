@@ -14,6 +14,7 @@ import {
   AuthHeader,
   AuthInput,
   AuthShell,
+  AuthSocialButtons,
   AuthSubmitButton,
 } from 'web/components/auth/auth-form'
 import {AppleButton, GoogleButton} from 'web/components/buttons/sign-up-button'
@@ -238,11 +239,13 @@ function RegisterComponent() {
               {isLoading ? 'Signing in...' : t('signin.submit', 'Sign in with Email')}
             </AuthSubmitButton>
             <AuthDivider label={t('signin.continue', 'Or')} />
-            <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading} />
-            {/* App Store guideline 4.8: an app offering third-party social login must also offer
-                Sign in with Apple. Shown in the iOS app (native flow) and in browsers once the
-                Services ID is configured, so an account created on iOS is not locked to it. */}
-            {showApple && <AppleButton onClick={handleAppleSignIn} isLoading={isLoading} />}
+            <AuthSocialButtons>
+              <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading} />
+              {/* App Store guideline 4.8: an app offering third-party social login must also offer
+                  Sign in with Apple. Shown in the iOS app (native flow) and in browsers once the
+                  Services ID is configured, so an account created on iOS is not locked to it. */}
+              {showApple && <AppleButton onClick={handleAppleSignIn} isLoading={isLoading} />}
+            </AuthSocialButtons>
           </div>
         </AuthForm>
         <AuthFooter>

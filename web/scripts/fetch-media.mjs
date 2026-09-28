@@ -51,7 +51,18 @@ const ASSETS = [
   // versioned because WhatsApp and X cache a preview by URL and never revalidate it — a redesign
   // ships as -v2 on both sides, it never overwrites -v1.
   {key: 'images/og-card-v1.jpg', dest: 'images/og-card-v1.jpg'},
+  // Martin's share-or-donate ask (docs/share-prompt.md). ~50 MB, so web-only: the apps stream it from
+  // the deployed site rather than carrying it in the bundle. Upload to R2 before enabling this line.
+  {key: 'videos/share-ask-v1.mp4', dest: 'videos/share-ask-v1.mp4', webOnly: true},
 ]
+
+/**
+ * The native build (`scripts/build_web_view.sh`, NEXT_PUBLIC_WEBVIEW=1) skips web-only assets: they
+ * are served from the deployed site to every platform, and pulling them here would only put them in
+ * the app packages.
+ */
+const WEBVIEW_BUILD = process.env.NEXT_PUBLIC_WEBVIEW === '1'
+const NEEDED = ASSETS.filter((a) => !(WEBVIEW_BUILD && a.webOnly))
 
 /**
  * On Vercel this comes from the project env. Locally it does not: this script runs in its own
@@ -98,12 +109,12 @@ async function main() {
 
   if (!base) {
     // No source configured: only acceptable if a local render already put the files in place.
-    const present = await Promise.all(ASSETS.map((a) => exists(join(PUBLIC_DIR, a.dest))))
+    const present = await Promise.all(NEEDED.map((a) => exists(join(PUBLIC_DIR, a.dest))))
     if (present.every(Boolean)) {
       console.log('[media] MEDIA_SOURCE_BASE_URL unset; using the local files already in public/')
       return
     }
-    const missing = ASSETS.filter((_, i) => !present[i]).map((a) => a.dest)
+    const missing = NEEDED.filter((_, i) => !present[i]).map((a) => a.dest)
     throw new Error(
       `MEDIA_SOURCE_BASE_URL is unset and these are missing from public/:\n` +
         missing.map((m) => `  - ${m}`).join('\n') +
@@ -115,7 +126,7 @@ async function main() {
 
   // Configured but unreachable is a real misconfiguration, and shipping a hero that 404s is worse
   // than failing the deploy.
-  for (const asset of ASSETS) await download(asset, base)
+  for (const asset of NEEDED) await download(asset, base)
 }
 
 main().catch((err) => {

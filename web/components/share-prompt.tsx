@@ -29,6 +29,14 @@ const MEDIA_BASE = (process.env.NEXT_PUBLIC_MEDIA_BASE_URL || DEPLOYED_WEB_URL).
 const SHARE_VIDEO_URL = `${MEDIA_BASE}/videos/${SHARE_VIDEO_FILE}`
 
 /**
+ * The first frame, as a still. Needed because `preload="metadata"` only draws a first frame in desktop
+ * browsers: the iOS web view shows nothing and Android's shows a grey placeholder until playback. It
+ * is the full 1080×1920 frame (black band included), so the crop below applies to it unchanged.
+ * Relative on purpose: small enough to ship in the app bundle, unlike the video.
+ */
+const SHARE_VIDEO_POSTER = '/images/share-ask-poster-v1.jpg'
+
+/**
  * The recording carries a black band along its top (18px) and right edge (4px): the picture itself is
  * 1076×1902 inside a 1080×1920 frame, measured with ffmpeg's `cropdetect`. Rather than re-encode the
  * file, the box takes the picture's own proportions and the video is sized and shifted inside it so
@@ -82,6 +90,7 @@ export function ShareAskVideo(props: {autoPlay?: boolean; className?: string}) {
           top: `${(-PICTURE.top / PICTURE.height) * 100}%`,
         }}
         src={SHARE_VIDEO_URL}
+        poster={SHARE_VIDEO_POSTER}
         autoPlay={autoPlay}
         muted={autoPlay}
         controls

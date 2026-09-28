@@ -54,6 +54,9 @@ const ASSETS = [
   // Martin's share-or-donate ask (docs/share-prompt.md). ~50 MB, so web-only: the apps stream it from
   // the deployed site rather than carrying it in the bundle. Upload to R2 before enabling this line.
   {key: 'videos/share-ask-v1.mp4', dest: 'videos/share-ask-v1.mp4', webOnly: true},
+  // Its poster (first frame), which *is* bundled: ~190 KB, and the app web views draw nothing — iOS a
+  // blank box, Android a grey placeholder — until a poster or the video's own data arrives.
+  {key: 'images/share-ask-poster-v1.jpg', dest: 'images/share-ask-poster-v1.jpg'},
 ]
 
 /**

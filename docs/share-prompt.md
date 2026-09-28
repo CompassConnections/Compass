@@ -45,6 +45,11 @@ At that size it stays **out of the app bundle** and is played from
   build left a copy in `public/`.
 - `web/components/share-prompt.tsx` points at `DEPLOYED_WEB_URL` (overridable with
   `NEXT_PUBLIC_MEDIA_BASE_URL`), so web and apps render the same markup.
+- The poster, `images/share-ask-poster-v1.jpg` (first frame, 720×1280, ~190 KB), is the exception:
+  also in R2 and `fetch-media.mjs`, but bundled into the apps. Without it the app web views draw
+  nothing before playback — `preload="metadata"` only yields a first frame in desktop browsers.
+  Regenerate it with
+  `ffmpeg -ss 0.3 -i share-ask-v1.mp4 -frames:v 1 -vf scale=720:1280 -q:v 3 share-ask-poster-v1.jpg`.
 
 ---
 

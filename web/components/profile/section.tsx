@@ -28,7 +28,7 @@ export function SectionHeading(props: {children: ReactNode; className?: string})
   const {children, className} = props
   return (
     <h2
-      className={clsx('text-ink-400 font-dm-sans mb-5 font-normal uppercase', className)}
+      className={clsx('text-primary-700 font-dm-sans mb-5 font-normal uppercase', className)}
       style={{fontSize: '10px', letterSpacing: '0.18em'}}
     >
       {children}

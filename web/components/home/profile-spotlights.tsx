@@ -243,13 +243,6 @@ function SpotlightCard({spotlight: s}: {spotlight: PublicSpotlight}) {
         'hover:shadow-[0_2px_4px_rgb(44_36_22/0.05),0_24px_52px_-24px_rgb(44_36_22/0.45)]',
       )}
     >
-      {/* A warm wash that only arrives on hover. The card is calm at rest — a rail of five permanently
-          tinted cards would out-shout the `StageBlock` further down, which is the page's one gradient. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-24 h-48 bg-[radial-gradient(ellipse_50%_60%_at_50%_100%,rgba(193,127,62,0.14),transparent_70%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-      />
-
       {s.quoteContext && (
         <p className={clsx(eyebrow, 'text-primary-700 relative mb-3')}>{s.quoteContext}</p>
       )}

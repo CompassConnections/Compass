@@ -90,7 +90,7 @@ export default function ReferralsPage() {
                 <p className="text-ink-600 mt-3 max-w-xl text-base leading-relaxed">
                   {t(
                     'referrals.invite.body',
-                    'Anyone who opens this link is credited to you for good — whether they join today or in a year.',
+                    'Anyone who opens this link is credited to you for good.',
                   )}
                 </p>
 
@@ -234,13 +234,6 @@ function ConstellationHero() {
 
   return (
     <section className="relative pt-8">
-      {/* The same warm bloom the constellation has at its centre, so arriving on that page feels like
-          walking into this one rather than somewhere else. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-28 left-0 h-80 w-[42rem] max-w-full bg-[radial-gradient(closest-side,rgb(var(--color-primary-500)/0.22),transparent)]"
-      />
-
       <div className="relative">
         {/*<p className={clsx(eyebrow, 'text-primary-700')}>*/}
         {/*  {t('referrals.hero.label', 'Your constellation')}*/}

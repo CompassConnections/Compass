@@ -63,7 +63,7 @@ export default function ProfilePhotoCarousel(props: {
     <Col className={clsx('gap-4', className)} data-testid="profile-photo-carousel">
       <Row className="items-baseline justify-between">
         <div
-          className="text-ink-400 font-dm-sans uppercase"
+          className="text-primary-700 font-dm-sans uppercase"
           style={{fontSize: '10px', letterSpacing: '0.18em'}}
         >
           {t('profile.photos', 'Photos')}

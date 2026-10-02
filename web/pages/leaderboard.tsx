@@ -73,15 +73,6 @@ export default function LeaderboardPage() {
 
       <Col className="mx-auto w-full max-w-4xl px-4 pb-24 sm:px-6">
         <header className="relative pt-8">
-          {/* The same warm bloom `/referrals` opens with, so arriving here reads as the next room and
-              not a different building. Inside the header rather than beside it, because it is the
-              only positioned ancestor on the page — as a sibling of `Col` it would anchor to the
-              viewport and drift with the scroll. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -top-24 left-0 h-80 w-[42rem] max-w-full bg-[radial-gradient(closest-side,rgb(var(--color-primary-500)/0.22),transparent)]"
-          />
-
           <p className={clsx(eyebrow, 'text-primary-700')}>
             {t('leaderboard.label', 'Referral leaderboard')}
           </p>

@@ -1108,7 +1108,7 @@ function Big5Traits(props: {profile: Profile}) {
           return (
             <div key={trait.key} className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-ink-900 font-normal">{trait.label}</span>
+                <span className="text-sm text-primary-900 font-normal">{trait.label}</span>
                 <span
                   className="text-sm text-ink-500"
                   style={{fontFamily: 'Cormorant Garamond, serif', fontSize: '15px'}}

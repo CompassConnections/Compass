@@ -739,13 +739,6 @@ export function LoggedOutHome() {
             section off the fold; side by side, its height is an asset instead of a cost. */}
         <section className="relative w-full max-w-3xl lg:max-w-6xl pt-16 pb-12 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] gap-10 lg:gap-14 items-center">
           <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-            {/* Soft radial glow behind the hero for depth. Dark mode uses a brighter,
-              lighter-hued, faster-falloff core so it reads as light, not brown haze. */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-x-0 -top-16 -z-10 h-[420px] bg-[radial-gradient(ellipse_60%_60%_at_50%_30%,rgba(193,127,62,0.16),transparent_70%)]"
-            />
-
             {/* A new key, not a reword of `home.eyebrow`: the third claim used to be "No matching
                 algorithms", which is false — `common/src/profiles/compatibility-score.ts` is exactly that,
                 and the "The only algorithm" block below now says so. Reusing the old key would have left

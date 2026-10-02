@@ -1863,7 +1863,7 @@ function Category({title, className}: {title: string; className?: string}) {
       {/* `!mt-0` / `!mb-0`: the global h1–h6 rule sets Newsreader at weight 700 with a 24px margin, so
           a heading element has to opt out of all three explicitly or it opts out of none. */}
       <h3
-        className="font-dm-sans text-ink-400 !mt-0 !mb-3 font-normal uppercase !leading-none"
+        className="font-dm-sans text-primary-700 !mt-0 !mb-3 font-normal uppercase !leading-none"
         style={{fontSize: '10px', letterSpacing: '0.18em'}}
       >
         {title}

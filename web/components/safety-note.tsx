@@ -67,7 +67,7 @@ export function SafetyLink({
       href={href}
       onClick={() => track('click safety link', {source})}
       className={clsx(
-        'text-primary-600 hover:text-primary-800 hover:underline underline-offset-4',
+        'text-primary-700 hover:text-primary-800 hover:underline underline-offset-4',
         className,
       )}
     >
@@ -109,7 +109,7 @@ export function ConversationSafetyTip({className}: {className?: string}) {
         <XMarkIcon className="h-4 w-4" />
       </button>
       <div className="flex items-start gap-2.5">
-        <ShieldCheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary-600" />
+        <ShieldCheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary-700" />
         <p className="text-xs leading-relaxed text-ink-700">
           {t(
             'safety.tip.new_conversation',

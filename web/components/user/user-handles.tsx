@@ -58,7 +58,7 @@ export function UserHandles(props: {links: Socials; className?: string}) {
           key={key}
           target="_blank"
           href={url}
-          className="border-canvas-300 bg-canvas-0 flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[12.5px] text-ink-500 transition-colors hover:border-primary-300 hover:text-primary-600"
+          className="border-canvas-300 bg-canvas-0 flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[12.5px] text-ink-500 transition-colors hover:border-primary-300 hover:text-primary-700"
         >
           <SocialIcon site={platform as any} className="text-ink-500 h-[16px] w-[16px]" />
           <span>{label}</span>

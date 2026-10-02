@@ -161,7 +161,7 @@ function ReleaseCard(props: {release: Release}) {
         <div className="mb-5">
           <button
             onClick={() => setShowTechnical(!showTechnical)}
-            className="text-primary-500 hover:text-primary-700 z-10 select-none text-sm"
+            className="text-primary-700 hover:text-primary-800 z-10 select-none text-sm"
           >
             <Row className="items-center gap-0.5">
               {showTechnical ? (
@@ -183,7 +183,7 @@ function ReleaseCard(props: {release: Release}) {
       )}
       <CustomLink
         href={release.html_url}
-        className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 text-sm font-medium transition-colors"
+        className="inline-flex items-center gap-2 text-primary-700 hover:text-primary-800 text-sm font-medium transition-colors"
       >
         {t('news.view_on_github', 'View on GitHub')}
       </CustomLink>

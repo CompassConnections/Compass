@@ -7,7 +7,7 @@ export function NewBadge(props: {classes: string | undefined; created?: string; 
   return (
     <span
       className={clsx(
-        'absolute z-10 rounded px-1 text-xs text-primary-500 font-semibold tracking-wide shadow',
+        'absolute z-10 rounded px-1 text-xs text-primary-700 font-semibold tracking-wide shadow',
         classes,
       )}
     >

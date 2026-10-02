@@ -21,7 +21,7 @@ export function ExpandButton(props: {
     <Button
       color="none"
       className={clsx(
-        'text-primary-500 hover:text-primary-700 z-10 select-none bg-inherit text-sm',
+        'text-primary-700 hover:text-primary-800 z-10 select-none bg-inherit text-sm',
         className,
       )}
       onClick={onClick}

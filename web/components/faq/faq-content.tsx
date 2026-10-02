@@ -331,7 +331,9 @@ function StillStuck() {
       <div className="relative flex flex-col gap-7 md:flex-row md:items-center md:justify-between">
         <div className="max-w-lg">
           <div className="mb-4 flex items-center gap-2.5">
+            {/* eslint-disable-next-line no-restricted-syntax -- lighter amber on the bg-canvas-950 panel */}
             <LifebuoyIcon className="h-5 w-5 flex-shrink-0 text-primary-500" strokeWidth={1.8} />
+            {/* eslint-disable-next-line no-restricted-syntax -- lighter amber on the bg-canvas-950 panel */}
             <span className={clsx(eyebrow, 'text-primary-500')}>
               {t('faq.stuck.label', 'Still stuck')}
             </span>

@@ -429,7 +429,7 @@ function Boilerplate() {
           <button
             type="button"
             onClick={onCopy}
-            className="mt-6 inline-flex items-center gap-2 rounded-xl border-2 border-canvas-200 bg-transparent px-5 py-2.5 text-sm font-semibold text-ink-900 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-500 hover:text-primary-500"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl border-2 border-canvas-200 bg-transparent px-5 py-2.5 text-sm font-semibold text-ink-900 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-primary-500 hover:text-primary-700"
           >
             {copied ? (
               <CheckIcon className="h-[1.05rem] w-[1.05rem]" strokeWidth={2.5} aria-hidden />
@@ -542,7 +542,7 @@ function KitCard({
   return (
     <div className={clsx(surface, surfaceHover, 'flex h-full flex-col p-6 sm:p-7')}>
       <div className="mb-5 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-primary-100 ring-1 ring-primary-200">
-        <Icon className="h-5 w-5 text-primary-600" strokeWidth={1.8} />
+        <Icon className="h-5 w-5 text-primary-700" strokeWidth={1.8} />
       </div>
       <h3 className="mt-0 mb-2.5 font-bold text-ink-900">{title}</h3>
       <p className="mb-6 text-sm leading-relaxed text-ink-600">{text}</p>
@@ -556,7 +556,7 @@ function KitCard({
           'mt-auto inline-flex w-fit items-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 ease-out hover:-translate-y-0.5',
           primary
             ? 'bg-cta text-white shadow-[0_6px_20px_-6px_rgba(193,127,62,0.6)] hover:bg-cta-hover'
-            : 'border-2 border-canvas-200 text-ink-900 hover:border-primary-500 hover:text-primary-500',
+            : 'border-2 border-canvas-200 text-ink-900 hover:border-primary-500 hover:text-primary-700',
         )}
       >
         {buttonLabel}

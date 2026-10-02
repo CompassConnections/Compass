@@ -52,6 +52,7 @@ export function InviteNavLabel() {
     <span className="inline-flex items-center gap-2 whitespace-nowrap">
       {t('nav.invite', 'Invite')}
       {total > 0 && (
+        // eslint-disable-next-line no-restricted-syntax -- sits on the always-dark sidebar rail
         <span className="bg-primary-500/20 text-primary-500 rounded-full px-1.5 py-px text-[11px] font-semibold tabular-nums">
           {total}
         </span>

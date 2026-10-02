@@ -875,7 +875,7 @@ function RaisedIn(props: {profile: Profile}) {
     <AboutRow
       title={t('profile.raised_in', 'Raised In')}
       text={
-        <CustomLink href={getGoogleMapsUrl(locationText)} className={'hover:text-primary-500'}>
+        <CustomLink href={getGoogleMapsUrl(locationText)} className={'hover:text-primary-700'}>
           {locationText}
         </CustomLink>
       }

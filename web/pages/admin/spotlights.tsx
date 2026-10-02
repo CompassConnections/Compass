@@ -166,7 +166,7 @@ function CandidateRow({
           <div className="truncate font-semibold">
             {c.name}
             {c.age ? `, ${c.age}` : ''}{' '}
-            <a className="text-primary-600 text-sm font-normal underline" href={`/${c.username}`}>
+            <a className="text-primary-700 text-sm font-normal underline" href={`/${c.username}`}>
               @{c.username}
             </a>
           </div>
@@ -178,7 +178,7 @@ function CandidateRow({
               prohibition, but the presence of one is what tells a video shoot which profiles it may
               actually use — and that consent cannot be read off the profile page. */}
           {c.socialConsent && (
-            <div className="text-primary-600 mt-1 text-xs font-medium">
+            <div className="text-primary-700 mt-1 text-xs font-medium">
               Social media OK — may be filmed for Instagram/TikTok
             </div>
           )}
@@ -283,7 +283,7 @@ function SpotlightRow({
             {s.age ? `, ${s.age}` : ''}{' '}
             {s.username && (
               <a
-                className="text-primary-600 text-sm font-normal underline"
+                className="text-primary-700 text-sm font-normal underline"
                 href={`/${s.username}`}
                 target="_blank"
                 rel="noreferrer"

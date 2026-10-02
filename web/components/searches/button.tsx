@@ -326,7 +326,7 @@ function StarModal(props: {
                           </div>
                           <Col className="flex-1">
                             <div
-                              className="font-medium text-ink-900 group-hover:text-primary-600 transition-colors"
+                              className="font-medium text-ink-900 group-hover:text-primary-700 transition-colors"
                               data-testid="saved-person-display-name"
                             >
                               {u.name}

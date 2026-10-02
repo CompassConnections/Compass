@@ -12,7 +12,7 @@ export function ReplyToggle(props: {
 
   return (
     <button
-      className="text-ink-500 hover:text-primary-500 flex items-center gap-2 text-sm transition-colors"
+      className="text-ink-500 hover:text-primary-700 flex items-center gap-2 text-sm transition-colors"
       onClick={onSeeReplyClick}
     >
       <div className={clsx(numComments === 0 ? 'hidden' : 'flex select-none items-center gap-1')}>

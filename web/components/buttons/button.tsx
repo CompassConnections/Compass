@@ -69,7 +69,7 @@ export function buttonClass(size: SizeType, color: ColorType) {
       solid,
       '!rounded-xl bg-cta hover:bg-cta-hover shadow-[0_6px_20px_-8px_rgb(var(--color-cta)/0.75)]',
     ],
-    color === 'indigo-outline' && [outline, 'text-primary-500 hover:bg-primary-500'],
+    color === 'indigo-outline' && [outline, 'text-primary-700 hover:bg-primary-500'],
     color === 'gray' &&
       'bg-canvas-200 text-ink-900 disabled:bg-ink-200 disabled:text-ink-500 hover:bg-canvas-300 hover:text-ink-1000',
     // ink-600 on the page canvas is 4.2:1 at 14px, just under AA; ink-700 clears it.

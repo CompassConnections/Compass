@@ -83,7 +83,7 @@ export const Input = forwardRef(
             <button
               type="button"
               onClick={handleClear}
-              className="text-ink-500 hover:text-primary-600 transition-colors"
+              className="text-ink-500 hover:text-primary-700 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>

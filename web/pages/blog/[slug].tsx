@@ -105,7 +105,7 @@ export default function BlogPostPage({slug: staticSlug, post: initialPost}: Prop
         <Col className="gap-4">
           <Link
             href="/blog"
-            className={clsx(eyebrow, 'text-primary-600 hover:text-primary-700 w-fit')}
+            className={clsx(eyebrow, 'text-primary-700 hover:text-primary-800 w-fit')}
           >
             {t('blog.back', '← All posts')}
           </Link>
@@ -158,7 +158,7 @@ export default function BlogPostPage({slug: staticSlug, post: initialPost}: Prop
         <Content content={post.content} size="lg" className="prose-p:!my-4" />
 
         <div className="border-canvas-200 border-t pt-6">
-          <Link href="/blog" className="text-primary-600 text-sm hover:underline">
+          <Link href="/blog" className="text-primary-700 text-sm hover:underline">
             {t('blog.back', '← All posts')}
           </Link>
         </div>

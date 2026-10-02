@@ -133,7 +133,7 @@
 //       <Col className="bg-canvas-50 w-full px-4 py-2">
 //         <UserLink
 //           className={
-//             'hover:text-primary-500 text-ink-1000 truncate font-semibold transition-colors'
+//             'hover:text-primary-700 text-ink-1000 truncate font-semibold transition-colors'
 //           }
 //           user={user}
 //           hideBadge

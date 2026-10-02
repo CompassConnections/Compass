@@ -44,7 +44,7 @@ export function ReviewCardTester() {
   return (
     <Col className={`${surface} gap-3 p-4`}>
       <Row className={'items-start gap-3'}>
-        <StarIcon className={'text-primary-600 mt-0.5 h-5 w-5 flex-shrink-0'} />
+        <StarIcon className={'text-primary-700 mt-0.5 h-5 w-5 flex-shrink-0'} />
         <Col className={'gap-1'}>
           <div className={'text-ink-900 font-medium'}>Store review card</div>
           <div className={'text-ink-500 text-sm'}>

@@ -168,7 +168,7 @@ export function TestimonialModControls({
           disabled={busy}
           icon={
             <StarIcon
-              className={clsx('h-3.5 w-3.5', featured && 'fill-primary-500 text-primary-500')}
+              className={clsx('h-3.5 w-3.5', featured && 'fill-primary-500 text-primary-700')}
             />
           }
           // A single rank value, not a spinner: the wall only needs "this one goes near the top", and

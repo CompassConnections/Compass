@@ -349,7 +349,7 @@ function PostRow({post: p, onChanged}: {post: AdminBlogPost; onChanged: () => vo
         </div>
         <Row className="flex-shrink-0 gap-2">
           {p.status === 'published' && (
-            <a className="text-primary-600 self-center text-xs underline" href={`/blog/${p.slug}`}>
+            <a className="text-primary-700 self-center text-xs underline" href={`/blog/${p.slug}`}>
               open
             </a>
           )}

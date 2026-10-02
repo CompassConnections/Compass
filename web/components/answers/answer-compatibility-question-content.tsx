@@ -389,8 +389,8 @@ export const AnswerMatrix = (props: {
           data-testid="compatibility-question-your-answer"
           className={clsx(headerClass, 'border-primary-500/40 col-start-1 border-b')}
         >
-          <UserIcon className="text-primary-600 h-3.5 w-3.5 shrink-0" />
-          <span className={clsx(labelClass, 'text-primary-600')}>
+          <UserIcon className="text-primary-700 h-3.5 w-3.5 shrink-0" />
+          <span className={clsx(labelClass, 'text-primary-700')}>
             {t('answers.preferred.your_answer', 'Your answer')}
           </span>
         </Row>

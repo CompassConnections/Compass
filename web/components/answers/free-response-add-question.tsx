@@ -89,7 +89,7 @@ function AddQuestionModal(props: {
           </Col>
         ) : selectedQuestion == null ? (
           <>
-            <div className="text-primary-600  w-full font-semibold">
+            <div className="text-primary-700  w-full font-semibold">
               {t('answers.free.choose_question', 'Choose a question to answer')}
             </div>
             <Col className={SCROLLABLE_MODAL_CLASS}>

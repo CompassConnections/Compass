@@ -172,7 +172,7 @@ function FlowStep({
         <span aria-hidden className="absolute left-5 top-11 -bottom-0 w-px bg-canvas-200" />
       )}
       <div className="relative z-10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 ring-1 ring-primary-200">
-        <Icon className="h-5 w-5 text-primary-600" strokeWidth={1.8} />
+        <Icon className="h-5 w-5 text-primary-700" strokeWidth={1.8} />
       </div>
       <div className="min-w-0 pt-1">
         <div className="font-semibold text-ink-900 leading-snug">{title}</div>
@@ -385,7 +385,7 @@ function StepStats() {
     <div className="mt-8 grid grid-cols-2 gap-3 lg:mt-0 lg:w-72 lg:flex-shrink-0">
       {stats.map((s) => (
         <div key={s.label} className="rounded-lg border border-canvas-300 bg-canvas-0 p-3">
-          <div className="text-2xl font-bold text-primary-600">{s.value}</div>
+          <div className="text-2xl font-bold text-primary-700">{s.value}</div>
           <div className="mt-1 text-xs leading-snug text-ink-500">{s.label}</div>
         </div>
       ))}
@@ -639,7 +639,7 @@ function VisibilityToggleMock() {
   return (
     <div className="mt-8 rounded-xl bg-canvas-100 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-72 lg:flex-shrink-0">
       <div className="flex items-center gap-3 rounded-lg border border-canvas-300 bg-canvas-0 p-3">
-        <GlobeAltIcon className="h-4 w-4 flex-shrink-0 text-primary-600" />
+        <GlobeAltIcon className="h-4 w-4 flex-shrink-0 text-primary-700" />
         <div className="min-w-0">
           <div className="whitespace-nowrap text-[13px] font-semibold text-ink-900">
             {t('about.public.mock.public', 'Public')}
@@ -712,7 +712,7 @@ function PlatformGlyphs() {
           key={p.name}
           className="flex items-center gap-3 rounded-lg border border-canvas-300 bg-canvas-0 p-3"
         >
-          <p.icon className="h-4 w-4 flex-shrink-0 text-primary-600" />
+          <p.icon className="h-4 w-4 flex-shrink-0 text-primary-700" />
           <div className="min-w-0">
             <div className="whitespace-nowrap text-[13px] font-semibold text-ink-900">{p.name}</div>
             <div className="text-xs text-ink-500">{p.sub}</div>
@@ -774,7 +774,7 @@ function FeaturedHelpCard({icon, title, text, buttonLabel, buttonUrl, id}: HelpC
         href={buttonUrl}
         target={buttonUrl.startsWith('http') ? '_blank' : undefined}
         rel={buttonUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
-        className="inline-flex w-fit shrink-0 px-7 py-3.5 rounded-xl bg-transparent text-ink-900 font-semibold text-[15px] border-2 border-canvas-200 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5 transition-all duration-200 ease-out"
+        className="inline-flex w-fit shrink-0 px-7 py-3.5 rounded-xl bg-transparent text-ink-900 font-semibold text-[15px] border-2 border-canvas-200 hover:border-primary-500 hover:text-primary-700 hover:-translate-y-0.5 transition-all duration-200 ease-out"
       >
         {buttonLabel}
       </Link>
@@ -829,7 +829,7 @@ function ShareBenefit({icon: Icon, title, text}: {icon: IconType; title: string;
   return (
     <li className="flex items-start gap-3.5">
       <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white/[0.06] ring-1 ring-white/10">
-        <Icon className="h-[18px] w-[18px] text-primary-500" strokeWidth={1.8} />
+        <Icon className="h-[18px] w-[18px] text-primary-700" strokeWidth={1.8} />
       </div>
       <div className="min-w-0">
         <div className="text-[15px] font-semibold leading-snug text-white">{title}</div>
@@ -873,7 +873,7 @@ function ShareCTA() {
       {user && (
         <Link
           href="/constellation"
-          className="text-primary-500 hover:text-primary-400 text-sm underline underline-offset-4"
+          className="text-primary-700 hover:text-primary-800 text-sm underline underline-offset-4"
         >
           {t('about.share.see_yours', 'See who you’ve already brought')}
         </Link>
@@ -969,7 +969,9 @@ function ShareStrip() {
       />
       <div className="relative">
         <div className="flex items-center gap-2.5 mb-5">
+          {/* eslint-disable-next-line no-restricted-syntax -- lighter amber on the always-dark closing panel */}
           <MegaphoneIcon className="w-5 h-5 text-primary-500 flex-shrink-0" strokeWidth={1.8} />
+          {/* eslint-disable-next-line no-restricted-syntax -- lighter amber on the always-dark closing panel */}
           <span className={clsx(eyebrow, 'text-primary-500')}>
             {t('about.final.label', 'Spread the word')}
           </span>

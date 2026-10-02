@@ -96,10 +96,6 @@ function HeroBand({
 
   return (
     <div className="relative overflow-hidden rounded-3xl bg-canvas-950 px-6 py-8 sm:px-10 sm:py-10">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-primary-500/20 blur-3xl"
-      />
       {/* Mobile is a 2-column grid rather than a wrapping flex row: with flex-wrap the tiles are sized by
           their digits, so the labels never line up and the last stat is left dangling at a different
           x-offset than the one above it. The grid keeps every label on a shared baseline and gives the
@@ -117,6 +113,7 @@ function HeroBand({
           >
             <div
               className={clsx(
+                // eslint-disable-next-line no-restricted-syntax -- lighter amber on the bg-canvas-950 hero panel
                 'font-black leading-none tracking-tight tabular-nums text-primary-400',
                 i === 0 ? 'text-5xl sm:text-6xl' : 'text-3xl sm:text-4xl',
               )}
@@ -139,7 +136,7 @@ function ChartCard() {
     <div className={clsx(surface, 'p-5 sm:p-6')}>
       <div className="mb-1 flex items-center gap-2.5">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-100 ring-1 ring-primary-200">
-          <ArrowTrendingUpIcon className="h-[18px] w-[18px] text-primary-600" strokeWidth={1.8} />
+          <ArrowTrendingUpIcon className="h-[18px] w-[18px] text-primary-700" strokeWidth={1.8} />
         </div>
         <div>
           <h2 className="text-sm font-bold leading-tight text-ink-900">
@@ -177,7 +174,7 @@ function ActivityPanel({
     <div className={clsx(surface, 'flex h-full flex-col p-5 sm:p-6')}>
       <div className="mb-4 flex items-center gap-2.5">
         <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary-100 ring-1 ring-primary-200">
-          <Icon className="h-[18px] w-[18px] text-primary-600" strokeWidth={1.8} />
+          <Icon className="h-[18px] w-[18px] text-primary-700" strokeWidth={1.8} />
         </div>
         <h3 className="text-sm font-bold text-ink-900">{title}</h3>
       </div>
@@ -188,7 +185,7 @@ function ActivityPanel({
             className="flex items-baseline justify-between gap-3 border-t border-canvas-200/70 pt-3 first:border-0 first:pt-0"
           >
             <dt className="text-sm text-ink-600">{r.label}</dt>
-            <dd className="text-lg font-black tabular-nums text-primary-600">
+            <dd className="text-lg font-black tabular-nums text-primary-700">
               {formatNumber(r.value as number)}
             </dd>
           </div>

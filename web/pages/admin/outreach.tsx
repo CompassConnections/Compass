@@ -276,7 +276,7 @@ function OutreachTableRow(props: {
           <UserAvatarAndBadge user={row.user} />
           {row.channelId !== null && (
             <Link
-              className={'text-primary-600 text-xs underline'}
+              className={'text-primary-700 text-xs underline'}
               href={`/messages/${row.channelId}`}
             >
               thread
@@ -310,7 +310,7 @@ function OutreachTableRow(props: {
         ) : (
           <button
             className={
-              'text-ink-400 hover:text-primary-600 disabled:text-ink-300 disabled:hover:text-ink-300'
+              'text-ink-400 hover:text-primary-700 disabled:text-ink-300 disabled:hover:text-ink-300'
             }
             disabled={creatingSearch}
             title={'Save the search they described in “who I’m looking for”'}

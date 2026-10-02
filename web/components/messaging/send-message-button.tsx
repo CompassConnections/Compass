@@ -328,7 +328,7 @@ export const SendMessageButton = (props: {
                 <Col className={'gap-0.5'}>
                   <span
                     className={
-                      'text-primary-600 text-[11px] font-semibold uppercase tracking-[0.09em]'
+                      'text-primary-700 text-[11px] font-semibold uppercase tracking-[0.09em]'
                     }
                   >
                     {t('send_message.writing_to', 'Writing to')}
@@ -371,7 +371,7 @@ export const SendMessageButton = (props: {
                       'w-full bg-canvas-100/80 border border-canvas-200 rounded-2xl p-[18px]'
                     }
                   >
-                    <p className={'text-primary-600 mb-3 text-[12.5px] font-semibold'}>
+                    <p className={'text-primary-700 mb-3 text-[12.5px] font-semibold'}>
                       {t('send_message.keywords_hint', `Insert some of {name}'s topics`, {
                         name: firstName,
                       })}

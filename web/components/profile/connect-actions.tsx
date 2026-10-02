@@ -128,7 +128,7 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
         {/* Explaining the mechanism is only worth the row when the mechanism is available. */}
         {/*{hasSignalControls && (*/}
         {/*  <button*/}
-        {/*    className="text-ink-500 hover:text-primary-600 flex flex-none items-center gap-1 text-xs transition-colors"*/}
+        {/*    className="text-ink-500 hover:text-primary-700 flex flex-none items-center gap-1 text-xs transition-colors"*/}
         {/*    onClick={() => setShowHelp(!showHelp)}*/}
         {/*    aria-expanded={showHelp}*/}
         {/*  >*/}

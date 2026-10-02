@@ -294,7 +294,7 @@ function RegisterComponent() {
                     if (e.target.checked) setError(null)
                   }}
                   className={clsx(
-                    'mt-0.5 h-4 w-4 shrink-0 rounded border-ink-300 text-primary-500 focus:ring-primary-500',
+                    'mt-0.5 h-4 w-4 shrink-0 rounded border-ink-300 text-primary-700 focus:ring-primary-500',
                     // Only after a blocked attempt: an unticked box is the normal starting state and
                     // has done nothing wrong until someone tries to get past it.
                     termsMissing && 'ring-2 ring-red-500 ring-offset-2',

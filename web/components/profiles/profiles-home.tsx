@@ -55,7 +55,7 @@ function ProfileBanner(props: {
         <XMarkIcon className="h-4 w-4" />
       </button>
       <Row className="items-start gap-3 pr-7">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900/50 dark:text-primary-300">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300">
           {icon}
         </div>
         <Col className="min-w-0 items-start gap-2 text-left">{children}</Col>

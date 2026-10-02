@@ -62,7 +62,7 @@ export function TestimonialBeforeDelete({
     >
       <Row className="items-start gap-3">
         <div className="bg-primary-100 dark:bg-primary-900/50 mt-0.5 shrink-0 rounded-full p-2">
-          <HeartIcon className="text-primary-600 dark:text-primary-300 h-5 w-5" aria-hidden />
+          <HeartIcon className="text-primary-700 dark:text-primary-300 h-5 w-5" aria-hidden />
         </div>
         <Col className="gap-1">
           <div className="text-ink-900 font-semibold">
@@ -92,7 +92,7 @@ export function TestimonialBeforeDelete({
       <label className="text-ink-500 flex cursor-pointer items-start gap-2.5 text-sm">
         <input
           type="checkbox"
-          className="border-ink-300 bg-canvas-50 text-primary-600 focus:ring-primary-500 mt-0.5 h-4 w-4 shrink-0 rounded"
+          className="border-ink-300 bg-canvas-50 text-primary-700 focus:ring-primary-500 mt-0.5 h-4 w-4 shrink-0 rounded"
           checked={optedOut}
           onChange={(e) => setOptedOut(e.target.checked)}
           data-testid="testimonial-opt-out"

@@ -101,6 +101,18 @@ export default tseslint.config(
       'no-constant-condition': 'off',
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
+      // primary-300…600 are under 4.5:1 as text on the light canvas (primary-500 is 3.0:1). Use
+      // text-primary-700 or darker; the ramp inverts, so it stays legible in dark mode too. The
+      // lighter steps are only for always-dark surfaces (sidebar, bg-canvas-950 panels) — disable
+      // the rule on that line with a reason. `dark:` and alpha variants (`/15`) are not matched.
+      'no-restricted-syntax': [
+        'error',
+        ...['Literal[value', 'TemplateElement[value.raw'].map((node) => ({
+          selector: `${node}=/(^|\\s)((hover|focus|focus-visible|active|group-hover):)?text-primary-[3-6]00(\\s|$)/]`,
+          message:
+            'text-primary-300…600 fails contrast on light surfaces; use text-primary-700+. See docs/ui-guidelines.md.',
+        })),
+      ],
     },
   },
   {

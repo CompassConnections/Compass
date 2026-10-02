@@ -289,7 +289,7 @@ function Step3CompatibilityInspect({
 //         <Link
 //           href="/safety"
 //           target="_blank"
-//           className="text-primary-600 hover:text-primary-800 underline underline-offset-4"
+//           className="text-primary-700 hover:text-primary-800 underline underline-offset-4"
 //         >
 //           {t('safety.link', 'Read the safety guide')}
 //         </Link>

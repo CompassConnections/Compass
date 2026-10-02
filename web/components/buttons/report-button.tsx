@@ -71,7 +71,7 @@ export const ReportModal = (props: {
             ? `You've reported this ${label}. Our team will take a look within 24 hours`
             : `Report this ${label} for objectionable content that violates our `}
           {!isReported && (
-            <a href="/terms" className="text-primary-600 hover:text-primary-800 hover:underline">
+            <a href="/terms" className="text-primary-700 hover:text-primary-800 hover:underline">
               guidelines
             </a>
           )}

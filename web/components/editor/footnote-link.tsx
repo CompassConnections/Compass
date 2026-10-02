@@ -6,7 +6,7 @@ import {useT} from 'web/lib/locale'
 import {Footnote, footnoteDefId, footnoteRefId} from './footnotes'
 
 const MARKER_CLASS =
-  'text-primary-700 hover:text-primary-600 cursor-pointer align-super text-[0.75em] font-medium no-underline hover:underline scroll-mt-24'
+  'text-primary-700 hover:text-primary-800 cursor-pointer align-super text-[0.75em] font-medium no-underline hover:underline scroll-mt-24'
 
 /** Bring `id` into view and flash it, without the hard jump a raw hash navigation would cause. */
 const scrollTo = (id: string) => (e: MouseEvent) => {

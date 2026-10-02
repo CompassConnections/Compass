@@ -161,7 +161,7 @@ export function SelectUsers(props: {
                   type="button"
                   aria-label={t('select_users.remove', 'Remove {name}', {name: user.name})}
                   onClick={() => setSelectedUsers(selectedUsers.filter(({id}) => id != user.id))}
-                  className={'text-ink-500 hover:text-primary-600 transition-colors'}
+                  className={'text-ink-500 hover:text-primary-700 transition-colors'}
                 >
                   <XMarkIcon className="h-4 w-4" aria-hidden="true" />
                 </button>
@@ -247,7 +247,7 @@ export function SelectUsers(props: {
                         data-testid="search-results-username"
                         className={clsx(
                           'truncate text-sm font-medium transition-colors',
-                          i === activeRow ? 'text-primary-600' : 'text-ink-900',
+                          i === activeRow ? 'text-primary-700' : 'text-ink-900',
                         )}
                       >
                         {user.name}

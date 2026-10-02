@@ -74,7 +74,7 @@ export default function AdminTestimonials() {
           </Row>
           <div className="text-ink-500 text-sm">
             Everything ever submitted. The same approve and reject buttons also sit on{' '}
-            <a className="text-primary-600 underline" href="/testimonials">
+            <a className="text-primary-700 underline" href="/testimonials">
               /testimonials
             </a>
             , which is usually the faster place to clear the queue.

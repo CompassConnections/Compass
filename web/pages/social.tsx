@@ -51,7 +51,7 @@ function SocialLinkButton({url, label, icon, primary, rel}: SocialLink) {
         ${
           primary
             ? 'bg-cta border-cta text-white hover:bg-cta-hover shadow-[0_3px_12px_rgba(193,127,62,0.3)]'
-            : 'bg-canvas-100 border-canvas-300 text-ink-900 hover:border-primary-500 hover:text-primary-500'
+            : 'bg-canvas-100 border-canvas-300 text-ink-900 hover:border-primary-500 hover:text-primary-700'
         }
       `}
     >
@@ -76,7 +76,7 @@ function SectionCard({icon: Icon, title, description, links}: SectionCardProps) 
     >
       {/* Icon */}
       <div className="w-11 h-11 rounded-xl bg-primary-100 border border-primary-200 flex items-center justify-center mb-5 flex-shrink-0">
-        <Icon className="w-5 h-5 text-primary-600" strokeWidth={1.8} />
+        <Icon className="w-5 h-5 text-primary-700" strokeWidth={1.8} />
       </div>
 
       {/* Title & description */}
@@ -212,7 +212,7 @@ export default function Social() {
       <div className="max-w-4xl mx-auto px-6 py-12 pb-20">
         {/* ── Page header ── */}
         <div className="mb-10">
-          <p className="text-xs font-bold tracking-[1.5px] uppercase text-primary-500 mb-3">
+          <p className="text-xs font-bold tracking-[1.5px] uppercase text-primary-700 mb-3">
             {t('social.eyebrow', 'Connect with us')}
           </p>
           <h1 className="text-[clamp(28px,4vw,40px)] text-ink-900 tracking-tight leading-tight mb-3">

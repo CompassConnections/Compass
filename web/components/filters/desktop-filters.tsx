@@ -96,7 +96,7 @@
 //                 <FaUserGroup className="h-4 w-4" />
 //                 <RelationshipFilterText
 //                   relationship={filters.pref_relation_styles as RelationshipType[] | undefined}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                 />
 //               </Row>
 //             }
@@ -118,7 +118,7 @@
 //                 <RelationshipStatusFilterText
 //                   options={filters.relationship_status as string[] | undefined}
 //                   defaultLabel={t('filter.relationship_status.any', 'Any relationship status')}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                 />
 //               </Row>
 //             }
@@ -140,7 +140,7 @@
 //                 youProfile={youProfile}
 //                 location={locationFilterProps.location}
 //                 radius={locationFilterProps.radius}
-//                 highlightedClass={open ? 'text-primary-500' : ''}
+//                 highlightedClass={open ? 'text-primary-700' : ''}
 //               />
 //             }
 //             open={open}
@@ -163,7 +163,7 @@
 //                   youProfile={youProfile}
 //                   location={raisedInLocationFilterProps.location}
 //                   radius={raisedInLocationFilterProps.radius ?? 100}
-//                   highlightedClass={open ? 'text-primary-500' : ''}
+//                   highlightedClass={open ? 'text-primary-700' : ''}
 //                   labelPrefix={t('filter.raised_in', 'Grew up')}
 //                 />
 //               }
@@ -190,7 +190,7 @@
 //               <AgeFilterText
 //                 pref_age_min={filters.pref_age_min}
 //                 pref_age_max={filters.pref_age_max}
-//                 highlightedClass={open ? 'text-primary-500' : ''}
+//                 highlightedClass={open ? 'text-primary-700' : ''}
 //               />
 //             }
 //           />
@@ -211,7 +211,7 @@
 //             content={
 //               <GenderFilterText
 //                 gender={filters.genders as Gender[]}
-//                 highlightedClass={open ? 'text-primary-500' : undefined}
+//                 highlightedClass={open ? 'text-primary-700' : undefined}
 //               />
 //             }
 //             open={open}
@@ -232,7 +232,7 @@
 //       {/*      content={*/}
 //       {/*        <PrefGenderFilterText*/}
 //       {/*          pref_gender={filters.pref_gender as Gender[]}*/}
-//       {/*          highlightedClass={open ? 'text-primary-500' : undefined}*/}
+//       {/*          highlightedClass={open ? 'text-primary-700' : undefined}*/}
 //       {/*        />*/}
 //       {/*      }*/}
 //       {/*      open={open}*/}
@@ -258,7 +258,7 @@
 //                     <FaHeart className="h-4 w-4" />
 //                     <RomanticFilterText
 //                       relationship={filters.pref_romantic_styles as RomanticType[] | undefined}
-//                       highlightedClass={open ? 'text-primary-500' : undefined}
+//                       highlightedClass={open ? 'text-primary-700' : undefined}
 //                     />
 //                   </Row>
 //                 }
@@ -309,7 +309,7 @@
 //                     strength={
 //                       filters.wants_kids_strength ?? wantsKidsLabelsWithIcon.no_preference.strength
 //                     }
-//                     highlightedClass={open ? 'text-primary-500' : ''}
+//                     highlightedClass={open ? 'text-primary-700' : ''}
 //                   />
 //                 }
 //                 open={open}
@@ -348,7 +348,7 @@
 //                 content={
 //                   <HasKidsLabel
 //                     has_kids={filters.has_kids ?? -1}
-//                     highlightedClass={open ? 'text-primary-500' : ''}
+//                     highlightedClass={open ? 'text-primary-700' : ''}
 //                   />
 //                 }
 //                 open={open}
@@ -370,7 +370,7 @@
 //                 <GiFruitBowl className="h-4 w-4" />
 //                 <DietFilterText
 //                   options={filters.diet as DietType[] | undefined}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                 />
 //               </Row>
 //             }
@@ -392,7 +392,7 @@
 //                 <DrinksFilterText
 //                   drinks_min={filters.drinks_min}
 //                   drinks_max={filters.drinks_max}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                 />
 //               </Row>
 //             }
@@ -417,7 +417,7 @@
 //                 <LuCigarette className="h-4 w-4" />
 //                 <SmokerFilterText
 //                   is_smoker={filters.is_smoker}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                 />
 //               </Row>
 //             }
@@ -442,7 +442,7 @@
 //                 <MdLanguage className="h-4 w-4" />
 //                 <LanguageFilterText
 //                   options={filters.languages as string[] | undefined}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                 />
 //               </Row>
 //             }
@@ -464,7 +464,7 @@
 //                 <FaStar className="h-4 w-4" />
 //                 <InterestFilterText
 //                   options={filters.interests as string[] | undefined}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                   label={'interests'}
 //                 />
 //               </Row>
@@ -494,7 +494,7 @@
 //                 <FaHandsHelping className="h-4 w-4" />
 //                 <InterestFilterText
 //                   options={filters.causes as string[] | undefined}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                   label={'causes'}
 //                 />
 //               </Row>
@@ -524,7 +524,7 @@
 //                 <FaBriefcase className="h-4 w-4" />
 //                 <InterestFilterText
 //                   options={filters.work as string[] | undefined}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                   label={'work'}
 //                 />
 //               </Row>
@@ -553,7 +553,7 @@
 //                 <RiScales3Line className="h-4 w-4" />
 //                 <PoliticalFilterText
 //                   options={filters.political_beliefs as string[] | undefined}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                 />
 //               </Row>
 //             }
@@ -574,7 +574,7 @@
 //                 <PiHandsPrayingBold className="h-4 w-4" />
 //                 <ReligionFilterText
 //                   options={filters.religion as string[] | undefined}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                 />
 //               </Row>
 //             }
@@ -601,7 +601,7 @@
 //                 <BsPersonVcard className="h-4 w-4" />
 //                 <MbtiFilterText
 //                   options={filters.mbti as string[] | undefined}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                   defaultLabel={t('filter.any_mbti', 'Any MBTI')}
 //                 />
 //               </Row>
@@ -624,7 +624,7 @@
 //                 <Big5FilterText
 //                   filters={filters}
 //                   highlightedClass={
-//                     open || hasAnyBig5Filter(filters) ? 'text-primary-500' : undefined
+//                     open || hasAnyBig5Filter(filters) ? 'text-primary-700' : undefined
 //                   }
 //                 />
 //               </Row>
@@ -649,7 +649,7 @@
 //                 <LuGraduationCap className="h-4 w-4" />
 //                 <EducationFilterText
 //                   options={filters.education_levels as string[]}
-//                   highlightedClass={open ? 'text-primary-500' : undefined}
+//                   highlightedClass={open ? 'text-primary-700' : undefined}
 //                 />
 //               </Row>
 //             }
@@ -673,7 +673,7 @@
 //             content={
 //               <LastActiveFilterText
 //                 last_active={filters.last_active}
-//                 highlightedClass={open ? 'text-primary-500' : ''}
+//                 highlightedClass={open ? 'text-primary-700' : ''}
 //               />
 //             }
 //           />

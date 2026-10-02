@@ -24,7 +24,7 @@ export function ShowMoreLessButton(props: {
   return (
     <button
       className={clsx(
-        'text-primary-500 hover:text-primary-700 z-10 select-none text-sm',
+        'text-primary-700 hover:text-primary-800 z-10 select-none text-sm',
         className,
       )}
       onClick={onClick}

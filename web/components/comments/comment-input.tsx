@@ -244,7 +244,7 @@ export function CommentInputTextArea(props: {
             {/*<span>Editing message</span>*/}
             <button
               type="button"
-              className="text-primary-600 hover:underline"
+              className="text-primary-700 hover:underline"
               onClick={cancelEditing}
             >
               {t('comment.cancel', 'Cancel')}

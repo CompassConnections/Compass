@@ -217,7 +217,7 @@ export const MessageChannelRow = (props: {
           <Row className={'items-center justify-between'}>
             <span
               className={
-                'font-medium text-ink-900 text-sm group-hover:text-primary-600 transition-colors'
+                'font-medium text-ink-900 text-sm group-hover:text-primary-700 transition-colors'
               }
               data-testid="messages-username"
             >

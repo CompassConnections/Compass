@@ -61,7 +61,7 @@ export default function BlogIndexPage({initialPosts}: Props) {
 
       <Col className="mx-auto w-full max-w-3xl gap-10 px-4 py-10 sm:py-14">
         <Col className="gap-4">
-          <p className={clsx(eyebrow, 'text-primary-600')}>
+          <p className={clsx(eyebrow, 'text-primary-700')}>
             {t('blog.hero.eyebrow', 'From the team')}
           </p>
           <h1 className="text-ink-900 text-[clamp(30px,5vw,44px)] font-bold leading-[1.1] tracking-tight">

@@ -244,7 +244,7 @@ function ConstellationHero() {
             t('referrals.hero.empty', 'Your constellation starts with one person')
           ) : (
             <>
-              <span className="text-primary-600 tabular-nums">{stats.total}</span>{' '}
+              <span className="text-primary-700 tabular-nums">{stats.total}</span>{' '}
               {t('referrals.hero.title', 'people are here because of you')}
             </>
           )}
@@ -283,7 +283,7 @@ function ConstellationHero() {
             href="/leaderboard"
             className="text-ink-600 hover:text-ink-900 group flex items-center gap-1.5 text-sm font-medium"
           >
-            {/*<TrophyIcon className="text-primary-600 h-4 w-4" />*/}
+            {/*<TrophyIcon className="text-primary-700 h-4 w-4" />*/}
             {t('referrals.cta.leaderboard', 'Who has invited the most people')}
             <ArrowRightIcon className="h-3.5 w-3.5 transition-transform duration-200 ease-out group-hover:translate-x-1" />
           </Link>

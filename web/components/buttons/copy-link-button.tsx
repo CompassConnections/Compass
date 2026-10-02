@@ -129,7 +129,7 @@ export const CopyLinkRow = (props: {
     <button
       className={clsx(
         'border-ink-300 flex select-none items-center justify-between rounded border px-4 py-2 text-sm transition-colors duration-700',
-        bgPressed ? 'bg-primary-50 text-primary-500 transition-none' : 'bg-canvas-50 text-ink-500',
+        bgPressed ? 'bg-primary-50 text-primary-700 transition-none' : 'bg-canvas-50 text-ink-500',
         'disabled:h-9 disabled:animate-pulse',
         linkBoxClassName,
       )}

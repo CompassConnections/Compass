@@ -121,7 +121,7 @@ export function EventCard(props: {
             href={event.location_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary-600 hover:text-primary-700 flex items-center gap-2"
+            className="text-primary-700 hover:text-primary-800 flex items-center gap-2"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -282,7 +282,7 @@ export function EventCard(props: {
       {!user && !isPast && event.status === 'active' && (
         <Link
           href="/signin"
-          className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+          className="text-primary-700 hover:text-primary-800 text-sm font-medium"
         >
           {t('events.login_to_rsvp', 'Log in to RSVP')}
         </Link>

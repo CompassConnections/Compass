@@ -215,7 +215,7 @@
 //   return (
 //     <Row className="text-ink-600 items-center gap-1">
 //       <CompatibleBadge
-//         className="text-primary-600 self-end font-semibold"
+//         className="text-primary-700 self-end font-semibold"
 //         compatibility={compatibility}
 //       />
 //       compatible

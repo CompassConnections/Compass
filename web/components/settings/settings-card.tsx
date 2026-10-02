@@ -61,7 +61,7 @@ export function SettingsCard(props: {
               'flex h-9 w-9 flex-none items-center justify-center rounded-xl [&>svg]:h-5 [&>svg]:w-5',
               isDanger
                 ? 'bg-red-500/10 text-red-500'
-                : 'bg-primary-500/10 text-primary-600 dark:text-primary-500',
+                : 'bg-primary-500/10 text-primary-700 dark:text-primary-500',
             )}
           >
             {icon}

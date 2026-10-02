@@ -520,7 +520,7 @@ export const OptionalProfileUserForm = (props: {
             opacity, i.e. styled like fine print, which is exactly backwards. */}
         <div className="border-primary-400 flex items-start gap-3 border-l-2 pl-4">
           <InformationCircleIcon
-            className="w-5 h-5 text-primary-600 shrink-0 mt-0.5"
+            className="w-5 h-5 text-primary-700 shrink-0 mt-0.5"
             strokeWidth={1.8}
           />
           <p className="text-sm text-ink-600 leading-relaxed">

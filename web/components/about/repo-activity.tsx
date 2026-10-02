@@ -42,7 +42,7 @@ function Metric({
   return (
     <div className="flex items-center gap-3.5">
       <div className="w-10 h-10 rounded-xl bg-primary-100 ring-1 ring-primary-200 flex items-center justify-center shrink-0">
-        <Icon className="w-[18px] h-[18px] text-primary-600" strokeWidth={1.8} />
+        <Icon className="w-[18px] h-[18px] text-primary-700" strokeWidth={1.8} />
       </div>
       <div className="min-w-0">
         <div className="flex items-center gap-2 font-heading text-xl font-bold text-ink-900 leading-tight tabular-nums">

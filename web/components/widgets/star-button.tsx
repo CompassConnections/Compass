@@ -48,7 +48,7 @@ export const StarButton = (props: {
         'border border-canvas-200',
         buttonClass('xs', 'none'),
         isStarred
-          ? 'bg-primary-50 border-primary-200 text-primary-600'
+          ? 'bg-primary-50 border-primary-200 text-primary-700'
           : 'bg-canvas-50 border-canvas-300 text-ink-500 hover:border-primary-400 hover:bg-primary-50',
         className,
       )}

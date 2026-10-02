@@ -250,6 +250,7 @@ export function WorldHeatmap({
             style={{left: `${hover.x}%`, top: `${hover.y}%`}}
           >
             <div className="text-xs font-bold leading-tight text-white">{hover.name}</div>
+            {/* eslint-disable-next-line no-restricted-syntax -- tooltip on bg-canvas-950 */}
             <div className="text-[11px] font-semibold tabular-nums text-primary-400">
               {hover.count === 1
                 ? t('stats.countries.member_one', '1 member')

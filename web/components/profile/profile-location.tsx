@@ -26,7 +26,7 @@ export function ProfileLocation(props: {
   const link = noLink ? (
     text
   ) : (
-    <CustomLink href={getGoogleMapsUrl(text)} className={'hover:text-primary-500'}>
+    <CustomLink href={getGoogleMapsUrl(text)} className={'hover:text-primary-700'}>
       {text}
     </CustomLink>
   )

@@ -99,7 +99,7 @@ export function Modal(props: {
                   <button
                     onClick={() => setOpen(false)}
                     className={clsx(
-                      'text-ink-700 bottom-50 hover:text-primary-400 focus:text-primary-400 absolute -top-4 right-4 -translate-y-full cursor-pointer outline-none sm:right-0',
+                      'text-ink-700 bottom-50 hover:text-primary-700 focus:text-primary-700 absolute -top-4 right-4 -translate-y-full cursor-pointer outline-none sm:right-0',
                       position === 'top' && 'sm:-bottom-4 sm:top-auto sm:translate-y-full',
                     )}
                   >

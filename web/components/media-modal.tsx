@@ -100,7 +100,7 @@ export function MediaModal(props: {
         {/* close button, fixed so it stays visible whatever the media size */}
         <button
           onClick={() => setOpen(false)}
-          className="text-ink-700 hover:text-primary-400 focus:text-primary-400 fixed right-4 top-[calc(1rem+env(safe-area-inset-top))] z-10 cursor-pointer outline-none"
+          className="text-ink-700 hover:text-primary-700 focus:text-primary-700 fixed right-4 top-[calc(1rem+env(safe-area-inset-top))] z-10 cursor-pointer outline-none"
         >
           <XMarkIcon className="h-8 w-8" />
           <div className="sr-only">Close</div>
@@ -180,7 +180,7 @@ function NavButton(props: {side: 'left' | 'right'; label: string; onClick: () =>
     <button
       onClick={onClick}
       aria-label={label}
-      className={`text-ink-700 hover:text-primary-400 focus:text-primary-400 bg-canvas-50/70 fixed top-1/2 z-10 -translate-y-1/2 rounded-full p-2 outline-none backdrop-blur transition-colors ${
+      className={`text-ink-700 hover:text-primary-700 focus:text-primary-700 bg-canvas-50/70 fixed top-1/2 z-10 -translate-y-1/2 rounded-full p-2 outline-none backdrop-blur transition-colors ${
         side === 'left' ? 'left-2 sm:left-4' : 'right-2 sm:right-4'
       }`}
     >

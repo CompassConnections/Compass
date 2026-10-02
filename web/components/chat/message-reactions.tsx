@@ -52,7 +52,7 @@ export function MessageReactions({message, className, setMessages}: MessageReact
             className={clsx(
               'flex items-center gap-1 rounded-full border px-2 py-0.5 text-sm',
               hasReacted
-                ? 'bg-primary-50 border-primary-200 text-primary-600'
+                ? 'bg-primary-50 border-primary-200 text-primary-700'
                 : 'bg-canvas-50 border-ink-200 text-ink-600 hover:bg-ink-50',
             )}
           >

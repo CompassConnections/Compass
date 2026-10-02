@@ -106,7 +106,7 @@ export const AddPhotosWidget = (props: {
               flip with the theme. */}
           <label
             className={clsx(
-              'border-canvas-300 text-ink-500 hover:border-primary-400 hover:text-primary-600 flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed transition-colors',
+              'border-canvas-300 text-ink-500 hover:border-primary-400 hover:text-primary-700 flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed transition-colors',
               uploadingImages && 'opacity-50 cursor-not-allowed',
             )}
             htmlFor="photo-upload"

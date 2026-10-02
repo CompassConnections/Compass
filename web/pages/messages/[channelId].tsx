@@ -390,7 +390,7 @@ export const PrivateChat = (props: {
             // Members here can include someone who left the chat — they're still a real person with a
             // real profile, so they're shown like any other member.
             const nameClassName =
-              'ml-1 cursor-pointer hover:text-primary-600 transition-colors font-medium text-sm text-ink-900'
+              'ml-1 cursor-pointer hover:text-primary-700 transition-colors font-medium text-sm text-ink-900'
             const nameContent = (
               <>
                 {members

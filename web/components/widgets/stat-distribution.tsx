@@ -150,7 +150,7 @@ export function DistributionCard({
     <div className={clsx(surface, 'flex h-full flex-col p-5 sm:p-6')}>
       <div className="mb-4 flex items-center gap-3">
         <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary-100 ring-1 ring-primary-200">
-          <Icon className="h-[18px] w-[18px] text-primary-600" strokeWidth={1.8} />
+          <Icon className="h-[18px] w-[18px] text-primary-700" strokeWidth={1.8} />
         </div>
         <div className="min-w-0">
           <h3 className="text-sm font-bold leading-tight text-ink-900">{title}</h3>

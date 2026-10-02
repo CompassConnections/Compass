@@ -33,6 +33,7 @@ export function SidebarItem(props: {item: Item; currentPage?: string}) {
     // Active is a warm amber-washed pill, not the same neutral fill as hover — the two used to be
     // near-identical (both `bg-canvas-900`), so the current page barely stood out. Hover uses the
     // canvas-900 "sidebar pressed" token, which is theme-aware on the always-dark rail.
+    // eslint-disable-next-line no-restricted-syntax -- always-dark sidebar rail
     isCurrentPage ? 'bg-primary-500/15 text-primary-500' : 'sidebar-text hover:bg-canvas-900',
     'focus-visible:bg-canvas-900',
   )
@@ -44,6 +45,7 @@ export function SidebarItem(props: {item: Item; currentPage?: string}) {
           className={clsx(
             'h-5 w-5 flex-shrink-0 transition',
             // Muted until active/hovered — modern icon hierarchy — but always full-amber when current.
+            // eslint-disable-next-line no-restricted-syntax -- always-dark sidebar rail
             isCurrentPage ? 'text-primary-500' : 'sidebar-text opacity-70 group-hover:opacity-100',
           )}
           aria-hidden="true"

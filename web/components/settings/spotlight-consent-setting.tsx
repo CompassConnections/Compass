@@ -89,7 +89,7 @@ export function SpotlightConsentSetting() {
   }
 
   const savedFlag = saved ? (
-    <span className="text-primary-600 flex items-center gap-1 text-xs">
+    <span className="text-primary-700 flex items-center gap-1 text-xs">
       <CheckIcon className="h-4 w-4" aria-hidden />
       {t('settings.spotlight.saved', 'Saved')}
     </span>

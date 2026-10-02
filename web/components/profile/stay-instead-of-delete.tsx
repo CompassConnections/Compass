@@ -24,7 +24,7 @@ function Point(props: {icon: ReactNode; title: string; body: string}) {
   const {icon, title, body} = props
   return (
     <Row className="gap-3">
-      <div className="text-primary-600 mt-0.5 shrink-0">{icon}</div>
+      <div className="text-primary-700 mt-0.5 shrink-0">{icon}</div>
       <div className="text-sm">
         <span className="font-medium">{title}</span> <span className="text-ink-700">{body}</span>
       </div>

@@ -424,7 +424,7 @@ export function NotificationUserLink(props: {
   return (
     <UserLink
       user={{id: userId || '', name: name || '', username: username || ''}}
-      className={clsx(className ?? 'hover:text-primary-500 relative flex-shrink-0')}
+      className={clsx(className ?? 'hover:text-primary-700 relative flex-shrink-0')}
       hideBadge={hideBadge}
     />
   )
@@ -522,7 +522,7 @@ export function PrimaryNotificationLink(props: {text: string | undefined}) {
   if (!text) {
     return <></>
   }
-  return <span className="hover:text-primary-500 font-semibold transition-colors">{text}</span>
+  return <span className="hover:text-primary-700 font-semibold transition-colors">{text}</span>
 }
 
 // the primary skeleton for notifications
@@ -568,7 +568,7 @@ export function NotificationFrame(props: {
           shortened={isMobile}
           className={clsx(
             'whitespace-nowrap text-xs',
-            highlighted ? 'text-primary-600 font-medium' : 'text-ink-500',
+            highlighted ? 'text-primary-700 font-medium' : 'text-ink-500',
           )}
         />
         {/* unread dot — the only unread cue that survives on mobile, so it is not hidden there */}

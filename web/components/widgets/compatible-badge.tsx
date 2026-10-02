@@ -112,6 +112,7 @@ export const CompatibilityRing = (props: {
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={circumference * (1 - score)}
+            // eslint-disable-next-line no-restricted-syntax -- decorative ring stroke, not text
             className="text-primary-300 transition-[stroke-dashoffset] duration-500"
           />
         </svg>

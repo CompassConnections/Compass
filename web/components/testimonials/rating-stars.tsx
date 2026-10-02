@@ -22,7 +22,7 @@ export function RatingStars({
         <StarSolid
           key={n}
           aria-hidden
-          className={clsx(SIZES[size], n <= rating ? 'text-primary-500' : 'text-canvas-300')}
+          className={clsx(SIZES[size], n <= rating ? 'text-primary-700' : 'text-canvas-300')}
         />
       ))}
     </div>
@@ -74,7 +74,7 @@ export function RatingStarsInput({
             )}
           >
             <Icon
-              className={clsx(SIZES[size], filled ? 'text-primary-500' : 'text-canvas-400')}
+              className={clsx(SIZES[size], filled ? 'text-primary-700' : 'text-canvas-400')}
               aria-hidden
             />
           </button>

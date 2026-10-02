@@ -59,7 +59,7 @@ export function MinimalistTabs(props: TabProps & {activeIndex: number}) {
             }}
             aria-current={activeIndex === i ? 'page' : undefined}
             className={clsx(
-              activeIndex === i ? 'text-primary-600' : 'text-ink-400 hover:text-ink-700',
+              activeIndex === i ? 'text-primary-700' : 'text-ink-400 hover:text-ink-700',
               'cursor-pointer whitespace-nowrap text-lg ',
               labelClassName,
             )}
@@ -121,7 +121,7 @@ export function ControlledTabs(props: TabProps & {activeIndex: number}) {
             }}
             className={clsx(
               activeIndex === i
-                ? 'border-primary-500 text-primary-600'
+                ? 'border-primary-500 text-primary-700'
                 : 'text-ink-500 hover:border-ink-300 hover:text-ink-700 border-transparent',
               'mr-4 inline-flex cursor-pointer flex-row gap-1 whitespace-nowrap border-b-2 px-1 py-3 text-sm font-medium ',
               labelClassName,

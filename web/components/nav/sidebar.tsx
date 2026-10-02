@@ -123,6 +123,7 @@ export default function Sidebar(props: {
         {user === null && (
           <LanguagePicker
             className={
+              // eslint-disable-next-line no-restricted-syntax -- always-dark sidebar rail
               'w-fit mx-3 mt-2 pr-12 mb-2 bg-transparent border-canvas-900 sidebar-text hover:text-primary-600'
             }
           />

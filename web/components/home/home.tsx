@@ -51,7 +51,7 @@ function FeatureCard({icon: Icon, title, text}: FeatureCardProps) {
   return (
     <div className={clsx(surface, surfaceHover, 'h-full p-6 sm:p-7')}>
       <div className="w-11 h-11 rounded-xl bg-primary-100 ring-1 ring-primary-200 flex items-center justify-center mb-5">
-        <Icon className="w-5 h-5 text-primary-600" strokeWidth={1.8} />
+        <Icon className="w-5 h-5 text-primary-700" strokeWidth={1.8} />
       </div>
       <h3 className="font-bold text-ink-1000 mb-2.5">{title}</h3>
       <p className="text-sm text-ink-600 leading-relaxed">{text}</p>
@@ -322,7 +322,7 @@ function ScoreDiagram() {
         <span className="text-xs font-semibold uppercase tracking-wide text-ink-500">
           {t('home.score.mock.result', 'Match')}
         </span>
-        <span className="text-lg font-bold text-primary-600">92%</span>
+        <span className="text-lg font-bold text-primary-700">92%</span>
       </div>
     </div>
   )
@@ -403,7 +403,7 @@ function ClaimBlock({
         <div className="min-w-0">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-primary-100 ring-1 ring-primary-200 flex items-center justify-center flex-shrink-0">
-              <Icon className="w-5 h-5 text-primary-600" strokeWidth={1.8} />
+              <Icon className="w-5 h-5 text-primary-700" strokeWidth={1.8} />
             </div>
             <p className={clsx(eyebrow, 'text-primary-700')}>{label}</p>
           </div>
@@ -763,7 +763,7 @@ export function LoggedOutHome() {
               // brand base measured 2.70:1 on the light canvas. One step down clears it at 3.71:1,
               // and because the ramp inverts, the dark theme gets a *brighter* amber here (6.8:1)
               // rather than a dimmer one.
-              className="animate-fade-up font-heading font-semibold text-[clamp(52px,8vw,96px)] lg:text-[clamp(44px,5.4vw,84px)] leading-none tracking-tight text-primary-600 mb-9 flex items-center justify-center lg:justify-start min-h-[1.1em]"
+              className="animate-fade-up font-heading font-semibold text-[clamp(52px,8vw,96px)] lg:text-[clamp(44px,5.4vw,84px)] leading-none tracking-tight text-primary-700 mb-9 flex items-center justify-center lg:justify-start min-h-[1.1em]"
               style={{animationDelay: '80ms'}}
             >
               <span ref={typewriterRef} />
@@ -801,7 +801,7 @@ export function LoggedOutHome() {
                   the outline buttons on /about. The accent stays on the border and the hover. */}
               <Link
                 href={'/about'}
-                className="px-7 py-3.5 rounded-xl bg-transparent text-ink-900 font-semibold text-[15px] border-2 border-canvas-200 hover:border-primary-500 hover:text-primary-500 hover:-translate-y-0.5 transition-all duration-200 ease-out"
+                className="px-7 py-3.5 rounded-xl bg-transparent text-ink-900 font-semibold text-[15px] border-2 border-canvas-200 hover:border-primary-500 hover:text-primary-700 hover:-translate-y-0.5 transition-all duration-200 ease-out"
               >
                 {t('home.cta.secondary', 'Learn how it works')}
               </Link>

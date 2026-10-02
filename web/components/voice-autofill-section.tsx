@@ -170,7 +170,7 @@ export function VoiceAutofillSection(props: {
               <ul className="mt-2 space-y-1 text-sm text-ink-700">
                 {talkingPoints.map((point) => (
                   <li key={point} className="flex gap-2">
-                    <span aria-hidden className="text-primary-500">
+                    <span aria-hidden className="text-primary-700">
                       •
                     </span>
                     <span>{point}</span>

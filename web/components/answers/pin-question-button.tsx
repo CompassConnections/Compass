@@ -68,7 +68,7 @@ export function PinQuestionButton({
         }
       >
         {isPinned ? (
-          <PinSolid className={clsx(iconClassName, 'text-primary-600')} />
+          <PinSolid className={clsx(iconClassName, 'text-primary-700')} />
         ) : (
           <PinOutline className={clsx(iconClassName, 'text-ink-500')} />
         )}

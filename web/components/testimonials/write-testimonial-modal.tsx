@@ -135,7 +135,7 @@ export function WriteTestimonialModal({
       <Col className="bg-canvas-0 max-h-[85dvh] gap-5 overflow-auto rounded-2xl p-6 sm:p-8">
         {submitted ? (
           <Col className="items-center gap-3 py-6 text-center">
-            <CheckCircleIcon className="text-primary-500 h-12 w-12" aria-hidden />
+            <CheckCircleIcon className="text-primary-700 h-12 w-12" aria-hidden />
             <div className="text-ink-900 text-xl font-semibold">
               {t('testimonials.submitted.title', 'Thank you — that means a lot')}
             </div>

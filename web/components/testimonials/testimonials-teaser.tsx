@@ -48,7 +48,7 @@ export function TestimonialsTeaser({count = 3}: {count?: number}) {
 
       <Link
         href="/testimonials"
-        className="text-primary-600 hover:text-primary-700 text-sm font-medium"
+        className="text-primary-700 hover:text-primary-800 text-sm font-medium"
       >
         <Row className="items-center gap-1.5">
           {t('testimonials.teaser.read_all', 'Read all {count} stories', {count: all.length})}

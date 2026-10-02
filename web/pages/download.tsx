@@ -365,7 +365,7 @@ function PlatformRows() {
           key={r.name}
           className="border-canvas-300 bg-canvas-0 flex items-center gap-3 rounded-lg border p-3"
         >
-          <r.icon className="text-primary-600 h-4 w-4 flex-shrink-0" />
+          <r.icon className="text-primary-700 h-4 w-4 flex-shrink-0" />
           <div className="min-w-0">
             <div className="text-ink-900 whitespace-nowrap text-[13px] font-semibold">{r.name}</div>
             <div className="text-ink-500 text-xs">{r.sub}</div>

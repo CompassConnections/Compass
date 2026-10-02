@@ -93,7 +93,7 @@ export default function AdminHome() {
           {ADMIN_PAGES.map((page) => (
             <Link key={page.href} href={page.href} className={`${surface} ${surfaceHover} p-4`}>
               <Row className={'items-start gap-3'}>
-                <page.icon className={'text-primary-600 mt-0.5 h-5 w-5 flex-shrink-0'} />
+                <page.icon className={'text-primary-700 mt-0.5 h-5 w-5 flex-shrink-0'} />
                 <Col className={'gap-1'}>
                   <div className={'text-ink-900 font-medium'}>{page.name}</div>
                   <div className={'text-ink-500 text-sm'}>{page.description}</div>

@@ -16,7 +16,7 @@ export function ShowMore(props: ShowMoreProps) {
       <button
         type="button"
         onClick={() => setShowMoreInfo(!showMoreInfo)}
-        className="text-primary-600 hover:text-primary-800 flex items-center"
+        className="text-primary-700 hover:text-primary-800 flex items-center"
       >
         {showMoreInfo ? labelOpen : labelClosed}
         <svg

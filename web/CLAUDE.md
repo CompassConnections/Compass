@@ -36,7 +36,8 @@ web/
   `usePersistentLocalState` instead of `useState`. localStorage stores strings — convert back to `Date` on
   load.
 - **Styling**: Tailwind utilities. Use the design tokens (`bg-canvas-50`, `text-ink-900`, ...) — don't hardcode
-  colors.
+  colors. Read [`../docs/ui-guidelines.md`](../docs/ui-guidelines.md) before building or restyling UI: it lists the
+  palette, which tokens are low-contrast or broken and how to use them, and the "looks AI-generated" anti-patterns.
 - **i18n**: `const t = useT()` from `web/lib/locale`, then `t('key', 'English fallback')`. Translation JSON
   lives in `common/messages/` (`de.json`, `fr.json`). English is the inline fallback.
 - **Lodash over hand-rolled loops/Sets** (`keyBy`, `uniq`, `uniqBy`, ...).
@@ -67,6 +68,7 @@ E2E (Playwright) runs from the root: `yarn test:e2e`. See [`../docs/testing.md`]
 
 ## Related docs
 
+- [`../docs/ui-guidelines.md`](../docs/ui-guidelines.md) — design tokens, palette, typography, motion, anti-patterns
 - [`../docs/next-js.md`](../docs/next-js.md) — Next.js patterns we use
 - [`../docs/react.md`](../docs/react.md) — React/TS fundamentals
 - [`../docs/filters.md`](../docs/filters.md) — search/filter UI

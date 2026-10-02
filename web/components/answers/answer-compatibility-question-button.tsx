@@ -80,7 +80,7 @@ export function AnswerCompatibilityQuestionButton(props: {
           {t('answers.answer.cta', 'Answer{core} Questions', {
             core: isCore ? ' Core' : '',
           })}{' '}
-          <span className="text-primary-600 ml-2">+{questionsToAnswer.length}</span>
+          <span className="text-primary-700 ml-2">+{questionsToAnswer.length}</span>
         </Button>
       ) : (
         <button
@@ -227,7 +227,7 @@ function CoreQuestionsCompleteScreen(props: {
 
   return (
     <Col className={clsx(SCROLLABLE_MODAL_CLASS, 'mx-auto max-w-2xl px-6 text-center')}>
-      <CheckBadgeIcon className="text-primary-500 mx-auto mb-4 h-14 w-14" />
+      <CheckBadgeIcon className="text-primary-700 mx-auto mb-4 h-14 w-14" />
       <h1 className="text-ink-900 mb-4 text-3xl font-bold">
         {t('compatibility.core_done.title', "That's the core questions done")}
       </h1>

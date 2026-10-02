@@ -20,7 +20,7 @@ export function UserLink({
   return (
     <Link
       href={`/${user.username}`}
-      className={`hover:text-primary-600 flex items-center gap-1 ${className}`}
+      className={`hover:text-primary-700 flex items-center gap-1 ${className}`}
     >
       {user.avatar_url && (
         <img src={user.avatar_url} alt={user.name} className="h-5 w-5 rounded-full" />

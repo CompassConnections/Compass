@@ -121,8 +121,8 @@ Frontend then calls it via `useAPIGetter('endpoint-name', props)` (client) or `a
 
 Architecture and patterns: [`docs/knowledge.md`](docs/knowledge.md),
 [`docs/architecture.md`](docs/architecture.md), [`docs/development.md`](docs/development.md).
-Frontend: [`docs/next-js.md`](docs/next-js.md), [`docs/react.md`](docs/react.md),
-[`docs/filters.md`](docs/filters.md).
+Frontend: [`docs/ui-guidelines.md`](docs/ui-guidelines.md) (design tokens, palette, anti-patterns),
+[`docs/next-js.md`](docs/next-js.md), [`docs/react.md`](docs/react.md), [`docs/filters.md`](docs/filters.md).
 Database: [`docs/database-schema.md`](docs/database-schema.md),
 [`docs/database-connection-pooling.md`](docs/database-connection-pooling.md),
 [`docs/performance-optimization.md`](docs/performance-optimization.md).

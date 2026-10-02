@@ -109,7 +109,7 @@ export function TestimonialCard({
             <div className="min-w-0 flex-1">
               <div className="text-ink-900 truncate text-sm font-medium">
                 {author.username ? (
-                  <Link href={`/${author.username}`} className="hover:text-primary-600">
+                  <Link href={`/${author.username}`} className="hover:text-primary-700">
                     {author.name}
                   </Link>
                 ) : (

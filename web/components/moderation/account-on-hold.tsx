@@ -82,7 +82,7 @@ export function AccountOnHoldNotice(props: {
     >
       <Row className="items-center gap-2">
         <Icon
-          className={clsx('h-5 w-5 shrink-0', permanent ? 'text-ink-400' : 'text-primary-600')}
+          className={clsx('h-5 w-5 shrink-0', permanent ? 'text-ink-400' : 'text-primary-700')}
           aria-hidden="true"
         />
         <span className="font-semibold text-ink-900">{title}</span>

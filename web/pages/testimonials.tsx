@@ -77,6 +77,7 @@ function Hero({
       />
 
       <div className="relative max-w-2xl">
+        {/* eslint-disable-next-line no-restricted-syntax -- lighter amber on the bg-canvas-950 hero panel */}
         <p className={clsx(eyebrow, 'text-primary-400 mb-4')}>
           {t('testimonials.hero.eyebrow', 'In their own words')}
         </p>
@@ -107,6 +108,7 @@ function Hero({
             <div key={s.label}>
               <Row className="items-center gap-1.5">
                 <s.icon className="text-primary-400/70 h-4 w-4" aria-hidden />
+                {/* eslint-disable-next-line no-restricted-syntax -- lighter amber on the bg-canvas-950 hero panel */}
                 <span className="text-primary-400 text-3xl font-black leading-none tracking-tight tabular-nums">
                   {s.value}
                 </span>

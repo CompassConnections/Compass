@@ -679,14 +679,14 @@ export function ReferralConstellation(props: {
               <div className="mt-2 flex gap-3 text-xs">
                 <Link
                   href={`/${selectedNode.node.username}`}
-                  className="text-primary-600 hover:text-primary-700 underline underline-offset-2"
+                  className="text-primary-700 hover:text-primary-800 underline underline-offset-2"
                 >
                   {t('referrals.constellation.view_profile', 'Profile')}
                 </Link>
                 {selectedNode.descendants > 0 && (
                   <button
                     type="button"
-                    className="text-primary-600 hover:text-primary-700 underline underline-offset-2"
+                    className="text-primary-700 hover:text-primary-800 underline underline-offset-2"
                     onClick={() => {
                       keepOpen()
                       setFocusId(selectedNode.node.id)

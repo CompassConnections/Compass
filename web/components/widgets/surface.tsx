@@ -81,7 +81,7 @@ export function IconChip({
         large ? 'w-14 h-14' : 'w-11 h-11',
       )}
     >
-      <Icon className={clsx('text-primary-600', large ? 'w-7 h-7' : 'w-5 h-5')} strokeWidth={1.8} />
+      <Icon className={clsx('text-primary-700', large ? 'w-7 h-7' : 'w-5 h-5')} strokeWidth={1.8} />
     </div>
   )
 }

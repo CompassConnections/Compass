@@ -687,7 +687,7 @@ export function ProfilePreview(props: {
             )}
           </span>
           <button
-            className="text-primary-500 hover:text-primary-700 underline"
+            className="text-primary-700 hover:text-primary-800 underline"
             onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault()
               e.stopPropagation()

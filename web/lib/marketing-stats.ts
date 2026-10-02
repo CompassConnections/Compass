@@ -1,4 +1,4 @@
-import {DemographicField, Stats} from 'common/stats'
+import {DemographicField, GroupShareKey, Stats} from 'common/stats'
 
 /**
  * Turns the raw `stats` payload into the handful of claims the home and about pages make about who is on
@@ -65,6 +65,16 @@ export function topOf(
   const dist = stats?.demographics?.[field]
   if (!dist?.base || !dist.items.length) return undefined
   return dist.items.slice(0, n).map((i) => ({value: i.value, count: i.count, base: dist.base}))
+}
+
+/**
+ * Share of respondents in one of the server-counted `GROUP_SHARES` — the multi-select case `shareOf`
+ * refuses, made safe by counting each profile once on the backend rather than summing bars here.
+ */
+export function groupShareOf(stats: Stats | undefined, key: GroupShareKey): Share | undefined {
+  const g = stats?.groupShares?.[key]
+  if (!g?.base) return undefined
+  return {pct: Math.round((g.count / g.base) * 100), base: g.base}
 }
 
 /** How many members answered a field at all. */

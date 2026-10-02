@@ -90,15 +90,24 @@ export function DistRow({
   pct,
   widthPct,
   rank = 0,
+  labelClassName,
 }: {
   label: string
   pct: number
   widthPct: number
   rank?: number
+  /** Overrides the label column's width, for callers whose labels are phrases rather than values. */
+  labelClassName?: string
 }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="w-24 shrink-0 truncate text-[13px] text-ink-700 sm:w-28" title={label}>
+      <div
+        className={clsx(
+          'shrink-0 truncate text-[13px] text-ink-700',
+          labelClassName ?? 'w-24 sm:w-28',
+        )}
+        title={label}
+      >
         {label}
       </div>
       {/* Quieter than it was: 6px rather than 8, a half-strength track, and the fill held at 75%.
@@ -119,7 +128,7 @@ export function DistRow({
           style={{width: `${widthPct}%`, opacity: Math.max(0.45, 1 - rank * 0.11)}}
         />
       </div>
-      <div className="w-9 shrink-0 text-right text-xs tabular-nums text-ink-500">{pct}%</div>
+      <div className="w-9 shrink-0 text-right text-xs tabular-nums text-ink-700">{pct}%</div>
     </div>
   )
 }
@@ -154,7 +163,7 @@ export function DistributionCard({
         </div>
         <div className="min-w-0">
           <h3 className="text-sm font-bold leading-tight text-ink-900">{title}</h3>
-          <p className="text-xs text-ink-500">
+          <p className="text-xs text-ink-700">
             {dist.multi
               ? `of ${dist.base.toLocaleString()} who shared`
               : `${dist.base.toLocaleString()} shared`}

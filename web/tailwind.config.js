@@ -33,6 +33,19 @@ module.exports = {
       },
     ),
     extend: {
+      // The type scale (docs/ui-guidelines.md §2): a 1.25 ratio on a 16px base, so every size is a
+      // step of the same scale rather than a one-off `text-[17px]`. The two heading sizes and the
+      // display size are fluid between two steps of the scale. Named rather than numbered so they
+      // can't be confused with Tailwind's own `text-sm` / `text-xl` ramp, which is still available
+      // to pages that haven't moved over.
+      fontSize: {
+        caption: ['0.8rem', {lineHeight: '1.45'}], // 12.8px — labels, tags, metadata
+        body: ['1rem', {lineHeight: '1.6'}], // 16px — paragraphs, links, buttons
+        lead: ['1.25rem', {lineHeight: '1.5'}], // 20px — intro paragraphs, pull quotes
+        title: ['clamp(1.25rem, 1rem + 1vw, 1.5625rem)', {lineHeight: '1.25'}], // 20→25px — h3
+        headline: ['clamp(1.5625rem, 1rem + 2vw, 2.4414rem)', {lineHeight: '1.15'}], // 25→39px — h2
+        display: ['clamp(3.052rem, 1.5rem + 5vw, 4.768rem)', {lineHeight: '1'}], // 49→76px — h1
+      },
       minHeight: {
         screen: ['100vh /* fallback for Opera, IE and etc. */', '100dvh'],
       },

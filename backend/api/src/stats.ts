@@ -1,5 +1,13 @@
 import {getMessagesCount} from 'api/get-messages-count'
-import {CountryCount, DEMOGRAPHIC_FIELDS, DemographicField, Distribution} from 'common/stats'
+import {
+  CountryCount,
+  DEMOGRAPHIC_FIELDS,
+  DemographicField,
+  Distribution,
+  GROUP_SHARES,
+  GroupShare,
+  GroupShareKey,
+} from 'common/stats'
 import {HOUR_MS} from 'common/util/time'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 
@@ -60,6 +68,25 @@ async function fieldDistribution(
     multi,
     items: rows.slice(0, TOP_PER_FIELD).map((r: any) => ({value: r.value, count: r.count})),
   }
+}
+
+// One `GROUP_SHARES` entry: profiles whose array column overlaps `values`, out of those that answered the
+// field. Counted per profile (`&&`), so a member who ticks two of the values counts once — the thing a
+// sum of per-value bars gets wrong. Column and values both come from GROUP_SHARES, never the request.
+async function groupShare(
+  pg: SupabaseDirectClient,
+  field: DemographicField,
+  values: readonly string[],
+): Promise<GroupShare | null> {
+  const row = await pg.one(
+    `select count(*) filter (where $1~ && $2::text[])::int as count,
+            count(*)::int as base
+     from profiles
+     where $1~ is not null and array_length($1~, 1) > 0`,
+    [field, values],
+  )
+  if (row.base < MIN_RESPONSES || row.count < MIN_RESPONSES) return null
+  return {count: row.count, base: row.base}
 }
 
 // Age is the one numeric field, so it is bucketed into ordinal ranges rather than grouped raw, and kept
@@ -123,6 +150,7 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
     memberGrowthRows,
     activeMembersCount,
     demographicResults,
+    groupShareResults,
   ] = await Promise.all([
     pg.one(`SELECT COUNT(*)::int as count FROM users`),
     pg.one(`SELECT COUNT(*)::int as count FROM profiles`),
@@ -170,7 +198,18 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
         field === 'age' ? ageDistribution(pg) : fieldDistribution(pg, field, multi),
       ),
     ),
+    Promise.all(
+      (Object.keys(GROUP_SHARES) as GroupShareKey[]).map((key) =>
+        groupShare(pg, GROUP_SHARES[key].field, GROUP_SHARES[key].values),
+      ),
+    ),
   ])
+
+  const groupShares: Partial<Record<GroupShareKey, GroupShare>> = {}
+  ;(Object.keys(GROUP_SHARES) as GroupShareKey[]).forEach((key, i) => {
+    const share = groupShareResults[i]
+    if (share) groupShares[key] = share
+  })
 
   // Drop the fields that came back null (too few respondents) and key the rest by field name.
   const demographics: Partial<Record<DemographicField, Distribution>> = {}
@@ -214,6 +253,7 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
     countries,
     countryCount: countries.length,
     demographics,
+    groupShares,
     memberGrowth: (memberGrowthRows ?? []).map((r: any) => ({
       day: r.day,
       total: r.total,

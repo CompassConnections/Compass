@@ -207,9 +207,9 @@ export function StatBand() {
           spread; it was cut because this is the page's second element and the reader has not yet been given
           a single reason to want in — self-criticism before value is just discouragement. The same point is
           made properly on the home page, attached to something to do about it. */}
-      <p className="w-full text-sm text-ink-500">
-        {t('about.stat.caption', 'Read live from the database.')}
-      </p>
+      {/*<p className="w-full text-sm text-ink-500">*/}
+      {/*  {t('about.stat.caption', 'Read live from the database.')}*/}
+      {/*</p>*/}
     </div>
   )
 }

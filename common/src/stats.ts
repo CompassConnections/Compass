@@ -27,6 +27,26 @@ export const DEMOGRAPHIC_FIELDS = {
 
 export type DemographicField = keyof typeof DEMOGRAPHIC_FIELDS
 
+/**
+ * "Share of members who picked *any* of these values" for multi-select fields.
+ *
+ * A per-value distribution can't answer this: one member who ticks both "vegan" and "vegetarian" counts
+ * once in the base and twice in the bars, so adding the bars overstates. These groups are counted per
+ * profile on the server instead (`profiles.field && values`), so each member counts once. They back the
+ * claims the home page makes in prose ("secular", "more plant-based", "looking for a partner"), which is
+ * why the set is small and named rather than open-ended.
+ */
+export const GROUP_SHARES = {
+  secular: {field: 'religion', values: ['atheist', 'agnostic']},
+  plantBased: {field: 'diet', values: ['vegan', 'veg']},
+  seekingRelationship: {field: 'pref_relation_styles', values: ['relationship']},
+} as const satisfies Record<string, {field: DemographicField; values: readonly string[]}>
+
+export type GroupShareKey = keyof typeof GROUP_SHARES
+
+/** Profiles matching a `GROUP_SHARES` entry, against the profiles that answered that field at all. */
+export type GroupShare = {count: number; base: number}
+
 /** One bar of a distribution: a raw stored value (e.g. `'bachelors'`) and how many profiles have it. */
 export type DistributionItem = {value: string; count: number}
 
@@ -66,6 +86,11 @@ export type Stats = {
    * noise and a soft privacy leak, so the card simply doesn't render rather than showing a weak bar.
    */
   demographics: Partial<Record<DemographicField, Distribution>>
+  /**
+   * The `GROUP_SHARES` counts. Omitted per group under the same respondent floor as `demographics`,
+   * and also when the matching count itself is under it, so a small group is never pinned down.
+   */
+  groupShares: Partial<Record<GroupShareKey, GroupShare>>
   /**
    * Daily new-profile counts for the member-growth charts — one row per UTC day the platform gained a
    * profile, oldest first. `total` is all new profiles that day; `completed` is the subset with a

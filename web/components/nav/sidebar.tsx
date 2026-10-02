@@ -83,7 +83,10 @@ export default function Sidebar(props: {
           <SidebarItem key={item.key} item={item} currentPage={currentPage} />
         ))}
 
-        {user === null && <SignUpButton className="mt-4" text={t('nav.sign_up', 'Sign up')} />}
+        {/* `py-3` matches the hero's "Join us", so the two read as the same button. */}
+        {user === null && (
+          <SignUpButton className="mt-4 !py-3" text={t('nav.sign_up', 'Join us')} />
+        )}
 
         {user && profile === null && (
           <Button className="mt-2" onClick={() => router.push('signup')}>
@@ -175,7 +178,7 @@ export const SignUpButton = (props: {
       onClick={startSignup}
       className={clsx('w-full', className)}
     >
-      {text ?? t('home.sign_up', 'Sign up')}
+      {text ?? t('home.sign_up', 'Join us')}
     </Button>
   )
 }

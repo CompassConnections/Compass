@@ -111,7 +111,8 @@ Noticeable motion is wanted for this project, but it needs to be deliberate, not
 - Error states say what happened and how to fix it — never vague, never apologetic filler ("Oops! Something went
   wrong").
 - Empty states are an invitation to act, not just a blank space or a mascot illustration.
-- No filler marketing language ("seamless," "empower," "unlock", "actually", "real") unless it's genuinely doing work in
+- No filler marketing language ("seamless," "empower," "unlock", "actually", "real", "every") unless it's genuinely
+  doing work in
   that sentence.
 
 ## 6. Process (do this before writing component code)

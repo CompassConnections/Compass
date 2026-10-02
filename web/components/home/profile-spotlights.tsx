@@ -5,8 +5,6 @@ import {capitalizeWords} from 'common/util/string'
 import Image from 'next/image'
 import Link from 'next/link'
 import {FocusEvent, PointerEvent, useCallback, useEffect, useRef, useState} from 'react'
-import {Reveal} from 'web/components/widgets/reveal'
-import {eyebrow} from 'web/components/widgets/surface'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useT} from 'web/lib/locale'
 
@@ -296,7 +294,13 @@ function SpotlightRail({
           !drift.enabled && 'snap-x snap-mandatory sm:snap-proximity',
           // The negative margin plus matching padding lets cards bleed to the container edge while
           // keeping the first one aligned with the prose above it.
-          'scroll-px-4 -mx-4 px-4 sm:-mx-6 sm:px-6',
+          // Full bleed: the rail runs to the edges of the content area (everything but the sidebar),
+          // while its padding puts the first card back on the heading's left edge. `50cqw - 50%` is
+          // the gap between this column and the page wrapper (a size container, set in home.tsx);
+          // the fixed part cancels the wrapper's own padding plus the page shell's, the same
+          // 28 / 40 / 48px the closing `Band`s bleed by.
+          '[--bleed:calc(50cqw_-_50%_+_28px)] sm:[--bleed:calc(50cqw_-_50%_+_40px)] xl:[--bleed:calc(50cqw_-_50%_+_48px)]',
+          'mx-[calc(var(--bleed)*-1)] px-[var(--bleed)] scroll-px-[var(--bleed)]',
           // The rail is the one horizontally-scrolling element on the page, so it hides its own bar
           // rather than drawing a second scrollbar under the section.
           '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
@@ -311,10 +315,12 @@ function SpotlightRail({
             : undefined
         }
       >
-        {spotlights.map((s, i) => (
-          <Reveal key={s.id} delay={i * 70} className="snap-start">
+        {spotlights.map((s) => (
+          // No staggered reveal: the drift is this section's motion, and a fade-in under it made
+          // three effects on one row.
+          <div key={s.id} className="snap-start">
             <SpotlightCard spotlight={s} />
-          </Reveal>
+          </div>
         ))}
       </div>
 
@@ -352,19 +358,16 @@ function SpotlightCard({spotlight: s}: {spotlight: PublicSpotlight}) {
         'bg-canvas-50 ring-1 ring-canvas-200/60',
         'shadow-[0_1px_2px_rgb(44_36_22/0.04),0_12px_32px_-20px_rgb(44_36_22/0.30)]',
         'dark:ring-canvas-200 dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.04)]',
-        'transition-[transform,box-shadow,--tw-ring-color] duration-200 ease-out',
-        'hover:-translate-y-1 hover:ring-primary-500/40',
-        'hover:shadow-[0_2px_4px_rgb(44_36_22/0.05),0_24px_52px_-24px_rgb(44_36_22/0.45)]',
+        // Hover is a ring colour change, not a lift and a deeper shadow: a card that jumps while the
+        // rail is drifting reads as a glitch, and the ring says "this is a link" just as well.
+        'transition-[--tw-ring-color] duration-200 ease-out',
+        'hover:ring-2 hover:ring-primary-500/50',
       )}
     >
-      {s.quoteContext && (
-        <p className={clsx(eyebrow, 'text-primary-700 relative mb-3')}>{s.quoteContext}</p>
-      )}
-
       {/* The quote, and the reason the card exists. `font-heading` at 17–19px is the largest thing on
           the card by a wide margin; everything below it is metadata. */}
       <blockquote className="relative min-w-0">
-        <p className="font-heading text-ink-900 text-[17px] leading-[1.45] tracking-tight sm:text-[19px] text-pretty">
+        <p className="font-heading text-ink-900 text-lead tracking-tight text-pretty">
           <span aria-hidden className="text-primary-500/70">
             “
           </span>
@@ -383,7 +386,7 @@ function SpotlightCard({spotlight: s}: {spotlight: PublicSpotlight}) {
           {tags.map((tag) => (
             <span
               key={tag}
-              className="border-canvas-300 bg-canvas-0 text-ink-600 rounded-full border px-2.5 py-1 text-[12px]"
+              className="border-canvas-300 bg-canvas-0 text-ink-700 text-caption rounded-full border px-2.5 py-1"
             >
               {capitalizeWords(tag)}
             </span>
@@ -409,13 +412,13 @@ function SpotlightCard({spotlight: s}: {spotlight: PublicSpotlight}) {
           <div className="bg-primary-100 ring-primary-200 h-14 w-14 flex-shrink-0 rounded-full ring-1" />
         )}
         <div className="min-w-0">
-          <div className="text-ink-900 truncate font-semibold">{nameLine}</div>
-          {location && <div className="text-ink-500 truncate text-sm">{location}</div>}
+          <div className="text-ink-900 text-body truncate font-semibold">{nameLine}</div>
+          {location && <div className="text-ink-700 text-caption truncate">{location}</div>}
           {s.username && (
             // Shown outright on touch, where there is no hover to reveal it and the card would
             // otherwise look like a static quote rather than a door into a profile.
-            <div className="text-primary-700 mt-1 text-xs font-semibold transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
-              {t('home.spotlights.read', 'Read their profile →')}
+            <div className="text-primary-700 text-caption mt-1 font-semibold transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
+              {t('home.spotlights.read', 'Read their profile')}
             </div>
           )}
         </div>
@@ -453,17 +456,15 @@ export function ProfileSpotlights() {
           same block would compete with it and land a logged-out visitor on a sign-in wall. */}
       <div className="flex items-end justify-between gap-6">
         <div className="min-w-0">
-          <p className={clsx(eyebrow, 'text-primary-700 mb-3')}>
-            {t('home.spotlights.label', 'In their own words')}
-          </p>
-          <h3 className="font-heading text-ink-900 mt-0 text-[clamp(20px,2.4vw,28px)] leading-[1.2] tracking-tight text-balance">
+          {/* An h2: it was an h3 straight after the hero's h1, which skipped a level in the outline. */}
+          <h2 className="font-heading text-ink-900 text-headline mt-0 tracking-tight text-balance">
             {t('home.spotlights.title', 'Some of the people you’d be joining.')}
-          </h3>
+          </h2>
 
           {/* Says where the words came from without a paragraph of process. It matters: a reader who
               assumes we wrote these has been given a testimonial wall, which is a different and much
               less credible object. */}
-          <p className="text-ink-500 mt-3 max-w-2xl text-sm">
+          <p className="text-ink-700 text-body mt-3 max-w-2xl">
             {t(
               'home.spotlights.note',
               'Passages from their own profiles, published with their permission.',

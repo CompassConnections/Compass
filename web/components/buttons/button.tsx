@@ -67,7 +67,9 @@ export function buttonClass(size: SizeType, color: ColorType) {
     // fought the `size="xl"` its callers were passing.
     color === 'cta' && [
       solid,
-      '!rounded-xl bg-cta hover:bg-cta-hover shadow-[0_6px_20px_-8px_rgb(var(--color-cta)/0.75)]',
+      // No amber glow under it: coloured drop shadows are on the ui-guidelines anti-pattern list, and
+      // the home page's own buttons dropped theirs. The fill carries the emphasis on its own.
+      '!rounded-lg bg-cta hover:bg-cta-hover',
     ],
     color === 'indigo-outline' && [outline, 'text-primary-700 hover:bg-primary-500'],
     color === 'gray' &&

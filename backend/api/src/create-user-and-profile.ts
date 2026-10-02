@@ -252,7 +252,7 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
       const isMilestone = (n: number) => {
         return (
           [15, 20, 30, 40].includes(n) || // early milestones
-          n % 50 === 0
+          n % 100 === 0
         )
       }
       debug(nProfiles, isMilestone(nProfiles))

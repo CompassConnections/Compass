@@ -913,7 +913,7 @@ describe('createUserAndProfile', () => {
       ;(apiSetLastTimeOnline.setLastOnlineTimeUser as jest.Mock).mockResolvedValue(null)
       ;(timeUtils.sleep as jest.Mock).mockResolvedValue(null)
       ;(sendDiscordMessage as jest.Mock).mockResolvedValue(null)
-      const mockOneFn = jest.fn().mockResolvedValue({count: 50})
+      const mockOneFn = jest.fn().mockResolvedValue({count: 100})
       mockPg.one = mockOneFn
 
       await results.continue()

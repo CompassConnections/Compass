@@ -23,6 +23,7 @@ export type ColorType =
   | 'none'
   | 'primary'
   | 'cta'
+  | 'signup'
 
 const sizeClasses = {
   '2xs': 'px-2 py-1 text-xs',
@@ -70,6 +71,11 @@ export function buttonClass(size: SizeType, color: ColorType) {
       // No amber glow under it: coloured drop shadows are on the ui-guidelines anti-pattern list, and
       // the home page's own buttons dropped theirs. The fill carries the emphasis on its own.
       '!rounded-lg bg-cta hover:bg-cta-hover',
+    ],
+    // The sign-up button only. Dark ink on light amber in the dark theme, so "Join us" does not look
+    // like every other filled button; white on deep amber in light. See `--color-cta-soft` in globals.css.
+    color === 'signup' && [
+      'disabled:bg-canvas-200 !rounded-lg bg-cta-soft hover:bg-cta-soft-hover text-cta-soft-ink',
     ],
     color === 'indigo-outline' && [outline, 'text-primary-700 hover:bg-primary-500'],
     color === 'gray' &&

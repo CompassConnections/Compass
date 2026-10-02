@@ -8,6 +8,7 @@ import {LanguagePicker} from 'web/components/language/language-picker'
 import {useAppDownload} from 'web/hooks/use-app-download'
 import {useProfile} from 'web/hooks/use-profile'
 import {useStoreReviewUrl} from 'web/hooks/use-review-prompt'
+import {useIsSignUpCtaVisible} from 'web/hooks/use-signup-cta-visible'
 import {useUser} from 'web/hooks/use-user'
 import {firebaseLogout} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
@@ -36,6 +37,7 @@ export default function Sidebar(props: {
   const navOptions = props.navigationOptions
 
   const t = useT()
+  const pageCtaVisible = useIsSignUpCtaVisible()
   const bottomNavOptions = bottomNav(!!user)
 
   const isApp = isNativeApp()
@@ -83,9 +85,17 @@ export default function Sidebar(props: {
           <SidebarItem key={item.key} item={item} currentPage={currentPage} />
         ))}
 
-        {/* `py-3` matches the hero's "Join us", so the two read as the same button. */}
+        {/* `py-3` matches the hero's "Join us", so the two read as the same button.
+            Faded out while the page shows its own sign-up button, so the CTA is never on screen twice.
+            `invisible` rather than unmounting, so the rows below do not jump. */}
         {user === null && (
-          <SignUpButton className="mt-4 !py-3" text={t('nav.sign_up', 'Join us')} />
+          <SignUpButton
+            className={clsx(
+              'mt-4 !py-3 transition-[opacity,visibility] duration-200',
+              pageCtaVisible && 'invisible opacity-0',
+            )}
+            text={t('nav.sign_up', 'Join us')}
+          />
         )}
 
         {user && profile === null && (
@@ -173,7 +183,7 @@ export const SignUpButton = (props: {
 
   return (
     <Button
-      color={color ?? 'cta'}
+      color={color ?? 'signup'}
       size={size ?? 'xl'}
       onClick={startSignup}
       className={clsx('w-full', className)}

@@ -11,6 +11,7 @@ import {MemberGrowth} from 'web/components/widgets/charts'
 import {DistRow} from 'web/components/widgets/stat-distribution'
 import {Section, surface, surfaceHover} from 'web/components/widgets/surface'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
+import {trackSignUpCta} from 'web/hooks/use-signup-cta-visible'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 import {CORE_AGE_BUCKETS, groupShareOf, Share, shareOf} from 'web/lib/marketing-stats'
@@ -55,7 +56,7 @@ function Band({className, children}: {className?: string; children: ReactNode}) 
  * two come out the same height.
  */
 const heroPrimary =
-  'items-center justify-center px-6 py-3 rounded-lg border border-cta bg-cta text-white font-semibold text-body hover:bg-cta-hover hover:border-cta-hover transition-colors duration-150'
+  'items-center justify-center px-6 py-3 rounded-lg border border-cta-soft bg-cta-soft text-cta-soft-ink font-semibold text-body hover:bg-cta-soft-hover hover:border-cta-soft-hover transition-colors duration-150'
 /**
  * A 1px `ink-800` outline (about 10:1 on the canvas) rather than the old 2px `canvas-200` one, which
  * was about 1.1:1 and read as a disabled button. Hover tints the fill instead of changing colour, so it
@@ -667,8 +668,11 @@ function OpenSourceStrip({
                 // Taller than the row above it, not just wider — width alone on a full-bleed row can
                 // read as "stretched to fit" rather than as emphasis.
                 'w-full py-3',
-                'bg-cta text-white border-cta hover:bg-cta-hover',
+                // Below lg the sticky sign-up bar is already on screen, so a second one here is noise.
+                'hidden lg:inline-flex',
+                'bg-cta-soft text-cta-soft-ink border-cta-soft hover:bg-cta-soft-hover',
               )}
+              ref={trackSignUpCta}
             >
               {primary.icon}
               {primary.label}
@@ -796,7 +800,10 @@ export function LoggedOutHome() {
       icon: <FaDiscord className="w-4 h-4" />,
     },
     // {label: t('home.strip.books', 'See the books'), url: '/financials'},
-    {label: t('home.strip.join', 'Join us'), url: '/register', primary: true},
+    // Members have nothing to join; the strip keeps just GitHub and Discord for them.
+    ...(user === null
+      ? [{label: t('home.strip.join', 'Join us'), url: '/register', primary: true}]
+      : []),
   ]
 
   return (
@@ -882,6 +889,7 @@ export function LoggedOutHome() {
                 <Link
                   href={'/register'}
                   className={clsx(heroPrimary, 'hidden sm:inline-flex', focusRing)}
+                  ref={trackSignUpCta}
                 >
                   {t('home.cta.primary', 'Join us')}
                 </Link>

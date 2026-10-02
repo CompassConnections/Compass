@@ -181,6 +181,15 @@
     --color-cta-hover: 133 80 34; /* #855022 — white on this: 6.29:1 */
     --color-cta-deep: 101 58 24; /* #653A18 — the far stop of the gradient CTA, ~9:1 */
 
+    /* The sign-up button. Unlike `--color-cta` this one is per theme: white on a deep amber here,
+       dark ink on a light amber in the dark theme. Light amber on this beige canvas was only 1.75:1
+       against the page and read as a pale patch, not a button. #A8641F rather than `--color-cta`
+       (#A6682E) because it is more saturated, and further from the #855022 headline amber.
+       Hover goes one step darker. */
+    --color-cta-soft: 168 100 31; /* #A8641F — white on this: 4.66:1, 3.8:1 against the page */
+    --color-cta-soft-hover: 143 82 24; /* #8F5218 — white on this: 6.2:1 */
+    --color-cta-soft-ink: 255 255 255;
+
     --color-ink-0: 255 255 255; /* white */
     --color-ink-50: 255 255 255;
     --color-ink-100: 255 255 255;
@@ -317,6 +326,13 @@
     --color-cta-deep: 101 58 24; /* pinned dark: the gradient's far stop used to be primary-800,
                                     which in this ramp is near-cream (232 201 157) — white text ran
                                     off the end of it at about 1.3:1. */
+    /* Dark ink on a light amber: white-on-amber is the stock look for this palette, and flipping it
+       makes "Join us" the one button that reads differently. More saturated than this ramp's
+       `primary-700` (#DCAB71) on purpose: that step read as sand on the dark canvas, and it is also
+       the headline amber here, so the button blended into it. Hover goes one step darker. */
+    --color-cta-soft: 226 166 90; /* #E2A65A — ink on this: 8.1:1 */
+    --color-cta-soft-hover: 212 145 74; /* #D4914A — ink on this: 6.5:1 */
+    --color-cta-soft-ink: 43 21 8; /* #2B1508 */
 
     --color-no-950: 255 255 255; /* white */
     --color-no-900: 242 242 242;

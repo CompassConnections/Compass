@@ -371,6 +371,10 @@ module.exports = {
           DEFAULT: 'rgb(var(--color-cta) / <alpha-value>)',
           hover: 'rgb(var(--color-cta-hover) / <alpha-value>)',
           deep: 'rgb(var(--color-cta-deep) / <alpha-value>)',
+          // Sign-up button only: `bg-cta-soft hover:bg-cta-soft-hover text-cta-soft-ink`.
+          soft: 'rgb(var(--color-cta-soft) / <alpha-value>)',
+          'soft-hover': 'rgb(var(--color-cta-soft-hover) / <alpha-value>)',
+          'soft-ink': 'rgb(var(--color-cta-soft-ink) / <alpha-value>)',
         },
         gray: {
           50: 'hsl(0, 0%, 95%)',

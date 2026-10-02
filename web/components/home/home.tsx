@@ -82,6 +82,9 @@ function SocialAvatar({letter, gradient}: SocialAvatarProps) {
  * asked this early ("is anyone here, does anyone reply?") without stating how small the pool is. The
  * membership figure appears exactly once on this page, much further down, attached to what to do about it.
  *
+ * The conversations figure has since been swapped back for the member count, as a plain number alongside
+ * messages sent rather than the old "real people worldwide" pitch.
+ *
  * Live, and renders nothing at all when the stats call comes back empty — same rule as `StatBand`.
  */
 function SocialProof() {
@@ -96,7 +99,7 @@ function SocialProof() {
     {letter: 'L', gradient: 'linear-gradient(135deg, #C17F3E, #D4955A)'},
   ]
 
-  if (!data?.conversations || !data?.messages) return null
+  if (!data?.profiles || !data?.messages) return null
 
   return (
     <div className="flex items-center gap-3 text-ink-600 text-sm">
@@ -106,8 +109,8 @@ function SocialProof() {
       {/*  ))}*/}
       {/*</div>*/}
       <span>
-        <strong className="text-ink-900">{data.conversations.toLocaleString()}</strong>
-        {t('home.proof.conversations', ' conversations started · ')}
+        <strong className="text-ink-900">{data.profiles.toLocaleString()}</strong>
+        {t('home.proof.members', ' members · ')}
         <strong className="text-ink-900">{data.messages.toLocaleString()}</strong>
         {t('home.proof.messages', ' messages sent')}
       </span>

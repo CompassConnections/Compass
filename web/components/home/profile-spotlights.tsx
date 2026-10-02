@@ -4,7 +4,7 @@ import {formatSpotlightLocation, PublicSpotlight} from 'common/profiles/spotligh
 import {capitalizeWords} from 'common/util/string'
 import Image from 'next/image'
 import Link from 'next/link'
-import {useCallback, useEffect, useState} from 'react'
+import {FocusEvent, PointerEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {Reveal} from 'web/components/widgets/reveal'
 import {eyebrow} from 'web/components/widgets/surface'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
@@ -37,6 +37,114 @@ import {useT} from 'web/lib/locale'
 /** Gap between cards, in px. Duplicated from the `gap-*` classes because paging has to measure it. */
 const GAP = {base: 16, sm: 20}
 
+/** How fast the rail drifts left on its own, in px/s. Slow enough to read a quote as it passes. */
+const DRIFT_SPEED = 24
+/** How long the drift waits after a touch or an arrow click before picking up again. */
+const DRIFT_RESUME_MS = 3000
+/** How long the drift rests on the last card before rewinding to the first. */
+const DRIFT_END_PAUSE_MS = 2500
+
+/**
+ * Moves the rail slowly to the left on its own, so the row reads as "there are more people here"
+ * without anyone having to find the arrows.
+ *
+ * It stops whenever someone is engaging with it: a mouse over the rail, a finger on it (and for a
+ * few seconds after, so a flick's momentum and the read that follows are not interrupted), keyboard
+ * focus inside it, and an arrow click. Off-screen it does not run at all, and with reduced motion
+ * it never starts. Hover and focus as the pause controls are also what WCAG 2.2.2 asks of content
+ * that moves on its own.
+ *
+ * At the last card it rests, then rewinds to the first — a seamless loop would need every card
+ * rendered twice, which doubles the links a screen reader or keyboard user has to get through.
+ */
+function useDrift(el: HTMLDivElement | null) {
+  const [hovered, setHovered] = useState(false)
+  const [pressed, setPressed] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const [visible, setVisible] = useState(false)
+  // Assume reduced until measured, so a server render never starts moving before the check runs.
+  const [reduced, setReduced] = useState(true)
+  /** `performance.now()` timestamp before which the drift holds still. */
+  const holdUntil = useRef(0)
+
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReduced(query.matches)
+    update()
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [el])
+
+  const running = !!el && visible && !reduced && !hovered && !pressed && !focused
+
+  useEffect(() => {
+    if (!running || !el) return
+    let frame = 0
+    let last = performance.now()
+    // Position is accumulated here rather than read back from `scrollLeft`: some browsers round
+    // `scrollLeft` to whole pixels, and at under a pixel per frame the rail would never move.
+    let pos = el.scrollLeft
+    let endSince: number | null = null
+    const tick = (now: number) => {
+      // Capped so a frame after a background tab or a long task does not jump the rail.
+      const dt = Math.min(now - last, 100)
+      last = now
+      const max = el.scrollWidth - el.clientWidth
+      if (now < holdUntil.current || max <= 0) {
+        pos = el.scrollLeft
+      } else if (pos >= max - 1) {
+        endSince ??= now
+        if (now - endSince > DRIFT_END_PAUSE_MS) {
+          endSince = null
+          pos = 0
+          holdUntil.current = now + DRIFT_RESUME_MS
+          el.scrollTo({left: 0, behavior: 'smooth'})
+        }
+      } else {
+        pos = Math.min(max, pos + (DRIFT_SPEED * dt) / 1000)
+        el.scrollLeft = pos
+      }
+      frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [running, el])
+
+  /** Holds the drift for a few seconds, e.g. after an arrow click, so it does not fight the page. */
+  const hold = useCallback(() => {
+    holdUntil.current = performance.now() + DRIFT_RESUME_MS
+  }, [])
+
+  const release = useCallback(() => {
+    setPressed(false)
+    hold()
+  }, [hold])
+
+  const handlers = {
+    onPointerEnter: (e: PointerEvent) => e.pointerType === 'mouse' && setHovered(true),
+    onPointerLeave: (e: PointerEvent) => e.pointerType === 'mouse' && setHovered(false),
+    onPointerDown: (e: PointerEvent) => e.pointerType !== 'mouse' && setPressed(true),
+    // `pointercancel` is what a touch gets once the browser takes the gesture over as a scroll.
+    onPointerUp: (e: PointerEvent) => e.pointerType !== 'mouse' && release(),
+    onPointerCancel: (e: PointerEvent) => e.pointerType !== 'mouse' && release(),
+    // Keyboard focus only: a mouse click on the focusable rail would otherwise pause it for good.
+    onFocus: (e: FocusEvent) =>
+      (e.target as HTMLElement).matches(':focus-visible') && setFocused(true),
+    onBlur: (e: FocusEvent) => {
+      if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false)
+    },
+  }
+
+  return {enabled: !reduced, running, hold, handlers}
+}
+
 /**
  * Scroll state for the rail: which ends are reached, how far along we are, and how to page.
  *
@@ -50,6 +158,7 @@ function useRail() {
   // re-runs the measure the moment it appears.
   const [el, ref] = useState<HTMLDivElement | null>(null)
   const [state, setState] = useState({atStart: true, atEnd: true, offset: 0, thumb: 1})
+  const drift = useDrift(el)
 
   const measure = useCallback(() => {
     if (!el) return
@@ -80,16 +189,17 @@ function useRail() {
   const page = useCallback(
     (direction: 1 | -1) => {
       if (!el) return
+      drift.hold()
       const card = el.firstElementChild as HTMLElement | null
       const step = card ? card.offsetWidth + (window.innerWidth >= 640 ? GAP.sm : GAP.base) : 320
       const cards = Math.max(1, Math.floor(el.clientWidth / step))
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       el.scrollBy({left: direction * cards * step, behavior: reduced ? 'auto' : 'smooth'})
     },
-    [el],
+    [el, drift.hold],
   )
 
-  return {ref, page, onScroll: measure, ...state}
+  return {ref, page, onScroll: measure, drift, ...state}
 }
 
 function RailArrow({
@@ -142,7 +252,7 @@ function SpotlightRail({
   rail: ReturnType<typeof useRail>
 }) {
   const t = useT()
-  const {ref, onScroll, atStart, atEnd, offset, thumb} = rail
+  const {ref, onScroll, atStart, atEnd, offset, thumb, drift} = rail
   const scrollable = thumb < 1
 
   // Faded only on the side that has something behind it, so at either end the row still sits square
@@ -158,6 +268,7 @@ function SpotlightRail({
       <div
         ref={ref}
         onScroll={onScroll}
+        {...drift.handlers}
         // Focusable so the rail can be driven with the arrow keys, which is also what makes it
         // reachable at all for a keyboard user when every card is the same distance away.
         tabIndex={0}
@@ -179,7 +290,10 @@ function SpotlightRail({
           // Snap so a flick lands on a card rather than between two. Mandatory on touch, where the
           // gesture is a throw; proximity on desktop, where mandatory fights a trackpad that is
           // trying to nudge.
-          'snap-x snap-mandatory sm:snap-proximity',
+          // Off whenever the drift is on, not just while it moves: snapping would pull each sub-pixel
+          // step back to the nearest card, and toggling it back on at a pause makes Chrome re-snap
+          // to the card it last snapped to — the first one — so every hover rewound the rail.
+          !drift.enabled && 'snap-x snap-mandatory sm:snap-proximity',
           // The negative margin plus matching padding lets cards bleed to the container edge while
           // keeping the first one aligned with the prose above it.
           'scroll-px-4 -mx-4 px-4 sm:-mx-6 sm:px-6',

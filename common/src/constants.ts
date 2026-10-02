@@ -48,15 +48,27 @@ export const IOS_APP_ID = IS_IOS_APP_PUBLISHED
  *
  * Lives here rather than in either page because the home strip and the about page both state it, and two
  * copies of a number that is the whole point of the transparency argument would be the one place it must
- * not drift. The authoritative breakdown is `web/public/md/financials.md` and the spreadsheet it links;
- * update all of them together.
+ * not drift. `/financials` reads the exact figures too: `web/public/md/{,fr/,de/}financials.md` carry `{spent}`,
+ * `{donated}` and `{deficit}` placeholders rather than numbers, so updating `exact` here (and the
+ * spreadsheet it links) is the whole update.
  *
  * Not queried live: unlike the member count there is no endpoint behind it, and inventing one to avoid a
  * constant would put a bookkeeping figure on a page-load path.
  */
+const SPENT_USD = 718.13
+const DONATED_USD = 241.7
+
 export const FINANCIALS = {
-  spent: 457,
-  donated: 145,
+  /** To the cent, for the line-by-line breakdown on /financials. */
+  exact: {
+    spent: SPENT_USD,
+    donated: DONATED_USD,
+    // Rounded to cents so float subtraction can't print 476.43000000000006.
+    deficit: Math.round((SPENT_USD - DONATED_USD) * 100) / 100,
+  },
+  /** Whole dollars, for the home strip and about page prose. */
+  spent: Math.round(SPENT_USD),
+  donated: Math.round(DONATED_USD),
   /** Covered out of pocket by the founder — kept derived so it can never disagree with the two above. */
   get deficit() {
     return this.spent - this.donated

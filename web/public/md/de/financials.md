@@ -6,21 +6,21 @@ für die aktuellste Aufschlüsselung an. Du kannst Compass unterstützen, indem 
 
 ### Ausgaben
 
-- **Hosting & Infrastruktur**: 300,83 $
+- **Hosting & Infrastruktur**: {spent} $
 - **Entwicklung**: 0 $ (vollständig ehrenamtlich)
 - **Marketing**: 0 $ (Wachstum erfolgt organisch und community-getrieben)
 - **Sonstiges / private Kosten**: 0 $
 
 ### Finanzierungsquellen
 
-- **Spenden**: 29,78 $
+- **Spenden**: {donated} $
 - **Fördermittel**: 0 $
 
 ### Finanzielle Übersicht
 
-- **Gesamteinnahmen**: 29,78 $
-- **Gesamtausgaben**: 300,83 $
-- **Nettoergebnis**: -271,05 $
+- **Gesamteinnahmen**: {donated} $
+- **Gesamtausgaben**: {spent} $
+- **Nettoergebnis**: -{deficit} $
 
 ### Warum Compass besonders kosteneffizient ist
 

@@ -6,21 +6,21 @@ donating [here](/support).
 
 ### Expenses
 
-- **Hosting & Infrastructure**: $456.65
+- **Hosting & Infrastructure**: ${spent}
 - **Development**: $0 (all volunteer-driven)
 - **Marketing**: $0 (growth is organic and community-led)
 - **Miscellaneous / Private Costs**: $0
 
 ### Funding Sources
 
-- **Donations**: $144.70
+- **Donations**: ${donated}
 - **Grants**: $0
 
 ### Financial Summary
 
-- **Total Income**: $144.70
-- **Total Expenses**: $456.65
-- **Net Surplus**: -$311.95
+- **Total Income**: ${donated}
+- **Total Expenses**: ${spent}
+- **Net Surplus**: -${deficit}
 
 ### Why Compass is Money-Efficient
 

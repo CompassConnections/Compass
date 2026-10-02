@@ -34,14 +34,14 @@ interface SocialAvatarProps {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function EyebrowBadge({children}: {children: React.ReactNode}) {
-  return (
-    <div className="inline-flex items-center gap-2 bg-canvas-200 text-primary-700 ring-1 ring-primary-300 rounded-full px-4 py-1.5 text-sm font-semibold mb-8 animate-fade-up">
-      {/*<span className="w-2 h-2 rounded-full bg-[#6B8F71] inline-block" />*/}
-      {children}
-    </div>
-  )
-}
+// function EyebrowBadge({children}: {children: React.ReactNode}) {
+//   return (
+//     <div className="inline-flex items-center gap-2 bg-canvas-200 text-primary-700 ring-1 ring-primary-300 rounded-full px-4 py-1.5 text-sm font-semibold mb-8 animate-fade-up">
+//       {/*<span className="w-2 h-2 rounded-full bg-[#6B8F71] inline-block" />*/}
+//       {children}
+//     </div>
+//   )
+// }
 
 // Unused since the three feature tiles became the `ClaimBlock`s below, and kept for the same reason their
 // copy is kept commented in `LoggedOutHome`: bringing a short-card row back is then an edit rather than a
@@ -750,7 +750,7 @@ export function LoggedOutHome() {
             {/* Two items, not three. The old third claim ("No swiping") repeats the <h1> directly
                 below it, and three chips of which the last is a negation was the same cadence as every
                 other list on the page. */}
-            <EyebrowBadge>{t('home.eyebrow.v3', 'Free forever · Open source')}</EyebrowBadge>
+            {/*<EyebrowBadge>{t('home.eyebrow.v3', 'Free forever · Open source')}</EyebrowBadge>*/}
 
             <h1 className="animate-fade-up text-[clamp(52px,8vw,96px)] lg:text-[clamp(44px,5.4vw,84px)] leading-none tracking-tight mb-2">
               {t('home.title', "Don't Swipe.")}

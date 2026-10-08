@@ -71,6 +71,7 @@ describe('createUserAndProfile', () => {
     })
     ;(sharedUtils.getUserByUsername as jest.Mock).mockResolvedValue(false)
     ;(vpnCheck.lookupVpnNetwork as jest.Mock).mockResolvedValue(null)
+    ;(vpnCheck.isVpnTableComplete as jest.Mock).mockReturnValue(true)
     // `common/util/object` is auto-mocked, which leaves `removeUndefinedProps` returning `undefined`.
     // It is a pure helper that always returns an object, so `undefined` is not a stand-in for
     // anything the real one can do — it is a state the handler cannot reach in production, and a test
@@ -444,23 +445,32 @@ describe('createUserAndProfile', () => {
     const reportsPost = () =>
       (sendDiscordMessage as jest.Mock).mock.calls.find((c) => c[1] === 'reports')
 
-    it('never makes the person creating the account wait on the check', async () => {
+    it('checks within the request, with a bounded wait, before the response goes out', async () => {
+      // Cloud Run only gives the instance CPU while a request is in flight; a check left for after
+      // the response is a check that never runs on a cold instance (the 8 October 2026 miss).
       await runSignup({ip: VPN_IP})
-      // The lookup can take ten seconds on a cold instance; it belongs after the response.
-      expect(vpnCheck.lookupVpnNetwork).not.toHaveBeenCalled()
-      expect(sharedSupabaseUsers.updateUser).not.toHaveBeenCalled()
+      expect(vpnCheck.lookupVpnNetwork).toHaveBeenCalledTimes(1)
+      const [, maxWaitMs] = (vpnCheck.lookupVpnNetwork as jest.Mock).mock.calls[0]
+      expect(maxWaitMs).toBeGreaterThan(0)
+      expect(maxWaitMs).toBeLessThanOrEqual(15_000)
+      expect(sharedSupabaseUsers.updateUser).toHaveBeenCalled()
     })
 
     it('puts the account on hold under review', async () => {
-      await runAndContinue({ip: VPN_IP})
+      await runSignup({ip: VPN_IP})
       expect(holdApplied()).toEqual([
         'mockNewUserId',
         {isBannedFromPosting: true, banReason: 'under_review'},
       ])
     })
 
+    it('tells the client about the hold in the signup response', async () => {
+      const {result} = (await runSignup({ip: VPN_IP})) as any
+      expect(result.user).toMatchObject({isBannedFromPosting: true, banReason: 'under_review'})
+    })
+
     it('posts to the reports channel so a human picks it up', async () => {
-      await runAndContinue({ip: VPN_IP})
+      await runSignup({ip: VPN_IP})
       const post = reportsPost()
       expect(post).toBeDefined()
       expect(post[0]).toContain('M247')
@@ -468,20 +478,48 @@ describe('createUserAndProfile', () => {
     })
 
     it('leaves an ordinary ISP signup alone', async () => {
-      await runAndContinue({ip: ISP_IP})
+      const {result} = (await runSignup({ip: ISP_IP})) as any
       expect(sharedSupabaseUsers.updateUser).not.toHaveBeenCalled()
       expect(reportsPost()).toBeUndefined()
+      expect(result.user.isBannedFromPosting).toBeFalsy()
+    })
+
+    it('does not check again after the response when the tables were complete', async () => {
+      await runAndContinue({ip: ISP_IP})
+      expect(vpnCheck.lookupVpnNetwork).toHaveBeenCalledTimes(1)
+    })
+
+    it('tries once more after the response when the tables were not complete', async () => {
+      // First pass: tables missing a network, no hit. Second pass, after the response: the load
+      // has landed and the address is on a listed network.
+      ;(vpnCheck.isVpnTableComplete as jest.Mock).mockReturnValueOnce(false).mockReturnValue(true)
+      ;(vpnCheck.lookupVpnNetwork as jest.Mock).mockResolvedValueOnce(null).mockResolvedValue(M247)
+      await runAndContinue({ip: VPN_IP})
+      expect(vpnCheck.lookupVpnNetwork).toHaveBeenCalledTimes(2)
+      expect(holdApplied()).toEqual([
+        'mockNewUserId',
+        {isBannedFromPosting: true, banReason: 'under_review'},
+      ])
     })
 
     it('never holds an Apple Hide My Email signup, whatever the IP says', async () => {
       await runAndContinue({ip: VPN_IP, email: 'xyz123@privaterelay.appleid.com'})
+      expect(vpnCheck.lookupVpnNetwork).not.toHaveBeenCalled()
       expect(sharedSupabaseUsers.updateUser).not.toHaveBeenCalled()
       expect(reportsPost()).toBeUndefined()
     })
 
     it('still creates the account when the hold cannot be written', async () => {
       ;(sharedSupabaseUsers.updateUser as jest.Mock).mockRejectedValue(new Error('db down'))
-      await expect(runAndContinue({ip: VPN_IP})).resolves.toBeUndefined()
+      const {result} = (await runSignup({ip: VPN_IP})) as any
+      expect(result.user.username).toBe('mockUsername')
+    })
+
+    it('still creates the account when the lookup itself blows up', async () => {
+      ;(vpnCheck.lookupVpnNetwork as jest.Mock).mockRejectedValueOnce(new Error('ripe down'))
+      const {result} = (await runSignup({ip: VPN_IP})) as any
+      expect(result.user.username).toBe('mockUsername')
+      expect(sharedSupabaseUsers.updateUser).not.toHaveBeenCalled()
     })
   })
 

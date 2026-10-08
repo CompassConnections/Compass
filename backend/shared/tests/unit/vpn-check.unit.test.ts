@@ -64,29 +64,25 @@ describe('vpn lookup', () => {
   }
 
   /** Every listed network answers, which is what it takes for a load to be cached. */
-  const mockAllAsnsRespond = () => {
-    const asns = Object.keys(VPN_ASNS).map(Number)
-    mockRipe(
-      Object.fromEntries(
-        asns.map((asn, i) => [asn, asn === 9009 ? M247_PREFIXES : [`198.51.${i}.0/24`]]),
-      ),
-    )
-  }
+  const mockAllAsnsRespond = () => mockRipe({9009: M247_PREFIXES})
 
   // Counted here rather than off the jest mock: jest.resetModules(), which every restart in these
   // tests goes through, wipes a mock's call history along with the module registry.
   let fetchCalls = 0
   const fetchCount = () => fetchCalls
 
+  // A network the case does not mention answers with a placeholder prefix: a load is only complete
+  // once every listed network has answered, and a case that wants a gap says so with 'fail',
+  // 'empty' or 'hang'.
   const mockRipe = (byAsn: Record<number, string[] | 'fail' | 'empty' | 'hang'>) => {
     fetchCalls = 0
     global.fetch = jest.fn(async (url: any) => {
       fetchCalls++
       const asn = Number(String(url).split('resource=AS')[1])
-      const entry = byAsn[asn]
+      const entry = byAsn[asn] ?? [`198.51.${asn % 256}.0/24`]
       if (entry === 'fail') throw new Error('network down')
       if (entry === 'hang') await new Promise(() => {}) // never resolves
-      const prefixes = entry === 'empty' || entry === 'hang' || !entry ? [] : entry
+      const prefixes = entry === 'empty' || entry === 'hang' ? [] : entry
       return {
         ok: true,
         json: async () => ({data: {prefixes: prefixes.map((prefix) => ({prefix}))}}),
@@ -193,7 +189,72 @@ describe('vpn lookup', () => {
     mockRipe({9009: 'fail', 212238: 'fail'})
     const mod = await freshModule()
     // Nothing to fall back to on a cold start: a miss, never a wrong hold.
-    expect(await mod.lookupVpnNetwork(SCAMMER_IPV6)).toBeNull()
+    expect(await mod.lookupVpnNetwork(SCAMMER_IPV6, 200)).toBeNull()
+    expect(mod.isVpnTableComplete()).toBe(false)
+  })
+
+  // The 8 October 2026 miss: the boot-time load had failed for SecFirewall (CPU-starved on an idle
+  // Cloud Run instance), and the table stayed that way for the life of the instance.
+  it('loads a network that failed at boot the next time someone signs up', async () => {
+    mockRipe({206092: 'fail'})
+    const mod = await freshModule()
+    await mod.refreshVpnRanges()
+    expect(mod.missingVpnAsns()).toEqual([206092])
+
+    mockRipe({206092: ['63.135.161.0/24']}) // RIPE is answering again
+    expect((await mod.lookupVpnNetwork('63.135.161.73', 5_000))?.asn).toBe(206092)
+    // Only the network that was missing is asked for again.
+    expect(fetchCount()).toBe(1)
+    expect(mod.isVpnTableComplete()).toBe(true)
+  })
+
+  it('still catches a network it did load while others are missing', async () => {
+    mockRipe({9009: 'fail', 212238: CDNEXT_PREFIXES})
+    const mod = await freshModule()
+    await mod.refreshVpnRanges()
+    expect((await mod.lookupVpnNetwork('85.203.46.196', 0))?.asn).toBe(212238)
+    expect(mod.isVpnTableComplete()).toBe(false)
+  })
+
+  it('keeps retrying a missing network until the wait runs out, without hammering RIPE', async () => {
+    mockRipe({9009: 'fail'})
+    const mod = await freshModule()
+    await mod.refreshVpnRanges()
+    const before = fetchCount()
+    const started = Date.now()
+    expect(await mod.lookupVpnNetwork(SCAMMER_IPV6, 1_500)).toBeNull()
+    expect(Date.now() - started).toBeLessThan(3_000)
+    // Fails fast, so without the backoff this would be hundreds of requests.
+    expect(fetchCount() - before).toBeGreaterThanOrEqual(1)
+    expect(fetchCount() - before).toBeLessThanOrEqual(3)
+  })
+
+  it('joins the load already in flight rather than starting another', async () => {
+    mockRipe({})
+    const mod = await freshModule()
+    const first = mod.lookupVpnNetwork('8.8.8.8', 5_000)
+    const second = mod.lookupVpnNetwork('8.8.8.8', 5_000)
+    await Promise.all([first, second])
+    expect(fetchCount()).toBe(Object.keys(VPN_ASNS).length)
+  })
+
+  it('retries a failed network in the background, backing off', async () => {
+    jest.useFakeTimers()
+    try {
+      mockRipe({206092: 'fail'})
+      const mod = await freshModule()
+      const timer = mod.startVpnRangeRefresh()
+      await jest.advanceTimersByTimeAsync(0)
+      expect(mod.missingVpnAsns()).toEqual([206092])
+
+      mockRipe({206092: ['63.135.161.0/24']})
+      await jest.advanceTimersByTimeAsync(60_000)
+      expect(mod.isVpnTableComplete()).toBe(true)
+      expect((await mod.lookupVpnNetwork('63.135.161.73', 0))?.asn).toBe(206092)
+      clearInterval(timer)
+    } finally {
+      jest.useRealTimers()
+    }
   })
 
   it('does not make a signup wait on a hung RIPEstat', async () => {
@@ -228,9 +289,22 @@ describe('vpn lookup', () => {
   })
 
   it('does not cache a partial load, so gaps are never pinned in place for a day', async () => {
-    const mod = await loaded() // only two networks answered
+    mockRipe({9009: M247_PREFIXES, 212238: 'fail'})
+    const mod = await freshModule()
+    await mod.refreshVpnRanges()
     expect(() => readFileSync(cacheFile, 'utf8')).toThrow()
-    expect((await mod.lookupVpnNetwork(SCAMMER_IPV6))?.asn).toBe(9009)
+    expect((await mod.lookupVpnNetwork(SCAMMER_IPV6, 0))?.asn).toBe(9009)
+  })
+
+  it('caches once a retry completes the picture', async () => {
+    mockRipe({9009: M247_PREFIXES, 212238: 'fail'})
+    const mod = await freshModule()
+    await mod.refreshVpnRanges()
+    mockRipe({9009: 'fail', 212238: CDNEXT_PREFIXES}) // only the gap is asked for
+    await mod.lookupVpnNetwork('85.203.46.196', 5_000)
+    const written = readFileSync(cacheFile, 'utf8')
+    expect(written).toContain('212238 85.203.46.0/24')
+    expect(written).toContain('9009 2a0d:5600:235::/48')
   })
 
   it('ignores a cache written from a different ASN list', async () => {

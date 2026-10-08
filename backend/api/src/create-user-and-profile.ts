@@ -18,7 +18,7 @@ import {getIp, track} from 'shared/analytics'
 import {getBucket} from 'shared/firebase-utils'
 import {generateAvatarUrl} from 'shared/helpers/generate-and-update-avatar-urls'
 import {isApplePrivateEmail} from 'shared/moderation/vpn-asns'
-import {lookupVpnNetwork} from 'shared/moderation/vpn-check'
+import {isVpnTableComplete, lookupVpnNetwork} from 'shared/moderation/vpn-check'
 import {getReferrer, notifyReferrerOfSignup} from 'shared/outreach/referrals'
 import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
@@ -165,6 +165,51 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
 
   log('created user and profile', {username: user.username, firebaseId: auth.uid})
 
+  // Signing up from behind a commercial VPN is the strongest signal we have at the moment of
+  // registration: in the September 2026 audit these networks carried 12 of our 13 confirmed-abuse
+  // accounts. It is nowhere near proof — plenty of members run a VPN for perfectly good reasons —
+  // so it buys a provisional hold and a nudge to a human, never a ban. What counts as a VPN, and
+  // why, is in backend/shared/src/moderation/vpn-asns.ts.
+  //
+  // Done before the response goes out, not in the continuation after it, because of where this
+  // runs: Cloud Run only gives an instance CPU while a request is in flight. The check used to live
+  // in the continuation so a cold instance's prefix load would never hold up a signup — and on 8
+  // October 2026 that is exactly how a scammer on SecFirewall (AS206092) got in: the load the
+  // server started at boot had stalled for want of CPU, the check ran after the response, waited
+  // its full minute on an idle instance, and gave up. In the request the wait is bounded and
+  // normally zero, since the tables are already loaded; on a cold instance it is the few seconds
+  // RIPE takes to answer. Holding the person a moment later is not an option here.
+  //
+  // Someone arriving on an Apple Hide My Email address is exempt: that means Apple's privacy
+  // plumbing, which is the opposite of a fraud signal, and it travels with iCloud Private Relay.
+  let held = false
+  let vpnChecked = isApplePrivateEmail(email)
+  const checkVpnAndHold = async (maxWaitMs: number) => {
+    const vpnNetwork = await lookupVpnNetwork(ip, maxWaitMs)
+    vpnChecked = isVpnTableComplete()
+    if (!vpnNetwork) return
+    held = true
+    await updateUser(user.id, {
+      isBannedFromPosting: true,
+      banReason: 'under_review' satisfies BanReason,
+    })
+    // #reports rather than #members: a queue item for a moderator, not an announcement. A failed
+    // webhook must not undo the hold — the account is held either way, it just waits longer for
+    // someone to notice.
+    try {
+      await sendDiscordMessage(vpnSignupDiscordMessage(user, vpnNetwork, ip), 'reports')
+    } catch (e) {
+      console.error('Failed to send discord vpn signup', e)
+    }
+  }
+  if (!vpnChecked) {
+    try {
+      await checkVpnAndHold(VPN_CHECK_MAX_WAIT_MS)
+    } catch (e) {
+      console.error('Failed to run the VPN check on signup', e)
+    }
+  }
+
   const continuation = async () => {
     try {
       await track(auth.uid, 'create profile', {username: user.username})
@@ -199,37 +244,15 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
     } catch (e) {
       console.error('Failed to send discord new profile', e)
     }
-    // Signing up from behind a commercial VPN is the strongest signal we have at the moment of
-    // registration: in the September 2026 audit these networks carried 12 of our 13 confirmed-abuse
-    // accounts. It is nowhere near proof — plenty of members run a VPN for perfectly good reasons —
-    // so it buys a provisional hold and a nudge to a human, never a ban. What counts as a VPN, and
-    // why, is in backend/shared/src/moderation/vpn-asns.ts.
-    //
-    // Done here rather than inline in the signup because the prefix tables are fetched from RIPE
-    // and a cold instance can take ten seconds to load them — far too long to hold up a person
-    // creating an account, and nothing is lost by holding them a moment later. They cannot message
-    // anyone in the meantime without first finding someone and opening a channel.
-    //
-    // Someone arriving on an Apple Hide My Email address is exempt: that means Apple's privacy
-    // plumbing, which is the opposite of a fraud signal, and it travels with iCloud Private Relay.
-    try {
-      const vpnNetwork = isApplePrivateEmail(email) ? null : await lookupVpnNetwork(ip, 60_000)
-      if (vpnNetwork) {
-        await updateUser(user.id, {
-          isBannedFromPosting: true,
-          banReason: 'under_review' satisfies BanReason,
-        })
-        // #reports rather than #members: a queue item for a moderator, not an announcement. A failed
-        // webhook must not undo the hold — the account is held either way, it just waits longer for
-        // someone to notice.
-        try {
-          await sendDiscordMessage(vpnSignupDiscordMessage(user, vpnNetwork, ip), 'reports')
-        } catch (e) {
-          console.error('Failed to send discord vpn signup', e)
-        }
+    // Second chance for the VPN check when the one above could not finish: it costs nothing, and by
+    // the time this runs the first load may have landed. (After the response Cloud Run gives this
+    // instance almost no CPU, so this mostly helps when another request comes in meanwhile.)
+    if (!vpnChecked) {
+      try {
+        await checkVpnAndHold(60_000)
+      } catch (e) {
+        console.error('Failed to re-run the VPN check after signup', e)
       }
-    } catch (e) {
-      console.error('Failed to run the VPN check on signup', e)
     }
     try {
       // The one moment a sharer can be told their share worked. Miss it and `?referrer=` stays a
@@ -267,7 +290,9 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
   return {
     result: {
       // include everything the frontend needs
-      user,
+      user: held
+        ? {...user, isBannedFromPosting: true, banReason: 'under_review' satisfies BanReason}
+        : user,
       privateUser,
       profile: {
         ...newProfileRow,
@@ -279,6 +304,13 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
     continue: continuation,
   }
 }
+
+/**
+ * The most a signup waits for the VPN prefix tables. With the tables loaded, which is the normal
+ * case, the check is instant; this only bites on a cold instance whose boot-time load is still
+ * running or had failed, where a fresh load from RIPE takes a few seconds with CPU to run on.
+ */
+const VPN_CHECK_MAX_WAIT_MS = 15_000
 
 const bannedDeviceTokens = [
   'fa807d664415',

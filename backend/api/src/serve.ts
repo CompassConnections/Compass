@@ -66,8 +66,10 @@ const startupProcess = async () => {
 
   // Which prefixes a VPN network announces changes week to week, so the signup check reads live BGP
   // data rather than whatever was true when the image was built. Not awaited: the server is already
-  // serving, and until the first refresh lands the check runs on the prefixes compiled into the
-  // build. See shared/moderation/vpn-check.ts.
+  // serving. Nothing is compiled into the build, so until the first load lands a signup loads what
+  // it needs itself, within its own request — on Cloud Run this background work only gets CPU while
+  // a request is in flight, which is why it cannot be relied on alone. See
+  // shared/moderation/vpn-check.ts.
   startVpnRangeRefresh()
 }
 startupProcess().then((_r) => log('Server started successfully'))

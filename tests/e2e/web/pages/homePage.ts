@@ -15,7 +15,13 @@ export class HomePage {
     this.sidebar = page.getByTestId('sidebar')
     this.homePageLink = page.locator('a[href="/home"]')
     this.profileLink = page.getByTestId('sidebar-username')
-    this.signUpButton = page.locator('button').filter({hasText: 'Sign up'}).first()
+    // The sign-up CTA reads "Join us" and may be the hero link or the sidebar button: the sidebar hides
+    // its copy while the page's own is on screen (see `use-signup-cta-visible`), so match whichever shows.
+    this.signUpButton = page
+      .getByRole('link', {name: 'Join us'})
+      .or(page.getByRole('button', {name: 'Join us'}))
+      .filter({visible: true})
+      .first()
     this.localePicker = page.getByTestId('sidebar-locale-picker')
     this.signInLink = page.locator('a[href="/signin"]').first()
     this.signOutLink = page.getByText('Sign out', {exact: true})

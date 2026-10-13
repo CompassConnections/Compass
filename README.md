@@ -196,45 +196,33 @@ Then, install the dependencies for this project:
 yarn install --frozen-lockfile
 ```
 
-### Tests
+### Running the app
 
-Make sure the Jest tests pass:
+There are two ways to run Compass locally:
 
-```bash
-yarn test
-```
+|                 | Quick start (`yarn dev`)              | Full isolation (`yarn dev:isolated`)                 |
+| --------------- | ------------------------------------- | ---------------------------------------------------- |
+| Database & auth | Shared remote dev environment         | Local Supabase + Firebase emulators                  |
+| Extra setup     | None                                  | Docker, Java 21+, Firebase CLI                       |
+| Best for        | UI changes, wording fixes, first look | Database, auth, or anything that writes lots of data |
 
-If they don't and you can't find out why, simply raise an issue! Sometimes it's something on our end that we overlooked.
+If you're unsure, start with the quick start. You can switch to full isolation later.
 
-### Running the Development Server
+After pulling new changes, run `yarn install --frozen-lockfile` before launching either one.
 
-Start the development server:
+#### Option A: Quick start (shared dev database)
 
 ```bash
 yarn dev
 ```
 
-[//]: # 'Note: the dev remote server is not available until further notice (to save money). The above command will start a local'
-[//]: # "server instead (same as `yarn dev:isolated` below). You'll have to set up Firebase and Supabase first (see below)."
-[//]: # 'Contact us if you need help; we may spin up the dev remote server for you.'
+> ⚠️ The remote dev database is shared by all contributors. Don't reset or wipe it. If you need a clean or disposable
+> database, use full isolation.
 
-Once the server is running, visit http://localhost:3000 to start using the app. You can sign up and visit the profiles;
-you should see a few synthetic profiles.
+#### Option B: Full isolation (local database)
 
-Note: it's normal if page loading locally is much slower than the deployed version. It can take up to 10 seconds, it
-would be great to improve that though!
-
-If you update the database schema (in the SQL files) or the database is not super clean or too large (e.g., someone
-clogged it up), you can reset it to a clean state by running:
-
-```bash
-yarn dev:db:reset
-```
-
-#### Full isolation
-
-Running `yarn dev:isolated` spins up a local Supabase and Firebase emulator instead of pointing at the shared remote
-database. This is strongly recommended for day-to-day development:
+`yarn dev:isolated` runs a local Supabase database and Firebase emulators instead of using the shared remote
+environment:
 
 - **Freedom** — Reset, wipe, and reseed your local database as many times as you want without affecting other
   contributors.
@@ -242,7 +230,7 @@ database. This is strongly recommended for day-to-day development:
 - **Works offline** — No internet required once services are started locally.
 - **Faster** — No network latency on every database query.
 
-However, running in full isolation requires installing several heavy dependencies:
+The trade-off is heavier setup:
 
 - **Docker** (~500MB) — runs the Supabase Postgres container
 - **Supabase CLI** — manages the local Supabase stack (10+ Docker containers, ~1-2GB RAM when running)
@@ -252,11 +240,7 @@ However, running in full isolation requires installing several heavy dependencie
 First startup is slow (30-60s) and the stack uses significant memory. If your machine has less than 8GB RAM, you may
 notice slowdowns.
 
-If this feels like too much, you can skip isolation entirely — `yarn dev` works out of the box against the shared remote
-and is perfectly fine for most contributions, especially UI changes, wording fixes, or anything that doesn't touch the
-database or authentication.
-
-###### Setup instructions
+##### Prerequisites
 
 As always, don't hesitate to raise an issue if you run into any problems!
 
@@ -305,14 +289,34 @@ npm install -g firebase-tools
 firebase --version
 ```
 
-Run in isolation
+##### Run
+
+Start each session with a fresh local database that has all the latest migrations:
 
 ```bash
+yarn test:db:reset
 yarn dev:isolated
 ```
 
-Visit http://localhost:3000 as usual. Your local database comes preloaded with synthetic test profiles so the app
-looks and feels like the real thing.
+`yarn test:db:reset` only affects your local database and never touches the shared dev one. The Firebase emulator
+doesn't keep users between runs, so resetting the database each time keeps the two in sync.
+
+#### What to expect
+
+Visit http://localhost:3000. You can sign up and browse a few synthetic profiles.
+
+Local page loads can be much slower than the deployed site, up to 10 seconds. That's expected (though improvements are
+welcome!).
+
+### Tests
+
+Before opening a pull request, make sure the Jest tests pass:
+
+```bash
+yarn test
+```
+
+If they fail and you can't work out why, raise an issue. Sometimes it's something on our end that we overlooked.
 
 ### Contributing
 

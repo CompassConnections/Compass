@@ -132,6 +132,7 @@ Cross-cutting: [`docs/compatibility-questions.md`](docs/compatibility-questions.
 compatibility prompts), [`docs/feed.md`](docs/feed.md),
 [`docs/internationalization.md`](docs/internationalization.md),
 [`docs/profile-fields.md`](docs/profile-fields.md), [`docs/testing.md`](docs/testing.md),
+[`docs/load-testing.md`](docs/load-testing.md) (JMeter load tests),
 [`docs/logging-monitoring.md`](docs/logging-monitoring.md),
 [`docs/troubleshooting.md`](docs/troubleshooting.md).
 Mobile: [`android/README.md`](android/README.md), [`ios/README.md`](ios/README.md),

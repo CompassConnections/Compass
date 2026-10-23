@@ -22,7 +22,7 @@ How we apply it here
 
 ### Test types at a glance
 
-This project uses three complementary test types. Use the right level for the job:
+This project uses four complementary test types. Use the right level for the job:
 
 - Unit tests
   - Purpose: Verify a single function/module in isolation; fast, deterministic.
@@ -47,6 +47,14 @@ This project uses three complementary test types. Use the right level for the jo
   - Runner: Playwright (see root `playwright.config.ts`, `testDir: ./tests/e2e`).
   - Naming: `*.e2e.spec.ts`.
   - When to use: Critical journeys (signup, login, checkout), cross-service interactions, smoke tests for deployments.
+
+- Load tests
+  - Purpose: Check how the API behaves when many users hit it at once (response times, throughput, error rate).
+  - Where: `tests/load/` (`compass-testPlan.jmx`).
+  - Runner: Apache JMeter 5.6+.
+  - When to use: Before releases or after changes to frequently used endpoints. Not for checking correctness;
+    unit, integration and E2E tests cover that.
+  - Guide: [Load testing guide](load-testing.md).
 
 Quick commands
 

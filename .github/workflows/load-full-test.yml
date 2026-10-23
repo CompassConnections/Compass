@@ -1,0 +1,22 @@
+name: Load test (full)
+
+# The full load test against the dev API, once a week: 100 users for 120 seconds.
+# 100 users is Firebase's limit of 100 new accounts per hour from one IP address. Raising it needs a
+# higher sign-up quota in the Firebase console first.
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays at 06:00 UTC
+  workflow_dispatch: # adds a "Run workflow" button in the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  full:
+    uses: ./.github/workflows/load-test.yml
+    with:
+      users: 100
+      duration: 120
+      max_error_rate: 1
+      max_p95: 800
+      report_name: load-full-report

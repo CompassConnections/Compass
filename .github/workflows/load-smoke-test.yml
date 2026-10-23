@@ -1,0 +1,28 @@
+name: Load test (smoke)
+
+# A small JMeter run when a pull request changes API-related files, to check the test plan still works.
+# It tests the API deployed to dev, not the pull request's code: dev is only updated by running
+# backend/api/deploy-api.sh dev by hand. The weekly full run is in load-full-test.yml.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/api/**'
+      - 'backend/shared/**'
+      - 'common/src/api/**'
+      - 'tests/load/**'
+      - '.github/workflows/load-*.yml'
+  workflow_dispatch: # adds a "Run workflow" button in the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    uses: ./.github/workflows/load-test.yml
+    with:
+      users: 3
+      duration: 30
+      max_error_rate: 0
+      max_p95: 2000
+      report_name: load-smoke-report

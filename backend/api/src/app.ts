@@ -99,6 +99,7 @@ import {getMyReferrals} from './get-my-referrals'
 import {getNotifications} from './get-notifications'
 import {getOutreachQueue} from './get-outreach-queue'
 import {getOutreachStats} from './get-outreach-stats'
+import {getPrivateUserAdmin} from './get-private-user-admin'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfileFeed} from './get-profile-feed'
 import {getProfiles} from './get-profiles'
@@ -667,6 +668,7 @@ Commit: ${git.revision} (${git.commitDate})`,
 
 const handlers: {[k in APIPath]: APIHandler<k>} = {
   'ban-user': banUser,
+  'get-private-user-admin': getPrivateUserAdmin,
   'compatible-profiles': getCompatibleProfilesHandler,
   contact: contact,
   'create-bookmarked-search': createBookmarkedSearch,

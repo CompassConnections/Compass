@@ -1,6 +1,6 @@
 import {EllipsisHorizontalIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
-import {User} from 'common/user'
+import {PrivateUser, User} from 'common/user'
 import {buildArray} from 'common/util/array'
 import Router from 'next/router'
 import {useState} from 'react'
@@ -27,6 +27,7 @@ export function MoreOptionsUserButton(props: {user: User}) {
   const {id: userId, name} = user
   const currentPrivateUser = usePrivateUser()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [privateInfo, setPrivateInfo] = useState<PrivateUser | null | undefined>(undefined)
   const isAdmin = useAdmin()
   const isTrusted = useTrusted()
   const t = useT()
@@ -37,6 +38,11 @@ export function MoreOptionsUserButton(props: {user: User}) {
       success: () => t('more_options_user.user_banned', 'User banned!'),
       error: () => t('more_options_user.error_banning', 'Error banning user'),
     })
+  }
+
+  const loadPrivateInfo = async () => {
+    const {privateUser} = await api('get-private-user-admin', {userId})
+    setPrivateInfo(privateUser)
   }
 
   if (!currentPrivateUser) return <div />
@@ -133,12 +139,41 @@ export function MoreOptionsUserButton(props: {user: User}) {
                   >
                     {t('more_options_user.delete_pinned_photo', 'Delete pinned photo')}
                   </Button>
+                  {isAdmin && (
+                    <Button size="xs" color="gray-outline" onClick={loadPrivateInfo}>
+                      {t('more_options_user.private_info', 'Private info')}
+                    </Button>
+                  )}
                 </Row>
+                {isAdmin && privateInfo !== undefined && <PrivateInfo privateUser={privateInfo} />}
               </Col>
             </>
           )}
         </Col>
       </Modal>
     </>
+  )
+}
+
+function PrivateInfo(props: {privateUser: PrivateUser | null}) {
+  const {privateUser} = props
+  if (!privateUser) return <span className="text-sm text-ink-500">No private user found</span>
+  const rows: [string, string | number | undefined][] = [
+    ['ip', privateUser.initialIpAddress],
+    ['email', privateUser.email],
+    ['device', privateUser.initialDeviceToken],
+    ['locale', privateUser.locale],
+    ['blocked', privateUser.blockedUserIds?.length],
+    ['blocked by', privateUser.blockedByUserIds?.length],
+  ]
+  return (
+    <Col className="gap-1 rounded-lg bg-canvas-100 p-3 font-mono text-xs">
+      {rows.map(([label, value]) => (
+        <Row key={label} className="gap-2">
+          <span className="w-20 shrink-0 text-ink-500">{label}:</span>
+          <span className="select-all break-all">{value ?? '—'}</span>
+        </Row>
+      ))}
+    </Col>
   )
 }

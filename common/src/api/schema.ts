@@ -364,6 +364,17 @@ export const API = (_apiTypeCheck = {
     summary: 'Ban or unban a user',
     tag: 'Admin',
   },
+  'get-private-user-admin': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({userId: z.string()}).strict(),
+    // Email, signup IP and device token — for checking a suspicious account against others. Admins
+    // only, not mods: none of it is needed to take content down.
+    returns: {} as {privateUser: PrivateUser | null},
+    summary: "Get a user's private info (email, signup IP, device). Admin only.",
+    tag: 'Admin',
+  },
   'create-user-and-profile': {
     method: 'POST',
     authed: true,

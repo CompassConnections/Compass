@@ -20,6 +20,10 @@ export const createCompatibilityQuestion: APIHandler<'create-compatibility-quest
       question,
       answer_type: 'compatibility_multiple_choice',
       multiple_choice_options: options,
+      // Member-created prompts are never core: 0 keeps them out of the guided first run and sorted
+      // after the ramp (see docs/compatibility-questions.md). Set explicitly rather than trusting the
+      // column default, which has not always been 0.
+      importance_score: 0,
     }),
   )
 

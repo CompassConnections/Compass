@@ -54,6 +54,7 @@ describe('createCompatibilityQuestion', () => {
         question: mockQuestion,
         answer_type: 'compatibility_multiple_choice',
         multiple_choice_options: mockOptions,
+        importance_score: 0,
       })
     })
   })

@@ -18,12 +18,14 @@ import {Section, SectionHeading} from 'web/components/profile/section'
 import ProfileAbout, {
   hasAccessibility,
   hasBigFive,
+  hasOnlineCommunities,
   hasPersonality,
   ProfileAccessibility,
   ProfileBigFive,
   ProfileCauses,
   ProfileInterests,
   ProfileLinks,
+  ProfileOnlineCommunities,
   ProfilePersonality,
 } from 'web/components/profile-about'
 import {ProfileCommentSection} from 'web/components/profile-comment-section'
@@ -432,9 +434,15 @@ function RailBlocks(props: {
           </RailSection>
         )}
 
-        {profile.links && Object.keys(profile.links).length > 0 && (
+        {/* Handles and online communities share one block, as they share one section of the form:
+            where you broadcast, then where you gather. */}
+        {((profile.links && Object.keys(profile.links).length > 0) ||
+          hasOnlineCommunities(profile)) && (
           <RailSection title={t('profile.links', 'Links')}>
-            <ProfileLinks profile={profile} />
+            <Col className="gap-3">
+              <ProfileLinks profile={profile} />
+              <ProfileOnlineCommunities profile={profile} />
+            </Col>
           </RailSection>
         )}
 

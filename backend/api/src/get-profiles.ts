@@ -156,6 +156,8 @@ const textFields = [
   'neurotype_details',
   // Keyword-searchable but deliberately has no filter of its own — see the migration for why.
   'accessibility_notes',
+  // Same shape: free text, keyword-searchable, no filter.
+  'online_communities',
 ]
 
 // Define choice fields to search

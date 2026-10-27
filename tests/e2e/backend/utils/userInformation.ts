@@ -48,6 +48,7 @@ class UserAccountInformationForSeeding {
       ],
   )
   accessibility_notes = faker.lorem.sentence()
+  online_communities = faker.lorem.sentence()
   pref_age = {
     min: faker.number.int({min: 18, max: 27}),
     max: faker.number.int({min: 36, max: 68}),

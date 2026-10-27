@@ -186,6 +186,7 @@ export async function validateProfileFields(
     'orientation_details',
     'neurotype_details',
     'accessibility_notes',
+    'online_communities',
   ]
   for (const key of toString) {
     if (result[key] !== undefined) {
@@ -686,6 +687,8 @@ export async function callLLM(
     keywords: 'Array of 3–6 short tags summarising the person.',
     accessibility_notes:
       'String. Practical things that help someone meet them well — access needs, energy levels, sensory preferences, venue preferences. Only if mentioned; never infer a disability, and keep their own framing and wording.',
+    online_communities:
+      'String. Online places they spend time besides Compass — forums, subreddits, Discord or Slack servers, Telegram or WhatsApp groups, newsletters. Only if mentioned; keep their wording.',
     links: `Object. Key is any of: ${SITE_ORDER.join(', ')}.`,
 
     // Taxonomies. Anything that does not resolve to an existing option is dropped after parsing (see

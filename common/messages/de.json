@@ -1373,6 +1373,8 @@
   "profile.optional.neurotype": "Neurotyp",
   "profile.optional.num_kids": "Aktuelle Anzahl von Kindern",
   "profile.optional.og_card": "Profilkarte",
+  "profile.optional.online_communities_hint": "Optional und öffentlich wie der Rest deines Profils. Wo verbringst du online Zeit, außer hier? Foren, Gruppenchats, Server, Newsletter — es zeigt anderen, wo deine Welt ist, und uns, wo Compass geteilt werden sollte.",
+  "profile.optional.online_communities_placeholder": "z. B. r/vegan, die EA-Berlin-Telegram-Gruppe, ein paar MBTI-Discord-Server, die Kommentare bei Astral Codex Ten.",
   "profile.optional.orientation": "Sexuelle Orientierung",
   "profile.optional.photo_reminder": "Eines können wir nicht für Sie ausfüllen: Ihre Fotos. Sie sind das Erste, was die Leute ansehen — gehen Sie also nicht, ohne ein paar hinzuzufügen.",
   "profile.optional.photo_reminder.cta": "Zu den Fotos",

@@ -1474,6 +1474,7 @@ export type Database = {
           neurotype_details: string | null
           occupation: string | null
           occupation_title: string | null
+          online_communities: string | null
           orientation: string[] | null
           orientation_details: string | null
           photo_urls: string[] | null
@@ -1565,6 +1566,7 @@ export type Database = {
           neurotype_details?: string | null
           occupation?: string | null
           occupation_title?: string | null
+          online_communities?: string | null
           orientation?: string[] | null
           orientation_details?: string | null
           photo_urls?: string[] | null
@@ -1656,6 +1658,7 @@ export type Database = {
           neurotype_details?: string | null
           occupation?: string | null
           occupation_title?: string | null
+          online_communities?: string | null
           orientation?: string[] | null
           orientation_details?: string | null
           photo_urls?: string[] | null
@@ -2558,6 +2561,7 @@ export type Database = {
           neurotype_details: string | null
           occupation: string | null
           occupation_title: string | null
+          online_communities: string | null
           orientation: string[] | null
           orientation_details: string | null
           photo_urls: string[] | null

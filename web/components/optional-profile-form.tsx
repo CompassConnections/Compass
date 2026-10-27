@@ -1646,6 +1646,34 @@ export const OptionalProfileUserForm = (props: {
 
         <SocialLinksSection profile={profile} setProfile={setProfile} />
 
+        {/* Same section as the handles because it is the same question from the other side: handles
+            say where you broadcast, this says where you gather. Free text on purpose — the answer is a
+            Telegram group, a Slack, a subreddit, a newsletter — nothing a platform picker could
+            enumerate, and nothing visible from the handles above. */}
+        <Col className={clsx(colClassName)}>
+          <label className={clsx('guidance')}>
+            {t(
+              'profile.optional.online_communities_hint',
+              'Where do you hang out online? Forums, group chats, servers, newsletters, etc. It shows people where you engage with others.',
+            )}
+          </label>
+          <Textarea
+            data-testid="online_communities"
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setProfile('online_communities' as any, e.target.value)
+            }
+            className={
+              'text-ink-700 w-full bg-canvas-50 border border-canvas-300 rounded-xl p-3 transition-all duration-150 hover:border-primary-300 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/25'
+            }
+            value={(profile as any)['online_communities'] ?? undefined}
+            maxLength={500}
+            placeholder={t(
+              'profile.optional.online_communities_placeholder',
+              'e.g. r/vegan, an EA WhatsApp group, an MBTI Discord server.',
+            )}
+          />
+        </Col>
+
         {/* Socials before Accessibility to match the profile's own rail order (Links, then
             Accessibility), and so the last thing before Submit is a short optional textarea rather
             than an empty platform picker. */}

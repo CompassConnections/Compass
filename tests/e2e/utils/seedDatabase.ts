@@ -100,6 +100,7 @@ export async function seedDbUser(
     orientation_details: 'Some orientation details',
     neurotype_details: 'Some neurotype details',
     accessibility_notes: userInfo.accessibility_notes,
+    online_communities: userInfo.online_communities,
     pinned_url: '/images/default-avatar.png',
   }
 

@@ -993,6 +993,32 @@ export function ProfileAccessibility(props: {profile: Profile}) {
   )
 }
 
+/** Whether the Online communities card has anything to show. Same shape as `hasAccessibility`. */
+export function hasOnlineCommunities(profile: Profile) {
+  return !!(profile as any).online_communities
+}
+
+/**
+ * Sits right after Links in the rail: handles say where the member broadcasts, this says where they
+ * gather. Rendered as written, line breaks preserved — the whole point of free text is that the list is
+ * theirs, so the UI must not restructure it into chips.
+ */
+export function ProfileOnlineCommunities(props: {profile: Profile}) {
+  const {profile} = props
+  const communities = (profile as any).online_communities as string | null | undefined
+
+  if (!communities) return null
+
+  return (
+    <div
+      className="text-ink-600"
+      style={{fontSize: '15px', lineHeight: '1.55', whiteSpace: 'pre-wrap'}}
+    >
+      {communities}
+    </div>
+  )
+}
+
 export function ProfilePersonality(props: {profile: Profile}) {
   const {profile} = props
 

@@ -1372,6 +1372,8 @@
   "profile.optional.neurotype": "Neurotype",
   "profile.optional.num_kids": "Nombre actuel d'enfants",
   "profile.optional.og_card": "Carte de profil",
+  "profile.optional.online_communities_hint": "Facultatif, et public comme le reste de votre profil. Où passez-vous du temps en ligne, en dehors d'ici ? Forums, groupes de discussion, serveurs, newsletters — cela montre aux autres où se trouve votre monde, et nous indique où Compass mérite d'être partagé.",
+  "profile.optional.online_communities_placeholder": "ex. r/vegan, le groupe Telegram EA Paris, quelques serveurs Discord MBTI, les commentaires d'Astral Codex Ten.",
   "profile.optional.orientation": "Orientation sexuelle",
   "profile.optional.photo_reminder": "Une chose que nous ne pouvons pas remplir à votre place : vos photos. C'est la première chose que les gens regardent, alors ne partez pas sans en ajouter quelques-unes.",
   "profile.optional.photo_reminder.cta": "Aller aux photos",

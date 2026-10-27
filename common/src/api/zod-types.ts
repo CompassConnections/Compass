@@ -151,6 +151,7 @@ export const profileSchema = z.object({
   neurotype: z.array(z.string()).optional().nullable(),
   neurotype_details: z.string().optional().nullable(),
   accessibility_notes: z.string().optional().nullable(),
+  online_communities: z.string().optional().nullable(),
   religion: z.array(z.string()).optional().nullable(),
   religious_belief_strength: z.number().optional().nullable(),
   religious_beliefs: z.string().optional().nullable(),

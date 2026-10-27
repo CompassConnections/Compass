@@ -42,9 +42,11 @@ export class HomePage {
     return this.sidebar.getByText('Vote')
   }
 
-  get sidebarEvents() {
-    return this.sidebar.getByText('Events')
-  }
+  // Events is hidden from the nav for now (see `page-base.tsx`); uncomment this, `clickEventsLink` and
+  // the two `verify*` assertions below when it comes back.
+  // get sidebarEvents() {
+  //   return this.sidebar.getByText('Events')
+  // }
 
   get sidebarWhatsNew() {
     return this.sidebar.getByText("What's new")
@@ -105,10 +107,10 @@ export class HomePage {
     await this.sidebarVote.click()
   }
 
-  async clickEventsLink() {
-    await expect(this.sidebarEvents).toBeVisible()
-    await this.sidebarEvents.click()
-  }
+  // async clickEventsLink() {
+  //   await expect(this.sidebarEvents).toBeVisible()
+  //   await this.sidebarEvents.click()
+  // }
 
   async clickWhatsNewLink() {
     await expect(this.sidebarWhatsNew).toBeVisible()
@@ -172,7 +174,7 @@ export class HomePage {
     await expect(this.sidebarAbout).toBeVisible()
     await expect(this.sidebarFaq).toBeVisible()
     await expect(this.sidebarVote).toBeVisible()
-    await expect(this.sidebarEvents).toBeVisible()
+    // await expect(this.sidebarEvents).toBeVisible()
     await expect(this.sidebarWhatsNew).toBeVisible()
     await expect(this.sidebarSocials).toBeVisible()
     await expect(this.sidebarOrganization).toBeVisible()
@@ -193,7 +195,7 @@ export class HomePage {
     await expect(this.sidebarAbout).toBeVisible()
     await expect(this.sidebarFaq).toBeVisible()
     await expect(this.sidebarVote).toBeVisible()
-    await expect(this.sidebarEvents).toBeVisible()
+    // await expect(this.sidebarEvents).toBeVisible()
     await expect(this.sidebarWhatsNew).toBeVisible()
     await expect(this.sidebarSocials).toBeVisible()
     await expect(this.sidebarOrganization).toBeVisible()

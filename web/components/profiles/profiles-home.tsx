@@ -17,7 +17,6 @@ import {useFilters} from 'web/components/filters/use-filters'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {ProfileGrid, ProfileGridSkeleton} from 'web/components/profile-grid'
-import {Title} from 'web/components/widgets/title'
 import {useBookmarkedSearches} from 'web/hooks/use-bookmarked-searches'
 import {useDisplayOptions} from 'web/hooks/use-display-options'
 import {useGetter} from 'web/hooks/use-getter'
@@ -366,7 +365,8 @@ export function ProfilesHome() {
           </ProfileBanner>
         )}
         {/*{user && !profile && <Button className="mb-4 lg:hidden" onClick={() => Router.push('signup')}>Create a profile</Button>}*/}
-        <Title className="!mb-2 text-3xl">{t('profiles.title', 'People')}</Title>
+        {/* No "People" heading: the sidebar's active item already says where you are, and the grid starts higher without it. */}
+        {/*<Title className="!mb-2 text-3xl">{t('profiles.title', 'People')}</Title>*/}
         <Search
           ref={searchInputRef}
           openFilters={() => setOpenFiltersModal((open) => !open)}

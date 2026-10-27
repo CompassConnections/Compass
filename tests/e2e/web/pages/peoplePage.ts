@@ -89,7 +89,6 @@ export type PeoplePageFilter = {
 }
 
 export class PeoplePage {
-  private readonly peopleHeading: Locator
   private readonly savedPeopleHeading: Locator
   private readonly savedPeopleList: Locator
   private readonly searchBox: Locator
@@ -139,7 +138,6 @@ export class PeoplePage {
   private readonly profileSeeking: Locator
 
   constructor(public readonly page: Page) {
-    this.peopleHeading = page.getByRole('heading', {name: 'People'})
     this.savedPeopleHeading = page.getByRole('heading', {name: 'Saved People'})
     this.savedPeopleList = page.getByTestId('saved-person')
     this.searchBox = page.getByRole('textbox', {name: 'Search anything...'})
@@ -271,7 +269,8 @@ export class PeoplePage {
   }
 
   async verifyPeoplePage() {
-    await expect(this.peopleHeading).toBeVisible()
+    // The grid has no "People" heading any more; the search box is the page's landmark.
+    await expect(this.searchBox).toBeVisible()
   }
 
   async clickSavedPeopleButton() {

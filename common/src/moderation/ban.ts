@@ -6,7 +6,7 @@ export const MAX_NEW_CHANNELS_PER_DAY = 10
 // Same, over a short rolling window of BURST_WINDOW_MINUTES. Catches bursts early: a spammer
 // blasting out messages would otherwise get the full daily allowance in the first few minutes
 // before the daily limit kicks in.
-export const MAX_NEW_CHANNELS_PER_BURST = 5
+export const MAX_NEW_CHANNELS_PER_BURST = 3
 export const BURST_WINDOW_MINUTES = 20
 
 // Machine-readable marker on the APIError details, so the frontend can tell an automatic
@@ -45,8 +45,9 @@ export function isPermanentBan(reason: BanReason | null | undefined) {
  * can hurt other people (messaging, posting) and leaves browsing alone; a confirmed ban takes
  * everything.
  *
- * A null reason keeps the old full lockout on purpose: those are the hand-curated repeat abusers in
- * `create-user-and-profile.ts`, not automatic holds.
+ * A null reason keeps the old full lockout on purpose: those are signups from a device on the
+ * `banned_networks` list (see `backend/shared/src/moderation/banned-networks.ts`), not automatic
+ * holds.
  */
 export function canBrowseWhileBanned(reason: BanReason | null | undefined) {
   return reason === 'auto_rate_limit' || reason === 'under_review'

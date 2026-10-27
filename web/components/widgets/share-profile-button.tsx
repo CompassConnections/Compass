@@ -27,17 +27,30 @@ export const ShareProfileButton = (props: {
   className?: string
   /** Set false where X/LinkedIn already have their own buttons alongside, so the panel doesn't repeat them. */
   showSocials?: boolean
+  /**
+   * Replaces the outlined icon-button look entirely — pass `SHARE_CTA_BUTTON_CLASS` where the share
+   * should be the loudest thing on screen (the end of onboarding). `className` is ignored when set.
+   */
+  triggerClassName?: string
+  /** Trigger label. Defaults to "Share". */
+  label?: string
+  /** Which edge the phone sheet hangs from — see `SharePanel`. */
+  mobileSheet?: 'top' | 'bottom'
 }) => {
-  const {username, className, showSocials = true} = props
+  const {username, className, showSocials = true, triggerClassName, label, mobileSheet} = props
   const t = useT()
   const shareUrl = useProfileShareUrl(username)
 
   return (
     <SharePanel
-      triggerClassName={clsx(
-        className,
-        'border-canvas-300 text-ink-500 hover:border-primary-400 hover:bg-primary-50 flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors',
-      )}
+      triggerClassName={
+        triggerClassName ??
+        clsx(
+          className,
+          'border-canvas-300 text-ink-500 hover:border-primary-400 hover:bg-primary-50 flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors',
+        )
+      }
+      mobileSheet={mobileSheet}
       url={shareUrl}
       xShareUrl={showSocials ? getXShareProfileUrl(t, username, shareUrl) : undefined}
       linkedinUrl={showSocials ? getLinkedInShareProfileUrl(t, username, shareUrl) : undefined}
@@ -53,8 +66,21 @@ export const ShareProfileButton = (props: {
         ),
       }}
     >
-      <ShareIcon strokeWidth={'2.5'} className="hidden h-[1.1rem] sm:inline" aria-hidden="true" />
-      <div className="text-sm">{t('button.share.label', 'Share')}</div>
+      {triggerClassName ? (
+        <>
+          <ShareIcon className="h-[1.05rem] w-[1.05rem]" strokeWidth={2} aria-hidden="true" />
+          {label ?? t('button.share.label', 'Share')}
+        </>
+      ) : (
+        <>
+          <ShareIcon
+            strokeWidth={'2.5'}
+            className="hidden h-[1.1rem] sm:inline"
+            aria-hidden="true"
+          />
+          <div className="text-sm">{label ?? t('button.share.label', 'Share')}</div>
+        </>
+      )}
     </SharePanel>
   )
 }

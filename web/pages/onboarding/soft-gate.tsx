@@ -1,13 +1,13 @@
 import {ArrowRightIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
-import {ENV_CONFIG} from 'common/envs/constants'
 import Router from 'next/router'
 import {Button} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {PageBase} from 'web/components/page-base'
 import {ProfileCardViewer} from 'web/components/profile-card-viewer'
 import {SEO} from 'web/components/SEO'
-import {ShareCTAButton} from 'web/components/widgets/share-cta-button'
+import {SHARE_CTA_BUTTON_CLASS} from 'web/components/widgets/share-cta-button'
+import {ShareProfileButton} from 'web/components/widgets/share-profile-button'
 import {surface} from 'web/components/widgets/surface'
 import {useProfile} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
@@ -70,15 +70,14 @@ export default function SoftGatePage() {
                 )}
               </p>
               {user?.username && (
-                <ShareCTAButton
-                  url={`https://${ENV_CONFIG.domain}/${user.username}`}
-                  shareTitle={t('share_profile.share.title', 'A profile worth seeing on Compass')}
-                  shareText={t(
-                    'share_profile.share.text',
-                    'Thought you might want to see this profile on Compass — a free directory for finding your people, searchable by values, interests, and demographics. No ads, no swiping, no dubious algorithm.',
-                  )}
+                // The same panel the profile header's share button opens (copy the link, OS sheet or
+                // X/LinkedIn), wearing the CTA look. Sheet rises from the bottom: the button sits low
+                // on the screen, under the card.
+                <ShareProfileButton
+                  username={user.username}
+                  triggerClassName={SHARE_CTA_BUTTON_CLASS}
                   label={t('onboarding.soft-gate.share_button', 'Share My Profile')}
-                  copiedLabel={t('about.share.copied', 'Link copied!')}
+                  mobileSheet="bottom"
                 />
               )}
             </Col>

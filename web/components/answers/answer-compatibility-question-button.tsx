@@ -314,10 +314,15 @@ function AnswerCompatibilityQuestionModal(props: {
     setQuestionIndex(0)
   }, [sort])
 
-  const questionPool = useMemo(
-    () => (inCoreRun ? otherQuestions.filter(isCoreQuestion) : otherQuestions),
-    [otherQuestions, inCoreRun],
-  )
+  // Past the core run, the pool is the *non-core* remainder, not the whole unanswered set.
+  // `otherQuestions` is only refetched when the dialog closes, so at the moment "Keep answering" is
+  // pressed it still lists every core question that was just answered — serving `otherQuestions`
+  // as-is replayed the entire core run at the top of the new list.
+  const questionPool = useMemo(() => {
+    if (inCoreRun) return otherQuestions.filter(isCoreQuestion)
+    if (props.startWithCore) return otherQuestions.filter((q) => !isCoreQuestion(q))
+    return otherQuestions
+  }, [otherQuestions, inCoreRun, props.startWithCore])
 
   const remainingBeyondCore = useMemo(
     () => otherQuestions.filter((q) => !isCoreQuestion(q)).length,

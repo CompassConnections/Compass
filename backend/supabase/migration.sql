@@ -88,5 +88,6 @@ BEGIN;
 \i backend/supabase/migrations/20260907_canonical_options.sql
 \i backend/supabase/migrations/20260928_add_share_prompts.sql
 \i backend/supabase/migrations/20261010_add_online_communities_to_profiles.sql
+\i backend/supabase/migrations/20261023_compatibility_scores_range.sql
 \i backend/supabase/migrations/20261024_add_banned_networks.sql
 COMMIT;

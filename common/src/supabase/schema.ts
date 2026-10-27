@@ -400,6 +400,9 @@ export type Database = {
           id: number
           modified_time: string
           score: number | null
+          score_high: number | null
+          score_low: number | null
+          shared_answers: number | null
           user_id_1: string
           user_id_2: string
         }
@@ -408,6 +411,9 @@ export type Database = {
           id?: never
           modified_time?: string
           score?: number | null
+          score_high?: number | null
+          score_low?: number | null
+          shared_answers?: number | null
           user_id_1: string
           user_id_2: string
         }
@@ -416,6 +422,9 @@ export type Database = {
           id?: never
           modified_time?: string
           score?: number | null
+          score_high?: number | null
+          score_low?: number | null
+          shared_answers?: number | null
           user_id_1?: string
           user_id_2?: string
         }

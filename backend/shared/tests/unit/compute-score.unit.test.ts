@@ -85,6 +85,9 @@ describe('recomputeCompatibilityScoresForUser', () => {
       ]
       const mockCompatibilityScore = {
         score: 4,
+        low: 3,
+        high: 5,
+        sharedAnswers: 1,
         confidence: 'low',
       }
       const mockAnswersForUser = [

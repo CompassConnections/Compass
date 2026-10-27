@@ -6,7 +6,11 @@ CREATE TABLE IF NOT EXISTS compatibility_scores (
     user_id_1 TEXT NOT NULL, --- lowest-id user
     user_id_2 TEXT NOT NULL, --- highest-id user
     -- geometric mean score in range [0,1]
-    score DOUBLE PRECISION
+    score DOUBLE PRECISION,
+    -- likely range of `score` (~95% credible interval) and the shared answers it rests on
+    score_low DOUBLE PRECISION,
+    score_high DOUBLE PRECISION,
+    shared_answers INTEGER
 );
 
 -- Ensure canonical ordering and uniqueness of pairs

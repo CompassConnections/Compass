@@ -317,6 +317,9 @@ CREATE TABLE compatibility_scores (
   user_id_1 TEXT NOT NULL,
   user_id_2 TEXT NOT NULL,
   score NUMERIC(5, 4) NOT NULL,
+  score_low DOUBLE PRECISION, -- likely range of score (~95% credible interval)
+  score_high DOUBLE PRECISION,
+  shared_answers INTEGER, -- questions both answered, what the range rests on
   updated_time TIMESTAMPTZ NOT NULL DEFAULT now (),
   CONSTRAINT compatibility_scores_pkey PRIMARY KEY (user_id_1, user_id_2)
 );

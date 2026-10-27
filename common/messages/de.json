@@ -284,6 +284,7 @@
   "compatibility.tabs.to_answer": "Zu beantworten",
   "compatibility.title": "Ihre Kompatibilitätsfragen",
   "compatibility.tooltip": "Kompatibilitätswert zwischen Ihnen beiden",
+  "compatibility.tooltip_range": "Wahrscheinlich zwischen {low}% und {high}%, basierend auf {count} Fragen, die Sie beide beantwortet haben. Der Bereich wird enger, je mehr Sie beide beantworten.",
   "consent.accept": "Erlauben",
   "consent.decline": "Nein danke — zählt mich nicht mit",
   "consent.details": "Was wir speichern",

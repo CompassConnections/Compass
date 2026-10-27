@@ -384,6 +384,13 @@ matter how good questions 200–300 are, and in practice almost nobody reaches t
 the 300 is really **a core 50 that must be excellent and a tail of 250 that must merely be harmless**,
 and effort should be spent in that ratio.
 
+Alongside the point estimate, `getCompatibilityScore` returns a **likely range** (`low`, `high`) and the
+shared-answer count it rests on. The shrink toward 50% is the mean of a Beta prior, so the range is that
+posterior's, computed on the _effective_ number of questions `(Σw)² / Σw²` rather than on points — one
+"very important" match is 25 points but still one question. The edges are stored next to the score and
+shown as a band on the score bar and ring. Roughly: ±30 points at 10 shared answers, ±20 at 40, ±12 at 128. The nominal 95% is optimistic (questions correlate, and are served in a fixed order), so the UI
+calls it a likely range, never a confidence level.
+
 Two consequences of stopping the core at 50 rather than at the shrinkage constant. The penalty term is
 still **7.3 points** at 50 shared answers, against 0 at 100 — whether that matters depends on how members
 weight importance, since the term is in points and `maxScore` runs from 50 (all "Somewhat Important") to

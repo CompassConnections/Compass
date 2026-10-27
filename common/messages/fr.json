@@ -284,6 +284,7 @@
   "compatibility.tabs.to_answer": "À répondre",
   "compatibility.title": "Vos questions de compatibilité",
   "compatibility.tooltip": "Compatibilité entre vous deux",
+  "compatibility.tooltip_range": "Probablement entre {low}% et {high}%, d’après {count} questions auxquelles vous avez tous deux répondu. La fourchette se resserre à mesure que vous répondez.",
   "consent.accept": "Autoriser",
   "consent.decline": "Non merci — ne me comptez pas",
   "consent.details": "Ce que nous stockons",

@@ -60,27 +60,35 @@ export async function recomputeCompatibilityScoresForUser(
     const answersOther = answersByUser[otherId] ?? []
     if (!hasAnsweredQuestions(answersOther)) continue
 
-    const {score} = getCompatibilityScore(answersSelf, answersOther)
+    const {score, low, high, sharedAnswers} = getCompatibilityScore(answersSelf, answersOther)
     const adaptedScore = score + (Math.random() - 0.5) * 0.001 // Add some noise to avoid ties (for profile sorting / pagination)
 
     const [u1, u2] = canonicalPair(userId, otherId)
-    rows.push([u1, u2, adaptedScore])
+    rows.push([u1, u2, adaptedScore, low, high, sharedAnswers])
   }
 
   if (rows.length === 0) return
 
-  const values = rows.map((_, i) => `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3})`).join(', ')
+  const values = rows
+    .map(
+      (_, i) =>
+        `($${i * 6 + 1}, $${i * 6 + 2}, $${i * 6 + 3}, $${i * 6 + 4}, $${i * 6 + 5}, $${i * 6 + 6})`,
+    )
+    .join(', ')
 
   const flatParams = rows.flat()
 
   // Upsert scores for each pair
   await pg.none(
     `
-        INSERT INTO compatibility_scores (user_id_1, user_id_2, score)
+        INSERT INTO compatibility_scores (user_id_1, user_id_2, score, score_low, score_high, shared_answers)
         VALUES
         ${values}
         ON CONFLICT (user_id_1, user_id_2)
-        DO UPDATE SET score = EXCLUDED.score
+        DO UPDATE SET score = EXCLUDED.score,
+                      score_low = EXCLUDED.score_low,
+                      score_high = EXCLUDED.score_high,
+                      shared_answers = EXCLUDED.shared_answers
     `,
     flatParams,
   )
@@ -162,7 +170,14 @@ export async function recomputeAllCompatibilityScores(): Promise<RecomputeAllRes
   // that can yield a row. `hasAnsweredQuestions` is the same gate the per-user path applies.
   const scorable = profiles.filter((p) => hasAnsweredQuestions(answersByUser[p.user_id] ?? []))
 
-  const rows: {user_id_1: string; user_id_2: string; score: number}[] = []
+  const rows: {
+    user_id_1: string
+    user_id_2: string
+    score: number
+    score_low: number | undefined
+    score_high: number | undefined
+    shared_answers: number | undefined
+  }[] = []
 
   for (let i = 0; i < scorable.length; i++) {
     for (let j = i + 1; j < scorable.length; j++) {
@@ -172,28 +187,50 @@ export async function recomputeAllCompatibilityScores(): Promise<RecomputeAllRes
       if (!a.eligible && !b.eligible) continue
       if (!areGenderCompatible(a, b)) continue
 
-      const {score} = getCompatibilityScore(answersByUser[a.user_id], answersByUser[b.user_id])
+      const {score, low, high, sharedAnswers} = getCompatibilityScore(
+        answersByUser[a.user_id],
+        answersByUser[b.user_id],
+      )
       // Same tie-breaking noise the incremental path adds, so profile sorting and pagination stay
       // stable rather than reshuffling on every equal score.
       const adaptedScore = score + (Math.random() - 0.5) * 0.001
 
       const [u1, u2] = canonicalPair(a.user_id, b.user_id)
-      rows.push({user_id_1: u1, user_id_2: u2, score: adaptedScore})
+      rows.push({
+        user_id_1: u1,
+        user_id_2: u2,
+        score: adaptedScore,
+        score_low: low,
+        score_high: high,
+        shared_answers: sharedAnswers,
+      })
     }
   }
 
   const previousPairs = await pg.tx(async (tx) => {
     const before = await tx.one<{count: string}>('select count(*) from compatibility_scores')
     await tx.none('delete from compatibility_scores')
-    // Chunked at 5000 pairs — 15000 parameters, comfortably inside the protocol's limit. Written as a
+    // Chunked at 5000 pairs — 30000 parameters, comfortably inside the protocol's limit. Written as a
     // plain insert rather than `bulkInsert` because that returns every row it wrote, and echoing back
     // a few hundred thousand pairs costs more than the write itself.
     for (let i = 0; i < rows.length; i += 5000) {
       const chunk = rows.slice(i, i + 5000)
-      const values = chunk.map((_, k) => `($${k * 3 + 1}, $${k * 3 + 2}, $${k * 3 + 3})`).join(', ')
+      const values = chunk
+        .map(
+          (_, k) =>
+            `($${k * 6 + 1}, $${k * 6 + 2}, $${k * 6 + 3}, $${k * 6 + 4}, $${k * 6 + 5}, $${k * 6 + 6})`,
+        )
+        .join(', ')
       await tx.none(
-        `insert into compatibility_scores (user_id_1, user_id_2, score) values ${values}`,
-        chunk.flatMap((r) => [r.user_id_1, r.user_id_2, r.score]),
+        `insert into compatibility_scores (user_id_1, user_id_2, score, score_low, score_high, shared_answers) values ${values}`,
+        chunk.flatMap((r) => [
+          r.user_id_1,
+          r.user_id_2,
+          r.score,
+          r.score_low,
+          r.score_high,
+          r.shared_answers,
+        ]),
       )
     }
     return Number(before.count)

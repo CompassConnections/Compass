@@ -13,7 +13,17 @@ export const getCompatibleProfiles = async (userId: string) => {
      where score is not null
        and (user_id_1 = $1 or user_id_2 = $1)`,
     [userId],
-    (r) => [r.user_id_1 == userId ? r.user_id_2 : r.user_id_1, {score: r.score}] as const,
+    (r) =>
+      [
+        r.user_id_1 == userId ? r.user_id_2 : r.user_id_1,
+        {
+          score: r.score,
+          // Null until the pair is recomputed on a build that writes the range.
+          low: r.score_low ?? undefined,
+          high: r.score_high ?? undefined,
+          sharedAnswers: r.shared_answers ?? undefined,
+        },
+      ] as const,
   )
 
   const profileCompatibilityScores = Object.fromEntries(scores)

@@ -14,7 +14,6 @@ import {
   INVERTED_RELIGION_CHOICES,
   INVERTED_ROMANTIC_CHOICES,
   INVERTED_SUBSTANCE_INTENTION_CHOICES,
-  MBTI_TYPE_NAMES,
   SUBSTANCE_PREFERENCE_ABOUT,
 } from 'common/choices'
 import {MAX_INT, MIN_INT} from 'common/constants'
@@ -1046,39 +1045,14 @@ function MBTI(props: {profile: Profile}) {
   if (!profile.mbti) return null
 
   const mbtiType = profile.mbti ? INVERTED_MBTI_CHOICES[profile.mbti] : null
-  const mbtiTypeName = mbtiType ? t(`profile.mbti.${mbtiType}`, MBTI_TYPE_NAMES[mbtiType]) : null
+  // const mbtiTypeName = mbtiType ? t(`profile.mbti.${mbtiType}`, MBTI_TYPE_NAMES[mbtiType]) : null
 
   return (
-    <div>
-      <div
-        className="border-canvas-200 bg-canvas-100 inline-flex items-center gap-2 rounded-lg border px-4 py-2"
-        style={{
-          fontFamily: 'Cormorant Garamond, serif',
-          fontSize: '20px',
-          fontWeight: '600',
-          color: 'rgb(var(--color-ink-900))',
-          letterSpacing: '0.08em',
-        }}
-      >
-        {mbtiType}
-        {mbtiTypeName && (
-          <span
-            style={{
-              fontFamily: 'DM Sans, sans-serif',
-              fontSize: '11px',
-              color: 'rgb(var(--color-ink-500))',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              fontWeight: '400',
-              marginLeft: '2px',
-              verticalAlign: 'middle',
-            }}
-          >
-            {mbtiTypeName}
-          </span>
-        )}
-      </div>
-    </div>
+    <AboutRow
+      title={t('profile.mbti', 'MBTI')}
+      text={mbtiType}
+      // details={mbtiTypeName ?? undefined}
+    />
   )
 }
 

@@ -1,6 +1,5 @@
 import {
-  CalendarIcon,
-  // ChatBubbleBottomCenterTextIcon, // re-add with the Testimonials nav item below
+  // CalendarIcon, // re-add with the Events nav item below
   HomeIcon,
   NewspaperIcon,
   PencilSquareIcon,
@@ -215,12 +214,13 @@ const Settings = {
   href: '/settings',
   icon: CogIcon,
 }
-const Events = {
-  key: 'nav.events',
-  name: 'Events',
-  href: '/events',
-  icon: CalendarIcon,
-}
+// Hidden from the nav for now; re-add to `base` below with the CalendarIcon import when unhiding.
+// const Events = {
+//   key: 'nav.events',
+//   name: 'Events',
+//   href: '/events',
+//   icon: CalendarIcon,
+// }
 // Not translated on purpose: only admins ever see it, and it's an internal-tools index.
 const Admin = {
   key: 'nav.admin',
@@ -234,7 +234,7 @@ const MessagesIconComponent = (props: any) => <PrivateMessagesIcon solid {...pro
 
 // Testimonials belongs next to About because it answers the same question — "is this for me?" — with
 // the one kind of evidence we cannot write ourselves. Add it back here when unhiding it above.
-const base = [About, faq, Blog, Vote, Events, News, Social, Organization, Contact]
+const base = [About, faq, Blog, Vote, News, Social, Organization, Contact]
 
 /**
  * The one nav entry that exists to be *noticed* rather than navigated to.

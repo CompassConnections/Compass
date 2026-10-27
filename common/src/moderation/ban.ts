@@ -3,6 +3,12 @@
 // `backend/api/src/create-private-user-message-channel.ts`).
 export const MAX_NEW_CHANNELS_PER_DAY = 10
 
+// Same, over a short rolling window of BURST_WINDOW_MINUTES. Catches bursts early: a spammer
+// blasting out messages would otherwise get the full daily allowance in the first few minutes
+// before the daily limit kicks in.
+export const MAX_NEW_CHANNELS_PER_BURST = 5
+export const BURST_WINDOW_MINUTES = 20
+
 // Machine-readable marker on the APIError details, so the frontend can tell an automatic
 // "account on hold, pending human review" ban apart from a deliberate admin ban and show the
 // reassuring copy instead of a bare "You are banned".

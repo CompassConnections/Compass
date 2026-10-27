@@ -157,7 +157,7 @@
   "account_on_hold.title": "Ihr Konto ist vorübergehend gesperrt",
   "account_on_hold.title_rate_limit": "Ihr Konto ist gesperrt, während wir es prüfen",
   "account_on_hold.why": "Wir sperren Konten automatisch, wenn die Aktivität nach Spam, Betrug oder Belästigung aussieht, damit wir das prüfen können, bevor jemand zu Schaden kommt.",
-  "account_on_hold.why_rate_limit": "Sie haben in den letzten 24 Stunden mehr als {limit} neue Unterhaltungen begonnen. Konten, die dieses Limit überschreiten, sperren wir automatisch — so halten wir Spam, Betrug und Belästigung von Compass fern.",
+  "account_on_hold.why_rate_limit": "Sie haben innerhalb von {burstMinutes} Minuten mehr als {burstLimit} oder innerhalb von 24 Stunden mehr als {dayLimit} neue Unterhaltungen begonnen. Konten, die diese Limits überschreiten, sperren wir automatisch — so halten wir Spam, Betrug und Belästigung von Compass fern.",
   "account_on_hold.reassurance": "Das ist kein Urteil über Sie. Ein echter Mensch prüft jedes gesperrte Konto innerhalb von {hours} Stunden, und wenn alles echt aussieht — was meistens der Fall ist — heben wir die Sperre auf und Sie machen dort weiter, wo Sie aufgehört haben. Ihr Profil, Ihre Unterhaltungen und Ihre Nachrichten bleiben erhalten.",
   "account_on_hold.contact_prefix": "Halten Sie das für einen Fehler oder möchten Sie es beschleunigen? ",
   "account_on_hold.contact_link": "Schreiben Sie uns",

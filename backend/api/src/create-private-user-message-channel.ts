@@ -6,6 +6,8 @@ import {DOMAIN, isAdminId, isModUsername} from 'common/envs/constants'
 import {
   AUTO_BAN_REVIEW_HOURS,
   AUTO_BAN_UNDER_REVIEW_CODE,
+  BURST_WINDOW_MINUTES,
+  MAX_NEW_CHANNELS_PER_BURST,
   MAX_NEW_CHANNELS_PER_DAY,
 } from 'common/moderation/ban'
 import {filterDefined} from 'common/util/array'
@@ -91,28 +93,46 @@ export const createPrivateUserMessageChannel: APIHandler<
   // onboarding), and auto-banning the people who handle the review queue would be self-defeating.
   const isStaff = isAdmin || isModUsername(creator.username)
 
-  // Spam guard: count how many conversations this user has started in the last 24h.
-  // If they've already created MAX_NEW_CHANNELS_PER_DAY, this new one is over the
-  // limit — ban them right away and flag it to the admins for review.
-  const {count: recentChannelCount} = isStaff
-    ? {count: 0}
+  // Spam guard: count how many conversations this user has started in the last
+  // BURST_WINDOW_MINUTES and the last 24h. If they've already created MAX_NEW_CHANNELS_PER_BURST in
+  // the burst window or MAX_NEW_CHANNELS_PER_DAY in the day, this new one is over the limit — ban them right away and
+  // flag it to the admins for review.
+  const recent = isStaff
+    ? {burst_count: 0, day_count: 0}
     : await pg.one(
-        `select count(*) as count
+        `select count(*) filter (where c.created_time > now() - $2 * interval '1 minute') as burst_count,
+                count(*) as day_count
      from private_user_message_channel_members m
      join private_user_message_channels c on c.id = m.channel_id
      where m.user_id = $1
        and m.role = 'creator'
        and c.created_time > now() - interval '24 hours'`,
-        [creatorId],
+        [creatorId, BURST_WINDOW_MINUTES],
       )
+  const burstCount = Number(recent.burst_count)
+  const dayCount = Number(recent.day_count)
 
-  if (!isStaff && Number(recentChannelCount) >= MAX_NEW_CHANNELS_PER_DAY) {
+  // The burst limit is checked first: it is the one a burst trips, and naming it tells the
+  // reviewer what actually happened.
+  const exceeded =
+    burstCount >= MAX_NEW_CHANNELS_PER_BURST
+      ? {
+          count: burstCount,
+          window: `${BURST_WINDOW_MINUTES} minutes`,
+          windowLabel: `${BURST_WINDOW_MINUTES}min`,
+          limit: MAX_NEW_CHANNELS_PER_BURST,
+        }
+      : dayCount >= MAX_NEW_CHANNELS_PER_DAY
+        ? {count: dayCount, window: '24 hours', windowLabel: '24h', limit: MAX_NEW_CHANNELS_PER_DAY}
+        : null
+
+  if (!isStaff && exceeded) {
     await updateUser(creatorId, {isBannedFromPosting: true, banReason: 'auto_rate_limit'})
     try {
       const message = `
       🔨 **Auto-ban: conversation spam** 🔨
       **User:** ${creator.name} ([@${creator.username}](https://${DOMAIN}/${creator.username}))
-      **Reason:** Started ${Number(recentChannelCount) + 1} conversations within 24h (limit ${MAX_NEW_CHANNELS_PER_DAY}).
+      **Reason:** Started ${exceeded.count + 1} conversations within ${exceeded.windowLabel} (limit ${exceeded.limit}).
       Please review.
       `
       await sendDiscordMessage(message, 'reports')
@@ -123,7 +143,7 @@ export const createPrivateUserMessageChannel: APIHandler<
     // explanation rather than a bare "You are banned" — most people who trip this are genuine and
     // get unbanned once a human looks at the profile.
     throw APIErrors.forbidden(
-      `You've started too many new conversations in the past 24 hours, so your account is temporarily on hold. We do this automatically to protect our members from spam, scams and harassment. Our team reviews every case within ${AUTO_BAN_REVIEW_HOURS} hours and restores accounts that look genuine — nothing you've written is lost.`,
+      `You've started too many new conversations in the past ${exceeded.window}, so your account is temporarily on hold. We do this automatically to protect our members from spam, scams and harassment. Our team reviews every case within ${AUTO_BAN_REVIEW_HOURS} hours and restores accounts that look genuine — nothing you've written is lost.`,
       {
         context: AUTO_BAN_UNDER_REVIEW_CODE,
         resolution: 'Contact us at /contact if you want to tell us about your account.',

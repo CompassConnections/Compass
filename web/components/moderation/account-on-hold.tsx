@@ -4,7 +4,9 @@ import {
   AUTO_BAN_REVIEW_HOURS,
   AUTO_BAN_UNDER_REVIEW_CODE,
   BanReason,
+  BURST_WINDOW_MINUTES,
   isPermanentBan,
+  MAX_NEW_CHANNELS_PER_BURST,
   MAX_NEW_CHANNELS_PER_DAY,
 } from 'common/moderation/ban'
 import {ShieldCheck, ShieldX} from 'lucide-react'
@@ -14,7 +16,7 @@ import {Row} from 'web/components/layout/row'
 import {useT} from 'web/lib/locale'
 
 /**
- * True when an API error is the automatic "too many new conversations in 24h" ban, which the backend
+ * True when an API error is the automatic "too many new conversations" ban (burst or daily limit), which the backend
  * tags with AUTO_BAN_UNDER_REVIEW_CODE. Anything else (deliberate admin ban, unrelated 403) is not.
  */
 export function isAutoBanUnderReviewError(e: unknown) {
@@ -57,8 +59,12 @@ export function AccountOnHoldNotice(props: {
     : reason === 'auto_rate_limit'
       ? t(
           'account_on_hold.why_rate_limit',
-          "You started more than {limit} new conversations in the last 24 hours. We pause accounts that go over that limit automatically — it's how we keep spam, scams and harassment off Compass before anyone gets hurt.",
-          {limit: MAX_NEW_CHANNELS_PER_DAY},
+          "You started more than {burstLimit} new conversations within {burstMinutes} minutes, or more than {dayLimit} within 24 hours. We pause accounts that go over these limits automatically — it's how we keep spam, scams and harassment off Compass before anyone gets hurt.",
+          {
+            burstLimit: MAX_NEW_CHANNELS_PER_BURST,
+            burstMinutes: BURST_WINDOW_MINUTES,
+            dayLimit: MAX_NEW_CHANNELS_PER_DAY,
+          },
         )
       : t(
           'account_on_hold.why',

@@ -157,7 +157,7 @@
   "account_on_hold.title": "Votre compte est suspendu",
   "account_on_hold.title_rate_limit": "Votre compte est suspendu le temps que nous vérifiions",
   "account_on_hold.why": "Nous suspendons automatiquement les comptes dont l'activité ressemble à du spam, à une arnaque ou à du harcèlement, afin de vérifier avant que quelqu'un ne soit blessé.",
-  "account_on_hold.why_rate_limit": "Vous avez démarré plus de {limit} nouvelles conversations au cours des dernières 24 heures. Nous suspendons automatiquement les comptes qui dépassent cette limite : c'est ainsi que nous gardons Compass à l'abri du spam, des arnaques et du harcèlement.",
+  "account_on_hold.why_rate_limit": "Vous avez démarré plus de {burstLimit} nouvelles conversations en {burstMinutes} minutes, ou plus de {dayLimit} en 24 heures. Nous suspendons automatiquement les comptes qui dépassent ces limites : c'est ainsi que nous gardons Compass à l'abri du spam, des arnaques et du harcèlement.",
   "account_on_hold.reassurance": "Ce n'est pas un jugement sur vous. Une vraie personne examine chaque compte suspendu dans les {hours} heures, et si tout paraît authentique — ce qui est presque toujours le cas — nous levons la suspension et vous reprenez là où vous en étiez. Votre profil, vos conversations et vos messages sont conservés.",
   "account_on_hold.contact_prefix": "Vous pensez qu'il s'agit d'une erreur ou vous souhaitez accélérer les choses ? ",
   "account_on_hold.contact_link": "Écrivez-nous",

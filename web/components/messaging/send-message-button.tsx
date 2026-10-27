@@ -64,7 +64,7 @@ export const SendMessageButton = (props: {
 
   const [openComposeModal, setOpenComposeModal] = useState(false)
   const [error, setError] = useState('')
-  // Set instead of `error` when the daily new-conversation limit auto-banned them: that case gets the
+  // Set instead of `error` when the new-conversation limit auto-banned them: that case gets the
   // full explanation panel rather than a one-line red error, since the outcome deserves context.
   const [onHold, setOnHold] = useState(false)
   const [submitting, setSubmitting] = useState(false)

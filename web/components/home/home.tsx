@@ -876,7 +876,7 @@ export function LoggedOutHome() {
                   dash was: the dash-apposition was the page's default punctuation and it started here. */}
               {t(
                 'home.subtitle.v3',
-                'Read and search profiles by values, interests, and demographics.',
+                'Read and search profiles by shared values and interests. Find lasting and meaningful relationships.',
               )}
             </p>
 

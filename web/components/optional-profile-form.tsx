@@ -1701,7 +1701,7 @@ export const OptionalProfileUserForm = (props: {
             maxLength={500}
             placeholder={t(
               'profile.optional.accessibility_notes_placeholder',
-              'e.g. I use a wheelchair, so step-free venues work best. Happy to answer questions.',
+              'e.g. I use a wheelchair, so step-free venues work best.',
             )}
           />
         </Col>

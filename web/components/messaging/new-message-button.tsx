@@ -39,7 +39,7 @@ function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) 
   const router = useRouter()
   const t = useT()
   const [errorText, setErrorText] = useState<string>('')
-  // The daily new-conversation limit auto-ban gets the full explanation panel instead of a red line.
+  // The new-conversation limit auto-ban gets the full explanation panel instead of a red line.
   const [onHold, setOnHold] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 

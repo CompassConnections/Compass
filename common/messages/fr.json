@@ -820,6 +820,8 @@
   "nav.rate_app": "Noter Compass",
   "nav.settings": "Paramètres",
   "nav.sign_in": "Se connecter",
+  "nav.collapse_sidebar": "Fermer la barre latérale",
+  "nav.expand_sidebar": "Ouvrir la barre latérale",
   "nav.sign_out": "Se déconnecter",
   "nav.sign_up": "Nous rejoindre",
   "nav.sign_up_now": "S'inscrire maintenant",

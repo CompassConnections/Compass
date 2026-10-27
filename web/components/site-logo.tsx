@@ -4,11 +4,15 @@ import Link from 'next/link'
 import FavIconBlack from 'web/components/FavIcon'
 import {Row} from 'web/components/layout/row'
 
-export default function SiteLogo(props: {noLink?: boolean; className?: string}) {
-  const {noLink, className} = props
+export default function SiteLogo(props: {
+  noLink?: boolean
+  hideIcon?: boolean
+  className?: string
+}) {
+  const {noLink, hideIcon, className} = props
   const inner = (
     <>
-      <FavIconBlack className={className?.includes('invert') ? '' : 'dark:invert'} />
+      {!hideIcon && <FavIconBlack className={className?.includes('invert') ? '' : 'dark:invert'} />}
       <div
         className={clsx('my-auto logo')}
         style={{

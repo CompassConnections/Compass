@@ -8,6 +8,7 @@ export class HomePage {
   private readonly signUpButton: Locator
   private readonly localePicker: Locator
   private readonly signInLink: Locator
+  private readonly userMenuButton: Locator
   private readonly signOutLink: Locator
   private readonly closeButton: Locator
 
@@ -24,6 +25,7 @@ export class HomePage {
       .first()
     this.localePicker = page.getByTestId('sidebar-locale-picker')
     this.signInLink = page.locator('a[href="/signin"]').first()
+    this.userMenuButton = page.getByTestId('sidebar-user-menu')
     this.signOutLink = page.getByText('Sign out', {exact: true})
     this.closeButton = page.getByRole('button', {name: 'Close'})
   }
@@ -196,7 +198,10 @@ export class HomePage {
     await expect(this.sidebarSocials).toBeVisible()
     await expect(this.sidebarOrganization).toBeVisible()
     await expect(this.sidebarContact).toBeVisible()
+    // Sign out sits behind the "…" menu next to the member's name.
+    await this.userMenuButton.click()
     await expect(this.signOutLink).toBeVisible()
+    await this.page.keyboard.press('Escape')
     await expect(this.signUpButton).not.toBeVisible()
     await expect(this.signInLink).not.toBeVisible()
     await expect(this.localePicker).not.toBeVisible()

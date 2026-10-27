@@ -1,11 +1,13 @@
 import {ArrowLeftOnRectangleIcon, ArrowRightOnRectangleIcon} from '@heroicons/react/24/outline'
 import {StarIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
-import {buildArray} from 'common/util/array'
 import Router, {useRouter} from 'next/router'
+import {LuPanelLeft} from 'react-icons/lu'
 import {Button, ColorType, SizeType} from 'web/components/buttons/button'
+import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {LanguagePicker} from 'web/components/language/language-picker'
 import {useAppDownload} from 'web/hooks/use-app-download'
+import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {useProfile} from 'web/hooks/use-profile'
 import {useStoreReviewUrl} from 'web/hooks/use-review-prompt'
 import {useIsSignUpCtaVisible} from 'web/hooks/use-signup-cta-visible'
@@ -38,7 +40,12 @@ export default function Sidebar(props: {
 
   const t = useT()
   const pageCtaVisible = useIsSignUpCtaVisible()
-  const bottomNavOptions = bottomNav(!!user)
+  // Already on the sign-up page, where "Join us" would only link back to itself.
+  const onRegisterPage = router.pathname === '/register'
+
+  // Desktop only: the mobile sidebar is already a slide-out drawer with its own close gesture.
+  const [storedCollapsed, setCollapsed] = usePersistentLocalState(false, 'sidebar-collapsed-v1')
+  const collapsed = !isMobile && storedCollapsed
 
   const isApp = isNativeApp()
 
@@ -52,30 +59,102 @@ export default function Sidebar(props: {
   // forbids calling requestReview from a tap. Null until the App Store listing exists.
   const reviewUrl = useStoreReviewUrl()
 
+  const toggleButton = !isMobile && (
+    <button
+      type="button"
+      onClick={() => setCollapsed(!collapsed)}
+      aria-label={
+        collapsed
+          ? t('nav.expand_sidebar', 'Open sidebar')
+          : t('nav.collapse_sidebar', 'Close sidebar')
+      }
+      aria-expanded={!collapsed}
+      aria-controls="main-navigation"
+      className={
+        'sidebar-text shrink-0 rounded-lg p-2 opacity-70 transition hover:bg-canvas-900 hover:opacity-100'
+      }
+    >
+      <LuPanelLeft className="h-5 w-5" aria-hidden="true" />
+    </button>
+  )
+
+  if (collapsed) {
+    return (
+      <nav
+        id="main-navigation"
+        aria-label="Sidebar"
+        data-testid="sidebar"
+        className={clsx(
+          'flex flex-col h-[calc(100dvh-var(--hloss))] mb-[calc(var(--bnh))] mt-[calc(var(--tnh))] pt-2 sm:pt-6',
+          className,
+        )}
+        style={style}
+      >
+        {toggleButton}
+      </nav>
+    )
+  }
+
   return (
     <nav
       id="main-navigation"
       aria-label="Sidebar"
       data-testid="sidebar"
       className={clsx(
+        // Sized to its widest row rather than to a grid fraction, so wide screens give the extra room
+        // to the page. Capped so one long member name cannot stretch the rail.
         'flex flex-col h-[calc(100dvh-var(--hloss))] mb-[calc(var(--bnh))] mt-[calc(var(--tnh))]',
+        !isMobile && 'w-max max-w-[16rem]',
         className,
       )}
       style={style}
     >
-      <SiteLogo className={'text-black invert'} />
+      <div className="flex items-center gap-1 pb-2 pt-2 sm:pt-6">
+        {toggleButton}
+        <SiteLogo hideIcon className={'text-black invert !pb-0 !pt-0 sm:!pt-0'} />
+      </div>
 
-      {user === undefined && <div className="h-[24px]" />}
+      <div className="h-px bg-white/[0.06] mb-3" />
 
-      {user && !isMobile && (
-        <>
-          <div className="h-px bg-white/[0.06] mb-4" />
+      {/* Sign in / out lives up here rather than at the foot of the rail, which saves a row. */}
+      {user === undefined && <div className="h-[44px] mb-3" />}
+      {user && (
+        <div className="mb-3 flex items-center gap-1">
           <ProfileSummary
             user={user}
-            className="mb-3 sidebar-text transition-colors hover:bg-canvas-900"
+            className="min-w-0 flex-1 sidebar-text transition-colors hover:bg-canvas-900"
             currentPage={currentPage}
           />
-        </>
+          <DropdownMenu
+            withinOverflowContainer
+            testId="sidebar-user-menu"
+            closeOnClick
+            menuWidth="w-40"
+            buttonClass={
+              'sidebar-text rounded-lg p-2 opacity-70 hover:bg-canvas-900 hover:opacity-100'
+            }
+            items={[
+              {
+                name: t('nav.sign_out', 'Sign out'),
+                icon: <ArrowRightOnRectangleIcon className="h-5 w-5" aria-hidden="true" />,
+                onClick: logout,
+              },
+            ]}
+          />
+        </div>
+      )}
+      {user === null && (
+        <div className="mb-3 flex flex-col">
+          <SidebarItem
+            item={{
+              key: 'nav.sign_in',
+              name: 'Sign in',
+              icon: ArrowLeftOnRectangleIcon,
+              href: '/signin',
+            }}
+            currentPage={currentPage}
+          />
+        </div>
       )}
 
       <div className="h-px bg-white/[0.06] mb-4" />
@@ -86,13 +165,14 @@ export default function Sidebar(props: {
         ))}
 
         {/* `py-3` matches the hero's "Join us", so the two read as the same button.
-            Faded out while the page shows its own sign-up button, so the CTA is never on screen twice.
+            Faded out while the page shows its own sign-up button, so the CTA is never on screen twice,
+            and on /register itself.
             `invisible` rather than unmounting, so the rows below do not jump. */}
         {user === null && (
           <SignUpButton
             className={clsx(
               'mt-4 !py-3 transition-[opacity,visibility] duration-200',
-              pageCtaVisible && 'invisible opacity-0',
+              (pageCtaVisible || onRegisterPage) && 'invisible opacity-0',
             )}
             text={t('nav.sign_up', 'Join us')}
           />
@@ -141,9 +221,6 @@ export default function Sidebar(props: {
             }
           />
         )}
-        {bottomNavOptions.map((item) => (
-          <SidebarItem key={item.key} item={item} currentPage={currentPage} />
-        ))}
       </div>
     </nav>
   )
@@ -155,22 +232,6 @@ const logout = async () => {
   await withTracking(firebaseLogout, 'sign out')()
   await Router.replace(Router.asPath)
 }
-
-const bottomNav = (loggedIn: boolean) =>
-  buildArray<Item>(
-    !loggedIn && {
-      key: 'nav.sign_in',
-      name: 'Sign in',
-      icon: ArrowLeftOnRectangleIcon,
-      href: '/signin',
-    },
-    loggedIn && {
-      key: 'nav.sign_out',
-      name: 'Sign out',
-      icon: ArrowRightOnRectangleIcon,
-      onClick: logout,
-    },
-  )
 
 export const SignUpButton = (props: {
   text?: string

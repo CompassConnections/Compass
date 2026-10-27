@@ -81,7 +81,10 @@ export function PageBase(props: {
       <Col
         className={clsx(
           'pb-page-base lg:pb-0', // bottom bar padding
-          'text-ink-1000 mx-auto min-h-screen w-full lg:grid lg:grid-cols-12',
+          'text-ink-1000 mx-auto min-h-screen w-full lg:grid',
+          // The sidebar column is sized by its own content (and collapses to a single button); the
+          // remaining ten columns split the rest, so `col-span-8` / `col-span-10` keep their meaning.
+          'lg:grid-cols-[auto_repeat(10,minmax(0,1fr))]',
         )}
       >
         <Toaster
@@ -90,16 +93,16 @@ export function PageBase(props: {
         />
         {/* Maintenance banner */}
         {IS_MAINTENANCE && (
-          <div className="lg:col-span-12 w-full bg-orange-500 text-white text-center text-sm py-2 px-3">
+          <div className="lg:col-span-full w-full bg-orange-500 text-white text-center text-sm py-2 px-3">
             Maintenance in progress: Some features may be broken for the next few hours.
           </div>
         )}
         {hideSidebar ? (
-          <div className="lg:col-span-2 lg:flex" />
+          <div className="lg:flex" />
         ) : (
           <Sidebar
             navigationOptions={desktopSidebarOptions}
-            className="sticky top-0 hidden self-start px-2 lg:col-span-2 lg:flex sidebar-nav bg-canvas-950"
+            className="sticky top-0 hidden self-start px-2 lg:flex sidebar-nav bg-canvas-950"
           />
         )}
         <main

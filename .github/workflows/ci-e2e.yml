@@ -9,7 +9,8 @@ on:
 jobs:
   e2e:
     name: E2E Tests
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, which Playwright has no browser deps for
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
 
     steps:

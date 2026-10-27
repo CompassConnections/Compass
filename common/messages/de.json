@@ -1,9 +1,10 @@
 {
   "answers.content.thoughts_placeholder": "Warum antworten Sie so?",
   "answers.matrix.all": "Alle",
+  "answers.matrix.accept_hint": "Die Antworten, die Sie von der anderen Person akzeptieren würden. Bei dieser Frage sind Sie kompatibel, wenn ihre Antwort eine davon ist.",
   "answers.matrix.hint": "Wählen Sie Ihre eigene Antwort und markieren Sie dann jede Antwort, die Sie von der anderen Person akzeptieren würden.",
   "answers.matrix.none": "Keine",
-  "answers.matrix.you_accept": "Sie akzeptieren",
+  "answers.matrix.you_accept": "Von der anderen Person akzeptieren",
   "answers.missing.accept": "Wählen Sie, was Sie akzeptieren",
   "answers.missing.importance": "Geben Sie an, wie wichtig das ist",
   "answers.missing.your_answer": "Wählen Sie Ihre Antwort",

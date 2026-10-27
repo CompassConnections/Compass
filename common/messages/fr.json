@@ -1,9 +1,10 @@
 {
   "answers.content.thoughts_placeholder": "Qu’est-ce qui vous fait répondre ainsi ?",
   "answers.matrix.all": "Tout",
+  "answers.matrix.accept_hint": "Les réponses que vous accepteriez de l’autre personne. Vous êtes compatibles sur cette question si sa réponse en fait partie.",
   "answers.matrix.hint": "Choisissez votre position, puis cochez toutes les réponses que vous pourriez accepter de l’autre.",
   "answers.matrix.none": "Aucune",
-  "answers.matrix.you_accept": "Vous acceptez",
+  "answers.matrix.you_accept": "Accepté de l’autre",
   "answers.missing.accept": "Choisissez ce que vous acceptez",
   "answers.missing.importance": "Indiquez l’importance",
   "answers.missing.your_answer": "Choisissez votre réponse",

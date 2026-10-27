@@ -370,6 +370,10 @@ export const AnswerMatrix = (props: {
   const mineHeaderId = `${columnId}-mine`
   const acceptHeaderId = `${columnId}-accept`
   const allAccepted = options.length > 0 && options.every((_, i) => prefChoices.includes(i))
+  const acceptHint = t(
+    'answers.matrix.accept_hint',
+    "The answers you'd be happy for the other person to give. You two are compatible on this question when their answer is one of these.",
+  )
 
   const headerClass = 'items-center gap-1.5 row-start-1 min-w-0 self-end pb-2'
   const labelClass = 'font-dm-sans text-[10px] uppercase tracking-[0.14em] sm:text-[11px] truncate'
@@ -401,8 +405,20 @@ export const AnswerMatrix = (props: {
         >
           <UserGroupIcon className="h-3.5 w-3.5 shrink-0 text-green-500" />
           <span className={clsx(labelClass, 'text-green-500')}>
-            {t('answers.matrix.you_accept', "You'll accept")}
+            {t('answers.matrix.you_accept', 'Accept from them')}
           </span>
+          {/* "You'll accept" read as a second question about yourself. The label now names the
+              other person, and the icon spells out what the ticks do to the score — the same
+              treatment as the hint at the top of the dialog. */}
+          <Tooltip text={acceptHint}>
+            <button
+              type="button"
+              aria-label={acceptHint}
+              className="text-ink-500 hover:text-ink-800 flex shrink-0 items-center transition-colors"
+            >
+              <InformationCircleIcon className="h-3.5 w-3.5" />
+            </button>
+          </Tooltip>
           <button
             type="button"
             onClick={() => setPrefChoices(allAccepted ? [] : options.map((_, i) => i))}

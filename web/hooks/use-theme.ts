@@ -49,7 +49,15 @@ const reRenderTheme = () => {
 }
 
 function getTheme() {
-  const theme = JSON.parse(localStorage.getItem('theme') ?? 'null') ?? 'auto'
+  // Raw localStorage in a try: some browsers deny storage access outright (cookies blocked, embedded
+  // webviews) and throw a SecurityError on the read. This runs in a passive effect on every page, so
+  // an uncaught throw here takes the whole page down. Fall back to the default instead.
+  let theme: any = 'auto'
+  try {
+    theme = JSON.parse(localStorage.getItem('theme') ?? 'null') ?? 'auto'
+  } catch {
+    // storage unavailable — keep the default
+  }
   return theme.value ?? theme
 }
 

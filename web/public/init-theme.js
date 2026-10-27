@@ -1,6 +1,16 @@
 // run this in <head> as blocking to prevent flash of unstyled content. See theme-provider.tsx
 {
-  const localTheme = localStorage.getItem('theme')
+  // localStorage access throws a SecurityError when the browser denies site storage (cookies blocked,
+  // embedded webviews). Read it through a guard so the page still renders with the defaults.
+  const readStored = (key) => {
+    try {
+      return localStorage.getItem(key)
+    } catch (_e) {
+      return null
+    }
+  }
+
+  const localTheme = readStored('theme')
   let theme = localTheme ? JSON.parse(localTheme) : 'auto'
   theme = theme.value ?? theme
 
@@ -11,7 +21,7 @@
     document.documentElement.classList.add('dark')
   }
 
-  const localFontPreference = localStorage.getItem('font-preference')
+  const localFontPreference = readStored('font-preference')
   let fontPreference = localFontPreference ? JSON.parse(localFontPreference) : 'atkinson'
   fontPreference = fontPreference.value ?? fontPreference
 

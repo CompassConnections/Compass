@@ -34,6 +34,12 @@ export const applyFontPreference = (font: FontOption) => {
 
 const getStoredFontPreference = (): FontOption => {
   if (typeof window === 'undefined') return 'atkinson'
-  const font = JSON.parse(localStorage.getItem('font-preference') ?? 'null') ?? 'atkinson'
+  // Same guard as getTheme(): storage access can throw a SecurityError in locked-down browsers.
+  let font: any = 'atkinson'
+  try {
+    font = JSON.parse(localStorage.getItem('font-preference') ?? 'null') ?? 'atkinson'
+  } catch {
+    // storage unavailable — keep the default
+  }
   return font.value ?? (font as FontOption)
 }

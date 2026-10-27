@@ -42,7 +42,9 @@ export default function CompatibilityPage() {
   const sep = isMobile ? '\n' : ''
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
-  const [sort, setSort] = useState<CompatibilitySort>('random')
+  // What the community marks important is the most useful first read of a long list — for the
+  // unanswered tab especially, where "important to you" has nothing to sort by yet.
+  const [sort, setSort] = useState<CompatibilitySort>('community_importance')
   const [pinnedOnly, setPinnedOnly] = useState(false)
   const [category, setCategory] = useState<string | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)

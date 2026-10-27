@@ -299,7 +299,7 @@ function AnswerCompatibilityQuestionModal(props: {
   const {open, setOpen, user, otherQuestions, refreshCompatibilityAll, onClose, fromSignup} = props
   const [questionIndex, setQuestionIndex] = useState(0)
   const [showOnboarding, setShowOnboarding] = useState(fromSignup ?? false)
-  const [sort, setSort] = useState<CompatibilitySort>('random')
+  const [sort, setSort] = useState<CompatibilitySort>('community_importance')
   // Set when the core run empties. Answering the last core question used to just close the dialog,
   // which reads as "that was all of them" — the reason someone finishes onboarding and never comes
   // back. The screen says what they finished and offers the rest.
@@ -332,8 +332,9 @@ function AnswerCompatibilityQuestionModal(props: {
   const sortedQuestions = useMemo(() => {
     debug('Refreshing sorted questions')
     // The core run is a guided sequence, not a pile to browse: it escalates, so it is ordered, and
-    // the sort control is hidden for it (below). Random is right for everything after — those are
-    // interchangeable in stakes, and shuffling keeps a long tail from always starting the same way.
+    // the sort control is hidden for it (below). Everything after defaults to what the community
+    // marks important, so the questions most likely to move a score come first; the control is
+    // there for anyone who wants random or newest instead.
     if (inCoreRun) return [...questionPool].sort(byCoreOrder)
     return [...questionPool].sort((a, b) => {
       return compareBySort(a, b, sort)

@@ -104,7 +104,13 @@ export const sendNewMessageEmail = async (
 
 export const sendWelcomeEmail = async (toUser: User, privateUser: PrivateUser) => {
   if (!privateUser.email) return
-  const verificationLink = await admin.auth().generateEmailVerificationLink(privateUser.email)
+  // Google and Apple sign-ins arrive with the address already verified by the provider, so asking
+  // those members to "confirm your email" sends them to click a link that does nothing. Only a
+  // password sign-up still has something to confirm; the template drops the step when there is no link.
+  const {emailVerified} = await admin.auth().getUser(toUser.id)
+  const verificationLink = emailVerified
+    ? undefined
+    : await admin.auth().generateEmailVerificationLink(privateUser.email)
 
   const locale = privateUser?.locale
   const t = createT(locale)

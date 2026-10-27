@@ -1,17 +1,6 @@
-import {Link} from '@react-email/components'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import {UNFINISHED_SIGNUP_GRACE_DAYS} from 'common/unfinished-signups'
-import {
-  Actions,
-  CTAButton,
-  Divider,
-  EmailShell,
-  Heading,
-  link,
-  Muted,
-  Paragraph,
-  paragraph,
-} from 'email/utils'
+import {EmailShell, LetterButton, LetterParagraph, Signature, TextLink} from 'email/utils'
 import React from 'react'
 import {createT} from 'shared/locale'
 
@@ -27,8 +16,10 @@ import {createT} from 'shared/locale'
  * list, no encouragement, no founder letter, and it is sent exactly once. Deletion on the stated
  * date is what makes the sentence about deletion true.
  *
- * From Compass rather than from Martin: a person reading a notice about a login they may not even
- * remember creating should see the name of the site, not of a stranger.
+ * Sent from the Compass address rather than Martin's: a person reading a notice about a login they
+ * may not even remember creating should see the name of the site in their inbox, not of a stranger.
+ * It is signed by Martin all the same, like every Compass email — a name at the bottom says a person
+ * is answerable for the notice; it is a signature, not a founder letter.
  */
 interface UnfinishedSignupEmailProps {
   email: string
@@ -63,52 +54,54 @@ export const UnfinishedSignupEmail = ({
       unsubscribeUrl={deleteUrl}
       email={email}
       locale={locale}
+      variant="plain"
     >
-      <Heading align="left" style={{fontSize: '26px'}}>
-        {t('email.unfinished_signup.title', 'You started a Compass account')}
-      </Heading>
+      {/*<Heading align="left" style={{fontSize: '24px', lineHeight: '1.25', margin: '0 0 16px 0'}}>*/}
+      {/*  {t('email.unfinished_signup.title', 'You started a Compass account')}*/}
+      {/*</Heading>*/}
 
-      <Paragraph>
+      <LetterParagraph>
         {t(
           'email.unfinished_signup.what_exists',
           'On {date}, you signed in to Compass with this address but did not finish creating a profile. Nothing is visible to anyone yet though.',
           {date},
         )}
-      </Paragraph>
+      </LetterParagraph>
 
-      <Paragraph>
+      <LetterParagraph>
         {t(
           'email.unfinished_signup.finish',
           'If you would like to finish, the form picks up where you left off:',
         )}
-      </Paragraph>
+      </LetterParagraph>
 
-      <Actions style={{margin: '8px 0 0 0'}}>
-        <CTAButton href={finishUrl}>
-          {t('email.unfinished_signup.finish_button', 'Finish my profile')}
-        </CTAButton>
-      </Actions>
+      <LetterButton href={finishUrl}>
+        {t('email.unfinished_signup.finish_button', 'Finish my profile')}
+      </LetterButton>
 
-      <Divider />
-
-      <Paragraph>
+      <LetterParagraph>
         {t(
           'email.unfinished_signup.or_not',
-          'If you would rather not, you do not have to do anything: logins that are never finished are deleted automatically {days} days after this email, and the address with them. You can also delete it right now:',
+          'If you would rather not, your login will be deleted automatically in {days} days. You can also',
           {days},
         )}{' '}
-        <Link href={deleteUrl} style={{...link, wordBreak: 'break-word'}}>
-          {t('email.unfinished_signup.delete_link', 'delete this login')}
-        </Link>
+        <TextLink href={deleteUrl} style={{wordBreak: 'break-word'}}>
+          {t('email.unfinished_signup.delete_link', 'delete it right now')}
+        </TextLink>
         .
-      </Paragraph>
+      </LetterParagraph>
 
-      <Muted align="left" style={{...paragraph, fontSize: '13px', margin: '24px 0 0 0'}}>
-        {t(
-          'email.unfinished_signup.only_one',
-          'This is the only email you will get about it. If it was not you, someone typed your address by mistake — ignore this and the login disappears on its own.',
-        )}
-      </Muted>
+      {/*<Muted align="left" style={{fontSize: '14px', lineHeight: '1.6', color: palette.ink600}}>*/}
+      {/*  {t(*/}
+      {/*    'email.unfinished_signup.only_one',*/}
+      {/*    'This is the only email you will get about it. If it was not you, someone typed your address by mistake — ignore this and the login disappears on its own.',*/}
+      {/*  )}*/}
+      {/*</Muted>*/}
+
+      <Signature
+        title={t('email.signature_title', 'Founder, Compass')}
+        style={{fontSize: '16px', lineHeight: '1.5', margin: '24px 0 0 0'}}
+      />
     </EmailShell>
   )
 }

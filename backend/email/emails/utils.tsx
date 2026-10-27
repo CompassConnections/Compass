@@ -49,6 +49,7 @@ export const palette = {
   canvas950: '#2c2416', // espresso
   ink500: '#8c8070', // muted
   ink600: '#6e6252', // body
+  ink800: '#3e362c', // running text on an unpainted ground; the only step besides 900 that clears 7:1
   ink900: '#1e1a14', // headings
   primary50: '#faf3e9',
   primary100: '#f3e4ce',
@@ -140,6 +141,22 @@ interface ShellProps {
   unsubscribeUrl: string
   email?: string
   locale?: string
+  /**
+   * `sheet` (default) is the bordered cream card with the centred wordmark and the icon footer.
+   * `plain` is a letter: no painted surface, everything on the left margin, a one-line footer. It is
+   * what a message looks like when a person or a small site wrote it rather than a template kit — use
+   * it with `Letter*` components below, which carry the darker running-text colour an unpainted ground
+   * needs.
+   */
+  variant?: 'sheet' | 'plain'
+}
+
+/** The plain variant's column: narrower than the sheet so 16px body copy stays under ~75 characters. */
+export const plainContainer: CSSProperties = {
+  margin: '0 auto',
+  maxWidth: '560px',
+  width: '100%',
+  padding: '32px 20px 24px 20px',
 }
 
 /**
@@ -149,7 +166,14 @@ interface ShellProps {
  * stylesheet and one ended up with a private copy of `main`/`container`/`content` that had drifted from
  * the shared one.
  */
-export const EmailShell = ({preview, children, unsubscribeUrl, email, locale}: ShellProps) => (
+export const EmailShell = ({
+  preview,
+  children,
+  unsubscribeUrl,
+  email,
+  locale,
+  variant = 'sheet',
+}: ShellProps) => (
   <Html>
     <Head>
       {/* Tells the client we have a real dark rendering, so it does not invent one by inverting ours. */}
@@ -165,13 +189,19 @@ export const EmailShell = ({preview, children, unsubscribeUrl, email, locale}: S
     </Head>
     <Preview>{preview}</Preview>
     <Body style={main} className="cm-body">
-      <Container style={container}>
-        <Wordmark />
-        <Section style={content} className="cm-sheet">
-          {children}
-        </Section>
-        <Footer unsubscribeUrl={unsubscribeUrl} email={email} locale={locale} />
-      </Container>
+      {variant === 'plain' ? (
+        <Container style={plainContainer}>
+          <Section style={{textAlign: 'left' as const}}>{children}</Section>
+          <PlainFooter unsubscribeUrl={unsubscribeUrl} email={email} locale={locale} />
+        </Container>
+      ) : (
+        <Container style={container}>
+          <Section style={content} className="cm-sheet">
+            {children}
+          </Section>
+          <Footer unsubscribeUrl={unsubscribeUrl} email={email} locale={locale} />
+        </Container>
+      )}
     </Body>
   </Html>
 )
@@ -181,8 +211,8 @@ export const EmailShell = ({preview, children, unsubscribeUrl, email, locale}: S
  * Gmail and Outlook will not render, and a raster fallback would be one more asset to keep in sync for a
  * line of type. Cormorant Garamond at 0.03em tracking is the same spec as `web/components/site-logo.tsx`.
  */
-export const Wordmark = () => (
-  <Section style={{textAlign: 'center' as const, padding: '0 0 18px 0'}}>
+export const Wordmark = ({align = 'center'}: {align?: 'left' | 'center'}) => (
+  <Section style={{textAlign: align, padding: align === 'left' ? '0 0 28px 0' : '0 0 18px 0'}}>
     <Link href={DEPLOYED_WEB_URL} style={{textDecoration: 'none'}}>
       <span
         className="cm-wordmark"
@@ -302,6 +332,77 @@ export const link: CSSProperties = {
   textDecoration: 'none',
   fontWeight: 600,
 }
+
+// ─── Letter (the `plain` shell) ───────────────────────────────────────────────
+
+/**
+ * Running text for the plain shell. ink-800 at 16px rather than `paragraph`'s ink-600 at 15px: with no
+ * cream sheet behind it the copy sits on the client's own white, and ink-600 is a secondary-text colour
+ * that misses the 7:1 body target in `docs/ui-guidelines.md`.
+ */
+export const letterParagraph: CSSProperties = {
+  fontFamily: fonts.body,
+  fontSize: '16px',
+  lineHeight: '1.6',
+  color: palette.ink800,
+  margin: '0 0 16px 0',
+}
+
+export const LetterParagraph = ({
+  children,
+  style,
+}: {
+  children: ReactNode
+  style?: CSSProperties
+}) => (
+  <Text className="cm-letter" style={{...letterParagraph, ...style}}>
+    {children}
+  </Text>
+)
+
+/**
+ * A link inside a sentence: underlined, regular weight, primary-700. The bold un-underlined amber of
+ * `link` is a button impersonating a word; in a letter a link should look like one.
+ */
+export const TextLink = ({
+  href,
+  children,
+  style,
+}: {
+  href: string
+  children: ReactNode
+  style?: CSSProperties
+}) => (
+  <Link
+    href={href}
+    className="cm-link"
+    style={{color: palette.primary700, textDecoration: 'underline', ...style}}
+  >
+    {children}
+  </Link>
+)
+
+/**
+ * The plain shell's button. Same cta fill as `CTAButton`, but a 6px corner and a tighter box, and it
+ * stays on the left margin with the text instead of being centred under it.
+ */
+export const LetterButton = ({href, children}: {href?: string; children: ReactNode}) => (
+  <Section style={{textAlign: 'left' as const, margin: '4px 0 28px 0'}}>
+    <Button
+      href={href}
+      className="cm-cta"
+      style={{
+        ...button,
+        borderRadius: '6px',
+        fontSize: '16px',
+        fontWeight: 600,
+        padding: '12px 22px',
+      }}
+    >
+      {children}
+    </Button>
+  </Section>
+)
 
 /**
  * The pill at the top of an event email — "New message", "Argument against". Same spec as the hero badge
@@ -452,8 +553,11 @@ export const Actions = ({children, style}: {children: ReactNode; style?: CSSProp
 )
 
 /** Martin's sign-off, identical across the three founder letters. */
-export const Signature = ({title}: {title: string}) => (
-  <Text style={{...paragraph, margin: '28px 0 0 0', color: palette.ink900}} className="cm-heading">
+export const Signature = ({title, style}: {title: string; style?: CSSProperties}) => (
+  <Text
+    style={{...paragraph, margin: '28px 0 0 0', color: palette.ink900, ...style}}
+    className="cm-heading"
+  >
     Martin Braquet
     <br />
     <span className="cm-muted" style={{fontSize: '12px', color: palette.ink500}}>
@@ -557,6 +661,39 @@ export const Footer = ({email, unsubscribeUrl, locale}: Props) => {
   )
 }
 
+/**
+ * The plain shell's footer: the one line the law wants, under a hairline. No icon row — eight social
+ * and donation logos under a short notice is the loudest thing in the message, and to someone who is
+ * not a member it is a pitch.
+ */
+export const PlainFooter = ({email, unsubscribeUrl, locale}: Props) => {
+  const t = createT(locale)
+  return (
+    <Section style={{margin: '32px 0 0 0', textAlign: 'left' as const}}>
+      <hr
+        style={{border: 'none', borderTop: `1px solid ${palette.canvas200}`, margin: '0 0 16px 0'}}
+      />
+      <Text
+        className="cm-muted"
+        style={{
+          fontFamily: fonts.body,
+          fontSize: '13px',
+          lineHeight: '1.6',
+          color: palette.ink600,
+          margin: '0',
+        }}
+      >
+        {t(
+          'email.footer.sent_to',
+          'The email was sent to {email}. To no longer receive these emails, unsubscribe',
+          {email},
+        )}{' '}
+        <TextLink href={unsubscribeUrl}>{t('email.footer.unsubscribe_link', 'here')}</TextLink>.
+      </Text>
+    </Section>
+  )
+}
+
 // ─── Legacy style objects ─────────────────────────────────────────────────────
 // Retained so nothing outside this package breaks, and retuned to the tokens above rather than left on
 // the old blue-button / white-sheet values.
@@ -632,6 +769,10 @@ export const DARK_MODE_CSS = `
     .cm-lead.cm-lead, .cm-name.cm-name, .cm-wordmark.cm-wordmark { color: #f7f4ef !important; }
     .cm-text.cm-text { color: #baaa96 !important; }
     .cm-muted.cm-muted, .cm-muted.cm-muted span { color: #b0a08c !important; }
+    /* The plain shell has no sheet, so its text sits on the client's dark ground directly: ink-800's
+       dark value for the copy, and a light amber for links, since primary-700 is a light-ground colour. */
+    .cm-letter.cm-letter { color: #d9cdbd !important; }
+    .cm-link.cm-link { color: #dcab71 !important; }
     .cm-chip.cm-chip, .cm-chip.cm-chip span {
       background-color: #443422 !important;
       border-color: #855022 !important;

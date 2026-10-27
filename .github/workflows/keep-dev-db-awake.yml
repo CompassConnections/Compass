@@ -1,0 +1,23 @@
+name: Keep Dev DB Awake
+
+on:
+  # The dev Supabase project lives in a free-tier org, which pauses a project after ~7 days without
+  # activity. A tiny read every 3 days keeps it awake for `yarn dev` and contributors.
+  schedule:
+    - cron: '0 6 */3 * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query the dev database
+        env:
+          # Public anon key, same as supabaseAnonKey in common/src/envs/dev.ts
+          SUPABASE_URL: https://zbspxezubpzxmuxciurg.supabase.co
+          SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpic3B4ZXp1YnB6eG11eGNpdXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2ODM0MTMsImV4cCI6MjA3MzI1OTQxM30.ZkM7zlawP8Nke0T3KJrqpOQ4DzqPaXTaJXLC2WU8Y7c
+        run: |
+          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 10 \
+            "$SUPABASE_URL/rest/v1/compatibility_prompts?select=id&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY"

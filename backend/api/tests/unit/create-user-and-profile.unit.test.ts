@@ -24,6 +24,7 @@ jest.mock('common/util/time')
 jest.mock('api/validate-username')
 jest.mock('common/logger')
 jest.mock('shared/moderation/vpn-check')
+jest.mock('shared/moderation/banned-networks')
 jest.mock('shared/supabase/users')
 
 import {createUserAndProfile} from 'api/create-user-and-profile'
@@ -41,6 +42,7 @@ import * as firebaseAdmin from 'firebase-admin'
 import * as sharedAnalytics from 'shared/analytics'
 import * as firebaseUtils from 'shared/firebase-utils'
 import * as avatarHelpers from 'shared/helpers/generate-and-update-avatar-urls'
+import * as bannedNetworks from 'shared/moderation/banned-networks'
 import * as vpnCheck from 'shared/moderation/vpn-check'
 import * as parsePhotos from 'shared/profiles/parse-photos'
 import * as supabaseInit from 'shared/supabase/init'
@@ -72,6 +74,7 @@ describe('createUserAndProfile', () => {
     ;(sharedUtils.getUserByUsername as jest.Mock).mockResolvedValue(false)
     ;(vpnCheck.lookupVpnNetwork as jest.Mock).mockResolvedValue(null)
     ;(vpnCheck.isVpnTableComplete as jest.Mock).mockReturnValue(true)
+    ;(bannedNetworks.findBannedNetwork as jest.Mock).mockResolvedValue(null)
     // `common/util/object` is auto-mocked, which leaves `removeUndefinedProps` returning `undefined`.
     // It is a pure helper that always returns an object, so `undefined` is not a stand-in for
     // anything the real one can do — it is a state the handler cannot reach in production, and a test
@@ -307,6 +310,13 @@ describe('createUserAndProfile', () => {
     })
 
     it('should ban user from posting if device token is banned', async () => {
+      ;(bannedNetworks.findBannedNetwork as jest.Mock).mockResolvedValue({
+        kind: 'device',
+        network: null,
+        sourceUserId: null,
+        sourceUsername: null,
+        note: 'Hand-curated repeat abuser',
+      })
       const mockProps = {
         deviceToken: 'fa807d664415',
         username: 'mockUsername',
@@ -369,11 +379,18 @@ describe('createUserAndProfile', () => {
 
       await createUserAndProfile(mockProps, mockAuth, mockReq)
 
+      expect(bannedNetworks.findBannedNetwork).toHaveBeenCalledWith(
+        expect.any(Object),
+        mockIp,
+        'fa807d664415',
+      )
+      // A device match keeps the full lockout: no provisional reason.
       expect(supabaseUtils.insert).toHaveBeenCalledWith(
         expect.any(Object),
         'users',
         expect.objectContaining({
           is_banned_from_posting: true,
+          ban_reason: null,
         }),
       )
     })
@@ -520,6 +537,96 @@ describe('createUserAndProfile', () => {
       const {result} = (await runSignup({ip: VPN_IP})) as any
       expect(result.user.username).toBe('mockUsername')
       expect(sharedSupabaseUsers.updateUser).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('when the signup matches the banned-networks list', () => {
+    const IP = '197.211.63.217'
+    const ipMatch = {
+      kind: 'ip',
+      network: '197.211.63.217/32',
+      sourceUserId: 'abuserId',
+      sourceUsername: 'abuser',
+      note: null,
+    }
+
+    const runSignup = async () => {
+      const mockProps = {
+        deviceToken: 'someDeviceToken',
+        username: 'mockUsername',
+        name: 'mockName',
+        link: {},
+        profile: {
+          city: 'mockCity',
+          gender: 'mockGender',
+          visibility: 'public' as 'public' | 'member',
+        },
+      }
+      const mockNewUserRow = {
+        created_time: 'mockCreatedTime',
+        id: 'mockNewUserId',
+        name: 'mockName',
+        username: 'mockUsername',
+        is_banned_from_posting: true,
+        ban_reason: 'under_review',
+      }
+      ;(sharedAnalytics.getIp as jest.Mock).mockReturnValue(IP)
+      ;(usernameUtils.cleanDisplayName as jest.Mock).mockReturnValue('mockName')
+      ;(firebaseUtils.getBucket as jest.Mock).mockReturnValue({} as any)
+      ;(avatarHelpers.generateAvatarUrl as jest.Mock).mockResolvedValue('mockAvatarUrl')
+      ;(validateUsernameModule.validateUsername as jest.Mock).mockResolvedValue({valid: true})
+      ;(parsePhotos.removePinnedUrlFromPhotoUrls as jest.Mock).mockReturnValue(mockProps.profile)
+      ;(mockPg.tx as jest.Mock).mockImplementation(async (cb: any) => {
+        const mockTx = {
+          oneOrNone: jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce(null),
+          one: jest.fn(),
+          manyOrNone: jest.fn().mockResolvedValue([]),
+        }
+        return cb(mockTx)
+      })
+      ;(supabaseUtils.insert as jest.Mock)
+        .mockResolvedValueOnce(mockNewUserRow)
+        .mockResolvedValueOnce({data: {}, id: 'mockPrivateUserId'})
+        .mockResolvedValueOnce({id: 'mockProfileId', user_id: 'mockUserId'})
+      ;(supabaseUsers.convertUser as jest.Mock).mockReturnValue(mockNewUserRow)
+      ;(supabaseUsers.convertPrivateUser as jest.Mock).mockReturnValue({})
+
+      return createUserAndProfile(mockProps, {uid: '321'} as AuthedUser, {get: jest.fn()} as any)
+    }
+
+    const reportsPost = () =>
+      (sendDiscordMessage as jest.Mock).mock.calls.find((c) => c[1] === 'reports')
+
+    beforeEach(() => {
+      ;(bannedNetworks.findBannedNetwork as jest.Mock).mockResolvedValue(ipMatch)
+    })
+
+    it('holds an IP match for review rather than locking it out', async () => {
+      await runSignup()
+      expect(supabaseUtils.insert).toHaveBeenCalledWith(
+        expect.any(Object),
+        'users',
+        expect.objectContaining({is_banned_from_posting: true, ban_reason: 'under_review'}),
+      )
+    })
+
+    it('posts to the reports channel naming the earlier account', async () => {
+      await runSignup()
+      const post = reportsPost()
+      expect(post).toBeDefined()
+      expect(post[0]).toContain(IP)
+      expect(post[0]).toContain('@abuser')
+    })
+
+    it('skips the VPN check, which would add nothing', async () => {
+      await runSignup()
+      expect(vpnCheck.lookupVpnNetwork).not.toHaveBeenCalled()
+    })
+
+    it('still creates the account when the reports post fails', async () => {
+      ;(sendDiscordMessage as jest.Mock).mockRejectedValue(new Error('discord down'))
+      const {result} = (await runSignup()) as any
+      expect(result.user.username).toBe('mockUsername')
     })
   })
 

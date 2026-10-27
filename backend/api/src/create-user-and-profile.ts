@@ -3,7 +3,11 @@ import {setProfileOptions} from 'api/update-options'
 import {APIErrors} from 'common/api/utils'
 import {defaultLocale} from 'common/constants'
 import {sendDiscordMessage} from 'common/discord/core'
-import {newMemberDiscordMessage, vpnSignupDiscordMessage} from 'common/discord/messages'
+import {
+  bannedNetworkSignupDiscordMessage,
+  newMemberDiscordMessage,
+  vpnSignupDiscordMessage,
+} from 'common/discord/messages'
 import {debug} from 'common/logger'
 import {BanReason} from 'common/moderation/ban'
 import {trimStrings} from 'common/parsing'
@@ -17,6 +21,7 @@ import * as admin from 'firebase-admin'
 import {getIp, track} from 'shared/analytics'
 import {getBucket} from 'shared/firebase-utils'
 import {generateAvatarUrl} from 'shared/helpers/generate-and-update-avatar-urls'
+import {BannedNetworkMatch, findBannedNetwork} from 'shared/moderation/banned-networks'
 import {isApplePrivateEmail} from 'shared/moderation/vpn-asns'
 import {isVpnTableComplete, lookupVpnNetwork} from 'shared/moderation/vpn-check'
 import {getReferrer, notifyReferrerOfSignup} from 'shared/outreach/referrals'
@@ -82,7 +87,7 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
 
   // The pg.tx() call wraps several database operations in a single atomic transaction,
   // ensuring they either all succeed or all fail together.
-  const {user, privateUser, newProfileRow} = await pg.tx(async (tx) => {
+  const {user, privateUser, newProfileRow, bannedMatch} = await pg.tx(async (tx) => {
     const existingUser = await tx.oneOrNone('select id from users where id = $1', [auth.uid])
     if (existingUser) {
       const existingProfile = await tx.oneOrNone('select id from profiles where user_id = $1', [
@@ -117,15 +122,19 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
       blockedByUserIds: [],
     }
 
+    // Signing up from the device or network of a confirmed abuser (backend/shared/src/moderation/
+    // banned-networks.ts). A device token names one browser, so a match there keeps the full
+    // lockout the hand-curated list always gave. An address is shared and reassigned, so an IP match
+    // only buys the same provisional hold as a VPN signup, and a human decides.
+    const bannedMatch: BannedNetworkMatch | null = await findBannedNetwork(tx, ip, deviceToken)
+
     const newUserRow = await insert(tx, 'users', {
       id: auth.uid,
       name: cleanName,
       username: finalUsername,
       avatar_url: avatarUrl,
-      is_banned_from_posting: Boolean(
-        (deviceToken && bannedDeviceTokens.includes(deviceToken)) ||
-          (ip && bannedIpAddresses.includes(ip)),
-      ),
+      is_banned_from_posting: !!bannedMatch,
+      ban_reason: bannedMatch?.kind === 'ip' ? ('under_review' satisfies BanReason) : null,
       data: {},
     })
 
@@ -160,10 +169,21 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
       user: convertUser(newUserRow),
       privateUser: convertPrivateUser(newPrivateUserRow),
       newProfileRow,
+      bannedMatch,
     }
   })
 
   log('created user and profile', {username: user.username, firebaseId: auth.uid})
+
+  if (bannedMatch) {
+    // #reports, before the response for the same Cloud Run reason as the VPN check below. A failed
+    // webhook leaves the ban in place; it just waits longer for someone to notice.
+    try {
+      await sendDiscordMessage(bannedNetworkSignupDiscordMessage(user, bannedMatch, ip), 'reports')
+    } catch (e) {
+      console.error('Failed to send discord banned network signup', e)
+    }
+  }
 
   // Signing up from behind a commercial VPN is the strongest signal we have at the moment of
   // registration: in the September 2026 audit these networks carried 12 of our 13 confirmed-abuse
@@ -183,7 +203,9 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
   // Someone arriving on an Apple Hide My Email address is exempt: that means Apple's privacy
   // plumbing, which is the opposite of a fraud signal, and it travels with iCloud Private Relay.
   let held = false
-  let vpnChecked = isApplePrivateEmail(email)
+  // Already banned on the list above: the VPN hold would add nothing, and would soften a device
+  // lockout into a provisional hold.
+  let vpnChecked = !!bannedMatch || isApplePrivateEmail(email)
   const checkVpnAndHold = async (maxWaitMs: number) => {
     const vpnNetwork = await lookupVpnNetwork(ip, maxWaitMs)
     vpnChecked = isVpnTableComplete()
@@ -311,18 +333,3 @@ export const createUserAndProfile: APIHandler<'create-user-and-profile'> = async
  * running or had failed, where a fresh load from RIPE takes a few seconds with CPU to run on.
  */
 const VPN_CHECK_MAX_WAIT_MS = 15_000
-
-const bannedDeviceTokens = [
-  'fa807d664415',
-  'dcf208a11839',
-  'bbf18707c15d',
-  '4c2d15a6cc0c',
-  '0da6b4ea79d3',
-]
-const bannedIpAddresses: string[] = [
-  '24.176.214.250',
-  '2607:fb90:bd95:dbcd:ac39:6c97:4e35:3fed',
-  '2607:fb91:389:ddd0:ac39:8397:4e57:f060',
-  '2607:fb90:ed9a:4c8f:ac39:cf57:4edd:4027',
-  '2607:fb90:bd36:517a:ac39:6c91:812c:6328',
-]

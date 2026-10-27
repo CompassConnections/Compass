@@ -2,6 +2,8 @@ import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {isAdminId} from 'common/envs/constants'
 import {trackPublicEvent} from 'shared/analytics'
 import {throwErrorIfNotMod} from 'shared/helpers/auth'
+import {addBannedNetworksOf, removeBannedNetworksOf} from 'shared/moderation/banned-networks'
+import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {updateUser} from 'shared/supabase/users'
 import {log} from 'shared/utils'
 
@@ -18,4 +20,9 @@ export const banUser: APIHandler<'ban-user'> = async (body, auth) => {
   })
   await updateUser(userId, {isBannedFromPosting: !unban, banReason})
   log('updated user')
+  // A confirmed abuser's signup IP and device are blocked for new signups; anything short of that
+  // (unban, or downgraded back to a provisional hold) takes them off the list again.
+  const pg = createSupabaseDirectClient()
+  if (banReason === 'confirmed_abuse') await addBannedNetworksOf(pg, userId)
+  else await removeBannedNetworksOf(pg, userId)
 }

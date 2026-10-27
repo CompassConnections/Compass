@@ -80,3 +80,37 @@ export const vpnSignupDiscordMessage = (
   `**IP:** \`${ip}\`\n` +
   `They can browse but not message anyone until someone lifts the hold. ` +
   `Most VPN users are genuine — check the profile before deciding.`
+
+/**
+ * The #reports post for a signup whose IP or device is on the banned-networks list — the network or
+ * device a confirmed abuser used.
+ *
+ * Names the earlier account so a moderator can put the two side by side, which is how the call is
+ * actually made. An IP match is worded as a hint, not a verdict: addresses are shared and reassigned.
+ */
+export const bannedNetworkSignupDiscordMessage = (
+  member: DiscordMember,
+  match: {
+    kind: 'ip' | 'device'
+    network: string | null
+    sourceUsername: string | null
+    note: string | null
+  },
+  ip: string,
+): string =>
+  (match.kind === 'device'
+    ? `⛔ **Signup from a banned device — locked out**\n`
+    : `🔒 **Signup from a banned network — on hold pending review**\n`) +
+  `**Member:** ${profileLink(member)} (@${member.username})\n` +
+  `**IP:** \`${ip}\`` +
+  (match.kind === 'ip' && match.network ? ` (in banned \`${match.network}\`)` : '') +
+  `\n` +
+  `**Banned because of:** ` +
+  (match.sourceUsername
+    ? `[@${match.sourceUsername}](${DEPLOYED_WEB_URL}/${match.sourceUsername})`
+    : (match.note ?? 'a hand-added entry')) +
+  `\n` +
+  (match.kind === 'device'
+    ? `Same browser as a confirmed abuser. Lift the ban if it turns out to be a shared computer.`
+    : `They can browse but not message anyone until someone lifts the hold. ` +
+      `Addresses are shared and reassigned — compare the two profiles before deciding.`)

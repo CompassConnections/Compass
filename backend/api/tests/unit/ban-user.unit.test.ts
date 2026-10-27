@@ -4,12 +4,14 @@ jest.mock('common/envs/constants')
 jest.mock('shared/supabase/users')
 jest.mock('shared/analytics')
 jest.mock('shared/utils')
+jest.mock('shared/moderation/banned-networks')
 
 import {banUser} from 'api/ban-user'
 import {AuthedUser} from 'api/helpers/endpoint'
 import * as constants from 'common/envs/constants'
 import * as sharedAnalytics from 'shared/analytics'
 import {throwErrorIfNotMod} from 'shared/helpers/auth'
+import * as bannedNetworks from 'shared/moderation/banned-networks'
 import * as supabaseInit from 'shared/supabase/init'
 import * as supabaseUsers from 'shared/supabase/users'
 
@@ -75,6 +77,30 @@ describe('banUser', () => {
         isBannedFromPosting: false,
         banReason: null,
       })
+    })
+  })
+  describe('the banned-networks list', () => {
+    const run = async (props: {userId: string; unban: boolean; reason?: any}) => {
+      ;(constants.isAdminId as jest.Mock).mockReturnValue(false)
+      await banUser(props, {uid: '321'} as AuthedUser, {} as any)
+    }
+
+    it('adds the account to the list on a confirmed-abuse ban', async () => {
+      await run({userId: '123', unban: false, reason: 'confirmed_abuse'})
+      expect(bannedNetworks.addBannedNetworksOf).toBeCalledWith(mockPg, '123')
+      expect(bannedNetworks.removeBannedNetworksOf).not.toBeCalled()
+    })
+
+    it('keeps a provisional hold off the list', async () => {
+      await run({userId: '123', unban: false, reason: 'under_review'})
+      expect(bannedNetworks.addBannedNetworksOf).not.toBeCalled()
+      expect(bannedNetworks.removeBannedNetworksOf).toBeCalledWith(mockPg, '123')
+    })
+
+    it('takes the account off the list on unban', async () => {
+      await run({userId: '123', unban: true})
+      expect(bannedNetworks.addBannedNetworksOf).not.toBeCalled()
+      expect(bannedNetworks.removeBannedNetworksOf).toBeCalledWith(mockPg, '123')
     })
   })
   describe('when an error occurs', () => {

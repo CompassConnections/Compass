@@ -109,10 +109,13 @@ export function ProfileInfo(props: {
   return (
     <>
       {/* The bar sticks to the viewport top, which on native sits under the Android/iOS status bar.
-          Pull it up through the body's safe-area padding and add that inset back as padding, so the
-          bar's background fills the status-bar strip while its buttons stay clear of the native nav. */}
+          `--tnh` is that inset (globals.css): the bar pins at `top-0` and carries the inset as its
+          own padding, so its background fills the status-bar strip while its buttons stay clear of
+          the native nav. The variable is 0 in a browser, so one rule covers both.
+          `hides-on-scroll` slides it away on the same cue as the mobile bottom nav — down while
+          reading, back on the first scroll up — so it never sits on a line someone is reading. */}
       <div
-        className="bg-canvas-50/95 border-canvas-300 top-0 z-20 mb-6 flex items-center border-b px-4 sm:px-9 py-4 backdrop-blur"
+        className="hides-on-scroll bg-canvas-50/95 border-canvas-300 sticky top-0 z-20 mb-6 flex items-center border-b px-4 sm:px-9 py-4 pt-[calc(1rem+var(--tnh))] backdrop-blur"
         style={{
           borderBottomWidth: '1px',
           gap: '10px',

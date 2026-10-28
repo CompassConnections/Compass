@@ -76,9 +76,21 @@
   }
 }
 
+/* `.hides-on-scroll` is for sticky top bars (the profile header) that take the same cue as the bottom
+   nav: slide up out of view while scrolling down, back on the way up. Not gated to mobile widths —
+   the bar exists on desktop too, where getting out of the reader's way is just as welcome. */
+.hides-on-scroll {
+  transition: transform 200ms ease-out;
+}
+
+.bottom-nav-hidden .hides-on-scroll {
+  transform: translateY(-100%);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bottom-nav,
-  .follows-bottom-nav {
+  .follows-bottom-nav,
+  .hides-on-scroll {
     transition: none;
   }
 }

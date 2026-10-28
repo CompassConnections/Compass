@@ -24,6 +24,9 @@ const HIDDEN_CLASS = 'bottom-nav-hidden'
  * `globals.css`, so a scroll frame costs no re-render. The bar translates by its *full* height,
  * safe-area padding included, so in the native apps the page shows through behind the system
  * navigation bar / home indicator while it is hidden.
+ *
+ * Sticky top bars that opt in with the `hides-on-scroll` class (the profile header) ride the same
+ * body class and slide up instead, so the two move together.
  */
 export const useHideBottomNavOnScroll = () => {
   const router = useRouter()
@@ -70,9 +73,9 @@ export const useHideBottomNavOnScroll = () => {
       requestAnimationFrame(() => (lastY = window.scrollY))
     }
 
-    // Keyboard users tabbing into the hidden bar should be able to see what they are focusing.
+    // Keyboard users tabbing into a hidden bar should be able to see what they are focusing.
     const onFocusIn = (e: FocusEvent) => {
-      if ((e.target as Element | null)?.closest?.('.bottom-nav')) setHidden(false)
+      if ((e.target as Element | null)?.closest?.('.bottom-nav, .hides-on-scroll')) setHidden(false)
     }
 
     window.addEventListener('scroll', onScroll, {passive: true})

@@ -10,8 +10,11 @@ import {APIErrors, APIHandler} from './helpers/endpoint'
 // Stores a contact message into the `contact` table
 // Web sends TipTap JSON in `content`; we store it as string in `description`.
 // If optional content metadata is provided, we include it; otherwise we fall back to user-centric defaults.
-export const contact: APIHandler<'contact'> = async ({content, userId}, _auth) => {
+export const contact: APIHandler<'contact'> = async ({content}, auth) => {
   const pg = createSupabaseDirectClient()
+  // Open to visitors, so there may be no sender; when there is one it is the token, never a field
+  // in the body, or a message could be made to look like it came from any member.
+  const userId = auth?.uid
 
   const {error} = await tryCatch(
     insert(pg, 'contact', {

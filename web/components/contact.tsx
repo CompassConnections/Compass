@@ -58,7 +58,6 @@ export function ContactComponent() {
                 linkifyUrls(editor)
                 const data = {
                   content: editor.getJSON() as JSONContent,
-                  userId: user?.id,
                 }
                 const result = await api('contact', data).catch(() => {
                   toast.error(

@@ -41,7 +41,6 @@ describe('contact', () => {
             },
           ],
         },
-        userId: '123',
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
@@ -57,7 +56,7 @@ describe('contact', () => {
       expect(tryCatch).toBeCalledTimes(1)
       expect(supabaseUtils.insert).toBeCalledTimes(1)
       expect(supabaseUtils.insert).toBeCalledWith(expect.any(Object), 'contact', {
-        user_id: mockProps.userId,
+        user_id: mockAuth.uid,
         content: JSON.stringify(mockProps.content),
       })
       ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockDbUser)
@@ -67,7 +66,7 @@ describe('contact', () => {
       expect(mockPg.oneOrNone).toBeCalledTimes(1)
       expect(mockPg.oneOrNone).toBeCalledWith(
         sqlMatch('select name, username from users where id = $1'),
-        [mockProps.userId],
+        [mockAuth.uid],
       )
       expect(sendDiscordMessage).toBeCalledTimes(1)
       expect(sendDiscordMessage).toBeCalledWith(
@@ -94,7 +93,6 @@ describe('contact', () => {
             },
           ],
         },
-        userId: '123',
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
@@ -122,7 +120,6 @@ describe('contact', () => {
             },
           ],
         },
-        userId: '123',
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
@@ -138,7 +135,7 @@ describe('contact', () => {
       expect(tryCatch).toBeCalledTimes(1)
       expect(supabaseUtils.insert).toBeCalledTimes(1)
       expect(supabaseUtils.insert).toBeCalledWith(expect.any(Object), 'contact', {
-        user_id: mockProps.userId,
+        user_id: mockAuth.uid,
         content: JSON.stringify(mockProps.content),
       })
       ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockDbUser)

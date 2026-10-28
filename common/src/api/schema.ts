@@ -1530,7 +1530,8 @@ export const API = (_apiTypeCheck = {
     returns: {} as any,
     props: z.object({
       content: contentSchema,
-      userId: z.string().optional(),
+      // No `userId` prop: the sender is whoever the token says, or nobody. A client-supplied id let
+      // a message be signed as any member.
     }),
     summary: 'Send a contact/support message',
     tag: 'Contact',

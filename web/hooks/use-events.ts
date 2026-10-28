@@ -18,8 +18,12 @@ export type Event = {
   is_public: boolean
   max_participants: number | null
   status: 'active' | 'cancelled' | 'completed'
+  // Member ids, as the viewer may see them: empty for a signed-out visitor, and minus anyone on
+  // either side of a block with the viewer. The counts are the full numbers.
   participants: string[]
   maybe: string[]
+  participantsCount: number
+  maybeCount: number
   creator?: {
     id: string
     name: string

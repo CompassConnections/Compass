@@ -140,15 +140,15 @@ export function EventCard(props: {
       <div className="mb-3">
         <p className="text-ink-500 text-sm">
           {t('events.participants_count', '{count} going', {
-            count: event.participants.length,
+            count: event.participantsCount,
           })}
           {event.max_participants &&
             t('events.participants_max', ' / {max} max', {
               max: event.max_participants,
             })}
-          {event.maybe.length > 0 &&
+          {event.maybeCount > 0 &&
             t('events.maybe_count', ' ({count} maybe)', {
-              count: event.maybe.length,
+              count: event.maybeCount,
             })}
         </p>
         {event.participants.length > 0 && (

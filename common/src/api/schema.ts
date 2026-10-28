@@ -1668,7 +1668,8 @@ export const API = (_apiTypeCheck = {
       past: any[]
     },
     props: z.object({}),
-    summary: 'Get all public events split into upcoming and past',
+    summary:
+      'Get all public events split into upcoming and past. Attendee ids only for a signed-in caller, minus blocks; visitors get counts.',
     tag: 'Events',
   },
   'update-event': {

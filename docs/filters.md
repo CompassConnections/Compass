@@ -39,7 +39,13 @@ Two toggles sit above the list, both of which write a whole search rather than o
   profile also has to accept _you_: their preferred gender has to include yours, your age has to fall
   in their range, your connection types have to overlap theirs, you have to sit inside the maximum
   distance they stated on their profile (`profiles.pref_max_distance`), and their kid desire has to be
-  within 2 of yours. Anything a profile left unstated passes — silence is not a rejection — and each
-  check is skipped entirely when your own profile has nothing to compare with. Implemented as extra
+  within 2 of yours. Anything a profile left unstated passes — silence is not a rejection — except
+  preferred gender, where a blank is read as the most common answer, "the other sex": a woman
+  searching sees profiles that named women plus men who left it blank, a man sees profiles that named
+  men plus women who left it blank, and a searcher of any other gender only sees profiles that named
+  theirs. When the connection filter is "relationship" and nothing else, "men and women" is read the
+  same way as a blank, since that answer nearly always means friendship with one and romance with the
+  other. Each check is skipped entirely when your own profile has nothing to compare with.
+  Implemented as extra
   WHERE clauses in `backend/api/src/get-profiles.ts` (`twoWayWhereClauses`), which costs one extra
   query to read your own profile and only when the toggle is on.

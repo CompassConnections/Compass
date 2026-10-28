@@ -190,6 +190,89 @@ describe('loadProfiles', () => {
         expect(query).toContain(`female`)
       })
 
+      describe('with two-way search on', () => {
+        const viewer = {
+          gender: 'female',
+          age: null,
+          city_latitude: null,
+          city_longitude: null,
+          pref_relation_styles: null,
+          wants_kids_strength: null,
+        }
+
+        it('as a woman, keeps people who named women plus men who left it blank', async () => {
+          mockPg.oneOrNone = jest.fn().mockResolvedValue(viewer)
+
+          await profilesModule.loadProfiles({userId: 'viewer-id', twoWay: true})
+
+          const [query] = mockPg.map.mock.calls[0]
+          expect(query).toContain(`'female' = ANY(profiles.pref_gender)`)
+          expect(query).toContain(`profiles.pref_gender IS NULL OR profiles.pref_gender = '{}'`)
+          expect(query).toContain(`profiles.gender = 'male'`)
+          expect(query).not.toContain(`@> '{male,female}'`)
+        })
+
+        it('as a man, keeps people who named men plus women who left it blank', async () => {
+          mockPg.oneOrNone = jest.fn().mockResolvedValue({...viewer, gender: 'male'})
+
+          await profilesModule.loadProfiles({userId: 'viewer-id', twoWay: true})
+
+          const [query] = mockPg.map.mock.calls[0]
+          expect(query).toContain(`'male' = ANY(profiles.pref_gender)`)
+          expect(query).toContain(`profiles.gender = 'female'`)
+        })
+
+        it('does not read "men and women" as the other sex unless the search is relationship-only', async () => {
+          mockPg.oneOrNone = jest.fn().mockResolvedValue({...viewer, gender: 'male'})
+
+          await profilesModule.loadProfiles({
+            userId: 'viewer-id',
+            twoWay: true,
+            pref_relation_styles: ['relationship', 'friendship'],
+          })
+
+          const [query] = mockPg.map.mock.calls[0]
+          expect(query).not.toContain(`@> '{male,female}'`)
+        })
+
+        it('in a relationship-only search, reads "men and women" as the other sex', async () => {
+          mockPg.oneOrNone = jest.fn().mockResolvedValue({...viewer, gender: 'male'})
+
+          await profilesModule.loadProfiles({
+            userId: 'viewer-id',
+            twoWay: true,
+            pref_relation_styles: ['relationship'],
+          })
+
+          const [query] = mockPg.map.mock.calls[0]
+          // A man who listed both only passes if he is a woman — i.e. he does not — while a woman who
+          // listed both does.
+          expect(query).toContain(`OR profiles.pref_gender @> '{male,female}'`)
+          expect(query).toContain(`THEN profiles.gender = 'female'`)
+          expect(query).toContain(`ELSE 'male' = ANY(profiles.pref_gender)`)
+        })
+
+        it('as any other gender, only keeps people who named it', async () => {
+          mockPg.oneOrNone = jest.fn().mockResolvedValue({...viewer, gender: 'non-binary'})
+
+          await profilesModule.loadProfiles({userId: 'viewer-id', twoWay: true})
+
+          const [query] = mockPg.map.mock.calls[0]
+          expect(query).toContain(`'non-binary' = ANY(profiles.pref_gender)`)
+          expect(query).not.toContain(`pref_gender IS NULL`)
+          expect(query).not.toContain(`profiles.gender = `)
+        })
+
+        it('skips the gender check when the searcher has no gender on file', async () => {
+          mockPg.oneOrNone = jest.fn().mockResolvedValue({...viewer, gender: null})
+
+          await profilesModule.loadProfiles({userId: 'viewer-id', twoWay: true})
+
+          const [query] = mockPg.map.mock.calls[0]
+          expect(query).not.toContain(`ANY(profiles.pref_gender)`)
+        })
+      })
+
       it('that contains a minimum age filter', async () => {
         await profilesModule.loadProfiles({
           pref_age_min: 20,

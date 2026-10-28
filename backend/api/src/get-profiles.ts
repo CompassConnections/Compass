@@ -449,25 +449,60 @@ const loadTwoWayViewer = (pg: SupabaseDirectClient, userId: string) =>
  * answers can genuinely conflict are checked, which is the same list the profile's "Who I'm looking
  * for" section collects.
  *
- * Silence passes. A candidate who never named a gender, an age range, a distance or a connection type
- * has not rejected anybody, and treating an unfilled field as a rejection would empty the grid of
- * exactly the newer profiles a member most wants to see. Each clause is also skipped outright when
- * the *searcher* has nothing to compare with (no gender on file, no city, no kid-desire answer):
- * there is no way to know whether they pass, and a guess in either direction is worse than the
- * question not being asked.
+ * Silence passes, with one exception. A candidate who never named an age range, a distance or a
+ * connection type has not rejected anybody, and treating an unfilled field as a rejection would empty
+ * the grid of exactly the newer profiles a member most wants to see. Gender is the exception: an
+ * unstated "interested in" is read as the most common answer — the other sex — rather than as "open to
+ * anyone", because it is the one field where that guess is right far more often than not. So a woman
+ * searching sees people who named women plus men who left it blank; a man sees people who named men
+ * plus women who left it blank. When the search is for a relationship and nothing else, "men and
+ * women" gets the same reading: a profile open to both for any kind of connection usually means the
+ * other sex once the connection is romantic, so it is treated like a blank too. Each clause is also
+ * skipped outright when the *searcher* has nothing to compare with (no gender on file, no city, no
+ * kid-desire answer): there is no way to know whether they pass, and a guess in either direction is
+ * worse than the question not being asked.
  */
-const twoWayWhereClauses = (viewer: TwoWayViewer) => {
+/**
+ * The gender a candidate with no stated preference is assumed to be looking for: the other sex, when
+ * the searcher has one. A woman is assumed wanted by men who left it blank, a man by women who did.
+ * Returns null for any other searcher gender, where the assumption has no obvious counterpart.
+ */
+const assumedSeekerGender = (viewerGender: string) =>
+  viewerGender === 'female' ? 'male' : viewerGender === 'male' ? 'female' : null
+
+/**
+ * Whether the forward connection-type filter asks for a relationship and nothing else — the case where
+ * a candidate's "men and women" is read as "the other sex" by the two-way gender clause.
+ */
+const isRelationshipOnly = (styles: string[] | undefined) =>
+  !!styles?.length && styles.every((s) => s === 'relationship')
+
+const twoWayWhereClauses = (
+  viewer: TwoWayViewer,
+  {relationshipOnly}: {relationshipOnly: boolean},
+) => {
   // Symmetric, so the searcher's own band is also the set of answers that would accept the searcher —
   // the same helper the forward `wants_kids_range_*` filter uses.
   const kidsRange = getWantsKidsRange(viewer.wants_kids_strength)
 
   return [
-    // Their "interested in connecting with" has to include the searcher's gender.
+    // Their "interested in connecting with" has to include the searcher's gender. Unlike the clauses
+    // below, an unfilled `pref_gender` (NULL or empty) is not a free pass: it is assumed to mean "the
+    // other sex", so it only lets through a candidate whose own gender is the opposite of the
+    // searcher's. A relationship-only search reads "men and women" the same way, since that answer
+    // nearly always covers friendship with one and romance with the other. For a searcher who is
+    // neither a woman nor a man, no such assumption can be made and blank-preference candidates are
+    // dropped (`= ANY(NULL)` is NULL and `= ANY('{}')` is false).
     !!viewer.gender &&
       where(
-        `profiles.pref_gender IS NULL OR profiles.pref_gender = '{}'
-         OR $(viewerGender) = ANY(profiles.pref_gender)`,
-        {viewerGender: viewer.gender},
+        assumedSeekerGender(viewer.gender)
+          ? `CASE WHEN profiles.pref_gender IS NULL OR profiles.pref_gender = '{}'
+                    ${relationshipOnly ? `OR profiles.pref_gender @> '{male,female}'` : ''}
+               THEN profiles.gender = $(assumedSeekerGender)
+               ELSE $(viewerGender) = ANY(profiles.pref_gender)
+             END`
+          : `$(viewerGender) = ANY(profiles.pref_gender)`,
+        {viewerGender: viewer.gender, assumedSeekerGender: assumedSeekerGender(viewer.gender)},
       ),
 
     // The searcher's age has to fall inside their stated range.
@@ -908,7 +943,11 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
         {wants_kids_range_min, wants_kids_range_max},
       ),
 
-    ...(twoWayViewer ? twoWayWhereClauses(twoWayViewer) : []),
+    ...(twoWayViewer
+      ? twoWayWhereClauses(twoWayViewer, {
+          relationshipOnly: isRelationshipOnly(pref_relation_styles),
+        })
+      : []),
 
     has_kids === 0 && where(`has_kids IS NULL OR has_kids = 0`),
     has_kids && has_kids > 0 && where(`has_kids > 0`),

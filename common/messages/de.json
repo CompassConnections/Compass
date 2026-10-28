@@ -716,6 +716,8 @@
   "messages.viewing_banned": "Gesperrte Nutzer",
   "messages.close_banned": "Zurück zu allen Unterhaltungen",
   "messages.banned_empty": "Keine Unterhaltungen mit gesperrten Nutzern.",
+  "messages.profile_panel.open_full": "Vollständiges Profil öffnen",
+  "messages.profile_panel.unavailable": "Dieses Profil ist nicht mehr verfügbar.",
   "messages.typing_many": "Mehrere Personen schreiben…",
   "messages.typing_one": "{name} schreibt…",
   "messages.input_placeholder": "Nachricht senden",

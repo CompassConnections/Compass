@@ -109,7 +109,9 @@ export function ChatMessageItem(props: {
           userId={id}
         />
       )}
-      <Col className="sm:max-w-[calc(100vw-6rem)] md:max-w-[70%]">
+      {/* The bubble itself is capped at ~80 characters (below); this only keeps a small gutter on the
+          far side so their messages read as theirs by position too, not just by colour. */}
+      <Col className="sm:max-w-[calc(100vw-6rem)] md:max-w-[calc(100%-3rem)]">
         <Col className="gap-1">
           {chats.map((chat) => (
             <div
@@ -120,7 +122,9 @@ export function ChatMessageItem(props: {
                 <Row>
                   <div
                     className={clsx(
-                      'rounded-3xl px-3 py-2',
+                      // ~80 characters of the 16px message text, plus padding. The chat column on
+                      // /messages/[channelId] is sized from this (CHAT_COLUMN_REM).
+                      'rounded-3xl px-3 py-2 max-w-[40rem]',
                       chat.visibility !== 'system_status' && '',
                       chat.visibility === 'system_status'
                         ? 'bg-canvas-50 italic'
@@ -141,7 +145,10 @@ export function ChatMessageItem(props: {
                       size={'sm'}
                       content={chat.content}
                       key={chat.id}
-                      className={isMe ? '!text-ink-900' : '!text-ink-700'}
+                      // 16px rather than the 14px `sm` prose gives; `sm` is kept for its tighter
+                      // spacing and shorter inline images. Font size only, so the line height
+                      // stays the prose one.
+                      className={clsx('!text-[1rem]', isMe ? '!text-ink-900' : '!text-ink-700')}
                     />
                   </div>
                 </Row>

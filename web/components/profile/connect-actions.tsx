@@ -17,7 +17,12 @@ import {api} from 'web/lib/api'
 import {User} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 
-export function ConnectActions(props: {profile: Profile; user: User}) {
+export function ConnectActions(props: {
+  profile: Profile
+  user: User
+  // Drops the whole Connect section: inside an open conversation there is no one to reach out to.
+  hideMessageButton?: boolean
+}) {
   const {profile, user} = props
   const currentUser = useUser()
   const currentProfile = useProfile()
@@ -98,23 +103,29 @@ export function ConnectActions(props: {profile: Profile; user: User}) {
 
   return (
     <>
-      <Section id="connect" title={t('profile.connect.title', 'Connect')}>
-        {profile.allow_direct_messaging || matches.length > 0 || isAdmin ? (
-          <SendMessageButton
-            toUser={user}
-            profile={profile}
-            text={t('profile.connect.message_name', 'Message {name}', {
-              name: shortenName(user.name),
-            })}
-          />
-        ) : (
-          <p className="text-ink-500 text-sm">
-            {t('profile.connect.direct_messaging_disabled', '{user} turned off direct messaging', {
-              user: user.name,
-            })}
-          </p>
-        )}
-      </Section>
+      {!props.hideMessageButton && (
+        <Section id="connect" title={t('profile.connect.title', 'Connect')}>
+          {profile.allow_direct_messaging || matches.length > 0 || isAdmin ? (
+            <SendMessageButton
+              toUser={user}
+              profile={profile}
+              text={t('profile.connect.message_name', 'Message {name}', {
+                name: shortenName(user.name),
+              })}
+            />
+          ) : (
+            <p className="text-ink-500 text-sm">
+              {t(
+                'profile.connect.direct_messaging_disabled',
+                '{user} turned off direct messaging',
+                {
+                  user: user.name,
+                },
+              )}
+            </p>
+          )}
+        </Section>
+      )}
 
       {/* Its own section rather than a subheading under Connect: it is a distinct thing to do, not a
           detail of messaging, and a smaller heading nested inside another read as one.

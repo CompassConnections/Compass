@@ -12,7 +12,7 @@ import dayjs from 'dayjs'
 import {keyBy, uniq} from 'lodash'
 import Link from 'next/link'
 import {useRouter} from 'next/router'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
 import {FaFlag, FaRegCopy, FaUserFriends, FaUserMinus} from 'react-icons/fa'
 import {GiSpeakerOff} from 'react-icons/gi'
@@ -25,6 +25,7 @@ import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
+import {ChatProfilePanel} from 'web/components/messaging/chat-profile-panel'
 import {
   AccountOnHoldNotice,
   isAutoBanUnderReviewError,
@@ -39,6 +40,7 @@ import {Avatar} from 'web/components/widgets/avatar'
 import {useTextEditor} from 'web/components/widgets/editor'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {AdminBadge, BannedBadge, UserAvatarAndBadge} from 'web/components/widgets/user-link'
+import {useElementSize} from 'web/hooks/use-element-size'
 import {useHideBottomNavOnKeyboard} from 'web/hooks/use-hide-bottom-nav-on-keyboard'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {useIsPageVisible} from 'web/hooks/use-page-visible'
@@ -73,7 +75,7 @@ export default function PrivateMessagesPage() {
     return <CompassLoadingIndicator />
   }
   return (
-    <PageBase trackPageView={'private messages page'} hideFooter>
+    <PageBase trackPageView={'private messages page'} className={'col-span-10 lg:!mt-2'} hideFooter>
       <SEO
         title={t('messages.title', 'Messages')}
         description={t('messages.seo.description', 'Messages')}
@@ -259,6 +261,47 @@ export const PrivateChat = (props: {
   const blockedInChannel = (otherUsers ?? []).some((member) => isBlocked(privateUser, member.id))
   const router = useRouter()
 
+  // Wide screens put the other person's profile beside a 1-on-1 chat. The chat column is at least
+  // wide enough for an 80-character message plus a small gutter, and also wide enough that sidebar
+  // plus chat fill half the window — this is the chat page, so the chat never becomes the minor
+  // column. The panel takes the rest, and appears only once that rest reaches its minimum width.
+  // Measured on the page area rather than the window so a collapsed sidebar counts, and decided in
+  // JS rather than CSS so the panel's requests never fire on screens that wouldn't show it.
+  const layoutRef = useRef<HTMLDivElement>(null)
+  const layoutSize = useElementSize(layoutRef)
+  const rootFontPx =
+    typeof window === 'undefined'
+      ? 16
+      : parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+  const isOneOnOne = displayedMemberIds.length === 1
+  // Everything left of the chat (sidebar, page gutter), re-read whenever the area resizes, which is
+  // also what a sidebar collapse or a window resize does.
+  const layoutLeft =
+    layoutSize && layoutRef.current ? layoutRef.current.getBoundingClientRect().left : 0
+  const chatColumnPx =
+    typeof window === 'undefined'
+      ? CHAT_COLUMN_REM * rootFontPx
+      : Math.max(CHAT_COLUMN_REM * rootFontPx, window.innerWidth / 2 - layoutLeft)
+  // "Name | Messages | Compass" in the tab once we know who this is with: first names only, as in
+  // the header. Until then the page's plain "Messages" title stands.
+  const memberNames = members.map((member) =>
+    member.name ? getFirstName(member.name) : t('messages.deleted_user', 'Deleted user'),
+  )
+  const chatTitle =
+    otherUsers === undefined
+      ? undefined
+      : memberNames.length === 0
+        ? t('messages.deleted_user', 'Deleted user')
+        : memberNames.length === 1
+          ? memberNames[0]
+          : memberNames.slice(0, 2).join(', ') +
+            (memberNames.length > 2 ? ` & ${memberNames.length - 2} more` : '')
+
+  const showProfilePanel =
+    isOneOnOne &&
+    !!layoutSize &&
+    layoutSize.width >= chatColumnPx + (PANEL_GAP_REM + PROFILE_PANEL_MIN_REM) * rootFontPx
+
   // Check ban status for messaging restrictions
   const allUsersBanned = members.length > 0 && members.every((member) => member.isBannedFromPosting)
 
@@ -418,357 +461,394 @@ export const PrivateChat = (props: {
     // off-screen: the header and composer are fixed rows, only the message list scrolls. `--vvo` is
     // added back because this page's document is locked, so the browser reveals the caret by panning
     // the visual viewport — without it the page stops that many px short of the keyboard.
-    <Col className="w-full overflow-hidden h-[calc(var(--vvh,100dvh)+var(--vvo,0px)-var(--hloss)-var(--bnv))] lg:h-[calc(100dvh-var(--hloss)-1.5rem)]">
-      <Row
-        className={
-          'bg-canvas-0 border border-canvas-200 h-14 shrink-0 items-center gap-2 rounded-xl px-2'
-        }
-      >
-        <BackButton className="self-stretch mr-2" />
-        {members && members.length > 0 ? (
-          <MultipleOrSingleAvatars
-            size="sm"
-            spacing={0.5}
-            startLeft={1}
-            avatars={members}
-            onClick={() => setShowUsers(true)}
-          />
-        ) : otherUsers === undefined ? null : (
-          <Avatar size="sm" username="?" noLink />
-        )}
-        {members && members.length > 0 ? (
-          (() => {
-            // Members here can include someone who left the chat — they're still a real person with a
-            // real profile, so they're shown like any other member.
-            const nameClassName =
-              'ml-1 cursor-pointer hover:text-primary-700 transition-colors font-medium text-sm text-ink-900'
-            const nameContent = (
-              <>
-                {members
-                  .map((user) =>
-                    user.name
-                      ? getFirstName(user.name)
-                      : t('messages.deleted_user', 'Deleted user'),
-                  )
-                  .slice(0, 2)
-                  .join(', ')}
-                {members.length > 2 && ` & ${members.length - 2} more`}
-              </>
-            )
-            // A real anchor for the 1-on-1 case so the browser context menu offers
-            // "Copy link address" / "Open in new tab" instead of doing nothing.
-            return members.length === 1 && members[0].username ? (
-              <Link href={`/${members[0].username}`} className={nameClassName}>
-                {nameContent}
-              </Link>
-            ) : (
-              <span className={nameClassName} onClick={() => setShowUsers(true)}>
-                {nameContent}
-              </span>
-            )
-          })()
-        ) : otherUsers === undefined ? null : (
-          <span className={'ml-1 italic text-ink-500 text-sm'}>
-            {t('messages.deleted_user', 'Deleted user')}
-          </span>
-        )}
-
-        {/* Whoever is in the room, named on the header or not — see the same call in the messages
-            list. Sits outside the name link so a tap on it can't navigate away. */}
-        {members.some((member) => isAdminUserId(member.id)) && <AdminBadge className="ml-1.5" />}
-        {members?.length == 1 && members[0].isBannedFromPosting && <BannedBadge />}
-        <DropdownMenu
-          className={'ml-auto [&_button]:p-4'}
-          menuWidth={'w-44'}
-          icon={<EllipsisVerticalIcon className="h-5 w-5" />}
-          items={buildArray(
-            {
-              icon: <FaUserFriends className={'h-5 w-5'} />,
-              name: t('messages.menu.see_members', 'See members'),
-              onClick: () => {
-                setShowUsers(true)
-              },
-            },
-            {
-              icon: <GiSpeakerOff className="h-5 w-5" />,
-              name: t('messages.menu.mute_1_day', 'Mute 1 day'),
-              onClick: async () => {
-                await toast.promise(
-                  api('update-private-user-message-channel', {
-                    channelId: channelId,
-                    notifyAfterTime: Date.now() + DAY_MS,
-                  }),
-                  {
-                    loading: t('messages.toast.muting_1_day.loading', 'Muting for 1 day...'),
-                    success: t('messages.toast.muting_1_day.success', 'Muted for 1 day'),
-                    error: t('messages.toast.muting_1_day.error', 'Failed to mute'),
-                  },
-                )
-              },
-            },
-            {
-              icon: <GiSpeakerOff className="h-5 w-5" />,
-              name: t('messages.menu.mute_forever', 'Mute forever'),
-              onClick: async () => {
-                await toast.promise(
-                  api('update-private-user-message-channel', {
-                    channelId: channelId,
-                    notifyAfterTime: Date.now() + 100 * YEAR_MS,
-                  }),
-                  {
-                    loading: t('messages.toast.muting_forever.loading', 'Muting forever...'),
-                    success: t('messages.toast.muting_forever.success', 'Muted forever'),
-                    error: t('messages.toast.muting_forever.error', 'Failed to mute'),
-                  },
-                )
-              },
-            },
-            {
-              icon: <FaFlag className="h-5 w-5" />,
-              name: t('messages.menu.report', 'Report'),
-              onClick: () => {
-                setReportTarget(members.length === 1 ? members[0] : null)
-                setShowReport(true)
-              },
-            },
-            {
-              icon: <FaUserMinus className="h-5 w-5" />,
-              name: t('messages.menu.leave_chat', 'Leave chat'),
-              onClick: async () => {
-                await api('leave-private-user-message-channel', {
-                  channelId: channelId,
-                })
-                router.push('/messages')
-              },
-            },
-            {
-              icon: <FaRegCopy className="h-5 w-5" />,
-              name: t('messages.menu.copy_plain_text', 'Copy as plain text'),
-              onClick: () => {
-                const text = messagesToPlainText(messages, user, otherUsers, t)
-                if (!text) {
-                  toast.error(t('messages.toast.copy_empty', 'No messages to copy'))
-                  return
-                }
-                copyToClipboard(text)
-                toast.success(t('messages.toast.copy_success', 'Conversation copied'))
-              },
-            },
-          )}
+    <div
+      ref={layoutRef}
+      className={clsx('w-full', showProfilePanel && 'grid gap-4')}
+      style={
+        showProfilePanel
+          ? {gridTemplateColumns: `${Math.round(chatColumnPx)}px minmax(0, 1fr)`}
+          : undefined
+      }
+    >
+      {chatTitle && (
+        <SEO
+          title={`${chatTitle} | ${t('messages.title', 'Messages')}`}
+          description={t('messages.seo.description', 'Messages')}
+          url={`/messages/${channelId}`}
         />
-        {showUsers && (
-          <Modal open={showUsers} setOpen={setShowUsers}>
-            <Col className={clsx(MODAL_CLASS)}>
-              <p className="font-heading text-2xl font-medium text-ink-900 mb-4">
-                {t('messages.members', 'Members')}
-              </p>
-              {members?.map((user) => (
-                <div
-                  key={user.id}
-                  className="w-full bg-canvas-0 border border-canvas-200 rounded-xl p-3 mb-2 transition-all hover:border-primary-300"
-                >
-                  <UserAvatarAndBadge user={user} />
-                </div>
-              ))}
-            </Col>
-          </Modal>
-        )}
-        {showReport && (
-          <Modal
-            open={showReport}
-            setOpen={(open) => {
-              setShowReport(open)
-              if (!open) setReportTarget(null)
-            }}
-          >
-            <Col className={clsx(MODAL_CLASS)}>
-              {reportTarget ? (
-                <ReportUser
-                  user={reportTarget}
-                  closeModal={() => {
-                    setShowReport(false)
-                    setReportTarget(null)
-                  }}
-                />
-              ) : members && members.length > 0 ? (
-                <>
-                  <p className="font-heading text-2xl font-medium text-ink-900 mb-4">
-                    {t('messages.report.select_user', 'Select a user to report')}
-                  </p>
-                  {members.map((user) => (
-                    <button
-                      key={user.id}
-                      onClick={() => setReportTarget(user)}
-                      className="w-full text-left bg-canvas-0 border border-canvas-200 rounded-xl p-3 mb-2 transition-all hover:border-primary-300"
-                    >
-                      <UserAvatarAndBadge user={user} />
-                    </button>
-                  ))}
-                </>
-              ) : (
-                <span>{t('messages.report.no_users', 'No users to report')}</span>
-              )}
-            </Col>
-          </Modal>
-        )}
-      </Row>
-      <Col className="relative min-h-0 flex-1 xl:px-0">
-        {/* overscroll-contain: at the top of the feed, further upward scrolling stays here instead of
-            chaining to the document and dragging the header/composer with it. */}
-        <div
-          ref={outerDiv}
-          className="relative h-full overflow-y-auto overscroll-contain"
-          style={{
-            transform: isSafari ? 'translate3d(0, 0, 0)' : 'none',
-          }}
-          data-testid="conversation"
+      )}
+      <Col className="w-full overflow-hidden h-[calc(var(--vvh,100dvh)+var(--vvo,0px)-var(--hloss)-var(--bnv))] lg:h-[calc(100dvh-var(--hloss)-0.5rem)]">
+        <Row
+          className={
+            'bg-canvas-0 border border-canvas-200 h-14 shrink-0 items-center gap-2 rounded-xl px-2'
+          }
         >
+          <BackButton className="self-stretch mr-2" />
+          {/* With the profile panel open beside the chat, the avatar and name here only repeat it. */}
+          {showProfilePanel ? null : members && members.length > 0 ? (
+            <MultipleOrSingleAvatars
+              size="sm"
+              spacing={0.5}
+              startLeft={1}
+              avatars={members}
+              onClick={() => setShowUsers(true)}
+            />
+          ) : otherUsers === undefined ? null : (
+            <Avatar size="sm" username="?" noLink />
+          )}
+          {showProfilePanel ? null : members && members.length > 0 ? (
+            (() => {
+              // Members here can include someone who left the chat — they're still a real person with a
+              // real profile, so they're shown like any other member.
+              const nameClassName =
+                'ml-1 cursor-pointer hover:text-primary-700 transition-colors font-medium text-sm text-ink-900'
+              const nameContent = (
+                <>
+                  {members
+                    .map((user) =>
+                      user.name
+                        ? getFirstName(user.name)
+                        : t('messages.deleted_user', 'Deleted user'),
+                    )
+                    .slice(0, 2)
+                    .join(', ')}
+                  {members.length > 2 && ` & ${members.length - 2} more`}
+                </>
+              )
+              // A real anchor for the 1-on-1 case so the browser context menu offers
+              // "Copy link address" / "Open in new tab" instead of doing nothing.
+              return members.length === 1 && members[0].username ? (
+                <Link href={`/${members[0].username}`} className={nameClassName}>
+                  {nameContent}
+                </Link>
+              ) : (
+                <span className={nameClassName} onClick={() => setShowUsers(true)}>
+                  {nameContent}
+                </span>
+              )
+            })()
+          ) : otherUsers === undefined ? null : (
+            <span className={'ml-1 italic text-ink-500 text-sm'}>
+              {t('messages.deleted_user', 'Deleted user')}
+            </span>
+          )}
+
+          {/* Whoever is in the room, named on the header or not — see the same call in the messages
+            list. Sits outside the name link so a tap on it can't navigate away. */}
+          {members.some((member) => isAdminUserId(member.id)) && <AdminBadge className="ml-1.5" />}
+          {members?.length == 1 && members[0].isBannedFromPosting && <BannedBadge />}
+          <DropdownMenu
+            className={'ml-auto [&_button]:p-4'}
+            menuWidth={'w-44'}
+            icon={<EllipsisVerticalIcon className="h-5 w-5" />}
+            items={buildArray(
+              {
+                icon: <FaUserFriends className={'h-5 w-5'} />,
+                name: t('messages.menu.see_members', 'See members'),
+                onClick: () => {
+                  setShowUsers(true)
+                },
+              },
+              {
+                icon: <GiSpeakerOff className="h-5 w-5" />,
+                name: t('messages.menu.mute_1_day', 'Mute 1 day'),
+                onClick: async () => {
+                  await toast.promise(
+                    api('update-private-user-message-channel', {
+                      channelId: channelId,
+                      notifyAfterTime: Date.now() + DAY_MS,
+                    }),
+                    {
+                      loading: t('messages.toast.muting_1_day.loading', 'Muting for 1 day...'),
+                      success: t('messages.toast.muting_1_day.success', 'Muted for 1 day'),
+                      error: t('messages.toast.muting_1_day.error', 'Failed to mute'),
+                    },
+                  )
+                },
+              },
+              {
+                icon: <GiSpeakerOff className="h-5 w-5" />,
+                name: t('messages.menu.mute_forever', 'Mute forever'),
+                onClick: async () => {
+                  await toast.promise(
+                    api('update-private-user-message-channel', {
+                      channelId: channelId,
+                      notifyAfterTime: Date.now() + 100 * YEAR_MS,
+                    }),
+                    {
+                      loading: t('messages.toast.muting_forever.loading', 'Muting forever...'),
+                      success: t('messages.toast.muting_forever.success', 'Muted forever'),
+                      error: t('messages.toast.muting_forever.error', 'Failed to mute'),
+                    },
+                  )
+                },
+              },
+              {
+                icon: <FaFlag className="h-5 w-5" />,
+                name: t('messages.menu.report', 'Report'),
+                onClick: () => {
+                  setReportTarget(members.length === 1 ? members[0] : null)
+                  setShowReport(true)
+                },
+              },
+              {
+                icon: <FaUserMinus className="h-5 w-5" />,
+                name: t('messages.menu.leave_chat', 'Leave chat'),
+                onClick: async () => {
+                  await api('leave-private-user-message-channel', {
+                    channelId: channelId,
+                  })
+                  router.push('/messages')
+                },
+              },
+              {
+                icon: <FaRegCopy className="h-5 w-5" />,
+                name: t('messages.menu.copy_plain_text', 'Copy as plain text'),
+                onClick: () => {
+                  const text = messagesToPlainText(messages, user, otherUsers, t)
+                  if (!text) {
+                    toast.error(t('messages.toast.copy_empty', 'No messages to copy'))
+                    return
+                  }
+                  copyToClipboard(text)
+                  toast.success(t('messages.toast.copy_success', 'Conversation copied'))
+                },
+              },
+            )}
+          />
+          {showUsers && (
+            <Modal open={showUsers} setOpen={setShowUsers}>
+              <Col className={clsx(MODAL_CLASS)}>
+                <p className="font-heading text-2xl font-medium text-ink-900 mb-4">
+                  {t('messages.members', 'Members')}
+                </p>
+                {members?.map((user) => (
+                  <div
+                    key={user.id}
+                    className="w-full bg-canvas-0 border border-canvas-200 rounded-xl p-3 mb-2 transition-all hover:border-primary-300"
+                  >
+                    <UserAvatarAndBadge user={user} />
+                  </div>
+                ))}
+              </Col>
+            </Modal>
+          )}
+          {showReport && (
+            <Modal
+              open={showReport}
+              setOpen={(open) => {
+                setShowReport(open)
+                if (!open) setReportTarget(null)
+              }}
+            >
+              <Col className={clsx(MODAL_CLASS)}>
+                {reportTarget ? (
+                  <ReportUser
+                    user={reportTarget}
+                    closeModal={() => {
+                      setShowReport(false)
+                      setReportTarget(null)
+                    }}
+                  />
+                ) : members && members.length > 0 ? (
+                  <>
+                    <p className="font-heading text-2xl font-medium text-ink-900 mb-4">
+                      {t('messages.report.select_user', 'Select a user to report')}
+                    </p>
+                    {members.map((user) => (
+                      <button
+                        key={user.id}
+                        onClick={() => setReportTarget(user)}
+                        className="w-full text-left bg-canvas-0 border border-canvas-200 rounded-xl p-3 mb-2 transition-all hover:border-primary-300"
+                      >
+                        <UserAvatarAndBadge user={user} />
+                      </button>
+                    ))}
+                  </>
+                ) : (
+                  <span>{t('messages.report.no_users', 'No users to report')}</span>
+                )}
+              </Col>
+            </Modal>
+          )}
+        </Row>
+        <Col className="relative min-h-0 flex-1 xl:px-0">
+          {/* overscroll-contain: at the top of the feed, further upward scrolling stays here instead of
+            chaining to the document and dragging the header/composer with it. */}
           <div
-            className="relative px-1 pb-4 pt-1 transition-all duration-100"
-            ref={innerDiv}
+            ref={outerDiv}
+            className="relative h-full overflow-y-auto overscroll-contain"
             style={{
               transform: isSafari ? 'translate3d(0, 0, 0)' : 'none',
-              opacity: showMessages ? 1 : 0,
             }}
+            data-testid="conversation"
           >
-            {groupedMessages === undefined ? (
-              <CompassLoadingIndicator />
-            ) : (
-              <>
-                <div
-                  className={'absolute h-1 '}
-                  ref={topVisibleRef}
-                  style={{top: SENTINEL_PREFETCH_PX}}
-                />
-                {groupedMessages.map((messages, i) => {
-                  const firstMessage = messages[0]
-                  if (firstMessage.visibility === 'system_status') {
+            <div
+              className="relative px-1 pb-4 pt-1 transition-all duration-100"
+              ref={innerDiv}
+              style={{
+                transform: isSafari ? 'translate3d(0, 0, 0)' : 'none',
+                opacity: showMessages ? 1 : 0,
+              }}
+            >
+              {groupedMessages === undefined ? (
+                <CompassLoadingIndicator />
+              ) : (
+                <>
+                  <div
+                    className={'absolute h-1 '}
+                    ref={topVisibleRef}
+                    style={{top: SENTINEL_PREFETCH_PX}}
+                  />
+                  {groupedMessages.map((messages, i) => {
+                    const firstMessage = messages[0]
+                    if (firstMessage.visibility === 'system_status') {
+                      return (
+                        <SystemChatMessageItem
+                          key={firstMessage.id}
+                          chats={messages}
+                          otherUsers={otherUsers
+                            ?.concat([user])
+                            .filter((user) => messages.some((m) => m.userId === user.id))}
+                        />
+                      )
+                    }
+                    const otherUser = otherUsers?.find((user) => user.id === firstMessage.userId)
                     return (
-                      <SystemChatMessageItem
+                      <ChatMessageItem
                         key={firstMessage.id}
                         chats={messages}
-                        otherUsers={otherUsers
-                          ?.concat([user])
-                          .filter((user) => messages.some((m) => m.userId === user.id))}
+                        currentUser={user}
+                        otherUser={otherUser}
+                        hideAvatar={(otherUsers?.length ?? 0) < 2}
+                        beforeSameUser={groupedMessages[i + 1]?.[0].userId === firstMessage.userId}
+                        firstOfUser={groupedMessages[i - 1]?.[0].userId !== firstMessage.userId}
+                        setMessages={setMessages}
+                        onRequestEdit={handleStartEdit}
+                        onReplyClick={(chat) =>
+                          setReplyToUserInfo({
+                            id: chat.userId,
+                            username: otherUser?.username ?? '',
+                          })
+                        }
                       />
                     )
-                  }
-                  const otherUser = otherUsers?.find((user) => user.id === firstMessage.userId)
-                  return (
-                    <ChatMessageItem
-                      key={firstMessage.id}
-                      chats={messages}
-                      currentUser={user}
-                      otherUser={otherUser}
-                      hideAvatar={(otherUsers?.length ?? 0) < 2}
-                      beforeSameUser={groupedMessages[i + 1]?.[0].userId === firstMessage.userId}
-                      firstOfUser={groupedMessages[i - 1]?.[0].userId !== firstMessage.userId}
-                      setMessages={setMessages}
-                      onRequestEdit={handleStartEdit}
-                      onReplyClick={(chat) =>
-                        setReplyToUserInfo({
-                          id: chat.userId,
-                          username: otherUser?.username ?? '',
-                        })
-                      }
-                    />
-                  )
-                })}
-              </>
-            )}
-            {pendingOpener && pendingOpener.status !== 'sent' && messages && (
-              <PendingOpenerBubble
-                pending={pendingOpener}
-                onEdit={() => {
-                  editor?.commands.setContent(pendingOpener.content)
-                  editor?.commands.focus('end')
-                  clearPendingOpener(channelId)
-                }}
-              />
-            )}
-            {typingNames.length > 0 && <TypingIndicator names={typingNames} />}
-            {messages && messages.length === 0 && !pendingOpener && (
-              <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
-                <p className="text-ink-500 text-sm">{t('messages.empty', 'No messages yet.')}</p>
-                <p className="text-ink-300 text-xs mt-1">
-                  {t('messages.empty_hint', 'Be the first to start the conversation!')}
-                </p>
-              </div>
-            )}
+                  })}
+                </>
+              )}
+              {pendingOpener && pendingOpener.status !== 'sent' && messages && (
+                <PendingOpenerBubble
+                  pending={pendingOpener}
+                  onEdit={() => {
+                    editor?.commands.setContent(pendingOpener.content)
+                    editor?.commands.focus('end')
+                    clearPendingOpener(channelId)
+                  }}
+                />
+              )}
+              {typingNames.length > 0 && <TypingIndicator names={typingNames} />}
+              {messages && messages.length === 0 && !pendingOpener && (
+                <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
+                  <p className="text-ink-500 text-sm">{t('messages.empty', 'No messages yet.')}</p>
+                  <p className="text-ink-300 text-xs mt-1">
+                    {t('messages.empty_hint', 'Be the first to start the conversation!')}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </Col>
-      {/* relative z-10: the composer is a static box, so the positioned message bubbles above it would
+        </Col>
+        {/* relative z-10: the composer is a static box, so the positioned message bubbles above it would
           otherwise paint over its border / focus ring as they scroll past. */}
-      <div className="relative z-10 shrink-0">
-        {allUsersBanned ? (
-          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
-            <span className="text-ink-500 text-sm">
-              {t(
-                'messages.cannot_message_banned',
-                "The profile was removed for suspicious activity; never send money to someone you haven't met.",
-              )}
-            </span>
-          </div>
-        ) : user.isBannedFromPosting ? (
-          <AccountOnHoldNotice reason={user.banReason} className="m-2" compact />
-        ) : blockedInChannel ? (
-          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
-            <span className="text-ink-500 text-sm">
-              {t(
-                'messages.cannot_message_blocked',
-                "This conversation is blocked, so you can't reply. You can still read it and report it.",
-              )}
-            </span>
-          </div>
-        ) : noOtherUser ? (
-          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
-            <span className="text-ink-500 text-sm">
-              {leftMembers.length > 0
-                ? leftMembers.length === 1
-                  ? t('messages.cannot_message_left', "{name} left the chat, so you can't reply.", {
-                      name: getFirstName(leftMembers[0].name),
-                    })
+        <div className="relative z-10 shrink-0">
+          {allUsersBanned ? (
+            <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
+              <span className="text-ink-500 text-sm">
+                {t(
+                  'messages.cannot_message_banned',
+                  "The profile was removed for suspicious activity; never send money to someone you haven't met.",
+                )}
+              </span>
+            </div>
+          ) : user.isBannedFromPosting ? (
+            <AccountOnHoldNotice reason={user.banReason} className="m-2" compact />
+          ) : blockedInChannel ? (
+            <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
+              <span className="text-ink-500 text-sm">
+                {t(
+                  'messages.cannot_message_blocked',
+                  "This conversation is blocked, so you can't reply. You can still read it and report it.",
+                )}
+              </span>
+            </div>
+          ) : noOtherUser ? (
+            <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-4 text-center m-2">
+              <span className="text-ink-500 text-sm">
+                {leftMembers.length > 0
+                  ? leftMembers.length === 1
+                    ? t(
+                        'messages.cannot_message_left',
+                        "{name} left the chat, so you can't reply.",
+                        {
+                          name: getFirstName(leftMembers[0].name),
+                        },
+                      )
+                    : t(
+                        'messages.cannot_message_all_left',
+                        "Everyone else left the chat, so you can't reply.",
+                      )
                   : t(
-                      'messages.cannot_message_all_left',
-                      "Everyone else left the chat, so you can't reply.",
-                    )
-                : t(
-                    'messages.cannot_message_deleted',
-                    "You can't text them as they deleted their account.",
-                  )}
-            </span>
-          </div>
-        ) : (
-          <>
-            {/* Only at the start of a conversation, and only until it is dismissed once: the two
+                      'messages.cannot_message_deleted',
+                      "You can't text them as they deleted their account.",
+                    )}
+              </span>
+            </div>
+          ) : (
+            <>
+              {/* Only at the start of a conversation, and only until it is dismissed once: the two
                 things this says (stay on the platform, never send money) are worth saying before the
                 first reply, and worth nothing on the four-hundredth. */}
-            {(messages?.length ?? 0) <= 3 && <ConversationSafetyTip className="mx-2 mb-2" />}
-            <CommentInputTextArea
-              editor={editor}
-              // Cap the composer at 40% of the *visible* viewport (the default max-h-[60vh] tracks the
-              // layout viewport, so with the keyboard up a long draft swallowed the whole feed).
-              maxHeight="max-h-[calc(var(--vvh)*0.4)]"
-              // A drag started in the composer stays in it rather than scrolling the transcript
-              // behind it.
-              overscrollContain
-              user={user}
-              submit={submitMessage}
-              isSubmitting={isSubmitting}
-              // Same as mobile: enter starts a new paragraph, sending goes through the send button
-              // (or ctrl/cmd+enter), so a multi-paragraph message never gets fired off half-written.
-              submitOnEnter={false}
-              replyTo={replyToUserInfo}
-              isEditing={!!editingMessage}
-              cancelEditing={cancelEditing}
-            />
-          </>
-        )}
-      </div>
-    </Col>
+              {(messages?.length ?? 0) <= 3 && <ConversationSafetyTip className="mx-2 mb-2" />}
+              <CommentInputTextArea
+                editor={editor}
+                // Cap the composer at 40% of the *visible* viewport (the default max-h-[60vh] tracks the
+                // layout viewport, so with the keyboard up a long draft swallowed the whole feed).
+                maxHeight="max-h-[calc(var(--vvh)*0.4)]"
+                // A drag started in the composer stays in it rather than scrolling the transcript
+                // behind it.
+                overscrollContain
+                user={user}
+                submit={submitMessage}
+                isSubmitting={isSubmitting}
+                // Same as mobile: enter starts a new paragraph, sending goes through the send button
+                // (or ctrl/cmd+enter), so a multi-paragraph message never gets fired off half-written.
+                submitOnEnter={false}
+                replyTo={replyToUserInfo}
+                isEditing={!!editingMessage}
+                cancelEditing={cancelEditing}
+              />
+            </>
+          )}
+        </div>
+      </Col>
+      {showProfilePanel && (
+        <ChatProfilePanel
+          member={members[0]}
+          loading={otherUsers === undefined}
+          className="lg:h-[calc(100dvh-var(--hloss)-0.5rem)]"
+        />
+      )}
+    </div>
   )
 }
+
+// Widths for the wide-screen profile panel, in rem so they follow zoom and font settings. The chat
+// column is an 80-character bubble (~40rem of 16px text plus padding), the "…"/timestamp column
+// beside it, and a ~3rem gutter so their messages stop short of the edge. That is the minimum: the
+// column also grows until sidebar plus chat cover half the window (see chatColumnPx).
+const CHAT_COLUMN_REM = 47
+const PANEL_GAP_REM = 1
+const PROFILE_PANEL_MIN_REM = 20
 
 const setAsSeen = async (channelId: number) => {
   return api('set-channel-seen-time', {channelId})

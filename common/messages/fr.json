@@ -716,6 +716,8 @@
   "messages.viewing_banned": "Utilisateurs bannis",
   "messages.close_banned": "Revenir à toutes les conversations",
   "messages.banned_empty": "Aucune conversation avec des utilisateurs bannis.",
+  "messages.profile_panel.open_full": "Ouvrir le profil complet",
+  "messages.profile_panel.unavailable": "Ce profil n'est plus disponible.",
   "messages.typing_many": "Plusieurs personnes écrivent…",
   "messages.typing_one": "{name} est en train d’écrire…",
   "messages.input_placeholder": "Envoyer un message",

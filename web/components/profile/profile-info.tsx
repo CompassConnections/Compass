@@ -1,9 +1,10 @@
-import {LockClosedIcon} from '@heroicons/react/24/outline'
+import {ArrowsPointingOutIcon, LockClosedIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {UserActivity} from 'common/user'
-import React, {ReactNode} from 'react'
+import Link from 'next/link'
+import React, {ReactNode, useRef} from 'react'
 import {ProfileAnswers} from 'web/components/answers/profile-answers'
 import {ProfileBio} from 'web/components/bio/profile-bio'
 import {Col} from 'web/components/layout/col'
@@ -12,6 +13,7 @@ import {SignUpButton} from 'web/components/nav/sidebar'
 import {ConnectActions} from 'web/components/profile/connect-actions'
 import {ProfileHeaderActions} from 'web/components/profile/profile-header'
 import ProfileHero from 'web/components/profile/profile-hero'
+import {HERO_GALLERY_MIN_WIDTH_PX} from 'web/components/profile/profile-hero-photo'
 import ProfilePhotoCarousel from 'web/components/profile/profile-photo-carousel'
 import {useProfilePhotos} from 'web/components/profile/profile-photos'
 import {Section, SectionHeading} from 'web/components/profile/section'
@@ -32,8 +34,10 @@ import {ProfileCommentSection} from 'web/components/profile-comment-section'
 import {ScrollPanel} from 'web/components/widgets/scroll-panel'
 import {linkClass} from 'web/components/widgets/site-link'
 import {shortenName} from 'web/components/widgets/user-link'
+import {useElementSize} from 'web/hooks/use-element-size'
 import {useGetter} from 'web/hooks/use-getter'
 import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
+import {useMinWidth} from 'web/hooks/use-min-width'
 import {useCompatibilityQuestionGroups} from 'web/hooks/use-questions'
 import {useScrolledPast} from 'web/hooks/use-scrolled-past'
 import {useUser} from 'web/hooks/use-user'
@@ -53,8 +57,13 @@ export function ProfileInfo(props: {
   refreshProfile: () => void
   fromProfilePage?: Profile
   fromSignup?: boolean
+  // Shown beside an open conversation (the wide-screen panel on /messages/[channelId]) rather than
+  // as its own page: no Back button, which would leave the chat, and no "Message" button, since
+  // that is where you already are.
+  embedded?: boolean
 }) {
-  const {profile, refreshProfile, fromProfilePage, fromSignup} = props
+  const {profile, refreshProfile, fromProfilePage, fromSignup, embedded} = props
+  const t = useT()
 
   const currentUser = useUser()
   // const currentProfile = useProfile()
@@ -91,7 +100,7 @@ export function ProfileInfo(props: {
   //   !!currentProfile && areGenderCompatible(currentProfile, profile)
 
   // Allow everyone to message everyone for now
-  const showMessageButton = true // liked || likedBack || !areCompatible
+  const showMessageButton = !embedded // liked || likedBack || !areCompatible
 
   // Members-only profiles are the default here (see `profiles.visibility`), and the gate is enforced
   // on the server: what arrives for a signed-out visitor is a display name and nothing else. This
@@ -122,7 +131,20 @@ export function ProfileInfo(props: {
         }}
       >
         <div className="flex w-full items-center gap-2">
-          <BackButton className={'hidden sm:flex'} />
+          {embedded ? (
+            // Where Back sits on the full page: the panel's way out is to the full-width profile.
+            <Link
+              href={`/${user.username}`}
+              className="border-canvas-300 mr-3 flex items-center rounded-lg border p-2.5 text-ink-500 transition-colors hover:border-primary-400 hover:bg-primary-50"
+              title={t('messages.profile_panel.open_full', 'Open full profile')}
+              aria-label={t('messages.profile_panel.open_full', 'Open full profile')}
+              data-testid="chat-profile-panel-expand"
+            >
+              <ArrowsPointingOutIcon className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          ) : (
+            <BackButton className={'hidden sm:flex'} />
+          )}
 
           {/* Identity fades in once the hero is gone, so who you are reading about — and how to reach
               them — stays on screen all the way down the page. */}
@@ -143,7 +165,11 @@ export function ProfileInfo(props: {
             {/*    className="h-8 w-8 flex-none rounded-lg object-cover"*/}
             {/*  />*/}
             {/*)}*/}
-            <span className="font-heading truncate text-lg font-medium">{user.name}</span>
+            {/* Nudged down: the heading serif draws its letters above the middle of its line box,
+                so centred by the box it sat visibly higher than the buttons beside it. */}
+            <span className="font-heading truncate text-lg font-medium translate-y-0.5">
+              {user.name}
+            </span>
           </div>
 
           <div className="ml-auto flex items-center gap-2">
@@ -216,6 +242,7 @@ export function ProfileInfo(props: {
             refreshProfile={refreshProfile}
             fromProfilePage={fromProfilePage}
             fromSignup={fromSignup}
+            embedded={embedded}
             // likesGiven={likesGiven ?? []}
             // likesReceived={likesReceived ?? []}
             // ships={ships ?? []}
@@ -380,6 +407,18 @@ function RailBlocks(props: {
 }) {
   const {profile, userActivity, isCurrentUser} = props
   const t = useT()
+  // Two columns whenever two readable ones fit in the rail's own width, wherever it is: beside the
+  // bio on a wide screen, full width under the bio, or in the profile panel beside a chat. Keyed to
+  // the window it split by screen size alone, cutting the panel's narrow rail into slivers and
+  // leaving a full-width rail under the bio in one long column. Until measured, the old window
+  // breakpoint stands in.
+  const railRef = useRef<HTMLDivElement>(null)
+  const railSize = useElementSize(railRef)
+  const columnsClass = !railSize
+    ? '3xl:columns-2 3xl:gap-x-10'
+    : railSize.width >= RAIL_TWO_COLUMNS_MIN_PX
+      ? 'columns-2 gap-x-10'
+      : ''
 
   // Blocks are spaced apart rather than divided inside a shared panel — with no card there is nothing
   // for a divider to belong to, and whitespace is what separates the sections on the left too.
@@ -392,7 +431,7 @@ function RailBlocks(props: {
   // other had already moved on to interests. Splitting Details evenly on its own and starting the
   // rest under it keeps both: half the height, and one thing at a time across the rail.
   return (
-    <div>
+    <div ref={railRef}>
       {/* Full width because the block under it is: this heads both columns of Details, not one. */}
       <RailHeading>{t('profile.details', 'Details')}</RailHeading>
 
@@ -401,7 +440,7 @@ function RailBlocks(props: {
           either end — every row brings the same 16px, which is what makes the top of column two
           match the top of column one — so the gap below is `mb-6` plus that row padding, landing on
           the same 40px every other block is spaced by. */}
-      <div className="3xl:columns-2 3xl:gap-x-10 mb-6 overflow-hidden">
+      <div className={clsx(columnsClass, 'mb-6 overflow-hidden')}>
         <ProfileAbout
           profile={profile}
           userActivity={userActivity}
@@ -412,7 +451,7 @@ function RailBlocks(props: {
 
       {/* Everything below Details is short enough to stay whole, so these balance as blocks: the
           browser fills the shorter column next and no section is ever cut in two. */}
-      <div className="3xl:columns-2 3xl:gap-x-10 [&>*:last-child]:mb-0">
+      <div className={clsx(columnsClass, '[&>*:last-child]:mb-0')}>
         {!!profile.interests?.length && (
           <RailSection title={t('profile.interests', 'Interests')}>
             <ProfileInterests profile={profile} />
@@ -506,6 +545,35 @@ function RailHeading(props: {children: ReactNode}) {
   )
 }
 
+const BIO_COLUMN_PX = 650
+const RAIL_GAP_PX = 48 // gap-x-12
+const RAIL_MIN_PX = 300
+/**
+ * Two Details columns of at least 400px and their 40px gap (gap-x-10). Narrower than that, each row's
+ * label and value squeeze against each other and the values wrap a word or two per line.
+ */
+const RAIL_TWO_COLUMNS_MIN_PX = 2 * 400 + 40
+/** 650px bio track + 48px gap + 300px rail. */
+const DETAILS_BESIDE_BIO_MIN_PX = BIO_COLUMN_PX + RAIL_GAP_PX + RAIL_MIN_PX
+
+// Literal class strings (Tailwind only generates what it can read). The two-column set is the old
+// `lg:` set unprefixed; the window set is that same layout keyed to the `lg` breakpoint.
+const CONTENT_LAYOUT_TWO_COLUMNS = {
+  grid: 'grid grid-cols-[minmax(0,650px)_minmax(300px,1fr)] items-start gap-x-12 gap-y-14',
+  bio: 'col-start-1 row-start-1',
+  rail: 'sticky top-6 col-start-2 row-span-2 row-start-1',
+  railScroll: 'overflow-y-auto max-h-[calc(100vh-3rem)] pr-5',
+  rest: 'col-start-1 row-start-2',
+}
+const CONTENT_LAYOUT_BY_WINDOW = {
+  grid: 'lg:grid lg:grid-cols-[minmax(0,650px)_minmax(300px,1fr)] lg:items-start lg:gap-x-12 lg:gap-y-14',
+  bio: 'lg:col-start-1 lg:row-start-1',
+  rail: 'lg:sticky lg:top-6 lg:col-start-2 lg:row-span-2 lg:row-start-1',
+  railScroll: 'lg:overflow-y-auto lg:max-h-[calc(100vh-3rem)] lg:pr-5',
+  rest: 'lg:col-start-1 lg:row-start-2',
+}
+const CONTENT_LAYOUT_STACKED = {grid: '', bio: '', rail: '', railScroll: '', rest: ''}
+
 function ProfileContent(props: {
   user: User
   userActivity?: UserActivity
@@ -513,6 +581,8 @@ function ProfileContent(props: {
   refreshProfile: () => void
   fromProfilePage?: Profile
   fromSignup?: boolean
+  // See ProfileInfo's prop of the same name.
+  embedded?: boolean
   // likesGiven: LikeData[]
   // likesReceived: LikeData[]
   // ships: ShipData[]
@@ -525,6 +595,7 @@ function ProfileContent(props: {
     refreshProfile,
     fromProfilePage,
     fromSignup,
+    embedded,
     // likesGiven,
     // likesReceived,
     // ships,
@@ -536,6 +607,32 @@ function ProfileContent(props: {
   const t = useT()
 
   const photos = useProfilePhotos(profile)
+  // Details sits beside the bio only when the bio still gets its full ~80-character measure (the
+  // 650px track) next to the 300px rail; narrower, it drops under the bio. Measured on this block,
+  // not the window, so the profile panel beside a chat follows the same rule. Until measured, the
+  // old window breakpoint stands in, so the first paint matches the usual result.
+  const contentRef = useRef<HTMLDivElement>(null)
+  const contentSize = useElementSize(contentRef)
+  const layout = !contentSize
+    ? CONTENT_LAYOUT_BY_WINDOW
+    : contentSize.width >= DETAILS_BESIDE_BIO_MIN_PX
+      ? CONTENT_LAYOUT_TWO_COLUMNS
+      : CONTENT_LAYOUT_STACKED
+  // On the profile page (not the panel beside a chat) the bio column also grows until sidebar plus
+  // bio cover half the window, so on a wide screen the profile's main column isn't the narrow one.
+  // The rail keeps at least its 300px. Re-read whenever this block resizes, which a window resize or
+  // a sidebar collapse both cause.
+  const bioColumnPx =
+    !embedded && layout === CONTENT_LAYOUT_TWO_COLUMNS && contentSize && contentRef.current
+      ? Math.min(
+          Math.max(
+            BIO_COLUMN_PX,
+            window.innerWidth / 2 - contentRef.current.getBoundingClientRect().left,
+          ),
+          contentSize.width - RAIL_GAP_PX - RAIL_MIN_PX,
+        )
+      : undefined
+  const heroShowsAllPhotos = useMinWidth(HERO_GALLERY_MIN_WIDTH_PX)
   const {answeredQuestions} = useCompatibilityQuestionGroups(user.id)
   const showCompatibilityPrompts = currentUser && (isCurrentUser || answeredQuestions.length > 0)
 
@@ -551,10 +648,16 @@ function ProfileContent(props: {
           under everything ranked below it. Explicit row/column placement at `lg` keeps the desktop
           layout identical while mobile reads bio → details → prompts → endorsements → connect. */}
       <div
-        className="mt-10 flex flex-col gap-14 lg:grid lg:grid-cols-[minmax(0,650px)_minmax(300px,1fr)] lg:items-start lg:gap-x-12 lg:gap-y-14"
+        ref={contentRef}
+        className={clsx('mt-10 flex flex-col gap-14', layout.grid)}
+        style={
+          bioColumnPx
+            ? {gridTemplateColumns: `${Math.round(bioColumnPx)}px minmax(${RAIL_MIN_PX}px, 1fr)`}
+            : undefined
+        }
         data-testid="profile-content"
       >
-        <Col className="min-w-0 gap-14 lg:col-start-1 lg:row-start-1">
+        <Col className={clsx('min-w-0 gap-14', layout.bio)}>
           {profile.bio && (
             <Section title={t('profile.bio.about_me', 'About Me')}>
               <ProfileBio
@@ -568,12 +671,15 @@ function ProfileContent(props: {
 
           {/* The rest of the photos, sideways under the bio rather than as thumbnails beside the
               hero: here they are large enough to be looked at instead of counted. */}
-          <ProfilePhotoCarousel
-            urls={photos.visibleUrls.slice(1)}
-            descriptions={profile.image_descriptions as Record<string, string>}
-            indexOffset={1}
-            onSelect={photos.openAt}
-          />
+          {/* On very wide windows the hero already shows every photo (ProfileHeroGallery). */}
+          {!heroShowsAllPhotos && (
+            <ProfilePhotoCarousel
+              urls={photos.visibleUrls.slice(1)}
+              descriptions={profile.image_descriptions as Record<string, string>}
+              indexOffset={1}
+              onSelect={photos.openAt}
+            />
+          )}
           {photos.lightbox}
         </Col>
 
@@ -583,19 +689,19 @@ function ProfileContent(props: {
             `row-span-2` gives the sticky element a containing block taller than itself, which is what
             it needs to have anywhere to travel. */}
         <ScrollPanel
-          className="lg:sticky lg:top-6 lg:col-start-2 lg:row-span-2 lg:row-start-1"
+          className={layout.rail}
           // `lg:pr-5` is the gutter the card's padding used to provide: without it the values, the
           // Big Five numbers in particular, sit hard against the scrollbar and get clipped by it.
           // The offset is small because nothing is pinned over the top of this page on desktop — the
           // nav is the left column, not a bar — so anything larger is just unused viewport: the rail
           // is the tallest thing here and every pixel of the cap is a pixel less to scroll.
-          scrollClassName="lg:overflow-y-auto lg:max-h-[calc(100vh-3rem)] lg:pr-5"
+          scrollClassName={layout.railScroll}
           fadeColorClass="from-canvas-100 to-transparent"
         >
           <RailBlocks profile={profile} userActivity={userActivity} isCurrentUser={isCurrentUser} />
         </ScrollPanel>
 
-        <Col className="min-w-0 gap-14 lg:col-start-1 lg:row-start-2">
+        <Col className={clsx('min-w-0 gap-14', layout.rest)}>
           {showCompatibilityPrompts && (
             <Section
               title={
@@ -636,7 +742,9 @@ function ProfileContent(props: {
 
               {/* Renders its own sections — reaching out and signalling interest privately are two
                   separate things to do, and each gets the same heading as everything else here. */}
-              {!isCurrentUser && <ConnectActions user={user} profile={profile} />}
+              {!isCurrentUser && (
+                <ConnectActions user={user} profile={profile} hideMessageButton={embedded} />
+              )}
             </Col>
           )}
           {!currentUser && <SignUpButton text={t('profile.info.signup_to_see', signupMessage)} />}

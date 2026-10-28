@@ -83,7 +83,9 @@
   transition: transform 200ms ease-out;
 }
 
-.bottom-nav-hidden .hides-on-scroll {
+.bottom-nav-hidden .hides-on-scroll,
+/* The same, inside a container that scrolls on its own: see useHideOnScrollWithin. */
+.scroll-hidden .hides-on-scroll {
   transform: translateY(-100%);
 }
 

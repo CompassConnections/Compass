@@ -41,6 +41,11 @@ jobs:
 
       # Docker load from cache is actually slower than pulling the images every time with supabase start
       - name: Start Supabase
+        env:
+          # The CLI pulls from public.ecr.aws by default, whose anonymous quota runs out on shared runner IPs
+          # ("toomanyrequests: Data limit exceeded"). Docker Hub hosts the same supabase/* images and doesn't
+          # rate-limit GitHub-hosted runners.
+          SUPABASE_INTERNAL_IMAGE_REGISTRY: docker.io
         run: ./scripts/supabase_start.sh
 
       - name: Run E2E tests

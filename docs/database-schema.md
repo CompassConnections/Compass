@@ -383,6 +383,29 @@ CREATE TABLE profile_comments (
 );
 ```
 
+### Donations Table
+
+One row per donation a member made to Compass, entered by hand from `/admin/donations` (there is no
+payment webhook). The profile page shows a **supporter badge** with the sum of a member's donations
+over the trailing 365 days, computed at read time by `get-donor-badge`; the member can hide it with
+`profiles.donor_badge_hidden` (Settings → Data & Privacy). Rules and helpers live in
+`common/src/donations.ts`.
+
+```sql
+CREATE TABLE donations (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  amount_cents INT NOT NULL CHECK (amount_cents > 0),
+  donated_at TIMESTAMPTZ NOT NULL DEFAULT now (),
+  note TEXT,
+  admin_id TEXT REFERENCES users (id) ON DELETE SET NULL,
+  created_time TIMESTAMPTZ NOT NULL DEFAULT now ()
+);
+```
+
+RLS is on and `anon`/`authenticated` have no grants: only the API reads it, so the opt-out is always
+honoured.
+
 ## Governance Tables
 
 Proposals (`/vote`), the votes cast on them, and their discussion threads.

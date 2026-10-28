@@ -73,6 +73,7 @@ import {createBlogPost} from './create-blog-post'
 import {createBookmarkedSearch} from './create-bookmarked-search'
 import {createComment} from './create-comment'
 import {createCompatibilityQuestion} from './create-compatibility-question'
+import {createDonation} from './create-donation'
 import {createEvent} from './create-event'
 import {createOutreachSearch} from './create-outreach-search'
 import {createPrivateUserMessage} from './create-private-user-message'
@@ -82,6 +83,7 @@ import {createTestimonial} from './create-testimonial'
 import {createUserAndProfile} from './create-user-and-profile'
 import {deleteBookmarkedSearch} from './delete-bookmarked-search'
 import {deleteCompatibilityAnswer} from './delete-compatibility-answer'
+import {deleteDonation} from './delete-donation'
 import {deleteMe} from './delete-me'
 import {deleteUnfinishedSignup} from './delete-unfinished-signup'
 import {getBlogPost} from './get-blog-post'
@@ -91,6 +93,8 @@ import {getCompatibilityQuestions} from './get-compatibililty-questions'
 import {getConnectionInterestsEndpoint} from './get-connection-interests'
 import {getCountries} from './get-countries'
 import {getCurrentPrivateUser} from './get-current-private-user'
+import {getDonationsAdmin} from './get-donations-admin'
+import {getDonorBadge} from './get-donor-badge'
 import {getEvents} from './get-events'
 import {getLikesAndShips} from './get-likes-and-ships'
 import {getMe} from './get-me'
@@ -729,6 +733,10 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-spotlights-admin': getSpotlightsAdmin,
   'create-spotlight': createSpotlight,
   'update-spotlight': updateSpotlight,
+  'get-donor-badge': getDonorBadge,
+  'get-donations-admin': getDonationsAdmin,
+  'create-donation': createDonation,
+  'delete-donation': deleteDonation,
   'get-profile-answers': getProfileAnswers,
   'get-profile-feed': getProfileFeed,
   'get-profile-gate': getProfileGate,

@@ -1458,6 +1458,7 @@ export type Database = {
           created_time: string
           diet: string[] | null
           disabled: boolean
+          donor_badge_hidden: boolean
           drinks_per_month: number | null
           education_level: string | null
           ethnicity: string[] | null
@@ -1550,6 +1551,7 @@ export type Database = {
           created_time?: string
           diet?: string[] | null
           disabled?: boolean
+          donor_badge_hidden?: boolean
           drinks_per_month?: number | null
           education_level?: string | null
           ethnicity?: string[] | null
@@ -1642,6 +1644,7 @@ export type Database = {
           created_time?: string
           diet?: string[] | null
           disabled?: boolean
+          donor_badge_hidden?: boolean
           drinks_per_month?: number | null
           education_level?: string | null
           ethnicity?: string[] | null
@@ -2545,6 +2548,7 @@ export type Database = {
           created_time: string
           diet: string[] | null
           disabled: boolean
+          donor_badge_hidden: boolean
           drinks_per_month: number | null
           education_level: string | null
           ethnicity: string[] | null

@@ -2398,5 +2398,11 @@
   "send_message.reference_warning": "Ce message ne semble rien reprendre du profil de {name}. Les entrées en matière qui pourraient être envoyées à n’importe qui restent souvent sans réponse, et notre vérification peut le retenir.",
   "messages.pending.checking": "Envoi en cours. Les premiers messages sont vérifiés avant d’être remis.",
   "messages.pending.refused": "Non envoyé",
-  "messages.pending.edit": "Modifier et réessayer"
+  "messages.pending.edit": "Modifier et réessayer",
+  "badge.donor": "Soutien",
+  "badge.donor.tooltip": "A donné {amount} au cours de l’année écoulée pour que Compass reste gratuit et indépendant.",
+  "settings.donor_badge.label": "Afficher votre badge de soutien",
+  "settings.donor_badge.description": "Si vous avez fait un don à Compass au cours de l’année écoulée, votre profil affiche un petit badge avec le total, en guise de remerciement et d’encouragement pour les autres. Désactivez-le pour garder votre soutien privé.",
+  "settings.donor_badge.saved": "Enregistré",
+  "settings.donor_badge.failed": "Impossible d’enregistrer — réessayer ?"
 }

@@ -2399,5 +2399,11 @@
   "send_message.reference_warning": "Diese Nachricht scheint nichts aus {name}s Profil aufzugreifen. Erste Nachrichten, die an jeden gehen könnten, bleiben oft unbeantwortet, und unsere Prüfung kann sie zurückhalten.",
   "messages.pending.checking": "Wird gesendet. Erste Nachrichten werden geprüft, bevor sie zugestellt werden.",
   "messages.pending.refused": "Nicht gesendet",
-  "messages.pending.edit": "Bearbeiten und erneut versuchen"
+  "messages.pending.edit": "Bearbeiten und erneut versuchen",
+  "badge.donor": "Unterstützer:in",
+  "badge.donor.tooltip": "Hat im vergangenen Jahr {amount} gespendet, damit Compass kostenlos und unabhängig bleibt.",
+  "settings.donor_badge.label": "Unterstützer-Abzeichen anzeigen",
+  "settings.donor_badge.description": "Wenn Sie Compass im vergangenen Jahr gespendet haben, zeigt Ihr Profil ein kleines Abzeichen mit dem Gesamtbetrag – als Dankeschön und als Anstoß für andere. Schalten Sie dies aus, um Ihre Unterstützung privat zu halten.",
+  "settings.donor_badge.saved": "Gespeichert",
+  "settings.donor_badge.failed": "Konnte nicht gespeichert werden – noch einmal versuchen?"
 }

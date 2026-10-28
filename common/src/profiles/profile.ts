@@ -34,6 +34,13 @@ export type Profile = ProfileWithoutUser & {
    * When it is set, `bio` is absent.
    */
   bio_snippet?: string
+  /**
+   * The supporter badge's number — this member's donations over the trailing year, in cents, zero
+   * when there is nothing to show or they opted out. Sent by list endpoints (`get-profiles`) so a
+   * grid of cards does not make one `get-donor-badge` request per card; the profile page, which
+   * reaches its profile by several roads, asks for it separately. See `common/donations.ts`.
+   */
+  donor_past_year_cents?: number
 }
 
 export const getProfileRowWithFrontendSupabase = async (

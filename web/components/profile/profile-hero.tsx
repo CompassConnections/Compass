@@ -11,9 +11,11 @@ import {Row} from 'web/components/layout/row'
 import ProfileHeroPhoto from 'web/components/profile/profile-hero-photo'
 import {useProfilePhotos} from 'web/components/profile/profile-photos'
 import {ProfileConnectionGoals} from 'web/components/profile-about'
+import {DonorBadge} from 'web/components/widgets/donor-badge'
 import {linkClass} from 'web/components/widgets/site-link'
 import {AdminBadge} from 'web/components/widgets/user-link'
 import {useAdminOrMod} from 'web/hooks/use-admin'
+import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useElementSize} from 'web/hooks/use-element-size'
 import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
@@ -54,6 +56,9 @@ export default function ProfileHero(props: {
   const t = useT()
 
   const photos = useProfilePhotos(profile)
+
+  const {data: donorBadge} = useAPIGetter('get-donor-badge', locked ? undefined : {userId: user.id})
+  const donorAmountCents = donorBadge?.amountCents ?? 0
 
   // Mirrors the `shortBio` filter in the backend's `get-profiles`: keep the two in sync.
   const isFilteredFromSearch = !(
@@ -177,6 +182,9 @@ export default function ProfileHero(props: {
                 name
               )}
               {isAdminUserId(user.id) && <AdminBadge className="px-2 py-1 text-xs" />}
+              {donorAmountCents > 0 && (
+                <DonorBadge amountCents={donorAmountCents} className="px-2 py-1 text-xs" />
+              )}
             </div>
           </Col>
 

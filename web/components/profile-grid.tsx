@@ -35,6 +35,7 @@ import {ProfileLocation} from 'web/components/profile/profile-location'
 import {getSeekingText} from 'web/components/profile-about'
 import {GetNotifiedButton} from 'web/components/searches/get-notified-button'
 import {CompatibilityRing} from 'web/components/widgets/compatible-badge'
+import {DonorBadge} from 'web/components/widgets/donor-badge'
 import HideProfileButton from 'web/components/widgets/hide-profile-button'
 import {StarButton} from 'web/components/widgets/star-button'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
@@ -844,6 +845,12 @@ export function ProfilePreview(props: {
                     <GenderIcon gender={profile.gender as Gender} className="h-3.5 w-3.5" />
                   )}
                 </Row>
+                {/* Compact on a card: the amount is the information, and the word "Supporter" is
+                    on the tooltip and the profile page. Comes with the list response, so no
+                    request per card. */}
+                {(profile.donor_past_year_cents ?? 0) > 0 && (
+                  <DonorBadge amountCents={profile.donor_past_year_cents!} compact />
+                )}
               </Row>
               {showCity !== false && (
                 <ProfileLocation

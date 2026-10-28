@@ -1074,6 +1074,17 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     'isBannedFromPosting', users.is_banned_from_posting,
     'banReason', users.ban_reason
   ) as user`
+  // The supporter badge, computed here rather than fetched per card. A correlated subquery, not a
+  // join: `donations` is small and indexed on (user_id, donated_at), and a left join to an aggregate
+  // would have to be added to the count query's table selection as well to keep the two in step.
+  // The window and the opt-out mirror `get-donor-badge`; keep them identical.
+  selectCols += `, (
+    select coalesce(sum(d.amount_cents), 0)
+    from donations d
+    where d.user_id = profiles.user_id
+      and d.donated_at > now() - interval '365 days'
+      and not profiles.donor_badge_hidden
+  )::int as donor_past_year_cents`
   if (orderByParam === 'compatibility_score') {
     selectCols += ', cs.score as compatibility_score'
   } else if (orderByParam === 'last_online_time' || last_active) {

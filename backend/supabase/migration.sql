@@ -91,4 +91,5 @@ BEGIN;
 \i backend/supabase/migrations/20261023_compatibility_prompts_importance_default_zero.sql
 \i backend/supabase/migrations/20261023_compatibility_scores_range.sql
 \i backend/supabase/migrations/20261024_add_banned_networks.sql
+\i backend/supabase/migrations/20261028_add_donations.sql
 COMMIT;

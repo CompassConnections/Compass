@@ -23,6 +23,7 @@ import {Row} from 'web/components/layout/row'
 import MeasurementSystemToggle from 'web/components/measurement-system-toggle'
 import {DeleteAccountSurveyModal} from 'web/components/profile/delete-account-survey-modal'
 import {AnalyticsConsentSetting} from 'web/components/settings/analytics-consent-setting'
+import {DonorBadgeSetting} from 'web/components/settings/donor-badge-setting'
 import HiddenProfilesModal from 'web/components/settings/hidden-profiles-modal'
 import {SettingsCard, SettingsRow} from 'web/components/settings/settings-card'
 import {SpotlightConsentSetting} from 'web/components/settings/spotlight-consent-setting'
@@ -153,6 +154,7 @@ const LoadedGeneralSettings = (props: {privateUser: PrivateUser}) => {
           style={enter(1)}
         >
           <SpotlightConsentSetting />
+          <DonorBadgeSetting />
           <DataPrivacySettings />
           <AnalyticsConsentSetting />
         </SettingsCard>

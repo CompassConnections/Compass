@@ -22,6 +22,12 @@ import {
 } from 'common/blog/blog'
 import {ChatMessage} from 'common/chat-message'
 import {COMMENT_TYPES} from 'common/comment'
+import {
+  AdminDonation,
+  DonorBadge,
+  MAX_DONATION_NOTE_LENGTH,
+  MAX_DONATION_USD,
+} from 'common/donations'
 import {FeedItem, MAX_FEED_LIMIT} from 'common/feed/feed'
 import {BAN_REASONS} from 'common/moderation/ban'
 import {ProfileGateIssues} from 'common/moderation/first-message'
@@ -2071,6 +2077,56 @@ export const API = (_apiTypeCheck = {
     returns: {} as {spotlight: AdminSpotlight},
     summary: 'Edit, re-snapshot, publish or take down a spotlight. Admins only.',
     tag: 'Spotlights',
+  },
+  'get-donor-badge': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z.object({userId: z.string()}).strict(),
+    returns: {} as DonorBadge,
+    // Its own request rather than a field on the profile: a profile reaches the page by three roads
+    // (static props, `get-profile`, and a direct PostgREST read for signed-out visitors), and a
+    // derived field would have to be threaded through each. One number, CDN-cached per member for
+    // the same window as the public spotlights; a member who opts out is off within minutes.
+    cache: 'public, max-age=300, stale-while-revalidate=600',
+    summary:
+      'The past-year donation total shown as a supporter badge on a profile. Zero if hidden.',
+    tag: 'Donations',
+  },
+  'get-donations-admin': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({}).strict(),
+    returns: {} as {donations: AdminDonation[]},
+    summary: 'Every recorded donation, newest first, with the donor. Admins only.',
+    tag: 'Donations',
+  },
+  'create-donation': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z
+      .object({
+        userId: z.string(),
+        // Dollars on the wire because that is what the admin typed; cents in the table.
+        amountUsd: z.number().positive().max(MAX_DONATION_USD),
+        donatedAt: z.coerce.date().optional(),
+        note: z.string().trim().max(MAX_DONATION_NOTE_LENGTH).nullable().optional(),
+      })
+      .strict(),
+    returns: {} as {donation: AdminDonation},
+    summary: 'Record a donation a member made, by hand. Admins only.',
+    tag: 'Donations',
+  },
+  'delete-donation': {
+    method: 'POST',
+    authed: true,
+    rateLimited: false,
+    props: z.object({id: z.number().int()}).strict(),
+    returns: {} as {success: true},
+    summary: 'Remove a donation entered by mistake. Admins only.',
+    tag: 'Donations',
   },
   'get-blog-posts': {
     method: 'GET',

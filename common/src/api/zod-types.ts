@@ -145,6 +145,10 @@ export const profileSchema = z.object({
   // social accounts (the Instagram scroll clip in `media-creator`)? Only meaningful while
   // `spotlight_consent` is true, and unlike it, revoking cannot unpublish what is already posted.
   social_media_consent: zBoolean.optional(),
+  // The member's opt-out of the supporter badge (past-year donation total on the profile). The
+  // donations themselves are admin-entered; this is the only part of the feature a member writes.
+  // See `common/donations.ts`.
+  donor_badge_hidden: zBoolean.optional(),
   gender_details: z.string().optional().nullable(),
   orientation: z.array(z.string()).optional().nullable(),
   orientation_details: z.string().optional().nullable(),

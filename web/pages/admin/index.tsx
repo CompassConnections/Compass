@@ -2,6 +2,7 @@ import {
   ChartBarIcon,
   ChatBubbleBottomCenterTextIcon,
   EnvelopeIcon,
+  HeartIcon,
   MapIcon,
   PencilSquareIcon,
   SparklesIcon,
@@ -65,6 +66,13 @@ const ADMIN_PAGES: {
     description:
       'Which prompts have stopped discriminating — the share on the most-picked answer, and on the most-picked accepted set.',
     icon: ChartBarIcon,
+  },
+  {
+    href: '/admin/donations',
+    name: 'Donations',
+    description:
+      'Record what a member donated. Their profile then shows a supporter badge with the past-year total.',
+    icon: HeartIcon,
   },
   {
     href: '/admin/spotlights',

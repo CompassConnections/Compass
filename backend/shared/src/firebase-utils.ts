@@ -42,9 +42,18 @@ export type Bucket = ReturnType<InstanceType<typeof Storage>['bucket']>
  * `generateAvatarUrl` writes to `user-images/<uid>.png`. The username prefix still holds every file
  * uploaded before that change, plus the images `rehostExternalImages` copies in on the server, so
  * both have to be swept or a deleted account leaves photos behind.
+ *
+ * The trailing slashes on the prefixes are load-bearing. `getFiles({prefix})` is a plain string
+ * prefix, not a folder: `user-images/bob` also matches `user-images/bobby/...`, and with a short
+ * username it matches every folder that starts with those letters. The generated avatar sits at
+ * `user-images/<uid>.png`, outside the uid folder, so it is deleted by its exact name rather than by
+ * widening the prefix.
  */
 export async function deleteUserFiles(username: string, userId: string) {
-  const prefixes = [`user-images/${username}`, `user-images/${userId}`]
+  // `user-images/` with nothing after it would match the whole bucket.
+  if (!username || !userId) throw new Error('deleteUserFiles: username and userId are required')
+
+  const prefixes = [`user-images/${username}/`, `user-images/${userId}/`]
 
   // Delete all files in the directories
   const bucket = getBucket()
@@ -52,6 +61,8 @@ export async function deleteUserFiles(username: string, userId: string) {
     prefixes.map(async (prefix) => (await bucket.getFiles({prefix}))[0]),
   )
   const files = fileLists.flat()
+
+  await bucket.file(`user-images/${userId}.png`).delete({ignoreNotFound: true})
 
   if (files.length === 0) {
     debug(`No files found in bucket for user ${username}`)

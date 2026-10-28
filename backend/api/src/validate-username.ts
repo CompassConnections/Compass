@@ -1,4 +1,4 @@
-import {RESERVED_PATHS} from 'common/envs/constants'
+import {MIN_USERNAME_LENGTH, RESERVED_PATHS} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {cleanUsername} from 'common/util/clean-username'
 import {randomString} from 'common/util/random'
@@ -18,6 +18,15 @@ export async function validateUsername(username: string): Promise<ValidationResu
 
   if (!cleanUsernameStr) {
     return {valid: false, message: 'Username cannot be empty'}
+  }
+
+  // No suggestion here on purpose: `create-user-and-profile` applies a suggestion silently, and a
+  // too-short name is the person's to lengthen rather than ours to pad with random characters.
+  if (cleanUsernameStr.length < MIN_USERNAME_LENGTH) {
+    return {
+      valid: false,
+      message: `Username must be at least ${MIN_USERNAME_LENGTH} characters`,
+    }
   }
 
   if (RESERVED_PATHS.has(cleanUsernameStr)) {

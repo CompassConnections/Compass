@@ -1,5 +1,5 @@
 import {toUserAPIResponse} from 'common/api/user-types'
-import {RESERVED_PATHS} from 'common/envs/constants'
+import {MIN_USERNAME_LENGTH, RESERVED_PATHS} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {cleanDisplayName, cleanUsername, impersonatesStaff} from 'common/util/clean-username'
 import {removeUndefinedProps} from 'common/util/object'
@@ -31,6 +31,10 @@ export const updateMe: APIHandler<'me/update'> = async (props, auth) => {
   if (update.username) {
     const cleanedUsername = cleanUsername(update.username)
     if (!cleanedUsername) throw APIErrors.badRequest('Invalid username')
+    if (cleanedUsername.length < MIN_USERNAME_LENGTH)
+      throw APIErrors.badRequest(`Username must be at least ${MIN_USERNAME_LENGTH} characters`, {
+        field: 'username',
+      })
     const reservedName = RESERVED_PATHS.has(cleanedUsername)
     if (reservedName) throw APIErrors.forbidden('This username is reserved')
     const otherUserExists = await getUserByUsername(cleanedUsername)

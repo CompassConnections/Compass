@@ -91,6 +91,11 @@ export const MOD_USERNAMES = ['Martin']
 
 export const VERIFIED_USERNAMES = ['Martin']
 
+// Measured after `cleanUsername`, so a name padded out with characters that get stripped does not
+// pass. Short usernames are not only a UX matter: anything that treats the username as a storage
+// prefix (see `deleteUserFiles`) gets more dangerous the shorter the name is.
+export const MIN_USERNAME_LENGTH = 3
+
 export const TEN_YEARS_SECS = 60 * 60 * 24 * 365 * 10
 
 export const endTitle = IS_PROD ? 'Compass' : 'Compass dev'

@@ -70,8 +70,15 @@ export const deleteUnfinishedLogin = async (
     debug(`Login ${uid} already gone from Firebase Auth`)
   }
 
-  const [files] = await getBucket().getFiles({prefix: `user-images/${uid}`})
-  await Promise.all(files.map((file) => file.delete()))
+  // Trailing slash so the prefix means the uid's folder and not every folder that starts with the
+  // uid (see `deleteUserFiles`). The avatar `generateAvatarUrl` may already have written sits beside
+  // the folder, so it goes by its exact name.
+  const bucket = getBucket()
+  const [files] = await bucket.getFiles({prefix: `user-images/${uid}/`})
+  await Promise.all([
+    ...files.map((file) => file.delete()),
+    bucket.file(`user-images/${uid}.png`).delete({ignoreNotFound: true}),
+  ])
   if (files.length) debug(`Deleted ${files.length} files for unfinished login ${uid}`)
 
   // Upsert rather than update: `stale` and `no_email` deletions never had a notice row.

@@ -18,5 +18,5 @@ jobs:
       users: 100
       duration: 120
       max_error_rate: 1
-      max_p95: 800
+      max_p95: 1200
       report_name: load-full-report

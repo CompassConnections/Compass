@@ -51,6 +51,7 @@ export default tseslint.config(
         Request: 'readonly',
         Response: 'readonly',
         AbortController: 'readonly',
+        AbortSignal: 'readonly',
         localStorage: 'readonly',
         sessionStorage: 'readonly',
         IntersectionObserver: 'readonly',

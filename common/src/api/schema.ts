@@ -1267,6 +1267,18 @@ export const API = (_apiTypeCheck = {
     summary: 'Set last seen time for a channel',
     tag: 'Messages',
   },
+  'set-channel-typing': {
+    method: 'POST',
+    authed: true,
+    // The composer sends at most one of these every few seconds while someone types, which stays well
+    // inside the per-user budget.
+    rateLimited: true,
+    props: z.object({
+      channelId: z.coerce.number(),
+    }),
+    summary: 'Tell the other members of a channel that you are typing',
+    tag: 'Messages',
+  },
   'set-last-online-time': {
     method: 'POST',
     authed: true,

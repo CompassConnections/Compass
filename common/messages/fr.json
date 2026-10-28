@@ -716,6 +716,8 @@
   "messages.empty": "Vous n'avez pas encore de messages.",
   "messages.search_placeholder": "Rechercher par nom ou identifiant...",
   "messages.search_empty": "Aucune conversation ne correspond à votre recherche.",
+  "messages.typing_many": "Plusieurs personnes écrivent…",
+  "messages.typing_one": "{name} est en train d’écrire…",
   "messages.input_placeholder": "Envoyer un message",
   "messages.menu.copy_plain_text": "Copier en texte brut",
   "messages.menu.leave_chat": "Quitter la conversation",

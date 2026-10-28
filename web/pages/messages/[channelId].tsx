@@ -19,6 +19,7 @@ import {GiSpeakerOff} from 'react-icons/gi'
 import {BackButton} from 'web/components/back-button'
 import {ChatMessageItem, SystemChatMessageItem} from 'web/components/chat/chat-message'
 import {PendingOpenerBubble} from 'web/components/chat/pending-opener'
+import {TypingIndicator} from 'web/components/chat/typing-indicator'
 import {CommentInputTextArea} from 'web/components/comments/comment-input'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
@@ -48,6 +49,7 @@ import {
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {useReviewPromptOnConversationExit} from 'web/hooks/use-review-prompt'
 import {useSharePromptOnConversationExit} from 'web/hooks/use-share-prompt'
+import {useTypingIndicator} from 'web/hooks/use-typing-indicator'
 import {isBlocked, usePrivateUser, useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {useVisualViewportHeight} from 'web/hooks/use-visual-viewport-height'
@@ -295,6 +297,29 @@ export const PrivateChat = (props: {
       editor.commands.focus('end')
     }
   }, [editor, editingMessage])
+
+  const typingUserIds = useTypingIndicator({
+    channelId,
+    userId: user.id,
+    editor,
+    messages,
+    sendEnabled: !editingMessage,
+  })
+  const typingNames = filterDefined(
+    typingUserIds.map((id) => otherUsers?.find((u) => u.id === id)?.name),
+  ).map(getFirstName)
+
+  // The dots join the bottom of the transcript; if the reader was already at the bottom, follow them
+  // in, the way a new message is followed. Someone reading history further up is left where they are.
+  const isTyping = typingNames.length > 0
+  useEffect(() => {
+    const el = outerDiv.current
+    if (!isTyping || !el) return
+    const TYPING_BUBBLE_ALLOWANCE_PX = 80
+    if (el.scrollHeight - el.clientHeight - el.scrollTop <= TYPING_BUBBLE_ALLOWANCE_PX) {
+      el.scrollTo({top: el.scrollHeight, behavior: 'smooth'})
+    }
+  }, [isTyping])
 
   useEffect(() => {
     if (editor && !isMobile) {
@@ -657,6 +682,7 @@ export const PrivateChat = (props: {
                 }}
               />
             )}
+            {typingNames.length > 0 && <TypingIndicator names={typingNames} />}
             {messages && messages.length === 0 && !pendingOpener && (
               <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
                 <p className="text-ink-500 text-sm">{t('messages.empty', 'No messages yet.')}</p>

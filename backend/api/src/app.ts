@@ -33,6 +33,7 @@ import {searchOptionsEndpoint} from 'api/search-options'
 import {sendCityNumberEmails} from 'api/send-city-number-emails'
 import {sendEmptyRoomEmails} from 'api/send-empty-room-emails'
 import {sendSearchNotifications} from 'api/send-search-notifications'
+import {setChannelTyping} from 'api/set-channel-typing'
 import {setOptionAlias} from 'api/set-option-alias'
 import {sweepUnfinishedSignups} from 'api/sweep-unfinished-signups'
 import {localSendTestEmail} from 'api/test'
@@ -765,6 +766,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'search-near-city': searchNearCity,
   'search-users': searchUsers,
   'set-channel-seen-time': setChannelLastSeenTime,
+  'set-channel-typing': setChannelTyping,
   'set-compatibility-answer': setCompatibilityAnswer,
   'set-last-online-time': setLastOnlineTime,
   'ship-profiles': shipProfiles,

@@ -37,4 +37,12 @@ describe('referral capture', () => {
     expect(hook).toContain("searchParams.get('referrer')")
     expect(hook).toContain("searchParams.get('r')")
   })
+  it('credits the default referrer only on a direct landing, not after in-app navigation', () => {
+    const hook = read('hooks', 'use-save-referral.ts')
+
+    // Clicking a home-page spotlight lands on `/[username]` client-side; that must not credit the
+    // profile owner as the visitor's referrer.
+    expect(hook).toContain("Router.events.on('routeChangeStart'")
+    expect(hook).toContain('landedHere ? options?.defaultReferrerUsername : undefined')
+  })
 })

@@ -28,6 +28,28 @@ export function isOnboardingFlag() {
   return safeLocalStorage?.getItem(`is-onboarding`)
 }
 
+export type SignInMethod = SocialProvider | 'email'
+
+const LAST_SIGN_IN_METHOD_KEY = 'last-sign-in-method'
+const SIGN_IN_METHODS: SignInMethod[] = ['google', 'apple', 'email']
+
+/**
+ * Remembers which way in worked, so `/signin` can mark that button "Last used". Someone who signed up
+ * with Apple months ago and now sees three buttons otherwise has to guess — and guessing wrong means a
+ * second, unrelated account, or `auth/account-exists-with-different-credential`.
+ *
+ * Kept per device in localStorage and deliberately not cleared on sign-out: the hint is for the *next*
+ * sign-in, which only ever happens after one.
+ */
+export function rememberSignInMethod(method: SignInMethod) {
+  safeLocalStorage?.setItem(LAST_SIGN_IN_METHOD_KEY, method)
+}
+
+export function getLastSignInMethod(): SignInMethod | undefined {
+  const value = safeLocalStorage?.getItem(LAST_SIGN_IN_METHOD_KEY)
+  return SIGN_IN_METHODS.find((m) => m === value)
+}
+
 /**
  * The one path from a social button into an account. Both `/register` and `/signin` go through it.
  *
@@ -67,6 +89,7 @@ export async function socialSigninSignup(
   setOnboardingFlag()
   try {
     const creds = await login()
+    rememberSignInMethod(provider)
     await signinSignupRedirect(creds?.user?.uid, path)
   } catch (e) {
     // Cleared on the way out, or a failed attempt would leave every later session convinced it is

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import {ButtonHTMLAttributes} from 'react'
+import {ButtonHTMLAttributes, ReactNode} from 'react'
 import {FcGoogle} from 'react-icons/fc'
 import {Row} from 'web/components/layout/row'
 import {startSignup} from 'web/lib/util/signup'
@@ -28,7 +28,7 @@ const SOCIAL_BUTTON_CLASSES = clsx(
   // gap 10px: Apple's rendered button puts about a quarter of the control's height between mark and
   // label. `h-12` (48px) is the height `AuthSubmitButton` uses too, so the three sign-in buttons read
   // as one set — and it clears Apple's 44px floor.
-  'w-full flex items-center justify-center gap-2.5 px-4 h-12 whitespace-nowrap',
+  'relative w-full flex items-center justify-center gap-2.5 px-4 h-12 whitespace-nowrap',
   // `rounded-xl`, matching `AuthSubmitButton` — the email button directly above these two. Apple
   // permits any radius from square to fully rounded, so the constraint here is ours: three sign-up
   // buttons stacked in a column look like three unrelated controls if only one of them is a pill.
@@ -89,6 +89,8 @@ type GoogleButtonProps = {
   isLoading?: boolean
   /** As with Apple: `/register` says "Sign up with Google", `/signin` takes the default. */
   label?: string
+  /** A `LastUsedBadge`, pinned to the top edge. */
+  badge?: ReactNode
 } & ButtonHTMLAttributes<HTMLButtonElement>
 
 /**
@@ -100,7 +102,13 @@ type GoogleButtonProps = {
  * ("Sign in with", "Sign up with" or "Continue with"). `FcGoogle` is the standard full-colour G,
  * which Google permits on either fill, so it needs no theme handling of its own.
  */
-export function GoogleButton({onClick, isLoading = false, label, ...props}: GoogleButtonProps) {
+export function GoogleButton({
+  onClick,
+  isLoading = false,
+  label,
+  badge,
+  ...props
+}: GoogleButtonProps) {
   return (
     <button
       type="button"
@@ -118,6 +126,7 @@ export function GoogleButton({onClick, isLoading = false, label, ...props}: Goog
           the G's own white counters stay legible on the black fill. */}
       <FcGoogle className="w-4 h-4 rounded-full bg-white" />
       {isLoading ? 'Loading...' : (label ?? 'Sign in with Google')}
+      {badge}
     </button>
   )
 }
@@ -130,6 +139,8 @@ type AppleButtonProps = {
    * with Apple" — and nothing else. `/register` passes the second; the default suits `/signin`.
    */
   label?: string
+  /** A `LastUsedBadge`, pinned to the top edge. */
+  badge?: ReactNode
 } & ButtonHTMLAttributes<HTMLButtonElement>
 
 /**
@@ -184,7 +195,13 @@ function AppleMark({className}: {className?: string}) {
  *
  * `AppleMark` paints with `currentColor`, so it follows the text colour through the flip on its own.
  */
-export function AppleButton({onClick, isLoading = false, label, ...props}: AppleButtonProps) {
+export function AppleButton({
+  onClick,
+  isLoading = false,
+  label,
+  badge,
+  ...props
+}: AppleButtonProps) {
   return (
     <button
       type="button"
@@ -203,6 +220,7 @@ export function AppleButton({onClick, isLoading = false, label, ...props}: Apple
           their 0.386, which is what dragged the whole thing down. */}
       <AppleMark className="h-[15px] w-[11.84px]" />
       {isLoading ? 'Loading...' : (label ?? 'Sign in with Apple')}
+      {badge}
     </button>
   )
 }

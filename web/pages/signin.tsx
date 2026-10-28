@@ -16,6 +16,7 @@ import {
   AuthShell,
   AuthSocialButtons,
   AuthSubmitButton,
+  LastUsedBadge,
 } from 'web/components/auth/auth-form'
 import {AppleButton, GoogleButton} from 'web/components/buttons/sign-up-button'
 import {InfoIcon} from 'web/components/icons'
@@ -31,7 +32,14 @@ import {
   googleLogin,
 } from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
-import {signinSignupRedirect, type SocialProvider, socialSigninSignup} from 'web/lib/util/signup'
+import {
+  getLastSignInMethod,
+  rememberSignInMethod,
+  type SignInMethod,
+  signinSignupRedirect,
+  type SocialProvider,
+  socialSigninSignup,
+} from 'web/lib/util/signup'
 
 export default function LoginPage() {
   return (
@@ -53,6 +61,11 @@ function RegisterComponent() {
   // first client render do not have — deciding during render would be a hydration mismatch.
   const [showApple, setShowApple] = useState(false)
   useEffect(() => setShowApple(canAppleLogin()), [])
+  // Also after mount: localStorage does not exist on the server.
+  const [lastMethod, setLastMethod] = useState<SignInMethod | undefined>()
+  useEffect(() => setLastMethod(getLastSignInMethod()), [])
+  const badgeFor = (method: SignInMethod) =>
+    lastMethod === method ? <LastUsedBadge label={t('signin.last_used', 'Last used')} /> : undefined
 
   useEffect(() => {
     const error = searchParams.get('error')
@@ -122,6 +135,7 @@ function RegisterComponent() {
   const handleEmailPasswordSignIn = async (email: string, password: string) => {
     try {
       const creds = await signInWithEmailAndPassword(auth, email, password)
+      rememberSignInMethod('email')
       await checkAndRedirect(creds?.user?.uid)
       debug(creds)
     } catch (error) {
@@ -235,16 +249,26 @@ function RegisterComponent() {
           <AuthError>{error}</AuthError>
 
           <div className="space-y-4">
-            <AuthSubmitButton isLoading={isLoading}>
+            <AuthSubmitButton isLoading={isLoading} badge={badgeFor('email')}>
               {isLoading ? 'Signing in...' : t('signin.submit', 'Sign in with Email')}
             </AuthSubmitButton>
             <AuthDivider label={t('signin.continue', 'Or')} />
             <AuthSocialButtons>
-              <GoogleButton onClick={handleGoogleSignIn} isLoading={isLoading} />
+              <GoogleButton
+                onClick={handleGoogleSignIn}
+                isLoading={isLoading}
+                badge={badgeFor('google')}
+              />
               {/* App Store guideline 4.8: an app offering third-party social login must also offer
                   Sign in with Apple. Shown in the iOS app (native flow) and in browsers once the
                   Services ID is configured, so an account created on iOS is not locked to it. */}
-              {showApple && <AppleButton onClick={handleAppleSignIn} isLoading={isLoading} />}
+              {showApple && (
+                <AppleButton
+                  onClick={handleAppleSignIn}
+                  isLoading={isLoading}
+                  badge={badgeFor('apple')}
+                />
+              )}
             </AuthSocialButtons>
           </div>
         </AuthForm>

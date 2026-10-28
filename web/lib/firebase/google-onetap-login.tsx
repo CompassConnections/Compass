@@ -4,6 +4,7 @@ import {GoogleAuthProvider, signInWithCredential} from 'firebase/auth'
 import Script from 'next/script'
 import {useEffect} from 'react'
 import {useUser} from 'web/hooks/use-user'
+import {rememberSignInMethod} from 'web/lib/util/signup'
 
 import {auth} from './users'
 
@@ -12,6 +13,7 @@ async function handleResponse(response: any) {
   const credential = GoogleAuthProvider.credential(idToken)
   try {
     const result = await signInWithCredential(auth, credential)
+    rememberSignInMethod('google')
     debug(result.user)
   } catch (error) {
     console.error('could not log in via onetap', error)

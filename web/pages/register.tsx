@@ -17,6 +17,7 @@ import {
   AuthShell,
   AuthSocialButtons,
   AuthSubmitButton,
+  LastUsedBadge,
 } from 'web/components/auth/auth-form'
 import {AppleButton, GoogleButton} from 'web/components/buttons/sign-up-button'
 import {PageBase} from 'web/components/page-base'
@@ -26,8 +27,11 @@ import {auth, canAppleLogin} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
 import {
   appleSigninSignup,
+  getLastSignInMethod,
   googleSigninSignup,
+  rememberSignInMethod,
   setOnboardingFlag,
+  type SignInMethod,
   signinSignupRedirect,
 } from 'web/lib/util/signup'
 
@@ -52,6 +56,12 @@ function RegisterComponent() {
   // first client render do not have — deciding during render would be a hydration mismatch.
   const [showApple, setShowApple] = useState(false)
   useEffect(() => setShowApple(canAppleLogin()), [])
+  // Shown here too: someone on `/register` who already has an account is about to make a second one.
+  // After mount, as on `/signin` — localStorage does not exist on the server.
+  const [lastMethod, setLastMethod] = useState<SignInMethod | undefined>()
+  useEffect(() => setLastMethod(getLastSignInMethod()), [])
+  const badgeFor = (method: SignInMethod) =>
+    lastMethod === method ? <LastUsedBadge label={t('signin.last_used', 'Last used')} /> : undefined
   /**
    * The terms checkbox is **disabled for now** — it is a suspect in the guideline 2.1 rejection of
    * 1.42.0, "got an error when trying to login with Apple login".
@@ -126,6 +136,7 @@ function RegisterComponent() {
       setOnboardingFlag()
       const creds = await createUserWithEmailAndPassword(auth, email, password)
       debug('User signed up:', creds.user)
+      rememberSignInMethod('email')
       await checkProfileAndRedirect(creds)
     } catch (error: any) {
       console.error('Error signing up:', error)
@@ -334,7 +345,7 @@ function RegisterComponent() {
               <AuthError>{error}</AuthError>
 
               <div className="space-y-4">
-                <AuthSubmitButton isLoading={isLoading}>
+                <AuthSubmitButton isLoading={isLoading} badge={badgeFor('email')}>
                   {isLoading
                     ? t('register.button.creating', 'Creating account...')
                     : t('register.button.email', 'Sign up with Email')}
@@ -345,6 +356,7 @@ function RegisterComponent() {
                     onClick={requireAgreement(googleSigninSignup)}
                     isLoading={isLoading}
                     label="Sign up with Google"
+                    badge={badgeFor('google')}
                   />
                   {/* App Store guideline 4.8 — see the same block in signin.tsx. */}
                   {showApple && (
@@ -354,6 +366,7 @@ function RegisterComponent() {
                       // "Sign up with Apple" rather than the default "Sign in with Apple": both are
                       // Apple's own permitted strings, and this page creates an account.
                       label="Sign up with Apple"
+                      badge={badgeFor('apple')}
                     />
                   )}
                 </AuthSocialButtons>

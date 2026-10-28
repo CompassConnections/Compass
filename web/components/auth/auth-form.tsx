@@ -108,9 +108,12 @@ export function AuthDivider({label}: {label: string}) {
 /** Primary CTA, matching the home hero button (amber, shadow, hover lift). */
 export function AuthSubmitButton({
   isLoading,
+  badge,
   children,
 }: {
   isLoading?: boolean
+  /** A `LastUsedBadge`, pinned to the top edge. */
+  badge?: ReactNode
   children: ReactNode
 }) {
   return (
@@ -123,7 +126,20 @@ export function AuthSubmitButton({
       )}
     >
       {children}
+      {badge}
     </button>
+  )
+}
+
+/**
+ * Small pill pinned to the top-right edge of a sign-in button, marking the method this device last
+ * signed in with (see `getLastSignInMethod`). The button it sits in must be `relative`.
+ */
+export function LastUsedBadge({label}: {label: string}) {
+  return (
+    <span className="absolute -top-2.5 right-3 px-2 py-1 rounded-full text-[11px] leading-none font-semibold bg-primary-100 text-primary-700 border border-primary-200 pointer-events-none">
+      {label}
+    </span>
   )
 }
 

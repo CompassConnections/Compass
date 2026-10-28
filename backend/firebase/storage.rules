@@ -26,8 +26,11 @@ service firebase.storage {
     //
     // contentType is checked because these files are served from our own origin: without it an
     // authenticated member could park an `image/svg+xml` (which executes script when opened
-    // directly) or an HTML file on compassmeet.com's storage host. The client sets the type
-    // explicitly from a sniffed magic number when the browser leaves `File.type` empty.
+    // directly) or an HTML file on compassmeet.com's storage host. An explicit list rather than
+    // `image/*`: SVG is an image type too, and `(image|video)/.*` let it straight through for as long
+    // as that was the check. The list mirrors ALLOWED_TYPES in web/lib/firebase/storage.ts, which
+    // rejects anything else before it reaches here with a readable message. The client sets the
+    // type explicitly from a sniffed magic number when the browser leaves `File.type` empty.
     //
     // Deletes are denied along with everything else: `request.resource` is null for them, so the
     // conditions below are false. No client code deletes objects — `deleteUserFiles` runs in the
@@ -36,7 +39,7 @@ service firebase.storage {
       allow write: if request.auth != null
         && request.auth.uid == userId
         && request.resource.size <= 20 * 1024 * 1024 // 20MB
-        && request.resource.contentType.matches('(image|video)/.*');
+        && request.resource.contentType.matches('^(image/(jpeg|png|webp|avif|gif|heic|heif)|video/(mp4|webm|quicktime|3gpp|x-m4v))$');
     }
   }
 }

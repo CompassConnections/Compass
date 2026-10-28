@@ -37,27 +37,33 @@ export const uploadImage = async (
   // Replace filename with a nanoid to avoid collisions
   const stem = nanoid(10)
 
+  // The exact list the storage rules accept (backend/firebase/storage.rules) — an allow-list rather
+  // than `image/*`, because SVG is an image type that runs script when opened directly, and this
+  // bucket is served from our own origin. Checked against the sniffed type so a file the browser gave
+  // no type for is judged on its magic number rather than its extension; anything outside the list
+  // would otherwise come back from the upload task as an opaque 403.
   const ALLOWED_TYPES = [
     'video/mp4',
     'video/webm',
+    'video/quicktime',
+    'video/3gpp',
+    'video/x-m4v',
     'image/jpeg',
     'image/png',
     'image/webp',
     'image/avif',
+    'image/gif',
     'image/heic',
     'image/heif',
   ]
 
   if (!ALLOWED_TYPES.includes(fileType || '')) {
-    captureMessage('Likely unsupported image format', {attributes: {type: file.type}})
-    console.warn('Likely unsupported image format', file.type)
-  }
-
-  // The storage rules only accept `image/*` and `video/*`, so anything else would come back as an
-  // opaque 403 from the upload task. Say what is actually wrong instead. Sniffing above means a file
-  // the browser gave no type for still gets here on its magic number rather than on its extension.
-  if (!/^(image|video)\//.test(fileType || '')) {
-    return Promise.reject('Only images and videos can be uploaded')
+    captureMessage('Unsupported upload type', {attributes: {type: file.type, sniffed: fileType}})
+    return Promise.reject(
+      /^(image|video)\//.test(fileType || '')
+        ? 'This image or video format is not supported'
+        : 'Only images and videos can be uploaded',
+    )
   }
 
   if (isHeic(file) && typeof window !== 'undefined') {

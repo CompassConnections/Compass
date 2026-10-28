@@ -2,6 +2,7 @@ import {Squares2X2Icon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {DisplayOptions} from 'common/profiles-rendering'
 import {buttonClass} from 'web/components/buttons/button'
+import {AutoScrollToggle} from 'web/components/filters/auto-scroll-toggle'
 import {CardSizeSelector} from 'web/components/filters/card-size-selector'
 import {FieldToggles} from 'web/components/filters/field-toggles'
 import {GridLayoutSelector} from 'web/components/filters/grid-layout-selector'
@@ -56,6 +57,10 @@ export function DisplayOptionsButton(props: {
               updateDisplayOptions={updateDisplayOptions}
             />
           </Col>
+          <AutoScrollToggle
+            displayOptions={displayOptions}
+            updateDisplayOptions={updateDisplayOptions}
+          />
         </Col>
       }
     />

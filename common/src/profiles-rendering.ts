@@ -26,6 +26,11 @@ export type DisplayOptions = {
   showDrinks: boolean | null | undefined
   showMBTI: boolean | null | undefined
   showBio: boolean | null | undefined
+  /**
+   * Load the next page as the reader nears the bottom (infinite scroll). Off by default: the grid
+   * ends in a "Load more" button instead, so paging is a deliberate choice.
+   */
+  autoScroll: boolean | null | undefined
 }
 
 /**
@@ -53,4 +58,5 @@ export const initialDisplayOptions: DisplayOptions = {
   showSmoking: false,
   showDrinks: false,
   showMBTI: false,
+  autoScroll: false,
 }

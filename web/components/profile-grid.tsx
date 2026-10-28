@@ -26,6 +26,7 @@ import {
 import Link from 'next/link'
 import React, {useMemo, useRef, useState} from 'react'
 import {PiMagnifyingGlassBold} from 'react-icons/pi'
+import {Button} from 'web/components/buttons/button'
 import {LocationFilterProps} from 'web/components/filters/location-filter'
 import GenderIcon from 'web/components/gender-icon'
 import {IconWithInfo} from 'web/components/icons'
@@ -318,7 +319,7 @@ export const ProfileGrid = (props: {
     refreshBookmarkedSearches,
   } = props
 
-  const {cardSize, gridLayout} = displayOptions ?? {}
+  const {cardSize, gridLayout, autoScroll} = displayOptions ?? {}
   const config = CARD_SIZE_CONFIG[cardSize ?? 'medium']
   const isUniform = (gridLayout ?? 'masonry') === 'uniform'
 
@@ -431,11 +432,31 @@ export const ProfileGrid = (props: {
         </div>
       )}
 
-      <LoadMoreUntilNotVisible loadMore={loadMore} />
+      {/* Infinite scroll is opt-in (Display → "Load more as I scroll"); the default is a button, so
+          paging is a deliberate choice rather than something that happens by itself. */}
+      {autoScroll && <LoadMoreUntilNotVisible loadMore={loadMore} />}
 
       {isLoadingMore && (
         <ProfileGridSkeleton count={columnCount} cardSize={cardSize} gridLayout={gridLayout} />
       )}
+
+      {!autoScroll &&
+        !reachedEnd &&
+        !isLoadingMore &&
+        !isReloading &&
+        other_profiles.length > 0 && (
+          <Row className="justify-center py-6">
+            <Button
+              color="gray-outline"
+              size="lg"
+              className="!rounded-full px-8"
+              onClick={() => loadMore()}
+              data-testid="people-grid-load-more"
+            >
+              {t('profile_grid.load_more', 'Load more')}
+            </Button>
+          </Row>
+        )}
 
       {reachedEnd && !isLoadingMore && !isReloading && other_profiles.length > 0 && (
         <Col

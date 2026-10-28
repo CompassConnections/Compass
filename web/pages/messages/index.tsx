@@ -1,3 +1,4 @@
+import {EllipsisVerticalIcon, NoSymbolIcon, XMarkIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {ChatMessage} from 'common/chat-message'
 import {isAdminUserId} from 'common/envs/constants'
@@ -8,6 +9,7 @@ import {parseJsonContentToText} from 'common/util/parse'
 import {keyBy, uniq} from 'lodash'
 import Link from 'next/link'
 import {useState} from 'react'
+import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
@@ -19,9 +21,10 @@ import {SafetyLink} from 'web/components/safety-note'
 import {SEO} from 'web/components/SEO'
 import {Avatar} from 'web/components/widgets/avatar'
 import {Input} from 'web/components/widgets/input'
-import {AdminBadge, BannedBadge} from 'web/components/widgets/user-link'
+import {AdminBadge} from 'web/components/widgets/user-link'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {useLastPrivateMessages} from 'web/hooks/use-last-private-messages'
+import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {
   useSortedPrivateMessageMemberships,
   useUnseenPrivateMessageChannels,
@@ -39,7 +42,7 @@ export default function MessagesPage() {
   const firebaseUser = useFirebaseUser()
   const t = useT()
   return (
-    <PageBase trackPageView={'messages page'} className={'py-2 px-2 xl:!px-6'}>
+    <PageBase trackPageView={'messages page'} className={'py-2 px-2 xl:!px-6 lg:!mt-0'}>
       <SEO
         title={t('messages.title', 'Messages')}
         description={t('messages.seo.description', 'Your Messages')}
@@ -64,6 +67,8 @@ export function MessagesContent(props: {currentUser: User}) {
   const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(true)
   const lastMessages = useLastPrivateMessages(currentUser.id)
   const [query, setQuery] = useState('')
+  // In-memory so opening a banned thread and coming back lands on the same list you left.
+  const [showBanned, setShowBanned] = usePersistentInMemoryState(false, 'messages-show-banned')
 
   // One batched fetch for every avatar on the page. get-channel-memberships already told us who is in
   // each channel, so letting each row fetch its own members would be one round-trip per chat.
@@ -86,16 +91,24 @@ export function MessagesContent(props: {currentUser: User}) {
     // undefined while the batch is still loading, so the row keeps its placeholder avatar
     // instead of flashing "Deleted user".
     const otherUsers = allUsers ? filterDefined(userIds.map((id) => usersById[id])) : undefined
-    return {channel, userIds, otherUsers}
+    // Banned when everyone else in the room is banned, the same rule the thread page uses to stop
+    // you writing into it. Unknown while the member batch loads, so those rows stay in the default
+    // list rather than flashing into the banned one.
+    const isBanned = !!otherUsers?.length && otherUsers.every((user) => user.isBannedFromPosting)
+    return {channel, userIds, otherUsers, isBanned}
   })
+
+  // Banned threads are kept out of the default list and only shown through the menu's
+  // "Banned users" view, which replaces the list rather than adding to it.
+  const listedRows = rows?.filter(({isBanned}) => isBanned === showBanned)
 
   // Name and username only — deliberately not message contents, which aren't all loaded here.
   // While the member batch is in flight otherUsers is undefined, so leave every row in place
   // rather than emptying the list and claiming nothing matched.
   const trimmedQuery = query.trim().toLowerCase()
   const filteredRows = !trimmedQuery
-    ? rows
-    : rows?.filter(({otherUsers}) =>
+    ? listedRows
+    : listedRows?.filter(({otherUsers}) =>
         otherUsers === undefined
           ? true
           : otherUsers.some(
@@ -117,10 +130,33 @@ export function MessagesContent(props: {currentUser: User}) {
         <h1 className="font-heading text-4xl font-medium text-ink-900">
           {t('messages.title', 'Messages')}
         </h1>
-        <NewMessageButton />
+        {/* Optical nudge: the heading font draws its capitals below the middle of its line box, so
+            box-centred controls read as sitting high next to "Messages". */}
+        <Row className="items-center gap-1 translate-y-1">
+          <NewMessageButton />
+          {!!channels?.length && (
+            <DropdownMenu
+              className={'!flex [&_button]:p-2'}
+              menuWidth={'w-44'}
+              icon={<EllipsisVerticalIcon className="h-5 w-5" />}
+              closeOnClick
+              testId="messages-menu"
+              selectedItemName={
+                showBanned ? t('messages.menu.banned_users', 'Banned users') : undefined
+              }
+              items={[
+                {
+                  icon: <NoSymbolIcon className="h-5 w-5" />,
+                  name: t('messages.menu.banned_users', 'Banned users'),
+                  onClick: () => setShowBanned(!showBanned),
+                },
+              ]}
+            />
+          )}
+        </Row>
       </Row>
       {!!channels?.length && (
-        <Row className="mb-4 items-center">
+        <Row className="mb-4 items-center gap-3 flex-wrap">
           <Input
             value={query}
             placeholder={t('messages.search_placeholder', 'Search by name or username...')}
@@ -129,10 +165,25 @@ export function MessagesContent(props: {currentUser: User}) {
             searchIcon
             data-testid="messages-search"
           />
+          {showBanned && (
+            <Row
+              className="items-center gap-1 text-primary-700 pl-3 pr-2 py-1 rounded-full text-sm bg-canvas-100 border border-canvas-200"
+              data-testid="messages-banned-tag"
+            >
+              <span>{t('messages.viewing_banned', 'Banned users')}</span>
+              <button
+                onClick={() => setShowBanned(false)}
+                className="hover:text-ink-500"
+                aria-label={t('messages.close_banned', 'Back to all conversations')}
+              >
+                <XMarkIcon className="h-3.5 w-3.5" />
+              </button>
+            </Row>
+          )}
         </Row>
       )}
       <Col className={'w-full overflow-hidden gap-2'} data-testid="messages-table">
-        {channels && channels.length === 0 && (
+        {channels && listedRows?.length === 0 && !showBanned && (
           <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
             <p className="text-ink-500 text-sm mb-1">
               {t('messages.empty', 'You have no messages, yet.')}
@@ -152,6 +203,13 @@ export function MessagesContent(props: {currentUser: User}) {
             </p>
           </div>
         )}
+        {showBanned && listedRows?.length === 0 && (
+          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
+            <p className="text-ink-500 text-sm">
+              {t('messages.banned_empty', 'No conversations with banned users.')}
+            </p>
+          </div>
+        )}
         {filteredRows?.map(({channel, userIds, otherUsers}) => (
           <MessageChannelRow
             key={channel.channel_id}
@@ -163,7 +221,7 @@ export function MessagesContent(props: {currentUser: User}) {
             lastMessage={lastMessages[channel.channel_id]}
           />
         ))}
-        {filteredRows?.length === 0 && !!channels?.length && (
+        {filteredRows?.length === 0 && !!listedRows?.length && (
           <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
             <p className="text-ink-500 text-sm">
               {t('messages.search_empty', 'No conversation matches your search.')}
@@ -190,7 +248,6 @@ export const MessageChannelRow = (props: {
   const numOthers = otherUsers?.length ?? 0
   const t = useT()
 
-  const isBanned = otherUsers?.length == 1 && otherUsers[0].isBannedFromPosting
   // Any member, not just the ones whose names fit on the row: what the badge tells you is that a
   // Compass admin is in this conversation, which is true whether or not they were named first.
   const hasAdmin = !!otherUsers?.some((user) => isAdminUserId(user.id))
@@ -246,7 +303,6 @@ export const MessageChannelRow = (props: {
                 )
               )}
               {hasAdmin && <AdminBadge className="ml-1.5" />}
-              {isBanned && <BannedBadge />}
             </span>
             <span className={'text-ink-300 text-xs'} data-testid="messages-timestamp">
               {lastMessage && <RelativeTimestamp time={lastMessage.createdTime} />}

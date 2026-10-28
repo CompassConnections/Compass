@@ -7,6 +7,7 @@ import * as supabaseUtils from 'shared/supabase/utils'
 
 jest.mock('common/util/try-catch')
 jest.mock('shared/supabase/init')
+jest.mock('api/helpers/blocks')
 jest.mock('shared/supabase/utils')
 
 describe('startProfile', () => {

@@ -1,3 +1,4 @@
+import {assertCanInteract} from 'api/helpers/blocks'
 import {APIHandler} from 'api/helpers/endpoint'
 import {Notification} from 'common/notifications'
 import {getNotificationDestinationsForUser} from 'common/user-notification-preferences'
@@ -20,6 +21,10 @@ export const updateConnectionInterests: APIHandler<'update-connection-interest'>
   }
 
   if (seeking) {
+    // Declaring an interest can end in a "it's mutual" notification to the other person, so the
+    // same bar as any other write that reaches them: not banned, not blocked either way.
+    await assertCanInteract(auth.uid, [targetUserId])
+
     await pg.query(
       `INSERT INTO connection_interests (user_id, target_user_id, connection_type)
        VALUES ($1, $2, $3)

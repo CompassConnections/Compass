@@ -1,4 +1,5 @@
 jest.mock('shared/supabase/init')
+jest.mock('api/helpers/blocks')
 jest.mock('common/util/try-catch')
 jest.mock('shared/supabase/utils')
 jest.mock('shared/create-profile-notification')

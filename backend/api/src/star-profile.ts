@@ -4,6 +4,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {log} from 'shared/utils'
 
+import {assertCanInteract} from './helpers/blocks'
 import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const starProfile: APIHandler<'star-profile'> = async (props, auth) => {
@@ -25,6 +26,8 @@ export const starProfile: APIHandler<'star-profile'> = async (props, auth) => {
     }
     return {status: 'success'}
   }
+
+  await assertCanInteract(creatorId, [targetUserId])
 
   // Check if star already exists
   const {data: existing} = await tryCatch(

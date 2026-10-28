@@ -4,6 +4,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
 import {log} from 'shared/utils'
 
+import {assertCanInteract} from './helpers/blocks'
 import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => {
@@ -41,6 +42,9 @@ export const shipProfiles: APIHandler<'ship-profiles'> = async (props, auth) => 
     }
     return {status: 'success'}
   }
+
+  // A ship notifies both people named in it, so both must be reachable by the shipper.
+  await assertCanInteract(creatorId, [targetUserId1, targetUserId2])
 
   // Insert the new ship
   const {data, error} = await tryCatch(

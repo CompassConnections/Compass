@@ -7,6 +7,7 @@ import * as profileNotifiction from 'shared/create-profile-notification'
 import * as supabaseInit from 'shared/supabase/init'
 
 jest.mock('shared/supabase/init')
+jest.mock('api/helpers/blocks')
 jest.mock('shared/create-profile-notification')
 jest.mock('api/has-free-like')
 jest.mock('common/util/try-catch')

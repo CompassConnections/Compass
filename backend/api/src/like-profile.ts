@@ -5,6 +5,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {log} from 'shared/utils'
 
 import {getHasFreeLike} from './has-free-like'
+import {assertCanInteract} from './helpers/blocks'
 import {APIErrors, APIHandler} from './helpers/endpoint'
 
 export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
@@ -26,6 +27,9 @@ export const likeProfile: APIHandler<'like-profile'> = async (props, auth) => {
     }
     return {status: 'success'}
   }
+
+  // Only on the way in: taking a like back is always allowed, block or ban notwithstanding.
+  await assertCanInteract(creatorId, [targetUserId])
 
   // Check if like already exists
   const {data: existing} = await tryCatch(

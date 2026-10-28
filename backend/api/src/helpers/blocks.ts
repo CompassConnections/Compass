@@ -1,6 +1,21 @@
-import {APIErrors} from 'api/helpers/endpoint'
+import {APIErrors, assertCanWrite} from 'api/helpers/endpoint'
 import {filterDefined} from 'common/util/array'
-import {getPrivateUser} from 'shared/utils'
+import {getPrivateUser, getUser} from 'shared/utils'
+
+/**
+ * The guard for every write that reaches another member — a like, a ship, a star, a declared
+ * interest: the writer exists and is not banned (`assertCanWrite`), and no block stands between
+ * them and anyone the write names (`assertNotBlocked`). Messaging and comments run the same two
+ * checks through their own validators; this is the one-liner for the handlers that have nothing
+ * else to validate. A blocked member could otherwise keep liking the person who blocked them, and
+ * each like notified that person.
+ */
+export const assertCanInteract = async (userId: string, otherIds: string[]) => {
+  const user = await getUser(userId)
+  if (!user) throw APIErrors.unauthorized('Your account was not found')
+  assertCanWrite(user)
+  await assertNotBlocked(userId, otherIds)
+}
 
 /**
  * Blocking is enforced **symmetrically**: once either side has blocked the other, neither can reach

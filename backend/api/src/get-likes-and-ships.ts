@@ -1,15 +1,13 @@
-import {type APIHandler} from 'api/helpers/endpoint'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-export const getLikesAndShips: APIHandler<'get-likes-and-ships'> = async (props) => {
-  const {userId} = props
-
-  return {
-    status: 'success',
-    ...(await getLikesAndShipsMain(userId)),
-  }
-}
-
+/**
+ * Likes given, likes received and ships involving one member.
+ *
+ * No endpoint exposes this any more. The `get-likes-and-ships` handler that used to wrap it accepted
+ * any `userId` from any signed-in member, which handed out who likes whom for the whole site; the
+ * web stopped calling it long before. The query lives on for `get-user-data-export`, where the
+ * member asking is the member it is about.
+ */
 export const getLikesAndShipsMain = async (userId: string) => {
   const pg = createSupabaseDirectClient()
 

@@ -97,7 +97,6 @@ import {getCurrentPrivateUser} from './get-current-private-user'
 import {getDonationsAdmin} from './get-donations-admin'
 import {getDonorBadge} from './get-donor-badge'
 import {getEvents} from './get-events'
-import {getLikesAndShips} from './get-likes-and-ships'
 import {getMe} from './get-me'
 import {getMyReferralCount} from './get-my-referral-count'
 import {getMyReferrals} from './get-my-referrals'
@@ -695,7 +694,6 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-channel-seen-time': getLastSeenChannelTime,
   'get-last-messages': getLastMessages,
   'get-compatibility-questions': getCompatibilityQuestions,
-  'get-likes-and-ships': getLikesAndShips,
   'get-messages-count': getMessagesCountEndpoint,
   'get-channels-count': getChannelsCountEndpoint,
   'get-notifications': getNotifications,

@@ -82,7 +82,6 @@ import {arrify} from 'common/util/array'
 import {STANCES, VOTE_STATUSES} from 'common/votes/constants'
 import {z} from 'zod'
 
-import {LikeData, ShipData} from './profile-types'
 import {FullUser, HiddenProfile} from './user-types' // mqp: very unscientific, just balancing our willingness to accept load
 
 // mqp: very unscientific, just balancing our willingness to accept load
@@ -868,24 +867,9 @@ export const API = (_apiTypeCheck = {
     summary: 'Unhide a previously hidden profile for the current user',
     tag: 'Relations',
   },
-  'get-likes-and-ships': {
-    method: 'GET',
-    authed: true,
-    rateLimited: true,
-    props: z
-      .object({
-        userId: z.string(),
-      })
-      .strict(),
-    returns: {} as {
-      status: 'success'
-      likesReceived: LikeData[]
-      likesGiven: LikeData[]
-      ships: ShipData[]
-    },
-    summary: 'Fetch likes and ships for a user',
-    tag: 'Profiles',
-  },
+  // `get-likes-and-ships` was removed: it took any `userId` and returned that person's likes given
+  // and received to any signed-in member. Nothing calls it; the query behind it still serves the
+  // owner's own data export (`getLikesAndShipsMain`).
   'has-free-like': {
     method: 'GET',
     authed: true,

@@ -1,10 +1,9 @@
 jest.mock('shared/supabase/init')
 
 import * as likesAndShips from 'api/get-likes-and-ships'
-import {AuthedUser} from 'api/helpers/endpoint'
 import * as supabaseInit from 'shared/supabase/init'
 
-describe('getLikesAndShips', () => {
+describe('getLikesAndShipsMain', () => {
   let mockPg = {} as any
   beforeEach(() => {
     jest.resetAllMocks()
@@ -20,8 +19,6 @@ describe('getLikesAndShips', () => {
   describe('when given valid input', () => {
     it('should get all likes recieved/given an any ships', async () => {
       const mockProps = {userId: 'mockUserId'}
-      const mockAuth = {uid: '321'} as AuthedUser
-      const mockReq = {} as any
       const mockLikesGiven = {
         user_id: 'mockUser_Id_likes_given',
         created_Time: 123,
@@ -39,24 +36,20 @@ describe('getLikesAndShips', () => {
         created_time: 12345,
       }
 
-      jest.spyOn(likesAndShips, 'getLikesAndShipsMain')
       ;(mockPg.map as jest.Mock)
         .mockResolvedValueOnce(mockLikesGiven)
         .mockResolvedValueOnce(mockLikesReceived)
         .mockResolvedValueOnce(mockShips)
 
-      const result: any = await likesAndShips.getLikesAndShips(mockProps, mockAuth, mockReq)
+      const result: any = await likesAndShips.getLikesAndShipsMain(mockProps.userId)
       const [sql1, _params1, _fn1] = (mockPg.map as jest.Mock).mock.calls[0]
       const [sql2, _params2, _fn2] = (mockPg.map as jest.Mock).mock.calls[1]
       const [sql3, _params3, _fn3] = (mockPg.map as jest.Mock).mock.calls[2]
 
-      expect(result.status).toBe('success')
       expect(result.likesGiven).toBe(mockLikesGiven)
       expect(result.likesReceived).toBe(mockLikesReceived)
       expect(result.ships).toBe(mockShips)
 
-      expect(likesAndShips.getLikesAndShipsMain).toBeCalledTimes(1)
-      expect(likesAndShips.getLikesAndShipsMain).toBeCalledWith(mockProps.userId)
       expect(mockPg.map).toHaveBeenNthCalledWith(
         1,
         expect.stringContaining(sql1),

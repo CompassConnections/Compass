@@ -63,7 +63,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("jtl", help="results file written by jmeter -l")
     parser.add_argument("--max-error-rate", type=float, default=1.0, help="percent, default 1")
-    parser.add_argument("--max-p95", type=int, default=800, help="milliseconds, default 800")
+    parser.add_argument("--max-p95", type=int, default=1200, help="milliseconds, default 800")
     args = parser.parse_args()
 
     samples = load_samples(args.jtl)

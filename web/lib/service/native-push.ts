@@ -1,7 +1,6 @@
 import {PushNotifications} from '@capacitor/push-notifications'
 import {debug} from 'common/logger'
 import {useEffect} from 'react'
-import toast from 'react-hot-toast'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {isNativeApp, nativePlatform} from 'web/lib/util/webview'
@@ -50,19 +49,11 @@ export default function NativePush() {
       console.error('Push registration failed', err)
     })
 
-    // iOS only fires this in the foreground, and suppresses the banner there — the toast below is
-    // what the user actually sees in that case.
+    // iOS only fires this in the foreground, and suppresses the banner there. We deliberately show
+    // nothing in-app for it: the unread badge on the messages icon already updates live, and a
+    // toast of the message on top of that was noise.
     PushNotifications.addListener('pushNotificationReceived', (notif) => {
-      console.debug('Push received', notif, window.location.pathname)
-      const endpoint = notif?.data?.endpoint as string
-      if (!endpoint) return
-      if (!endpoint.startsWith('/messages/')) return
-      if (endpoint === window.location.pathname) return
-      const author = notif?.title
-      const message = notif?.body
-      // Reuse the endpoint as the toast id so successive messages from the same
-      // conversation replace each other rather than piling up.
-      toast.success(`${author}: "${message}"`, {id: endpoint})
+      debug('Push received', notif, window.location.pathname)
     })
 
     // Cross-platform notification tap. `handleAppLink` is installed on `window` by _app.tsx; going

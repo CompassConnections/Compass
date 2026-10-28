@@ -9,10 +9,11 @@ import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
 import {CardSize, DisplayOptions, GridLayout} from 'common/profiles-rendering'
 import {parseJsonContentToText} from 'common/util/parse'
-import {clamp} from 'lodash'
+import {clamp, difference, pick} from 'lodash'
 import {
   Brain,
   Briefcase,
+  CheckCircle2,
   Cigarette,
   HandHeart,
   Languages,
@@ -88,6 +89,33 @@ type CardSizeConfig = {
 }
 
 const MIN_BIO_LINES = 2
+
+/**
+ * The filters that define who someone is looking for at all: age, place, gender, the kind of
+ * relationship, a shared language, and whether the match has to go both ways. Everything else (interests, lifestyle, personality, keywords...) is a refinement,
+ * and those are what the empty state suggests dropping first — they narrow the pool fast and rarely
+ * decide whether two people would actually click.
+ */
+const CORE_FILTER_KEYS: (keyof FilterFields)[] = [
+  'pref_age_min',
+  'pref_age_max',
+  'geodbCityIds',
+  'lat',
+  'lon',
+  'radius',
+  'country',
+  'genders',
+  'pref_gender',
+  'orientation',
+  'pref_relation_styles',
+  'pref_romantic_styles',
+  'relationship_status',
+  'wants_kids_range_min',
+  'wants_kids_range_max',
+  'languages',
+  'twoWay',
+  'orderBy',
+]
 
 const CARD_SIZE_CONFIG: Record<CardSize, CardSizeConfig> = {
   small: {
@@ -250,6 +278,8 @@ export const ProfileGrid = (props: {
   loadMore: () => Promise<boolean>
   isLoadingMore: boolean
   isReloading: boolean
+  /** Every profile matching the search is loaded; shows the end-of-list marker. */
+  reachedEnd?: boolean
   compatibilityScores: Record<string, CompatibilityScore> | undefined
   starredUserIds: string[] | undefined
   refreshStars: () => Promise<void>
@@ -267,6 +297,7 @@ export const ProfileGrid = (props: {
     loadMore,
     isLoadingMore,
     isReloading,
+    reachedEnd,
     compatibilityScores,
     starredUserIds,
     refreshStars,
@@ -301,6 +332,22 @@ export const ProfileGrid = (props: {
       ) ?? [],
     [filters, locationFilterProps, choicesIdsToLabels, measurementSystem, t],
   )
+
+  // The part of the search that's a refinement rather than a core criterion, phrased the same way as
+  // the summary so the chips match. Formatting the core subset and diffing keeps the multi-key
+  // entries (Big Five, drinks, ...) on the right side without re-implementing the formatter.
+  const relaxableSummary = useMemo(() => {
+    const coreSummary =
+      formatFilters(
+        pick(filters, CORE_FILTER_KEYS),
+        locationFilterProps?.location ? (locationFilterProps as unknown as locationType) : null,
+        choicesIdsToLabels,
+        measurementSystem,
+        t,
+      ) ?? []
+    return difference(searchSummary, coreSummary)
+  }, [searchSummary, filters, locationFilterProps, choicesIdsToLabels, measurementSystem, t])
+  const coreSummary = difference(searchSummary, relaxableSummary)
 
   const other_profiles = profiles.filter((profile) => profile.user_id !== user?.id)
 
@@ -370,6 +417,33 @@ export const ProfileGrid = (props: {
         <ProfileGridSkeleton count={columnCount} cardSize={cardSize} gridLayout={gridLayout} />
       )}
 
+      {reachedEnd && !isLoadingMore && !isReloading && other_profiles.length > 0 && (
+        <Col
+          className="items-center gap-2 border-t border-canvas-200 px-4 pb-12 pt-8 text-center"
+          data-testid="people-grid-end"
+        >
+          <CheckCircle2 className="h-6 w-6 text-ink-400" />
+          <p className="font-medium text-ink-900">
+            {t('profile_grid.end_title', "You've seen everyone matching this search")}
+          </p>
+          <p className="max-w-sm text-sm text-ink-500">
+            {t(
+              'profile_grid.end_hint',
+              'Loosen a filter to see more people, or get notified when someone new matches.',
+            )}
+          </p>
+          <GetNotifiedButton
+            filters={filters}
+            locationFilterProps={locationFilterProps}
+            bookmarkedSearches={bookmarkedSearches}
+            refreshBookmarkedSearches={refreshBookmarkedSearches}
+            color="gray-outline"
+            size="sm"
+            className="mt-1"
+          />
+        </Col>
+      )}
+
       {user && isFullyBanned(user) ? (
         <Col className="items-center py-8">
           <AccountOnHoldNotice reason={user.banReason} className="max-w-xl" />
@@ -385,13 +459,43 @@ export const ProfileGrid = (props: {
             <p className="text-lg font-medium text-ink-900">
               {t('profile_grid.no_profiles', 'No profiles found')}
             </p>
-            {searchSummary.length > 0 && (
+            <p className="max-w-md text-ink-600">
+              {relaxableSummary.length > 0
+                ? t(
+                    'profile_grid.relax_refinements',
+                    'Your search may be too narrow. Try removing some of the extra filters below — they rule out many people who could still be a great match.',
+                  )
+                : t(
+                    'profile_grid.relax_core',
+                    'Your search may be too narrow. Try a wider age range or a larger area.',
+                  )}
+            </p>
+            {relaxableSummary.length > 0 && (
               <Col className="mt-1 max-w-md gap-2 items-center">
                 <div className="text-xs uppercase tracking-wide text-ink-400">
-                  {t('profile_grid.searched_for', 'Your search')}
+                  {t('profile_grid.try_removing', 'Try removing')}
                 </div>
                 <Row className="flex-wrap justify-center gap-1.5">
-                  {searchSummary.map((entry) => (
+                  {relaxableSummary.map((entry) => (
+                    <span
+                      key={entry}
+                      className="rounded-full border border-dashed border-primary-300 bg-primary-50 px-2.5 py-1 text-xs text-primary-700"
+                    >
+                      {entry}
+                    </span>
+                  ))}
+                </Row>
+              </Col>
+            )}
+            {coreSummary.length > 0 && (
+              <Col className="mt-1 max-w-md gap-2 items-center">
+                <div className="text-xs uppercase tracking-wide text-ink-400">
+                  {relaxableSummary.length > 0
+                    ? t('profile_grid.rest_of_search', 'Rest of your search')
+                    : t('profile_grid.searched_for', 'Your search')}
+                </div>
+                <Row className="flex-wrap justify-center gap-1.5">
+                  {coreSummary.map((entry) => (
                     <span
                       key={entry}
                       className="rounded-full border border-canvas-200 bg-canvas-0 px-2.5 py-1 text-xs text-ink-700"

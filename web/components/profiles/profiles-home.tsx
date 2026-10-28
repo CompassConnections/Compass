@@ -99,6 +99,8 @@ export function ProfilesHome() {
   const {bookmarkedSearches, refreshBookmarkedSearches} = useBookmarkedSearches(user?.id)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [isReloading, setIsReloading] = useState(false)
+  // Set once a page comes back empty, for when the total count isn't there to say so.
+  const [isExhausted, setIsExhausted] = useState(false)
   const [showSignupBanner, setShowSignupBanner] = useState(fromSignup)
   const [showEarlyBanner, setShowEarlyBanner] = usePersistentLocalState<boolean>(
     true,
@@ -167,6 +169,7 @@ export function ProfilesHome() {
       return
     }
     setIsReloading(true)
+    setIsExhausted(false)
     const current = ++id.current
     debug('Refreshing profiles. Filters:', args)
     api('get-profiles', args as any)
@@ -198,7 +201,7 @@ export function ProfilesHome() {
       setProfileCount(0)
       return false
     }
-    if (!profiles || isLoadingMore) return false
+    if (!profiles || isLoadingMore || isExhausted) return false
     debug('Loading more profiles. Current:', profiles.length)
     if (fromSignup && isClearedFilters && sendScrollWarning) {
       setSendScrollWarning(false)
@@ -235,7 +238,10 @@ export function ProfilesHome() {
           ...filters,
         }) as any,
       )
-      if (result.profiles.length === 0) return false
+      if (result.profiles.length === 0) {
+        setIsExhausted(true)
+        return false
+      }
       setProfiles((prev) => (prev ? [...prev, ...result.profiles] : result.profiles))
       return true
     } catch (err) {
@@ -244,7 +250,10 @@ export function ProfilesHome() {
     } finally {
       setIsLoadingMore(false)
     }
-  }, [profiles, filters, isLoadingMore, setProfiles])
+  }, [profiles, filters, isLoadingMore, isExhausted, setProfiles])
+
+  const reachedEnd =
+    isExhausted || (profileCount !== undefined && (profiles?.length ?? 0) >= profileCount)
 
   const onHide = useCallback((userId: string) => {
     // Do not remove the profile from the list; mark as recently hidden to show placeholder with Undo.
@@ -407,6 +416,7 @@ export function ProfilesHome() {
               loadMore={loadMore}
               isLoadingMore={isLoadingMore}
               isReloading={isReloading}
+              reachedEnd={reachedEnd}
               compatibilityScores={compatibleProfiles?.profileCompatibilityScores}
               starredUserIds={starredUserIds}
               refreshStars={refreshStars}

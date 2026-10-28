@@ -1,7 +1,9 @@
 import {getUserAndProfile} from 'api/get-user-and-profile'
+import * as blocks from 'api/helpers/blocks'
 import * as supabaseInit from 'shared/supabase/init'
 
 jest.mock('shared/supabase/init')
+jest.mock('api/helpers/blocks')
 jest.mock('common/supabase/users')
 
 describe('getUserAndProfile', () => {
@@ -143,6 +145,40 @@ describe('getUserAndProfile', () => {
       const result = await getUserAndProfile('mockuser', 'mock-user-id')
 
       expect(result?.profile?.birth_date).toBe('1990-01-01')
+    })
+
+    it('redacts a profile when a block stands between it and the viewer', async () => {
+      const mockUser = {id: 'mock-user-id', username: 'mockuser', name: 'Mock User'}
+      const mockProfile = {id: 'mock-profile-id', user_id: 'mock-user-id', bio: 'Mock bio'}
+
+      mockPg.oneOrNone.mockResolvedValueOnce(mockUser).mockResolvedValueOnce(mockProfile)
+      ;(blocks.isBlockedBetween as jest.Mock).mockResolvedValue(true)
+
+      const result = await getUserAndProfile('mockuser', 'blocked-member')
+
+      expect(blocks.isBlockedBetween).toBeCalledWith('blocked-member', ['mock-user-id'])
+      expect(result?.profile).not.toHaveProperty('bio')
+      expect(mockPg.any).not.toBeCalled()
+    })
+
+    it('redacts a disabled profile for everyone but its owner', async () => {
+      const mockUser = {id: 'mock-user-id', username: 'mockuser', name: 'Mock User'}
+      const mockProfile = {
+        id: 'mock-profile-id',
+        user_id: 'mock-user-id',
+        disabled: true,
+        bio: 'Mock bio',
+      }
+
+      mockPg.oneOrNone.mockResolvedValueOnce(mockUser).mockResolvedValueOnce(mockProfile)
+      const asVisitor = await getUserAndProfile('mockuser', 'some-other-member')
+      expect(asVisitor?.profile).toMatchObject({disabled: true})
+      expect(asVisitor?.profile).not.toHaveProperty('bio')
+
+      mockPg.oneOrNone.mockResolvedValueOnce(mockUser).mockResolvedValueOnce(mockProfile)
+      mockPg.any.mockResolvedValue([])
+      const asOwner = await getUserAndProfile('mockuser', 'mock-user-id')
+      expect(asOwner?.profile).toMatchObject({bio: 'Mock bio'})
     })
 
     it('should return null when user does not exist', async () => {

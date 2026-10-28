@@ -1,7 +1,19 @@
 import {type APIHandler} from 'api/helpers/endpoint'
+import {canReadProfileContent} from 'api/helpers/profile-visibility'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-export const getCompatibleProfilesHandler: APIHandler<'compatible-profiles'> = async (props) => {
+/**
+ * Someone's compatibility scores against everyone else. Any member may ask about any member, but
+ * only within the same rule as the rest of a profile's content: a members-only, disabled, banned or
+ * blocked profile answers with no scores at all, the same as a member nobody has been scored against.
+ */
+export const getCompatibleProfilesHandler: APIHandler<'compatible-profiles'> = async (
+  props,
+  auth,
+) => {
+  if (!(await canReadProfileContent(auth.uid, props.userId))) {
+    return {status: 'success', profileCompatibilityScores: {}}
+  }
   return getCompatibleProfiles(props.userId)
 }
 

@@ -1,7 +1,41 @@
 jest.mock('shared/supabase/init')
+jest.mock('api/helpers/profile-visibility')
 
-import {getCompatibleProfiles} from 'api/compatible-profiles'
+import {getCompatibleProfiles, getCompatibleProfilesHandler} from 'api/compatible-profiles'
+import {AuthedUser} from 'api/helpers/endpoint'
+import * as profileVisibility from 'api/helpers/profile-visibility'
 import * as supabaseInit from 'shared/supabase/init'
+
+describe('getCompatibleProfilesHandler', () => {
+  let mockPg = {} as any
+  beforeEach(() => {
+    jest.resetAllMocks()
+    mockPg = {map: jest.fn().mockResolvedValue([])}
+    ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
+  })
+
+  it('returns no scores for a profile the caller may not read', async () => {
+    ;(profileVisibility.canReadProfileContent as jest.Mock).mockResolvedValue(false)
+
+    const result: any = await getCompatibleProfilesHandler(
+      {userId: 'them'},
+      {uid: 'me'} as AuthedUser,
+      {} as any,
+    )
+
+    expect(profileVisibility.canReadProfileContent).toBeCalledWith('me', 'them')
+    expect(result).toEqual({status: 'success', profileCompatibilityScores: {}})
+    expect(mockPg.map).not.toBeCalled()
+  })
+
+  it('reads the scores when the caller may', async () => {
+    ;(profileVisibility.canReadProfileContent as jest.Mock).mockResolvedValue(true)
+
+    await getCompatibleProfilesHandler({userId: 'them'}, {uid: 'me'} as AuthedUser, {} as any)
+
+    expect(mockPg.map).toBeCalledTimes(1)
+  })
+})
 
 describe('getCompatibleProfiles', () => {
   let mockPg = {} as any

@@ -1,3 +1,4 @@
+import {isAdminId} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {ProfileRow} from 'common/profiles/profile'
 import {
@@ -8,14 +9,17 @@ import {
 import {convertUser} from 'common/supabase/users'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
+import {isBlockedBetween} from './helpers/blocks'
 import {type APIHandler} from './helpers/endpoint'
 
 /**
  * A profile by username, projected down to what `viewerId` is allowed to read.
  *
- * `viewerId` is the signed-in reader, or undefined for an anonymous one. It decides two things: a
+ * `viewerId` is the signed-in reader, or undefined for an anonymous one. It decides three things: a
  * members-only profile is redacted to its display name for anyone not signed in (see
- * common/profiles/visibility), and `birth_date` is returned only to the profile's owner.
+ * common/profiles/visibility); the same redaction applies to a disabled profile (except to its owner
+ * and to admins, who review them) and to a profile with a block in either direction between it and
+ * the viewer; and `birth_date` is returned only to the profile's owner.
  */
 export async function getUserAndProfile(username: string, viewerId?: string) {
   const pg = createSupabaseDirectClient()
@@ -32,10 +36,18 @@ export async function getUserAndProfile(username: string, viewerId?: string) {
 
   if (!profileRes) return {user, profile: null}
 
-  // Members-only profiles stop here. Nothing to hide is read at all — not the option tables, not the
-  // row's own columns — so there is nothing for a caller to find in the response body, in the static
-  // page props built from it, or in the OG tags derived from those.
-  if (!isProfileVisibleTo(profileRes, viewerId)) {
+  // Members-only, disabled and blocked profiles stop here. Nothing to hide is read at all — not the
+  // option tables, not the row's own columns — so there is nothing for a caller to find in the
+  // response body, in the static page props built from it, or in the OG tags derived from those.
+  // The redacted shape keeps `disabled`, which is how the page still says "disabled" rather than
+  // pretending the account does not exist. Disabled used to be a browser-side decision, which shipped
+  // the whole profile to anyone who asked the API directly.
+  const isOwner = viewerId === user.id
+  const hiddenFromViewer =
+    !isProfileVisibleTo(profileRes, viewerId) ||
+    (!isOwner && profileRes.disabled && !(viewerId && isAdminId(viewerId))) ||
+    (!isOwner && !!viewerId && (await isBlockedBetween(viewerId, [user.id])))
+  if (hiddenFromViewer) {
     return {
       user: redactMemberOnlyUser(user),
       profile: redactMemberOnlyProfile(profileRes),

@@ -28,7 +28,7 @@ jest.mock('shared/supabase/init')
 jest.mock('common/envs/constants', () => ({
   ...jest.requireActual('common/envs/constants'),
   isAdminId: jest.fn(),
-  isModUsername: jest.fn(),
+  isModId: jest.fn(),
 }))
 jest.mock('common/util/array')
 jest.mock('api/get-connection-interests')
@@ -64,7 +64,7 @@ describe('createPrivateUserMessageChannel', () => {
       getUser: jest.fn().mockResolvedValue({emailVerified: true}),
     })
     ;(constants.isAdminId as jest.Mock).mockReturnValue(false)
-    ;(constants.isModUsername as jest.Mock).mockReturnValue(false)
+    ;(constants.isModId as jest.Mock).mockReturnValue(false)
   })
   afterEach(() => {
     jest.restoreAllMocks()
@@ -300,7 +300,7 @@ describe('createPrivateUserMessageChannel', () => {
 
     it.each([
       ['an admin', 'isAdminId'],
-      ['a moderator', 'isModUsername'],
+      ['a moderator', 'isModId'],
     ])('never bans %s, however many conversations they start', async (_label, staffCheck) => {
       ;((constants as any)[staffCheck] as jest.Mock).mockReturnValue(true)
       ;(mockPg.one as jest.Mock).mockResolvedValueOnce({id: '333'})
@@ -410,7 +410,7 @@ describe('createPrivateUserMessageChannel', () => {
     })
 
     it('exempts staff', async () => {
-      ;(constants.isModUsername as jest.Mock).mockReturnValue(true)
+      ;(constants.isModId as jest.Mock).mockReturnValue(true)
       mockPg.oneOrNone = oneOrNoneWith(null, null)
       ;(mockPg.one as jest.Mock).mockResolvedValueOnce({id: '333'})
 

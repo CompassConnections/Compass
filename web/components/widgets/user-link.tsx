@@ -1,7 +1,7 @@
 import {CheckBadgeIcon, ShieldCheckIcon} from '@heroicons/react/24/outline'
 import {SparklesIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
-import {isAdminUserId, MOD_USERNAMES, VERIFIED_USERNAMES} from 'common/envs/constants'
+import {isAdminUserId, isModId, isVerifiedId} from 'common/envs/constants'
 import {DAY_MS} from 'common/util/time'
 import Link from 'next/link'
 import {useT} from 'web/lib/locale'
@@ -142,16 +142,17 @@ export function AdminBadge(props: {className?: string}) {
 }
 
 export function UserBadge(props: {userId: string; username: string; fresh?: boolean}) {
-  const {userId, username, fresh} = props
+  const {userId, fresh} = props
   const badges = []
 
   // Admin outranks the others rather than stacking with them: two badges next to one name read as
-  // decoration, and "runs the site" is the only one a reader needs at that point.
+  // decoration, and "runs the site" is the only one a reader needs at that point. All three are
+  // keyed on the id, never the username: a name can be given up and taken by someone else.
   if (isAdminUserId(userId)) {
     badges.push(<AdminBadge key="admin" />)
-  } else if (MOD_USERNAMES.includes(username)) {
+  } else if (isModId(userId)) {
     badges.push(<ModBadge key="mod" />)
-  } else if (VERIFIED_USERNAMES.includes(username)) {
+  } else if (isVerifiedId(userId)) {
     badges.push(<VerifiedBadge key="check" />)
   }
   if (fresh) {

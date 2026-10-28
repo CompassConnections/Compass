@@ -3,7 +3,7 @@ import {APIErrors, APIHandler, assertCanWrite} from 'api/helpers/endpoint'
 import {addUsersToPrivateMessageChannel} from 'api/helpers/private-messages'
 import {ownProfileGateIssues} from 'api/helpers/profile-gate'
 import {sendDiscordMessage} from 'common/discord/core'
-import {DOMAIN, isAdminId, isModUsername} from 'common/envs/constants'
+import {DOMAIN, isAdminId, isModId} from 'common/envs/constants'
 import {
   AUTO_BAN_REVIEW_HOURS,
   AUTO_BAN_UNDER_REVIEW_CODE,
@@ -97,7 +97,7 @@ export const createPrivateUserMessageChannel: APIHandler<
 
   // Admins and mods are exempt: they legitimately reach out to many members (support, moderation,
   // onboarding), and auto-banning the people who handle the review queue would be self-defeating.
-  const isStaff = isAdmin || isModUsername(creator.username)
+  const isStaff = isAdmin || isModId(creator.id)
 
   // Nobody starts a conversation before giving the other side something to go on: a bio of their
   // own and a few compatibility answers. Checked after the existing-channel return above, so a

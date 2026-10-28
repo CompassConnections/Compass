@@ -11,7 +11,7 @@ jest.mock('shared/utils')
 jest.mock('common/envs/constants', () => ({
   ...jest.requireActual('common/envs/constants'),
   isAdminId: jest.fn(),
-  isModUsername: jest.fn(),
+  isModId: jest.fn(),
 }))
 
 const mockAuth = {uid: '321'} as AuthedUser
@@ -25,7 +25,7 @@ describe('getProfileGate', () => {
     ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
     ;(sharedUtils.getUser as jest.Mock).mockResolvedValue({id: '321', username: 'newbie'})
     ;(constants.isAdminId as jest.Mock).mockReturnValue(false)
-    ;(constants.isModUsername as jest.Mock).mockReturnValue(false)
+    ;(constants.isModId as jest.Mock).mockReturnValue(false)
   })
 
   it('reports nothing missing for a member who has done their part', async () => {
@@ -56,7 +56,7 @@ describe('getProfileGate', () => {
   })
 
   it('exempts staff without consulting the profile', async () => {
-    ;(constants.isModUsername as jest.Mock).mockReturnValue(true)
+    ;(constants.isModId as jest.Mock).mockReturnValue(true)
 
     expect(await getProfileGate({}, mockAuth, mockReq)).toEqual({issues: null})
     expect(mockPg.oneOrNone).not.toHaveBeenCalled()

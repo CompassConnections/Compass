@@ -7,7 +7,7 @@ jest.mock('api/helpers/first-message')
 jest.mock('common/envs/constants', () => ({
   ...jest.requireActual('common/envs/constants'),
   isAdminId: jest.fn(),
-  isModUsername: jest.fn(),
+  isModId: jest.fn(),
 }))
 
 import {MAX_COMMENT_JSON_LENGTH} from 'api/create-comment'
@@ -38,7 +38,7 @@ describe('createPrivateUserMessage', () => {
       blockedByUserIds: [],
     })
     ;(constants.isAdminId as jest.Mock).mockReturnValue(false)
-    ;(constants.isModUsername as jest.Mock).mockReturnValue(false)
+    ;(constants.isModId as jest.Mock).mockReturnValue(false)
     // Default: the channel already has messages, so nothing here is an opener.
     ;(firstMessage.isOpener as jest.Mock).mockResolvedValue(false)
   })
@@ -124,7 +124,7 @@ describe('createPrivateUserMessage', () => {
 
     it('exempts staff', async () => {
       ;(firstMessage.isOpener as jest.Mock).mockResolvedValue(true)
-      ;(constants.isModUsername as jest.Mock).mockReturnValue(true)
+      ;(constants.isModId as jest.Mock).mockReturnValue(true)
       await createPrivateUserMessage(body, mockAuth, {} as any)
       expect(firstMessage.isOpener).not.toBeCalled()
       expect(firstMessage.assertAcceptableOpener).not.toBeCalled()

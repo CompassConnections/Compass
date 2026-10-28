@@ -3,7 +3,7 @@ import {assertNotBlocked} from 'api/helpers/blocks'
 import {APIErrors, APIHandler, assertCanWrite} from 'api/helpers/endpoint'
 import {assertAcceptableOpener, isOpener} from 'api/helpers/first-message'
 import {createPrivateUserMessageMain} from 'api/helpers/private-messages'
-import {isAdminId, isModUsername} from 'common/envs/constants'
+import {isAdminId, isModId} from 'common/envs/constants'
 import {isSuspiciousId} from 'common/moderation/suspicious'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {getUser} from 'shared/utils'
@@ -41,7 +41,7 @@ export const createPrivateUserMessage: APIHandler<'create-private-user-message'>
   // `api/helpers/first-message.ts`. Staff are exempt for the same reason as in the channel guard:
   // support and moderation legitimately open many near-identical conversations. Group channels are
   // left alone; there is no one profile for an opener to anchor to.
-  const isStaff = isAdminId(creator.id) || isModUsername(creator.username)
+  const isStaff = isAdminId(creator.id) || isModId(creator.id)
   if (!isStaff && otherMemberIds.length === 1 && (await isOpener(pg, channelId))) {
     await assertAcceptableOpener(pg, creator, otherMemberIds[0], content)
   }

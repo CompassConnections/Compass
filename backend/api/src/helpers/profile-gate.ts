@@ -1,15 +1,15 @@
-import {isAdminId, isModUsername} from 'common/envs/constants'
+import {isAdminId, isModId} from 'common/envs/constants'
 import {ProfileGateIssues, profileGateIssues} from 'common/moderation/first-message'
 import {User} from 'common/user'
 import {SupabaseDirectClient} from 'shared/supabase/init'
 
 /**
- * Staff (admins and mod usernames) are exempt from the first-message rules: support, moderation and
+ * Staff (admins and mods, both keyed on user id) are exempt from the first-message rules: support, moderation and
  * onboarding all legitimately open many conversations with members who have given them nothing to
  * go on.
  */
 export const isStaff = (user: Pick<User, 'id' | 'username'>) =>
-  isAdminId(user.id) || isModUsername(user.username)
+  isAdminId(user.id) || isModId(user.id)
 
 /**
  * What is still missing from this member's own profile before they may start a conversation, or

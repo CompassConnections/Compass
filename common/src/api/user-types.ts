@@ -1,4 +1,4 @@
-import {ENV_CONFIG, MOD_USERNAMES, WEB_URL} from 'common/envs/constants'
+import {ENV_CONFIG, isModId, WEB_URL} from 'common/envs/constants'
 import {BanReason} from 'common/moderation/ban'
 import {User} from 'common/user'
 import {removeUndefinedProps} from 'common/util/object'
@@ -24,7 +24,7 @@ export function toUserAPIResponse(user: User): FullUser {
     ...user,
     url: `${WEB_URL}/${user.username}`,
     isAdmin: ENV_CONFIG.adminIds.includes(user.id),
-    isTrustworthy: MOD_USERNAMES.includes(user.username),
+    isTrustworthy: isModId(user.id),
   })
 }
 

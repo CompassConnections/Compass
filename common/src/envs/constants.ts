@@ -31,14 +31,19 @@ export function isAdminUserId(id: string) {
   return ENV_CONFIG.adminIds.includes(id)
 }
 
+// Staff roles are keyed on user ids, never usernames. A username is released by a rename and can be
+// registered again by anyone, so a badge or an exemption tied to one would follow the name to its
+// next owner; an id stays with the account. Both lists are the admin list today because the founder
+// is the only moderator — kept as their own names so a mod can be added without becoming an admin.
+export const MOD_USER_IDS: string[] = ENV_CONFIG.adminIds
+export const VERIFIED_USER_IDS: string[] = ENV_CONFIG.adminIds
+
 export function isModId(id: string) {
-  return MOD_USERNAMES.includes(id)
+  return MOD_USER_IDS.includes(id)
 }
 
-// Mods are listed by username, so callers holding a user object should check that rather than the
-// id (`isModId` only matches when the id happens to be a mod username).
-export function isModUsername(username: string | null | undefined) {
-  return !!username && MOD_USERNAMES.includes(username)
+export function isVerifiedId(id: string) {
+  return VERIFIED_USER_IDS.includes(id)
 }
 
 console.debug(`Running in ${HOSTING_ENV} (${ENV})`)
@@ -87,10 +92,6 @@ export const REDIRECT_URI = `${WEB_URL}/auth/callback`
 
 export const AUTH_COOKIE_NAME = `FBUSER_${PROJECT_ID.toUpperCase().replace(/-/g, '_')}`
 
-export const MOD_USERNAMES = ['Martin']
-
-export const VERIFIED_USERNAMES = ['Martin']
-
 // Measured after `cleanUsername`, so a name padded out with characters that get stripped does not
 // pass. Short usernames are not only a UX matter: anything that treats the username as a storage
 // prefix (see `deleteUserFiles`) gets more dangerous the shorter the name is.
@@ -100,6 +101,8 @@ export const TEN_YEARS_SECS = 60 * 60 * 24 * 365 * 10
 
 export const endTitle = IS_PROD ? 'Compass' : 'Compass dev'
 
+// Routes, which therefore cannot be usernames. The profile page treats everything in here as "not a
+// username" and 404s it, so this is not the place for a name that must keep resolving to a profile.
 export const RESERVED_PATHS = new Set([
   '',
   '404',

@@ -15,12 +15,11 @@ import {consentRequired, startConsentedTracking} from 'web/lib/service/analytics
  * data" does not need a modal to explain itself. It is also the only honest way to run PostHog — see
  * `/privacy#cookies-and-local-storage`, which is what this replaced the admission in.
  *
- * **The two answers are deliberately not equal here.** "Allow" is the primary CTA and declining sits
- * one click away behind "Other options" — a product decision, taken knowingly. It is worth recording
- * what that trades away: asymmetry between accepting and refusing is the specific thing the EDPB's
- * dark-pattern guidance names, and the CNIL's €150M/€60M fines against Google and Meta in 2022 were
- * for exactly this shape — accept in one click, refuse in more. The decline control is therefore kept
- * real: plainly labelled, one click, no extra dialog, and always in the DOM for assistive tech.
+ * **Both answers are one click, side by side.** "Allow" is the primary CTA and "No thanks" a visible
+ * secondary button next to it — weighted differently, but never hidden. Declining used to sit behind
+ * an "Other options" disclosure; that asymmetry (accept in one click, refuse in more) is the specific
+ * thing the EDPB's dark-pattern guidance names, and the CNIL's €150M/€60M fines against Google and
+ * Meta in 2022 were for exactly that shape.
  *
  * Shown in the Android shell too. The app is this same web bundle in a WebView, so PostHog stores the
  * same ids on the same device there; skipping the prompt would leave the exact gap it exists to
@@ -38,7 +37,6 @@ export function ConsentBanner() {
   // the static render, so rendering it directly would either flash the banner at people who already
   // answered or trip a hydration mismatch.
   const [show, setShow] = useState(false)
-  const [showDecline, setShowDecline] = useState(false)
 
   useEffect(() => {
     // `consentRequired()` is checked here rather than in the render body for the same reason `show`
@@ -82,10 +80,10 @@ export function ConsentBanner() {
           {t('consent.details', 'What we store')}
         </Link>
       </p>
-      {/* One row: the CTA takes the space it can, "Other options" sits beside it. `shrink-0` on the
-          link and `min-w-0` on the button so a longer translation shortens the button rather than
-          wrapping the link under it. */}
-      <div className="mt-3 flex items-center gap-2">
+      {/* One row: the CTA takes the space it can, "No thanks" sits beside it at the same height.
+          `shrink-0` on the decline and `min-w-0` on the CTA so a longer translation shortens the CTA
+          rather than wrapping the decline under it. */}
+      <div className="mt-3 flex items-stretch gap-2">
         <button
           type="button"
           onClick={() => choose('granted')}
@@ -96,36 +94,11 @@ export function ConsentBanner() {
 
         <button
           type="button"
-          onClick={() => setShowDecline((v) => !v)}
-          aria-expanded={showDecline}
-          aria-controls="consent-other-options"
-          className="shrink-0 rounded px-1.5 py-1 text-left text-[12px] leading-tight text-ink-500 underline decoration-ink-300 underline-offset-2 transition-colors hover:text-ink-800"
+          onClick={() => choose('denied')}
+          className="shrink-0 rounded-xl px-4 py-2.5 text-[13px] font-medium text-ink-700 border border-canvas-300 transition-colors hover:bg-canvas-100 hover:text-ink-900"
         >
-          {t('consent.other_options', 'Other options')}
+          {t('consent.no_thanks', 'No thanks')}
         </button>
-      </div>
-
-      {/* Kept in the DOM and collapsed by height rather than unmounted, so the decline control is
-          always present for a screen reader and for find-in-page — `inert` takes it out of the tab
-          order while it is shut. Same `0fr → 1fr` grid trick the FAQ cards use. */}
-      <div
-        id="consent-other-options"
-        className={clsx(
-          'grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none',
-          showDecline ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
-        )}
-      >
-        <div className="overflow-hidden">
-          <div inert={!showDecline} className="pt-2">
-            <button
-              type="button"
-              onClick={() => choose('denied')}
-              className="w-full rounded-lg px-3 py-2 text-[13px] font-medium text-ink-600 ring-1 ring-canvas-200 transition-colors hover:bg-canvas-100"
-            >
-              {t('consent.decline', 'No thanks — do not count me')}
-            </button>
-          </div>
-        </div>
       </div>
     </section>
   )

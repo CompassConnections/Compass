@@ -1,20 +1,19 @@
 import {
-  // CalendarIcon, // re-add with the Events nav item below
+  HandThumbUpIcon,
   HomeIcon,
+  LifebuoyIcon,
   NewspaperIcon,
   PencilSquareIcon,
   QuestionMarkCircleIcon,
+  UsersIcon,
   WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline'
 import {
   CogIcon,
-  GlobeAltIcon,
   HomeIcon as SolidHomeIcon,
-  LinkIcon,
-  QuestionMarkCircleIcon as SolidQuestionIcon,
   SparklesIcon,
   UserCircleIcon,
-  UsersIcon,
+  UsersIcon as SolidUsersIcon,
 } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {IS_MAINTENANCE} from 'common/constants'
@@ -24,12 +23,11 @@ import {User} from 'common/user'
 import {buildArray} from 'common/util/array'
 import {ReactNode, useState} from 'react'
 import {Toaster} from 'react-hot-toast'
-import {FaEnvelope} from 'react-icons/fa'
-import {MdThumbUp} from 'react-icons/md'
 import {Col} from 'web/components/layout/col'
 import {PrivateMessagesIcon} from 'web/components/messaging/messages-icon'
 import {BottomNavBar} from 'web/components/nav/bottom-nav-bar'
 import {InviteNavLabel} from 'web/components/nav/invite-nav-label'
+import {Item, NavGroups} from 'web/components/nav/sidebar-item'
 import {SiteFooter} from 'web/components/site-footer'
 import {SkipLink} from 'web/components/skip-link'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
@@ -134,7 +132,7 @@ export function PageBase(props: {
       </Col>
       {!hideBottomBar && (
         <BottomNavBar
-          sidebarNavigationOptions={mobileSidebarOptions as any[]}
+          sidebarNavigationOptions={mobileSidebarOptions}
           navigationOptions={bottomNavOptions}
         />
       )}
@@ -142,24 +140,29 @@ export function PageBase(props: {
   )
 }
 
+// Outline in the rail, solid on the bottom bar — same split as Messages and Notifs.
 const Profiles = {
   key: 'nav.people',
   name: 'People',
   href: '/',
   icon: UsersIcon,
 }
+const ProfilesSolid = {...Profiles, icon: SolidUsersIcon}
 const Home = {
   key: 'nav.home',
   name: 'Home',
   href: '/',
   icon: HomeIcon,
 }
-const faq = {
-  key: 'nav.faq',
-  name: 'FAQ',
-  href: '/faq',
-  icon: SolidQuestionIcon,
-}
+// Out of the rail: it is in the footer and linked from About, and a thirteen-row rail hid the four
+// rows that matter. Re-add to the "what Compass is" cluster below (with the SolidQuestionIcon
+// import) if it earns its place back.
+// const faq = {
+//   key: 'nav.faq',
+//   name: 'FAQ',
+//   href: '/faq',
+//   icon: SolidQuestionIcon,
+// }
 const About = {
   key: 'nav.about',
   name: 'About',
@@ -184,23 +187,24 @@ const NotifsSolid = {
   href: `/notifications`,
   icon: SolidNotificationsIcon,
 }
-const Social = {
-  key: 'nav.social',
-  name: 'Socials',
-  href: '/social',
-  icon: LinkIcon,
-}
-const Organization = {
-  key: 'nav.organization',
-  name: 'Organization',
-  href: '/organization',
-  icon: GlobeAltIcon,
-}
+// const Social = {
+//   key: 'nav.social',
+//   name: 'Socials',
+//   href: '/social',
+//   icon: LinkIcon,
+// }
+// Out of the rail for the same reason as FAQ; the footer's "Organization" column keeps the path.
+// const Organization = {
+//   key: 'nav.organization',
+//   name: 'Organization',
+//   href: '/organization',
+//   icon: GlobeAltIcon,
+// }
 const Vote = {
   key: 'nav.vote',
   name: 'Vote',
   href: '/vote',
-  icon: MdThumbUp,
+  icon: HandThumbUpIcon,
 }
 // Hidden from the nav until there are testimonials to send people to — an empty wall is worse proof
 // than no wall. Uncomment this and its entry in `base` below once the first stories are approved.
@@ -210,11 +214,14 @@ const Vote = {
 //   href: '/testimonials',
 //   icon: ChatBubbleBottomCenterTextIcon,
 // }
-const Contact = {
-  key: 'nav.contact',
-  name: 'Contact',
-  href: '/contact',
-  icon: FaEnvelope,
+// "Help" rather than "Contact": the rail row is where someone goes when stuck, and /help answers
+// that first (support, safety, security) with the contact form one link in. /contact itself stays
+// in the footer under its own name.
+const Help = {
+  key: 'nav.help',
+  name: 'Help',
+  href: '/help',
+  icon: LifebuoyIcon,
 }
 const Blog = {
   key: 'nav.blog',
@@ -224,7 +231,7 @@ const Blog = {
 }
 const News = {
   key: 'nav.news',
-  name: "What's new",
+  name: "What's New",
   href: '/news',
   icon: NewspaperIcon,
 }
@@ -249,12 +256,25 @@ const Admin = {
   icon: WrenchScrewdriverIcon,
 }
 
-// Stable component for Messages icon to prevent re-mounting on every render
-const MessagesIconComponent = (props: any) => <PrivateMessagesIcon solid {...props} />
+// The scrolling middle of the rail (see `NavGroups`), one cluster: a hairline around About alone
+// read as a mistake. Split it into "what's happening" / "what Compass is" again once there is a
+// second row for the latter — Testimonials belongs next to About because it answers the same
+// question, "is this for me?", with the one kind of evidence we cannot write ourselves.
+const secondary = [[Vote, News, Blog, About]]
 
-// Testimonials belongs next to About because it answers the same question — "is this for me?" — with
-// the one kind of evidence we cannot write ourselves. Add it back here when unhiding it above.
-const base = [About, faq, Blog, Vote, News, Social, Organization, Contact]
+// Stable components for the Messages icon to prevent re-mounting on every render. Outline in the
+// rail, where the rows are line icons; solid on the bottom bar, where every tab is a filled glyph.
+const MessagesIconOutline = (props: any) => <PrivateMessagesIcon {...props} />
+const MessagesIconSolid = (props: any) => <PrivateMessagesIcon solid {...props} />
+
+const Messages: Item = {
+  key: 'nav.messages',
+  name: 'Messages',
+  href: '/messages',
+  icon: MessagesIconOutline,
+}
+
+const MessagesSolid: Item = {...Messages, icon: MessagesIconSolid}
 
 /**
  * The one nav entry that exists to be *noticed* rather than navigated to.
@@ -273,8 +293,8 @@ const Invite = {
 }
 
 function getBottomNavigation(user: User, profile: Profile | null | undefined) {
-  return buildArray(
-    Profiles,
+  return buildArray<Item>(
+    ProfilesSolid,
     NotifsSolid,
     {
       key: 'nav.profile',
@@ -282,39 +302,23 @@ function getBottomNavigation(user: User, profile: Profile | null | undefined) {
       href: profile === null ? '/signup' : `/${user.username}`,
       icon: SolidHomeIcon,
     },
-    {
-      key: 'nav.messages',
-      name: 'Messages',
-      href: '/messages',
-      icon: MessagesIconComponent,
-    },
+    MessagesSolid,
   )
 }
 
 const getBottomSignedOutNavigation = () => [Home, About, Signin]
 
-const getDesktopNavigation = (user: User | null | undefined) => {
-  if (user)
-    return buildArray(
-      Profiles,
-      Notifs,
-      {
-        key: 'nav.messages',
-        name: 'Messages',
-        href: '/messages',
-        icon: MessagesIconComponent,
-      },
-      Invite,
-      Settings,
-      ...base,
-      isAdminId(user.id) && Admin,
-    )
+// Messages above Notifs: messaging is the thing itself, notifications are about it.
+const getDesktopNavigation = (user: User | null | undefined): NavGroups => ({
+  primary: user ? [Profiles, Messages, Notifs, Invite] : [],
+  secondary,
+  utility: user ? buildArray(Settings, Help, isAdminId(user.id) && Admin) : [Help],
+})
 
-  return buildArray(...base)
-}
-
-const getMobileSidebar = (user: User | null | undefined, _toggleModal: () => void) => {
-  if (user) return buildArray(Invite, Settings, ...base, isAdminId(user.id) && Admin)
-
-  return buildArray(...base)
-}
+// The drawer behind the bottom bar's menu button. People, Messages, Notifs and Profile are already
+// on the bar itself, so only Invite is left of the daily-use band.
+const getMobileSidebar = (user: User | null | undefined, _toggleModal: () => void): NavGroups => ({
+  primary: user ? [Invite] : [],
+  secondary,
+  utility: user ? buildArray(Settings, Help, isAdminId(user.id) && Admin) : [Help],
+})

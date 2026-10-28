@@ -15,7 +15,7 @@ import {useT} from 'web/lib/locale'
 import {trackCallback} from 'web/lib/service/analytics'
 
 import Sidebar from './sidebar'
-import {Item} from './sidebar-item'
+import {Item, NavGroups} from './sidebar-item'
 
 const itemClass =
   'sm:hover:bg-ink-200 block w-full py-1 px-3 text-center sm:hover:text-primary-700 transition-colors'
@@ -23,7 +23,10 @@ const selectedItemClass = 'bg-canvas-100 text-primary-700'
 const touchItemClass = 'bg-primary-100'
 
 // From https://codepen.io/chris__sev/pen/QWGvYbL
-export function BottomNavBar(props: {navigationOptions: Item[]; sidebarNavigationOptions: Item[]}) {
+export function BottomNavBar(props: {
+  navigationOptions: Item[]
+  sidebarNavigationOptions: NavGroups
+}) {
   const {navigationOptions, sidebarNavigationOptions} = props
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -175,7 +178,7 @@ function NavBarItem(props: {
 export function MobileSidebar(props: {
   sidebarOpen: boolean
   setSidebarOpen: (open: boolean) => void
-  sidebarNavigationOptions: Item[]
+  sidebarNavigationOptions: NavGroups
 }) {
   const {sidebarOpen, sidebarNavigationOptions, setSidebarOpen} = props
 

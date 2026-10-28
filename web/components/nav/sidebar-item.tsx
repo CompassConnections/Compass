@@ -14,6 +14,23 @@ export type Item = {
   icon?: React.ComponentType<{className?: string}>
 }
 
+/**
+ * The rail in three bands, so the eye finds the daily-use rows without reading the whole list and
+ * so the top and bottom stay put on a short screen while only the middle scrolls.
+ *
+ * - `primary`: what a member opens every visit (people, messages, notifications, invite). Pinned
+ *   under the profile chip, and the same four the mobile bottom bar shows, so the two agree.
+ * - `secondary`: occasional reading, as clusters separated by a hairline — "what's happening"
+ *   (vote, what's new, blog) and "what Compass is" (about). The only band that scrolls.
+ * - `utility`: settings, help, admin tools. Pinned to the foot, where Slack, Linear and Discord
+ *   keep theirs, away from content navigation.
+ */
+export type NavGroups = {
+  primary: Item[]
+  secondary: Item[][]
+  utility: Item[]
+}
+
 export function SidebarItem(props: {item: Item; currentPage?: string}) {
   const {item, currentPage} = props
 

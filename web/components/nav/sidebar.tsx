@@ -2,6 +2,7 @@ import {ArrowLeftOnRectangleIcon, ArrowRightOnRectangleIcon} from '@heroicons/re
 import {StarIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import Router, {useRouter} from 'next/router'
+import {Fragment} from 'react'
 import {LuPanelLeft} from 'react-icons/lu'
 import {Button, ColorType, SizeType} from 'web/components/buttons/button'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
@@ -20,13 +21,13 @@ import {isNativeApp} from 'web/lib/util/webview'
 
 import SiteLogo from '../site-logo'
 import {ProfileSummary} from './profile-summary'
-import {Item, SidebarItem} from './sidebar-item'
+import {NavGroups, SidebarItem} from './sidebar-item'
 
 export default function Sidebar(props: {
   className?: string
   isMobile?: boolean
   style?: React.CSSProperties
-  navigationOptions: Item[]
+  navigationOptions: NavGroups
 }) {
   const {className, isMobile, style} = props
   const router = useRouter()
@@ -159,9 +160,28 @@ export default function Sidebar(props: {
 
       <div className="h-px bg-white/[0.06] mb-4" />
 
-      <div className="mb-4 flex flex-col gap-1 overflow-y-auto overflow-x-hidden">
-        {navOptions.map((item) => (
-          <SidebarItem key={item.key} item={item} currentPage={currentPage} />
+      {/* Daily-use rows, pinned: never scroll out from under the profile chip. */}
+      {navOptions.primary.length > 0 && (
+        <>
+          <div className="flex flex-col gap-1">
+            {navOptions.primary.map((item) => (
+              <SidebarItem key={item.key} item={item} currentPage={currentPage} />
+            ))}
+          </div>
+          <div className="h-px bg-white/[0.06] my-4" />
+        </>
+      )}
+
+      {/* The one band that scrolls. `min-h-0` lets it shrink inside the flex column instead of
+          pushing the utility band off the bottom of a short screen. */}
+      <div className="mb-4 flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overflow-x-hidden">
+        {navOptions.secondary.map((cluster, i) => (
+          <Fragment key={i}>
+            {i > 0 && <div className="h-px bg-white/[0.06] my-3" />}
+            {cluster.map((item) => (
+              <SidebarItem key={item.key} item={item} currentPage={currentPage} />
+            ))}
+          </Fragment>
         ))}
 
         {/* `py-3` matches the hero's "Join us", so the two read as the same button.
@@ -184,8 +204,12 @@ export default function Sidebar(props: {
           </Button>
         )}
       </div>
+      {/* Utility band, pinned to the foot: settings, help, admin tools, then the app row. */}
       <div className="mb-[12px] mt-auto flex flex-col gap-1">
-        <div className="h-px bg-white/[0.06]" />
+        <div className="h-px bg-white/[0.06] mb-1" />
+        {navOptions.utility.map((item) => (
+          <SidebarItem key={item.key} item={item} currentPage={currentPage} />
+        ))}
         {/* Hidden inside the shell for the obvious reason, and because an "install the app" row in
             the app is the kind of thing App Review notices. */}
         {!isApp && (

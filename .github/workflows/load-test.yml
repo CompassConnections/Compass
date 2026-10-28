@@ -27,6 +27,16 @@ on:
         description: Name of the uploaded report artifact
         type: string
         required: true
+      think_time_ms:
+        description: Shortest pause before each load test request, in milliseconds (the plan's thinkTimeMs)
+        type: number
+        required: false
+        default: 2000
+      think_random_ms:
+        description: Random extra pause on top of think_time_ms, 0 to this many milliseconds (the plan's thinkRandomMs)
+        type: number
+        required: false
+        default: 3000
 
 env:
   JMETER_VERSION: '5.6.3'
@@ -35,6 +45,8 @@ env:
   DURATION: ${{ inputs.duration }}
   MAX_ERROR_RATE: ${{ inputs.max_error_rate }}
   MAX_P95: ${{ inputs.max_p95 }}
+  THINK_TIME_MS: ${{ inputs.think_time_ms }}
+  THINK_RANDOM_MS: ${{ inputs.think_random_ms }}
 
 jobs:
   load-test:
@@ -89,6 +101,7 @@ jobs:
           # them unique, including when a failed job is re-run.
           jmeter -n -t "$PLAN" -JrunId="${GITHUB_RUN_ID: -5}${GITHUB_RUN_ATTEMPT}" \
             -JsetupThreads="$USERS" -Jthreads="$USERS" -Jduration="$DURATION" \
+            -JthinkTimeMs="$THINK_TIME_MS" -JthinkRandomMs="$THINK_RANDOM_MS" \
             -l results/results.jtl -j jmeter.log -e -o report
 
       - name: Check results

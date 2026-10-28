@@ -16,7 +16,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <link rel="icon" href={ENV_CONFIG.faviconPath} />
+        <link rel="icon" type="image/svg+xml" href={ENV_CONFIG.faviconPath} />
         <link
           // href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap"
           href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&display=swap"
@@ -43,7 +43,7 @@ export default function Document() {
         {/*/!* Link to your manifest *!/*/}
         <link rel="manifest" href="/manifest.json" />
         {/*/!* App icons *!/*/}
-        <link rel="apple-touch-icon" href={ENV_CONFIG.faviconPath} />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
 
         <Script src="/init-theme.js" strategy="beforeInteractive" />
         {IS_DEPLOYED && (

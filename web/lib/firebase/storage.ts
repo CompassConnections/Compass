@@ -78,14 +78,27 @@ export const uploadImage = async (
     return Promise.reject('File is over 20 MB')
   }
 
-  // 2️⃣ Compress if > 1MB (images only; Compressor operates on raster images)
-  if (file.size > 1024 ** 2 && file.type.startsWith('image')) {
+  // 2️⃣ Re-encode every image through a canvas (images only; Compressor operates on raster images).
+  //
+  // The re-encode is what drops the file's metadata — EXIF, and with it the GPS position of wherever
+  // the photo was taken, which for a profile photo is often someone's home. This used to run only
+  // above 1 MB as a size optimisation, which left the metadata intact on every photo a phone had
+  // already scaled down. Files over 1 MB are additionally compressed and bounded to 1920px as before;
+  // smaller ones keep their dimensions and a high quality, so the pass costs them almost nothing
+  // visually. `strict: false` is essential: with the default, Compressor hands back the *original*
+  // file whenever its output comes out larger, which would put the metadata straight back.
+  //
+  // Videos are not touched here — there is no browser-side way to re-mux them — so their metadata
+  // still goes up as-is.
+  if (file.type.startsWith('image')) {
+    const isLarge = file.size > 1024 ** 2
     file = await new Promise((resolve, reject) => {
       new Compressor(file, {
-        quality: 0.6,
-        maxHeight: 1920,
-        maxWidth: 1920,
+        quality: isLarge ? 0.6 : 0.92,
+        maxHeight: isLarge ? 1920 : Infinity,
+        maxWidth: isLarge ? 1920 : Infinity,
         convertSize: 1000000, // if result >1MB turn to jpeg
+        strict: false,
         success: (file: File) => resolve(file),
         error: (error) => reject(error.message),
       })

@@ -1,3 +1,4 @@
+import {timingSafeEqual} from 'node:crypto'
 import path from 'node:path'
 import {hrtime} from 'node:process'
 
@@ -838,44 +839,62 @@ Object.entries(handlers).forEach(([path, handler]) => {
 })
 
 // Internal Endpoints
-app.post(pathWithPrefix('/internal/send-search-notifications'), async (req, res) => {
-  const apiKey = req.header('x-api-key')
-  if (!IS_LOCAL && apiKey !== process.env.COMPASS_API_KEY) {
+
+/**
+ * Gate for the scheduler-driven jobs below. Fails closed: with no `COMPASS_API_KEY` configured there
+ * is no key that is right, rather than a missing header matching a missing variable, which is what
+ * `apiKey !== process.env.COMPASS_API_KEY` used to allow. Constant-time comparison so the key cannot
+ * be felt out byte by byte. Local runs skip it, as before.
+ */
+const requireInternalKey: RequestHandler = (req, res, next) => {
+  if (IS_LOCAL) return next()
+  const expected = process.env.COMPASS_API_KEY
+  const given = req.header('x-api-key')
+  if (!expected || !given) return res.status(401).json({error: 'Unauthorized'})
+  const a = Buffer.from(given)
+  const b = Buffer.from(expected)
+  if (a.length !== b.length || !timingSafeEqual(a, b)) {
     return res.status(401).json({error: 'Unauthorized'})
   }
+  next()
+}
 
-  try {
-    const result = await sendSearchNotifications()
-    return res.status(200).json(result)
-  } catch (err) {
-    console.error('Failed to send notifications:', err)
-    await sendDiscordMessage(
-      'Failed to send [daily notifications](https://console.cloud.google.com/cloudscheduler?project=compass-130ba) for bookmarked searches...',
-      'health',
-    )
-    return res.status(500).json({error: 'Internal server error'})
-  }
-})
+app.post(
+  pathWithPrefix('/internal/send-search-notifications'),
+  requireInternalKey,
+  async (_req, res) => {
+    try {
+      const result = await sendSearchNotifications()
+      return res.status(200).json(result)
+    } catch (err) {
+      console.error('Failed to send notifications:', err)
+      await sendDiscordMessage(
+        'Failed to send [daily notifications](https://console.cloud.google.com/cloudscheduler?project=compass-130ba) for bookmarked searches...',
+        'health',
+      )
+      return res.status(500).json({error: 'Internal server error'})
+    }
+  },
+)
 
 // Ages tick over at midnight rather than on save, so `profiles.age` needs a daily nudge (see
 // refreshProfileAges). The daily search-alert job above already runs it — this is the same pass on
 // its own, for scheduling it independently or catching up by hand after an outage. Running it twice
 // costs nothing: it only touches rows whose cached age is wrong.
-app.post(pathWithPrefix('/internal/refresh-profile-ages'), async (req, res) => {
-  const apiKey = req.header('x-api-key')
-  if (!IS_LOCAL && apiKey !== process.env.COMPASS_API_KEY) {
-    return res.status(401).json({error: 'Unauthorized'})
-  }
-
-  try {
-    const updated = await refreshProfileAges(createSupabaseDirectClient())
-    return res.status(200).json({status: 'success', updated})
-  } catch (err) {
-    console.error('Failed to refresh profile ages:', err)
-    await sendDiscordMessage('Failed to refresh profile ages...', 'health')
-    return res.status(500).json({error: 'Internal server error'})
-  }
-})
+app.post(
+  pathWithPrefix('/internal/refresh-profile-ages'),
+  requireInternalKey,
+  async (_req, res) => {
+    try {
+      const updated = await refreshProfileAges(createSupabaseDirectClient())
+      return res.status(200).json({status: 'success', updated})
+    } catch (err) {
+      console.error('Failed to refresh profile ages:', err)
+      await sendDiscordMessage('Failed to refresh profile ages...', 'health')
+      return res.status(500).json({error: 'Internal server error'})
+    }
+  },
+)
 
 /**
  * The two automated outreach jobs. They partition the directory between them — above the nearby-count
@@ -891,12 +910,7 @@ const internalOutreachJob = (
   // JSON parsing is per-route here rather than app-wide, so an internal endpoint that reads a body
   // has to ask for it explicitly. Without this `req.body` is undefined and every run silently uses
   // the default batch size.
-  app.post(pathWithPrefix(path), express.json(), async (req, res) => {
-    const apiKey = req.header('x-api-key')
-    if (!IS_LOCAL && apiKey !== process.env.COMPASS_API_KEY) {
-      return res.status(401).json({error: 'Unauthorized'})
-    }
-
+  app.post(pathWithPrefix(path), requireInternalKey, express.json(), async (req, res) => {
     try {
       const batchSize = req.body?.batchSize ? Number(req.body.batchSize) : undefined
       const result = await run({batchSize, dryRun: !!req.body?.dryRun})

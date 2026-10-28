@@ -14,7 +14,7 @@ export class HomePage {
 
   constructor(public readonly page: Page) {
     this.sidebar = page.getByTestId('sidebar')
-    this.homePageLink = page.locator('a[href="/home"]')
+    this.homePageLink = this.sidebar.locator('a[href="/home"]')
     this.profileLink = page.getByTestId('sidebar-username')
     // The sign-up CTA reads "Join us" and may be the hero link or the sidebar button: the sidebar hides
     // its copy while the page's own is on screen (see `use-signup-cta-visible`), so match whichever shows.

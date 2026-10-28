@@ -29,7 +29,7 @@ import {
   MAX_DONATION_USD,
 } from 'common/donations'
 import {FeedItem, MAX_FEED_LIMIT} from 'common/feed/feed'
-import {BAN_REASONS} from 'common/moderation/ban'
+import {BAN_REASONS, MAX_CHANNEL_MEMBERS} from 'common/moderation/ban'
 import {ProfileGateIssues} from 'common/moderation/first-message'
 import {Notification} from 'common/notifications'
 import {
@@ -1315,7 +1315,11 @@ export const API = (_apiTypeCheck = {
     rateLimited: true,
     returns: {} as any,
     props: z.object({
-      userIds: z.array(z.string()),
+      // Recipients, without the caller; the cap counts the caller too.
+      userIds: z
+        .array(z.string())
+        .min(1)
+        .max(MAX_CHANNEL_MEMBERS - 1),
     }),
     summary: 'Create a new private message channel between users',
     tag: 'Messages',

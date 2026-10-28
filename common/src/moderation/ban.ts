@@ -11,6 +11,11 @@ export const MAX_NEW_CHANNELS_PER_DAY = 10
 export const MAX_NEW_CHANNELS_PER_BURST = 3
 export const BURST_WINDOW_MINUTES = 20
 
+// Most people one conversation may be started with, the creator included. The two limits above
+// count conversations, not recipients, so without this a single "conversation" could reach the
+// whole directory at once.
+export const MAX_CHANNEL_MEMBERS = 10
+
 // Machine-readable marker on the APIError details, so the frontend can tell an automatic
 // "account on hold, pending human review" ban apart from a deliberate admin ban and show the
 // reassuring copy instead of a bare "You are banned".

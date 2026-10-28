@@ -10,8 +10,8 @@
       <boolProp name="TestPlan.functional_mode">false</boolProp>
     </TestPlan>
     <hashTree>
-      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="0 - Reset shared file">
-        <stringProp name="ThreadGroup.num_threads">${__P(resetFile,1)}</stringProp>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="0 - Check for leftover accounts">
+        <stringProp name="ThreadGroup.num_threads">${__P(checkLeftovers,1)}</stringProp>
         <intProp name="ThreadGroup.ramp_time">1</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
@@ -21,12 +21,27 @@
         </elementProp>
       </SetupThreadGroup>
       <hashTree>
-        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="SETUP | Reset created_accounts.txt" enabled="true">
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="SETUP | Check created_accounts.txt is empty" enabled="true">
           <stringProp name="cacheKey">true</stringProp>
           <stringProp name="filename"></stringProp>
           <stringProp name="parameters"></stringProp>
           <stringProp name="script">import org.apache.jmeter.services.FileServer
-new File(FileServer.getFileServer().getBaseDir(), &quot;created_accounts.txt&quot;).text = &quot;&quot;</stringProp>
+
+// Teardown removes each account from the file once it is deleted, so anything still listed was left
+// behind by an earlier run that was killed or failed to delete it. Emptying the file would lose the only
+// record of those accounts. Instead, give account creation and every load test zero threads (thread
+// counts are read when each group starts), so this run only deletes the leftovers. Then run again.
+// A new load test must add its own &lt;prefix&gt;Threads here.
+def file = new File(FileServer.getFileServer().getBaseDir(), &quot;created_accounts.txt&quot;)
+if (!file.exists()) file.text = &quot;&quot; // the later stages read it even when no account gets saved
+def leftovers = file.readLines().findAll { it.trim() }
+if (leftovers) {
+    def message = &quot;created_accounts.txt lists ${leftovers.size()} accounts from an earlier run. Deleting them instead of running the test; run again afterwards.&quot;
+    log.error(message)
+    SampleResult.setSuccessful(false)
+    SampleResult.setResponseMessage(message)
+    [&quot;setupThreads&quot;, &quot;threads&quot;, &quot;sessionThreads&quot;].each { props.put(it, &quot;0&quot;) }
+}</stringProp>
           <stringProp name="scriptLanguage">groovy</stringProp>
         </JSR223Sampler>
         <hashTree/>
@@ -47,6 +62,12 @@ new File(FileServer.getFileServer().getBaseDir(), &quot;created_accounts.txt&quo
           <elementProp name="firebaseApiKey" elementType="Argument">
             <stringProp name="Argument.name">firebaseApiKey</stringProp>
             <stringProp name="Argument.value">${__P(firebaseApiKey,AIzaSyBspL9glBXWbMsjmtt36dgb2yU0YGGhzKo)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="runId" elementType="Argument">
+            <stringProp name="Argument.name">runId</stringProp>
+            <stringProp name="Argument.value">${__P(runId,${__time(ddHHmmss,)})}</stringProp>
+            <stringProp name="Argument.desc">Added to every email and username so each run's accounts are new</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="signupUrl" elementType="Argument">
@@ -83,18 +104,6 @@ new File(FileServer.getFileServer().getBaseDir(), &quot;created_accounts.txt&quo
         </elementProp>
       </SetupThreadGroup>
       <hashTree>
-        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV - Accounts" enabled="true">
-          <stringProp name="filename">accounts.csv</stringProp>
-          <stringProp name="fileEncoding">UTF-8</stringProp>
-          <stringProp name="variableNames">userEmail,userPassword,username,name</stringProp>
-          <boolProp name="ignoreFirstLine">false</boolProp>
-          <stringProp name="delimiter">,</stringProp>
-          <boolProp name="quotedData">false</boolProp>
-          <boolProp name="recycle">false</boolProp>
-          <boolProp name="stopThread">true</boolProp>
-          <stringProp name="shareMode">shareMode.all</stringProp>
-        </CSVDataSet>
-        <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SETUP | Firebase Signup POST" enabled="true">
           <stringProp name="HTTPSampler.domain">${baseAuthUrl}</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
@@ -114,6 +123,22 @@ new File(FileServer.getFileServer().getBaseDir(), &quot;created_accounts.txt&quo
           </elementProp>
         </HTTPSamplerProxy>
         <hashTree>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Make this thread's account" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">// One new account per thread. The run ID makes it unique: reusing fixed accounts would fail every
+// sign-up with EMAIL_EXISTS or a taken username when a run overlaps another, or follows one that leaked
+// accounts. example.com is reserved for testing, so the API sends no welcome email to it.
+// Usernames are cut to 25 characters, so keep them short.
+def id = &quot;${vars.get(&apos;runId&apos;)}x${ctx.getThreadNum() + 1}&quot;
+vars.put(&quot;userEmail&quot;, &quot;loadtest${id}@example.com&quot;)
+vars.put(&quot;userPassword&quot;, UUID.randomUUID().toString())
+vars.put(&quot;username&quot;, &quot;loadUser${id}&quot;)
+vars.put(&quot;name&quot;, &quot;Load Test ${ctx.getThreadNum() + 1}&quot;)</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
@@ -194,13 +219,15 @@ if (!token) {
     log.warn(&quot;No token for ${vars.get(&apos;userEmail&apos;)}, not saving&quot;)
     return
 }
-if (!prev.isSuccessful()) {
+def profileCreated = prev.isSuccessful()
+if (!profileCreated) {
     log.warn(&quot;Profile creation failed for ${vars.get(&apos;userEmail&apos;)}, saving anyway so it gets cleaned up&quot;)
 }
 
+// profileCreated tells teardown how to delete it: through the API, or only from Firebase
 def file = new File(FileServer.getFileServer().getBaseDir(), &quot;created_accounts.txt&quot;)
 synchronized (FileServer.class) {
-	file.append([vars.get(&quot;userEmail&quot;), vars.get(&quot;userPassword&quot;), token, vars.get(&quot;name&quot;)].join(&quot;|&quot;) + &quot;\n&quot;, &quot;UTF-8&quot;)
+	file.append([vars.get(&quot;userEmail&quot;), vars.get(&quot;userPassword&quot;), token, vars.get(&quot;name&quot;), profileCreated].join(&quot;|&quot;) + &quot;\n&quot;, &quot;UTF-8&quot;)
 }</stringProp>
           </JSR223PostProcessor>
           <hashTree/>
@@ -212,9 +239,9 @@ synchronized (FileServer.class) {
         </DebugSampler>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="2 - /me load test" enabled="true">
-        <stringProp name="ThreadGroup.num_threads">${__P(meThreads,${__P(threads,100)})}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">${__P(meRamp,${__P(ramp,10)})}</stringProp>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="2 - Browsing session" enabled="true">
+        <stringProp name="ThreadGroup.num_threads">${__P(sessionThreads,${__P(threads,100)})}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(sessionRamp,${__P(ramp,10)})}</stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
@@ -226,7 +253,7 @@ synchronized (FileServer.class) {
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV - Created accounts" enabled="true">
           <stringProp name="filename">created_accounts.txt</stringProp>
           <stringProp name="fileEncoding">UTF-8</stringProp>
-          <stringProp name="variableNames">userEmail,userPassword,authToken,name</stringProp>
+          <stringProp name="variableNames">userEmail,userPassword,authToken,name,profileCreated</stringProp>
           <boolProp name="ignoreFirstLine">false</boolProp>
           <stringProp name="delimiter">|</stringProp>
           <boolProp name="quotedData">false</boolProp>
@@ -236,7 +263,7 @@ synchronized (FileServer.class) {
         </CSVDataSet>
         <hashTree/>
         <RunTime guiclass="RunTimeGui" testclass="RunTime" testname="Runtime Controller" enabled="true">
-          <stringProp name="RunTime.seconds">${__P(meDuration,${__P(duration,120)})}</stringProp>
+          <stringProp name="RunTime.seconds">${__P(sessionDuration,${__P(duration,120)})}</stringProp>
         </RunTime>
         <hashTree>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEST | /me GET" enabled="true">
@@ -265,15 +292,12 @@ synchronized (FileServer.class) {
               </collectionProp>
             </HeaderManager>
             <hashTree/>
-            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
-              <collectionProp name="Asserion.test_strings">
-                <stringProp name="49586">200</stringProp>
-              </collectionProp>
-              <stringProp name="Assertion.custom_message"></stringProp>
-              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-              <boolProp name="Assertion.assume_success">false</boolProp>
-              <intProp name="Assertion.test_type">8</intProp>
-            </ResponseAssertion>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Own user id and username" enabled="true">
+              <stringProp name="JSONPostProcessor.referenceNames">userId;ownUsername</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$.id;$.username</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers">1;1</stringProp>
+              <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND;NOT_FOUND</stringProp>
+            </JSONPostProcessor>
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="JSON Assertion" enabled="true">
               <stringProp name="JSON_PATH">$.name</stringProp>
@@ -284,10 +308,325 @@ synchronized (FileServer.class) {
               <boolProp name="ISREGEX">false</boolProp>
             </JSONPathAssertion>
             <hashTree/>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
           </hashTree>
-          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Think time" enabled="true">
-            <stringProp name="ConstantTimer.delay">${__P(thinkTimeMs,0)}</stringProp>
-          </ConstantTimer>
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If /me returned the account" enabled="true">
+            <stringProp name="IfController.condition">${__groovy(vars.get(&quot;userId&quot;) != &quot;NOT_FOUND&quot;)}</stringProp>
+            <boolProp name="IfController.evaluateAll">false</boolProp>
+            <boolProp name="IfController.useExpression">true</boolProp>
+          </IfController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEST | get-profile GET (own)" enabled="true">
+              <stringProp name="HTTPSampler.domain">${apiHost}</stringProp>
+              <stringProp name="HTTPSampler.protocol">https</stringProp>
+              <stringProp name="HTTPSampler.path">/get-profile?username=${ownUsername}</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Content-Type</stringProp>
+                    <stringProp name="Header.value">application/json</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Authorization</stringProp>
+                    <stringProp name="Header.value">Bearer ${authToken}</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEST | set-last-online-time POST" enabled="true">
+              <stringProp name="HTTPSampler.domain">${apiHost}</stringProp>
+              <stringProp name="HTTPSampler.protocol">https</stringProp>
+              <stringProp name="HTTPSampler.path">/set-last-online-time</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Content-Type</stringProp>
+                    <stringProp name="Header.value">application/json</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Authorization</stringProp>
+                    <stringProp name="Header.value">Bearer ${authToken}</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEST | get-notifications GET" enabled="true">
+              <stringProp name="HTTPSampler.domain">${apiHost}</stringProp>
+              <stringProp name="HTTPSampler.protocol">https</stringProp>
+              <stringProp name="HTTPSampler.path">/get-notifications?limit=450</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Content-Type</stringProp>
+                    <stringProp name="Header.value">application/json</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Authorization</stringProp>
+                    <stringProp name="Header.value">Bearer ${authToken}</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEST | compatible-profiles GET" enabled="true">
+              <stringProp name="HTTPSampler.domain">${apiHost}</stringProp>
+              <stringProp name="HTTPSampler.protocol">https</stringProp>
+              <stringProp name="HTTPSampler.path">/compatible-profiles?userId=${userId}</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Content-Type</stringProp>
+                    <stringProp name="Header.value">application/json</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Authorization</stringProp>
+                    <stringProp name="Header.value">Bearer ${authToken}</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEST | get-profiles GET (feed)" enabled="true">
+              <stringProp name="HTTPSampler.domain">${apiHost}</stringProp>
+              <stringProp name="HTTPSampler.protocol">https</stringProp>
+              <stringProp name="HTTPSampler.path">/get-profiles?limit=20&amp;projection=card&amp;compatibleWithUserId=${userId}</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Content-Type</stringProp>
+                    <stringProp name="Header.value">application/json</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">Authorization</stringProp>
+                    <stringProp name="Header.value">Bearer ${authToken}</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Feed usernames and last profile id" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">feedUsername;feedAfter</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.profiles[*].user.username;$.profiles[-1:].id</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers">-1;1</stringProp>
+                <stringProp name="JSONPostProcessor.defaultValues">NOT_FOUND;NOT_FOUND</stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                <collectionProp name="Asserion.test_strings">
+                  <stringProp name="49586">200</stringProp>
+                </collectionProp>
+                <stringProp name="Assertion.custom_message"></stringProp>
+                <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                <boolProp name="Assertion.assume_success">false</boolProp>
+                <intProp name="Assertion.test_type">8</intProp>
+              </ResponseAssertion>
+              <hashTree/>
+            </hashTree>
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If the feed returned profiles" enabled="true">
+              <stringProp name="IfController.condition">${__groovy((vars.get(&quot;feedUsername_matchNr&quot;) ?: &quot;0&quot;) as int &gt; 0)}</stringProp>
+              <boolProp name="IfController.evaluateAll">false</boolProp>
+              <boolProp name="IfController.useExpression">true</boolProp>
+            </IfController>
+            <hashTree>
+              <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Open profiles from the feed" enabled="true">
+                <stringProp name="LoopController.loops">${__P(profileViews,3)}</stringProp>
+                <boolProp name="LoopController.continue_forever">true</boolProp>
+              </LoopController>
+              <hashTree>
+                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEST | get-profile GET (feed profile)" enabled="true">
+                  <stringProp name="HTTPSampler.domain">${apiHost}</stringProp>
+                  <stringProp name="HTTPSampler.protocol">https</stringProp>
+                  <stringProp name="HTTPSampler.path">/get-profile?username=${__V(feedUsername_${__Random(1,${feedUsername_matchNr})})}</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                  <stringProp name="HTTPSampler.method">GET</stringProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+                    <collectionProp name="Arguments.arguments"/>
+                  </elementProp>
+                </HTTPSamplerProxy>
+                <hashTree>
+                  <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                    <collectionProp name="HeaderManager.headers">
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">Content-Type</stringProp>
+                        <stringProp name="Header.value">application/json</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">Authorization</stringProp>
+                        <stringProp name="Header.value">Bearer ${authToken}</stringProp>
+                      </elementProp>
+                    </collectionProp>
+                  </HeaderManager>
+                  <hashTree/>
+                  <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                    <collectionProp name="Asserion.test_strings">
+                      <stringProp name="49586">200</stringProp>
+                    </collectionProp>
+                    <stringProp name="Assertion.custom_message"></stringProp>
+                    <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                    <boolProp name="Assertion.assume_success">false</boolProp>
+                    <intProp name="Assertion.test_type">8</intProp>
+                  </ResponseAssertion>
+                  <hashTree/>
+                </hashTree>
+              </hashTree>
+              <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Load more, half the visits" enabled="true">
+                <intProp name="ThroughputController.style">1</intProp>
+                <boolProp name="ThroughputController.perThread">false</boolProp>
+                <intProp name="ThroughputController.maxThroughput">1</intProp>
+                <FloatProperty>
+                  <name>ThroughputController.percentThroughput</name>
+                  <value>50.0</value>
+                  <savedValue>0.0</savedValue>
+                </FloatProperty>
+              </ThroughputController>
+              <hashTree>
+                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEST | get-profiles GET (next page)" enabled="true">
+                  <stringProp name="HTTPSampler.domain">${apiHost}</stringProp>
+                  <stringProp name="HTTPSampler.protocol">https</stringProp>
+                  <stringProp name="HTTPSampler.path">/get-profiles?limit=20&amp;projection=card&amp;compatibleWithUserId=${userId}&amp;after=${feedAfter}</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+                  <stringProp name="HTTPSampler.method">GET</stringProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.postBodyRaw">false</boolProp>
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+                    <collectionProp name="Arguments.arguments"/>
+                  </elementProp>
+                </HTTPSamplerProxy>
+                <hashTree>
+                  <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                    <collectionProp name="HeaderManager.headers">
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">Content-Type</stringProp>
+                        <stringProp name="Header.value">application/json</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">Authorization</stringProp>
+                        <stringProp name="Header.value">Bearer ${authToken}</stringProp>
+                      </elementProp>
+                    </collectionProp>
+                  </HeaderManager>
+                  <hashTree/>
+                  <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+                    <collectionProp name="Asserion.test_strings">
+                      <stringProp name="49586">200</stringProp>
+                    </collectionProp>
+                    <stringProp name="Assertion.custom_message"></stringProp>
+                    <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+                    <boolProp name="Assertion.assume_success">false</boolProp>
+                    <intProp name="Assertion.test_type">8</intProp>
+                  </ResponseAssertion>
+                  <hashTree/>
+                </hashTree>
+              </hashTree>
+            </hashTree>
+          </hashTree>
+          <UniformRandomTimer guiclass="UniformRandomTimerGui" testclass="UniformRandomTimer" testname="Think time" enabled="true">
+            <stringProp name="ConstantTimer.delay">${__P(thinkTimeMs,2000)}</stringProp>
+            <stringProp name="RandomTimer.range">${__P(thinkRandomMs,3000)}</stringProp>
+          </UniformRandomTimer>
           <hashTree/>
         </hashTree>
       </hashTree>
@@ -305,7 +644,7 @@ synchronized (FileServer.class) {
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV - created accounts" enabled="true">
           <stringProp name="filename">created_accounts.txt</stringProp>
           <stringProp name="fileEncoding">UTF-8</stringProp>
-          <stringProp name="variableNames">userEmail,userPassword,authToken,name</stringProp>
+          <stringProp name="variableNames">userEmail,userPassword,authToken,name,profileCreated</stringProp>
           <boolProp name="ignoreFirstLine">false</boolProp>
           <stringProp name="delimiter">|</stringProp>
           <boolProp name="quotedData">false</boolProp>
@@ -342,15 +681,29 @@ synchronized (FileServer.class) {
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.custom_message"></stringProp>
-            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
-          </ResponseAssertion>
+          <JSR223Assertion guiclass="TestBeanGUI" testclass="JSR223Assertion" testname="Signed in, or already deleted" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">// An account that no longer exists is already deleted, e.g. a row an older version of this plan left
+// in created_accounts.txt after a successful run. Count it as deleted instead of failing it forever.
+// Firebase answers INVALID_LOGIN_CREDENTIALS instead of EMAIL_NOT_FOUND when email enumeration
+// protection is on, so this also matches a wrong password; the password comes from the file, so it
+// is only wrong if the file was edited.
+def signedIn = prev.getResponseCode() == &quot;200&quot;
+vars.put(&quot;signedIn&quot;, String.valueOf(signedIn))
+if (signedIn) return
+if (prev.getResponseDataAsString() =~ /EMAIL_NOT_FOUND|INVALID_LOGIN_CREDENTIALS/) {
+    prev.setSuccessful(true)
+    prev.setResponseMessage(&quot;Account already deleted&quot;)
+    props.putIfAbsent(&quot;deletedAccounts&quot;, java.util.concurrent.ConcurrentHashMap.newKeySet())
+    props.get(&quot;deletedAccounts&quot;).add(vars.get(&quot;userEmail&quot;))
+    return
+}
+AssertionResult.setFailure(true)
+AssertionResult.setFailureMessage(&quot;Sign-in failed with ${prev.getResponseCode()}&quot;)</stringProp>
+          </JSR223Assertion>
           <hashTree/>
           <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
             <stringProp name="JSONPostProcessor.referenceNames">authToken</stringProp>
@@ -359,49 +712,156 @@ synchronized (FileServer.class) {
           </JSONPostProcessor>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEARDOWN | Delete app user" enabled="true">
-          <stringProp name="HTTPSampler.domain">${apiHost}</stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.path">/me/delete</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;reasonCategory&quot;: &quot;jmeter-load-test&quot;}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-        </HTTPSamplerProxy>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If the profile was created (or the row predates that column)" enabled="true">
+          <stringProp name="IfController.condition">${__groovy(vars.get(&quot;signedIn&quot;) == &quot;true&quot; &amp;&amp; vars.get(&quot;profileCreated&quot;) != &quot;false&quot;)}</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+          <boolProp name="IfController.useExpression">true</boolProp>
+        </IfController>
         <hashTree>
-          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-            <collectionProp name="HeaderManager.headers">
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Content-Type</stringProp>
-                <stringProp name="Header.value">application/json</stringProp>
-              </elementProp>
-              <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">Authorization</stringProp>
-                <stringProp name="Header.value">Bearer ${authToken}</stringProp>
-              </elementProp>
-            </collectionProp>
-          </HeaderManager>
-          <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.custom_message"></stringProp>
-            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
-          </ResponseAssertion>
-          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEARDOWN | Delete app user" enabled="true">
+            <stringProp name="HTTPSampler.domain">${apiHost}</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">/me/delete</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;reasonCategory&quot;: &quot;jmeter-load-test&quot;}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">Authorization</stringProp>
+                  <stringProp name="Header.value">Bearer ${authToken}</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Remember deleted account" enabled="true">
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="script">// &quot;4 - Forget deleted accounts&quot; removes these from created_accounts.txt. Failed ones stay listed.
+if (prev.isSuccessful()) {
+    props.putIfAbsent(&quot;deletedAccounts&quot;, java.util.concurrent.ConcurrentHashMap.newKeySet())
+    props.get(&quot;deletedAccounts&quot;).add(vars.get(&quot;userEmail&quot;))
+}</stringProp>
+            </JSR223PostProcessor>
+            <hashTree/>
+          </hashTree>
         </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If there is no profile, or /me/delete failed" enabled="true">
+          <stringProp name="IfController.condition">${__groovy(vars.get(&quot;signedIn&quot;) == &quot;true&quot; &amp;&amp; (vars.get(&quot;profileCreated&quot;) == &quot;false&quot; || !ctx.getPreviousResult().isSuccessful()))}</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+          <boolProp name="IfController.useExpression">true</boolProp>
+        </IfController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TEARDOWN | Firebase delete account" enabled="true">
+            <stringProp name="HTTPSampler.domain">${baseAuthUrl}</stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.path">${deleteAccountUrl}${firebaseApiKey}</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;idToken&quot;: &quot;${authToken}&quot;}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+            <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+              <stringProp name="Assertion.custom_message"></stringProp>
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <boolProp name="Assertion.assume_success">false</boolProp>
+              <intProp name="Assertion.test_type">8</intProp>
+            </ResponseAssertion>
+            <hashTree/>
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Remember deleted account" enabled="true">
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="script">// &quot;4 - Forget deleted accounts&quot; removes these from created_accounts.txt. Failed ones stay listed.
+if (prev.isSuccessful()) {
+    props.putIfAbsent(&quot;deletedAccounts&quot;, java.util.concurrent.ConcurrentHashMap.newKeySet())
+    props.get(&quot;deletedAccounts&quot;).add(vars.get(&quot;userEmail&quot;))
+}</stringProp>
+            </JSR223PostProcessor>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+      </hashTree>
+      <PostThreadGroup guiclass="PostThreadGroupGui" testclass="PostThreadGroup" testname="4 - Forget deleted accounts" enabled="true">
+        <intProp name="ThreadGroup.num_threads">1</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <stringProp name="LoopController.loops">1</stringProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+      </PostThreadGroup>
+      <hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="TEARDOWN | Remove deleted accounts from created_accounts.txt" enabled="true">
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="script">import org.apache.jmeter.services.FileServer
+
+// Keep only the accounts teardown couldn&apos;t delete, so a later run (or Cleanup only) can still find them
+def deleted = props.remove(&quot;deletedAccounts&quot;) ?: [] as Set
+def file = new File(FileServer.getFileServer().getBaseDir(), &quot;created_accounts.txt&quot;)
+if (!file.exists()) return
+def remaining = file.readLines().findAll { it.trim() &amp;&amp; !deleted.contains(it.split(/\|/)[0]) }
+file.setText(remaining ? remaining.join(&quot;\n&quot;) + &quot;\n&quot; : &quot;&quot;, &quot;UTF-8&quot;)
+if (remaining) {
+    log.warn(&quot;${remaining.size()} accounts could not be deleted and are still listed in created_accounts.txt&quot;)
+}</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
       </hashTree>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>

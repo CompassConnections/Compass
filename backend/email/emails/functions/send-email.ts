@@ -20,6 +20,11 @@ export const sendEmail = async (
     return null
   }
 
+  if (sendsOnlyToTestDomains(payload.to)) {
+    debug(`Skipping email to reserved test domain: ${payload.to}`)
+    return null
+  }
+
   if (!resend) return null
 
   const {data, error} = await resend.emails.send(
@@ -42,6 +47,21 @@ export const sendEmail = async (
   await sleep(1000) // to avoid rate limits (2 / second in resend free plan)
 
   return data
+}
+
+// Domains reserved for testing (RFC 2606) can never receive mail. The load tests sign up with them, so
+// sending would only bounce and hurt the sender reputation.
+const isTestDomainAddress = (address: string) => {
+  const domain = address.trim().replace(/>$/, '').split('@').pop()?.toLowerCase() ?? ''
+  return (
+    ['example.com', 'example.net', 'example.org'].includes(domain) ||
+    ['.example', '.test', '.invalid'].some((tld) => domain.endsWith(tld))
+  )
+}
+
+const sendsOnlyToTestDomains = (to: string | string[]) => {
+  const addresses = Array.isArray(to) ? to : [to]
+  return addresses.length > 0 && addresses.every(isTestDomainAddress)
 }
 
 let resend: Resend | null = null

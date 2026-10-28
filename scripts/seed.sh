@@ -8,7 +8,7 @@ cd "$(dirname "$0")"/..
 export $(cat .env.test | grep -v '^#' | xargs)
 
 # Get connection details
-STATUS_JSON=$(supabase status --output json)
+STATUS_JSON=$(npx supabase status --output json)
 export NEXT_PUBLIC_SUPABASE_URL=$(echo "$STATUS_JSON" | jq -r '.API_URL')
 export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$STATUS_JSON" | jq -r '.ANON_KEY')
 export DATABASE_URL=$(echo "$STATUS_JSON" | jq -r '.DB_URL')

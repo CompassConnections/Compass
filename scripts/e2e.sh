@@ -60,7 +60,7 @@ fi
 # ✅ Kill stale processes from previous runs
 print_status "Killing any stale processes..."
 ./scripts/firebase_stop.sh
-supabase stop --no-backup 2>/dev/null || true
+npx supabase stop --no-backup 2>/dev/null || true
 sleep 2  # Give ports time to free up
 
 # Install Playwright browsers
@@ -81,7 +81,7 @@ npx wait-on \
 yarn test:db:reset
 
 # Get connection details
-STATUS_JSON=$(supabase status --output json)
+STATUS_JSON=$(npx supabase status --output json)
 export NEXT_PUBLIC_SUPABASE_URL=$(echo "$STATUS_JSON" | jq -r '.API_URL')
 export NEXT_PUBLIC_SUPABASE_ANON_KEY=$(echo "$STATUS_JSON" | jq -r '.ANON_KEY')
 export DATABASE_URL=$(echo "$STATUS_JSON" | jq -r '.DB_URL')

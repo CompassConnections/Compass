@@ -40,10 +40,14 @@ jobs:
   load-test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # Never run two load tests at once: they hit the same dev API, so each would skew the other's results.
+    # GitHub keeps only one pending run per concurrency group and cancels the one it replaces, so a single
+    # shared group would let a PR push silently cancel a queued run of another PR or the weekly full run.
+    # Instead each PR gets its own smoke group, where a newer push replaces the older run (its accounts are
+    # still deleted by the cleanup step, which runs on cancel), and the full run gets a group of its own.
+    # Smoke runs use only a few users, so one overlapping another run barely skews its results.
     concurrency:
-      group: load-test
-      cancel-in-progress: false
+      group: load-test-${{ inputs.report_name }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     defaults:
       run:
         working-directory: tests/load # folder holding the .jmx and check_results.py
@@ -77,22 +81,13 @@ jobs:
       - name: Add JMeter to PATH
         run: echo "$HOME/jmeter/bin" >> "$GITHUB_PATH"
 
-      - name: Make test accounts for this run
-        run: |
-          # one row per user: email,password,username,name (no header, no commas inside values)
-          # The run ID and attempt number make the accounts unique, including when a failed job is re-run.
-          id="${GITHUB_RUN_ID: -5}${GITHUB_RUN_ATTEMPT}"
-          rm -f accounts.csv
-          for i in $(seq 1 "$USERS"); do
-            echo "loadTest${id}x${i}@example.com,$(openssl rand -hex 8),loadUser${id}x${i},load Name${id}x${i}" >> accounts.csv
-          done
-          echo "Made $(wc -l < accounts.csv) accounts"
-
       - name: Run load test
         id: jmeter
         run: |
           mkdir -p results
-          jmeter -n -t "$PLAN" \
+          # The plan puts the run ID in each account's email and username. The run ID and attempt number keep
+          # them unique, including when a failed job is re-run.
+          jmeter -n -t "$PLAN" -JrunId="${GITHUB_RUN_ID: -5}${GITHUB_RUN_ATTEMPT}" \
             -JsetupThreads="$USERS" -Jthreads="$USERS" -Jduration="$DURATION" \
             -l results/results.jtl -j jmeter.log -e -o report
 
@@ -105,7 +100,7 @@ jobs:
         run: |
           [ -s created_accounts.txt ] || { echo "No accounts to clean up"; exit 0; }
           jmeter -n -t "$PLAN" \
-            -JresetFile=0 -JsetupThreads=0 -Jthreads=0 \
+            -JcheckLeftovers=0 -JsetupThreads=0 -Jthreads=0 \
             -l results/cleanup.jtl -j cleanup.log
 
       - name: Save report

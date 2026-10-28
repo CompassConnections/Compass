@@ -10,6 +10,7 @@ import argparse
 import csv
 import math
 import sys
+from collections import defaultdict
 
 # Requests in the plan are labelled "SETUP | ...", "TEST | ..." or "TEARDOWN | ...".
 # The error limit applies to all of them: a failed SETUP request means less load than asked for, and a
@@ -32,9 +33,12 @@ def percentile(values, pct):
 
 def summarise(samples):
     """Group samples by label (request name) and work out the numbers for each."""
+    groups = defaultdict(list)
+    for s in samples:  # one pass, so large full-run files stay fast
+        groups[s["label"]].append(s)
+
     stats = {}
-    for label in sorted({s["label"] for s in samples}):
-        group = [s for s in samples if s["label"] == label]
+    for label, group in sorted(groups.items()):
         errors = sum(1 for s in group if s["success"] != "true")
         stats[label] = {
             "count": len(group),

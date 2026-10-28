@@ -1,4 +1,5 @@
 import * as profilesModule from 'api/get-profiles'
+import {MIN_BIO_LENGTH} from 'common/constants'
 import {Profile} from 'common/profiles/profile'
 import * as supabaseInit from 'shared/supabase/init'
 import * as sqlBuilder from 'shared/supabase/sql-builder'
@@ -382,7 +383,7 @@ describe('loadProfiles', () => {
       // The sparse-profile filter must not depend on the output joins.
       expect(query).not.toContain('array_length(profile_work.work, 1)')
       expect(query).toContain('FROM profile_work')
-      expect(query).toContain('bio_length >= 100')
+      expect(query).toContain(`bio_length >= ${MIN_BIO_LENGTH}`)
     })
 
     it('keeps the work join for the full projection', async () => {

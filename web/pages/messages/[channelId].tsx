@@ -73,7 +73,7 @@ export default function PrivateMessagesPage() {
     return <CompassLoadingIndicator />
   }
   return (
-    <PageBase trackPageView={'private messages page'}>
+    <PageBase trackPageView={'private messages page'} hideFooter>
       <SEO
         title={t('messages.title', 'Messages')}
         description={t('messages.seo.description', 'Messages')}

@@ -31,7 +31,7 @@ export default function ProfilesPage() {
 
 function LoadingHome() {
   return (
-    <PageBase trackPageView={'loading'} className={'col-span-10 lg:!mt-0 xl:!px-0'}>
+    <PageBase trackPageView={'loading'} className={'col-span-10 lg:!mt-0 xl:!px-0'} hideFooter>
       <HomeLoadingAnimation />
     </PageBase>
   )

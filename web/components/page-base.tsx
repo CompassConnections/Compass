@@ -30,6 +30,7 @@ import {Col} from 'web/components/layout/col'
 import {PrivateMessagesIcon} from 'web/components/messaging/messages-icon'
 import {BottomNavBar} from 'web/components/nav/bottom-nav-bar'
 import {InviteNavLabel} from 'web/components/nav/invite-nav-label'
+import {SiteFooter} from 'web/components/site-footer'
 import {SkipLink} from 'web/components/skip-link'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
 import {useOnline} from 'web/hooks/use-online'
@@ -48,8 +49,21 @@ export function PageBase(props: {
   children?: ReactNode
   hideSidebar?: boolean
   hideBottomBar?: boolean
+  /**
+   * For pages sized to the viewport (the chat, the home loading state): a footer under one of those
+   * would make a page scroll that is built not to. The footer is already absent in the native apps.
+   */
+  hideFooter?: boolean
 }) {
-  const {trackPageView, trackPageProps, children, className, hideSidebar, hideBottomBar} = props
+  const {
+    trackPageView,
+    trackPageProps,
+    children,
+    className,
+    hideSidebar,
+    hideBottomBar,
+    hideFooter,
+  } = props
   const user = useUser()
   const isMobile = useIsMobile()
   const profile = useProfile()
@@ -96,12 +110,15 @@ export function PageBase(props: {
             Maintenance in progress: Some features may be broken for the next few hours.
           </div>
         )}
+        {/* `lg:row-span-2` so the rail's grid area runs down past the footer row: a sticky element
+            can't leave its own area, so without it the rail would slide up out of view just as the
+            footer scrolled in. */}
         {hideSidebar ? (
-          <div className="lg:flex" />
+          <div className="lg:flex lg:row-span-2" />
         ) : (
           <Sidebar
             navigationOptions={desktopSidebarOptions}
-            className="sticky top-0 hidden self-start px-2 lg:flex sidebar-nav bg-canvas-950"
+            className="sticky top-0 hidden self-start px-2 lg:flex lg:row-span-2 sidebar-nav bg-canvas-950"
           />
         )}
         <main
@@ -111,6 +128,9 @@ export function PageBase(props: {
         >
           {children}
         </main>
+        {/* Its own grid row, spanning the ten page columns whatever `col-span` the page asked for, so
+            it is the same width on a `col-span-8` page as on the `col-span-10` home. */}
+        {!hideFooter && <SiteFooter className="lg:col-start-2 lg:col-span-10" />}
       </Col>
       {!hideBottomBar && (
         <BottomNavBar

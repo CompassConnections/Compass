@@ -4,14 +4,14 @@ import clsx from 'clsx'
 import {LOCALES} from 'common/constants'
 import {useLocale} from 'web/lib/locale'
 
-export function LanguagePicker(props: {className?: string} = {}) {
-  const {className} = props
+export function LanguagePicker(props: {className?: string; id?: string} = {}) {
+  const {className, id} = props
   const {locale, setLocale} = useLocale()
 
   return (
     <select
-      id="locale-picker"
-      data-testid="sidebar-locale-picker"
+      id={id ?? 'locale-picker'}
+      data-testid={id ? undefined : 'sidebar-locale-picker'}
       value={locale}
       onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLocale(e.target.value)}
       className={clsx(

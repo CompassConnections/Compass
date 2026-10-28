@@ -49,8 +49,9 @@ describe('getProfileGate', () => {
   it('treats a member with no profile row as having nothing filled in', async () => {
     mockPg.oneOrNone.mockResolvedValue(null)
 
+    // The answers rule is tunable down to zero, at which point nobody can fail it.
     expect(await getProfileGate({}, mockAuth, mockReq)).toEqual({
-      issues: {bio: true, answers: true},
+      issues: {bio: true, answers: MIN_ANSWERS_TO_MESSAGE > 0},
     })
   })
 

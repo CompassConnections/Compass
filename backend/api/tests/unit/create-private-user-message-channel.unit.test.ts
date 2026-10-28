@@ -389,10 +389,11 @@ describe('createPrivateUserMessageChannel', () => {
         (e) => e,
       )
 
+      // The answers rule is tunable down to zero, at which point nobody can fail it.
       expect(error.details).toMatchObject({
         context: PROFILE_INCOMPLETE_CODE,
         bio: true,
-        answers: true,
+        answers: MIN_ANSWERS_TO_MESSAGE > 0,
       })
     })
 

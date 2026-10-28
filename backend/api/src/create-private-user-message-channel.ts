@@ -18,7 +18,7 @@ import {
 } from 'common/moderation/first-message'
 import {filterDefined} from 'common/util/array'
 import * as admin from 'firebase-admin'
-import {uniq} from 'lodash'
+import {compact, uniq} from 'lodash'
 import {getProfile} from 'shared/profiles/supabase'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {updateUser} from 'shared/supabase/users'
@@ -107,8 +107,14 @@ export const createPrivateUserMessageChannel: APIHandler<
   if (!isStaff) {
     const issues = await ownProfileGateIssues(pg, creatorId)
     if (issues) {
+      // Only the parts that are actually missing: the answers rule can be tuned down to zero, and
+      // "at least 0 compatibility questions" is not something to tell anyone.
+      const needed = compact([
+        issues.bio && `a bio of at least ${MIN_BIO_CHARS_TO_MESSAGE} characters`,
+        issues.answers && `answers to at least ${MIN_ANSWERS_TO_MESSAGE} compatibility questions`,
+      ]).join(' and ')
       throw APIErrors.forbidden(
-        `Before you write to anyone, give them something to read: a bio of at least ${MIN_BIO_CHARS_TO_MESSAGE} characters and answers to at least ${MIN_ANSWERS_TO_MESSAGE} compatibility questions. Compass only works when both profiles have been written.`,
+        `Before you write to anyone, give them something to read: ${needed}. Compass only works when both profiles have been written.`,
         {context: PROFILE_INCOMPLETE_CODE, ...issues},
       )
     }

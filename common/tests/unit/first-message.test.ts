@@ -171,9 +171,9 @@ describe('profileGateIssues', () => {
       bio: true,
       answers: false,
     })
-    expect(profileGateIssues({bioChars: MIN_BIO_CHARS_TO_MESSAGE, answers: 0})).toEqual({
-      bio: false,
-      answers: true,
-    })
+    // The answers rule is tunable down to zero, at which point nobody can fail it.
+    expect(profileGateIssues({bioChars: MIN_BIO_CHARS_TO_MESSAGE, answers: 0})).toEqual(
+      MIN_ANSWERS_TO_MESSAGE > 0 ? {bio: false, answers: true} : null,
+    )
   })
 })

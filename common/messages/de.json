@@ -2407,5 +2407,15 @@
   "settings.donor_badge.label": "Unterstützer-Abzeichen anzeigen",
   "settings.donor_badge.description": "Wenn Sie Compass im vergangenen Jahr gespendet haben, zeigt Ihr Profil ein kleines Abzeichen mit dem Gesamtbetrag – als Dankeschön und als Anstoß für andere. Schalten Sie dies aus, um Ihre Unterstützung privat zu halten.",
   "settings.donor_badge.saved": "Gespeichert",
-  "settings.donor_badge.failed": "Konnte nicht gespeichert werden – noch einmal versuchen?"
+  "settings.donor_badge.failed": "Konnte nicht gespeichert werden – noch einmal versuchen?",
+  "signin.last_used": "Zuletzt verwendet",
+  "answers.comparison.you": "Du",
+  "answers.comparison.legend_accepts": "Akzeptierte Antworten",
+  "answers.comparison.notes": "Ihre Gedanken",
+  "answers.comparison.you_accept": "Du akzeptierst diese Antwort",
+  "answers.comparison.user_accepts": "{name} akzeptiert diese Antwort",
+  "answers.comparison.you_reject": "Du akzeptierst diese Antwort nicht",
+  "answers.comparison.user_rejects": "{name} akzeptiert diese Antwort nicht",
+  "answers.comparison.legend_answer": "Antwort",
+  "answers.comparison.legend_accepted_by_other": "Von der anderen Person akzeptiert"
 }

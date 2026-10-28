@@ -2406,5 +2406,15 @@
   "settings.donor_badge.label": "Afficher votre badge de soutien",
   "settings.donor_badge.description": "Si vous avez fait un don à Compass au cours de l’année écoulée, votre profil affiche un petit badge avec le total, en guise de remerciement et d’encouragement pour les autres. Désactivez-le pour garder votre soutien privé.",
   "settings.donor_badge.saved": "Enregistré",
-  "settings.donor_badge.failed": "Impossible d’enregistrer — réessayer ?"
+  "settings.donor_badge.failed": "Impossible d’enregistrer — réessayer ?",
+  "signin.last_used": "Dernière connexion",
+  "answers.comparison.you": "Vous",
+  "answers.comparison.legend_accepts": "Réponses acceptées",
+  "answers.comparison.notes": "Leurs réflexions",
+  "answers.comparison.you_accept": "Vous acceptez cette réponse",
+  "answers.comparison.user_accepts": "{name} accepte cette réponse",
+  "answers.comparison.you_reject": "Vous n'acceptez pas cette réponse",
+  "answers.comparison.user_rejects": "{name} n'accepte pas cette réponse",
+  "answers.comparison.legend_answer": "Réponse",
+  "answers.comparison.legend_accepted_by_other": "Acceptée par l'autre personne"
 }

@@ -48,7 +48,6 @@ import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 
 import {CompatibilityScoreBar} from '../widgets/compatible-badge'
-import {Subtitle} from '../widgets/profile-subtitle'
 import {
   AnswerCompatibilityQuestionButton,
   AnswerSkippedCompatibilityQuestionsButton,
@@ -63,7 +62,7 @@ import {
   IMPORTANCE_CHOICES,
   submitCompatibilityAnswer,
 } from './answer-compatibility-question-content'
-import {PreferredList, PreferredListNoComparison} from './compatibility-question-preferred-list'
+import {AnswerComparison} from './compatibility-question-preferred-list'
 import {PinQuestionButton} from './pin-question-button'
 
 const NUM_QUESTIONS_TO_SHOW = 8
@@ -938,78 +937,65 @@ function CompatibilityDisplay(props: {
         </>
       )}
       <Modal open={open} setOpen={setOpen}>
-        <Col className={MODAL_CLASS}>
-          <Subtitle>{question.question}</Subtitle>
-          <Col className={clsx('w-full gap-1', SCROLLABLE_MODAL_CLASS)}>
-            <div className="text-ink-600 items-center gap-2">
-              {t('answers.modal.preferred_of_user', "{name}'s preferred answers", {
-                name: shortenName(user1.name),
-              })}
-            </div>
-            <div className="text-ink-500 text-sm">
-              {t('answers.modal.user_marked', '{name} marked this as ', {
-                name: shortenName(user1.name),
-              })}
-              <span className="font-semibold">
-                <ImportanceDisplay importance={answer1.importance} />
-              </span>
-            </div>
-            {!answer2 &&
-              (isHiddenUntilYouAnswer ? (
-                <Col className="items-start gap-3">
-                  <div className="text-ink-500 text-sm">
-                    {t(
-                      'answers.display.answer_to_reveal',
-                      "Answer this prompt to see {name}'s answer",
-                      {
-                        name: shortenName(user1.name),
-                      },
-                    )}
-                  </div>
-                  <AnswerCompatibilityQuestionButton
-                    user={currentUser}
-                    otherQuestions={[question]}
-                    refreshCompatibilityAll={refreshAnswer2 ?? (() => {})}
-                    size="sm"
-                  />
-                </Col>
-              ) : (
-                <PreferredListNoComparison question={question} answer={answer1} />
-              ))}
-            {answer2 && (
-              <>
-                <PreferredList
-                  answer={answer1}
-                  question={question}
-                  comparedAnswer={answer2}
-                  comparedUser={user2}
-                  isComparedUser={isCurrentUser}
-                />
-
-                <div className="text-ink-600 mt-6 items-center gap-2">
-                  {isCurrentUser
-                    ? t('answers.modal.your_preferred', 'Your preferred answers')
-                    : t('answers.modal.preferred_of_user', "{name}'s preferred answers", {
-                        name: shortenName(user2.name),
-                      })}
-                </div>
+        <Col className={clsx(MODAL_CLASS, ANSWER_MODAL_PANEL_CLASS, '!items-stretch')}>
+          {/* Same header as the answer screen — category tag, then the prompt in the heading serif —
+              so comparing reads as the other half of answering. */}
+          <Col className="shrink-0 gap-2">
+            <Row className="items-center gap-2">
+              {answerCompatibility !== undefined && (
+                <span
+                  className={clsx(
+                    'font-dm-sans w-fit rounded-full border px-2 py-0.5 uppercase',
+                    answerCompatibility
+                      ? 'border-green-500/40 text-green-700'
+                      : 'border-red-500/40 text-red-700',
+                  )}
+                  style={{fontSize: '10px', letterSpacing: '0.12em'}}
+                >
+                  {answerCompatibility
+                    ? t('answers.compatible', 'Compatible')
+                    : t('answers.incompatible', 'Incompatible')}
+                </span>
+              )}
+              {question.category && (
+                <CompatibilityCategoryTag className="ml-auto" category={question.category} />
+              )}
+            </Row>
+            <h2 className="font-heading text-ink-900 text-lg leading-snug sm:text-xl">
+              {question.question}
+            </h2>
+          </Col>
+          <Col className={clsx('w-full min-h-0 flex-1 gap-1 pb-4 pr-1', SCROLLABLE_MODAL_CLASS)}>
+            {!answer2 && isHiddenUntilYouAnswer ? (
+              <Col className="items-start gap-3">
                 <div className="text-ink-500 text-sm">
-                  {isCurrentUser
-                    ? t('answers.modal.you_marked', 'You marked this as ')
-                    : t('answers.modal.user_marked', '{name} marked this as ', {
-                        name: shortenName(user2.name),
-                      })}
-                  <span className="font-semibold">
-                    <ImportanceDisplay importance={answer2.importance} />
-                  </span>
+                  {t(
+                    'answers.display.answer_to_reveal',
+                    "Answer this prompt to see {name}'s answer",
+                    {
+                      name: shortenName(user1.name),
+                    },
+                  )}
                 </div>
-                <PreferredList
-                  answer={answer2}
-                  question={question}
-                  comparedAnswer={answer1}
-                  comparedUser={user1}
+                <AnswerCompatibilityQuestionButton
+                  user={currentUser}
+                  otherQuestions={[question]}
+                  refreshCompatibilityAll={refreshAnswer2 ?? (() => {})}
+                  size="sm"
                 />
-              </>
+              </Col>
+            ) : (
+              <AnswerComparison
+                question={question}
+                sides={
+                  answer2
+                    ? [
+                        {name: shortenName(user2.name), answer: answer2, isYou: isCurrentUser},
+                        {name: shortenName(user1.name), answer: answer1},
+                      ]
+                    : [{name: shortenName(user1.name), answer: answer1}]
+                }
+              />
             )}
           </Col>
         </Col>

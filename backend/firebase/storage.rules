@@ -1,7 +1,13 @@
 rules_version = '2';
 
-// Public bucket. Everything in it is world-readable by design: profile photos, bio media and
+// Public bucket. Every object in it is world-readable by design: profile photos, bio media and
 // generated avatars are served straight from here to signed-out visitors.
+//
+// Readable one at a time, though, not enumerable. `allow read` is shorthand for `get` + `list`, and
+// `list` lets anyone walk the whole bucket folder by folder — including the photos of members who
+// are hidden, banned or members-only, whose profiles never hand out those URLs. `allow get` keeps
+// every existing download URL working and closes the directory listing. No client code lists
+// folders; the API does its sweeps on the admin SDK, which bypasses these rules.
 //
 // Writes are another matter. This used to be `allow write: if request.auth != null` with nothing
 // but a size cap, which meant any signed-in member could write *any* path in the bucket. Since the
@@ -11,7 +17,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     match /{allPaths=**} {
-      allow read;
+      allow get;
     }
 
     // `user-images/{uid}/...` — the only path clients write, see web/lib/firebase/storage.ts.

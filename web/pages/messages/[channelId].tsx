@@ -41,6 +41,7 @@ import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {AdminBadge, BannedBadge, UserAvatarAndBadge} from 'web/components/widgets/user-link'
 import {useHideBottomNavOnKeyboard} from 'web/hooks/use-hide-bottom-nav-on-keyboard'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
+import {useIsPageVisible} from 'web/hooks/use-page-visible'
 import {usePreserveScrollFromBottom} from 'web/hooks/use-preserve-scroll-from-bottom'
 import {
   usePrivateMessages,
@@ -327,9 +328,12 @@ export const PrivateChat = (props: {
     }
   }, [editor])
 
+  // Only mark the chat as read while it is actually on screen: messages that arrive in a background
+  // tab stay unread (and show in the tab title) until the user comes back to it.
+  const isPageVisible = useIsPageVisible()
   useEffect(() => {
-    setAsSeen(channelId)
-  }, [JSON.stringify(messages)])
+    if (isPageVisible) setAsSeen(channelId)
+  }, [JSON.stringify(messages), isPageVisible])
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 

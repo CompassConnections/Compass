@@ -6,7 +6,9 @@ import {usePathname} from 'next/navigation'
 import {createContext, ReactNode, useContext} from 'react'
 import {BiEnvelope, BiSolidEnvelope} from 'react-icons/bi'
 import {Row} from 'web/components/layout/row'
+import {useApiSubscription} from 'web/hooks/use-api-subscription'
 import {useUnseenPrivateMessageChannels} from 'web/hooks/use-private-messages'
+import {useUnseenCountTitle} from 'web/hooks/use-unseen-count-title'
 import {usePrivateUser} from 'web/hooks/use-user'
 
 // Shared unseen-channels state so the desktop sidebar icon and the mobile
@@ -19,7 +21,21 @@ export function UnseenMessageChannelsProvider(props: {children: ReactNode}) {
   const privateUser = usePrivateUser()
   // The hook is always called (no conditional hooks); `enabled` gates the fetch
   // so signed-out users don't hit the authed endpoint.
-  const {unseenChannels} = useUnseenPrivateMessageChannels(false, !!privateUser)
+  const {unseenChannels, refresh} = useUnseenPrivateMessageChannels(false, !!privateUser)
+
+  // Refetch as soon as a message arrives (the hook otherwise only refreshes on navigation), so the
+  // badge and the tab title update while the user sits on a page — or in a background tab.
+  useApiSubscription({
+    topics: ['private-user-messages/' + privateUser?.id],
+    onBroadcast: () => refresh(),
+    enabled: !!privateUser,
+  })
+
+  const {sendToBrowser} = privateUser
+    ? getNotificationDestinationsForUser(privateUser, 'new_message')
+    : {sendToBrowser: false}
+  useUnseenCountTitle(sendToBrowser ? unseenChannels.length : 0)
+
   return (
     <UnseenMessageChannelsContext.Provider value={unseenChannels}>
       {children}

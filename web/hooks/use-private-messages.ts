@@ -66,6 +66,7 @@ export function usePrivateMessages(channelId: number, limit: number, userId: str
 
 export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean, enabled = true) => {
   const pathName = usePathname()
+  const isPageVisible = useIsPageVisible()
   const lastSeenMessagesPageTime = useLastSeenMessagesPageTime() // ms for now
   const [lastSeenChatTimeByChannelId, setLastSeenChatTimeByChannelId] = useState<
     Record<number, Date> | undefined
@@ -106,6 +107,9 @@ export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean, ena
     })
   }
 
+  // Re-read the seen times on every fetch of the channels, not only when their count changes: a new
+  // message in a channel that is already listed leaves the count alone, and so does reading a chat —
+  // keyed on the count, either would leave a stale seen time and a wrong unread state.
   useEffect(() => {
     const newMessageRows = channels
       .filter(
@@ -113,7 +117,7 @@ export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean, ena
       )
       .map((m) => m.channel_id)
     if (newMessageRows?.length) fetchLastSeenTimesPerChannel(uniq(newMessageRows))
-  }, [channels?.length])
+  }, [data])
 
   useEffect(() => {
     if (
@@ -124,7 +128,8 @@ export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean, ena
     }
   }, [channels?.length])
 
-  if (!lastSeenChatTimeByChannelId) return {unseenChannels: [], lastSeenChatTimeByChannelId: {}}
+  if (!lastSeenChatTimeByChannelId)
+    return {unseenChannels: [], lastSeenChatTimeByChannelId: {}, refresh}
   const unseenChannels = channels.filter((channel) => {
     const channelId = channel.channel_id
     const notifyAfterTime = new Date(
@@ -136,10 +141,12 @@ export const useUnseenPrivateMessageChannels = (ignorePageSeenTime: boolean, ena
     return (
       new Date(channel.last_updated_time) > lastSeenChatTime &&
       (ignorePageSeenTime || tsToMillis(channel.last_updated_time) > lastSeenMessagesPageTime) &&
-      !pathName?.endsWith(`/messages/${channelId}`)
+      // The open chat is being read, unless its tab is in the background — then a new message in it
+      // still counts, so the tab title can flag it.
+      !(isPageVisible && pathName?.endsWith(`/messages/${channelId}`))
     )
   })
-  return {unseenChannels, lastSeenChatTimeByChannelId}
+  return {unseenChannels, lastSeenChatTimeByChannelId, refresh}
 }
 
 const useLastSeenMessagesPageTime = () => {

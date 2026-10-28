@@ -5,11 +5,10 @@ import {runScript} from './run-script'
 // distinct people.
 //
 // "Answered by a person" means that person's user id appears as a creator_id in
-// either answer table for the prompt:
-//   - compatibility_answers       (multiple-choice answers)
-//   - compatibility_answers_free  (free-response answers)
-// We count DISTINCT creator_id across both tables (a single person who answered
-// in both still counts once), then delete prompts whose count is < N. N defaults
+// compatibility_answers for the prompt. (When this script was written it also
+// counted compatibility_answers_free; that table was dropped in
+// backend/supabase/migrations/20261028_drop_compatibility_answers_free.sql.)
+// We count DISTINCT creator_id, then delete prompts whose count is < N. N defaults
 // to 1 (so the default deletes only prompts nobody answered); set THRESHOLD=k to
 // delete every prompt with fewer than k distinct answerers.
 //
@@ -43,14 +42,9 @@ runScript(async ({pg}) => {
        FROM compatibility_prompts p
        LEFT JOIN (
               SELECT question_id, count(DISTINCT creator_id) AS answerers
-                FROM (
+                FROM compatibility_answers
                        -- multiple_choice = -1 means the person skipped the prompt; don't count it
-                       SELECT question_id, creator_id FROM compatibility_answers
-                        WHERE multiple_choice IS DISTINCT FROM -1
-                       UNION
-                       SELECT question_id, creator_id FROM compatibility_answers_free
-                        WHERE multiple_choice IS DISTINCT FROM -1
-                     ) u
+               WHERE multiple_choice IS DISTINCT FROM -1
                GROUP BY question_id
             ) ac ON ac.question_id = p.id
       WHERE coalesce(ac.answerers, 0) <= $1

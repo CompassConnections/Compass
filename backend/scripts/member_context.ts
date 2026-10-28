@@ -117,10 +117,10 @@ runScript(async ({pg}) => {
   /**
    * Every prompt they answered, chosen option and all.
    *
-   * The prose lives in `compatibility_answers.explanation`, *not* in `compatibility_answers_free` —
-   * that table holds one row in all of prod and is dead. Reading it made every member look like they
-   * had written nothing, which is the opposite of true for most of them and exactly the evidence
-   * Contact #1 needs.
+   * The prose lives in `compatibility_answers.explanation` — *not* in the since-dropped
+   * `compatibility_answers_free`, which held one row in all of prod. Reading that table made every
+   * member look like they had written nothing, which is the opposite of true for most of them and
+   * exactly the evidence Contact #1 needs.
    *
    * `multiple_choice_options` maps label -> index and `multiple_choice` is that index, so the chosen
    * label is resolved on this side rather than in SQL.

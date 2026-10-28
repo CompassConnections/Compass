@@ -7,13 +7,7 @@ import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {api} from 'web/lib/api'
 import {useLocale} from 'web/lib/locale'
-import {
-  getAllQuestions,
-  getFreeResponseQuestions,
-  getFRQuestionsWithAnswerCount,
-  getUserAnswers,
-  getUserCompatibilityAnswers,
-} from 'web/lib/supabase/questions'
+import {getAllQuestions, getUserCompatibilityAnswers} from 'web/lib/supabase/questions'
 
 export const useQuestions = () => {
   const [questions, setQuestions] = useState<Row<'compatibility_prompts'>[]>([])
@@ -21,34 +15,6 @@ export const useQuestions = () => {
     getAllQuestions().then(setQuestions)
   }, [])
   return questions
-}
-
-export const useFreeResponseQuestions = () => {
-  const [questions, setQuestions] = useState<Row<'compatibility_prompts'>[]>([])
-  useEffect(() => {
-    getFreeResponseQuestions().then(setQuestions)
-  }, [])
-  return questions
-}
-
-export const useUserAnswers = (userId: string | undefined) => {
-  const [answers, setAnswers] = usePersistentInMemoryState<Row<'compatibility_answers_free'>[]>(
-    [],
-    `answers-${userId}`,
-  )
-
-  useEffect(() => {
-    if (userId) {
-      getUserAnswers(userId).then(setAnswers)
-    }
-  }, [userId])
-
-  async function refreshAnswers() {
-    if (!userId) return
-    getUserAnswers(userId).then(setAnswers)
-  }
-
-  return {refreshAnswers, answers}
 }
 
 export const useUserCompatibilityAnswers = (userId: string | undefined) => {
@@ -75,21 +41,6 @@ export const useUserCompatibilityAnswers = (userId: string | undefined) => {
   }
 
   return {refreshCompatibilityAnswers, compatibilityAnswers}
-}
-
-export const useFRQuestionsWithAnswerCount = () => {
-  const [FRquestionsWithCount, setFRQuestionsWithCount] = usePersistentInMemoryState<any>(
-    [],
-    `fr-questions-with-count`,
-  )
-
-  useEffect(() => {
-    getFRQuestionsWithAnswerCount().then((questions) => {
-      setFRQuestionsWithCount(questions)
-    })
-  }, [])
-
-  return FRquestionsWithCount as QuestionWithStats[]
 }
 
 export const useCompatibilityQuestionsWithAnswerCount = () => {

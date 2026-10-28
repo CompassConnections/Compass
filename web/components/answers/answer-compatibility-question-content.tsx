@@ -5,7 +5,7 @@ import {QuestionWithStats} from 'common/api/types'
 import {Row as rowFor} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {shortenNumber} from 'common/util/format'
-import {sortBy} from 'lodash'
+import {omit, sortBy} from 'lodash'
 import {Fragment, useId, useState} from 'react'
 import toast from 'react-hot-toast'
 import {PinQuestionButton} from 'web/components/answers/pin-question-button'
@@ -21,8 +21,6 @@ import {Tooltip} from 'web/components/widgets/tooltip'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
-
-import {filterKeys} from '../questions-form'
 
 export type CompatibilityAnswerSubmitType = Omit<
   rowFor<'compatibility_answers'>,
@@ -56,9 +54,7 @@ export const IMPORTANCE_DISPLAY_COLORS: ImportanceColorsType = {
 
 export const submitCompatibilityAnswer = async (newAnswer: CompatibilityAnswerSubmitType) => {
   if (!newAnswer) return
-  const input = {
-    ...filterKeys(newAnswer, (key, _) => !['id', 'created_time'].includes(key)),
-  } as CompatibilityAnswerSubmitType
+  const input = omit(newAnswer, ['id', 'created_time']) as CompatibilityAnswerSubmitType
 
   try {
     await api('set-compatibility-answer', {

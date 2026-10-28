@@ -41,8 +41,8 @@ export const deleteCompatibilityPrompt: APIHandler<'delete-compatibility-prompt'
     )
   }
 
-  // Cascades to compatibility_answers, compatibility_answers_free, compatibility_prompts_translations
-  // and compatibility_prompts_pinned — the reason this is a plain DELETE and not a hand-rolled cleanup.
+  // Cascades to compatibility_answers, compatibility_prompts_translations and
+  // compatibility_prompts_pinned — the reason this is a plain DELETE and not a hand-rolled cleanup.
   await pg.none(`delete from compatibility_prompts where id = $(questionId)`, {questionId})
 
   return {question: current.question, removedAnswers: answerCount}

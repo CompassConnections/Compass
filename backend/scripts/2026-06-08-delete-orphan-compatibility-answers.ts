@@ -4,9 +4,10 @@ import {runScript} from './run-script'
 // Deletes "orphaned" compatibility answers — rows whose `question_id` points at
 // a compatibility_prompts row that no longer exists. These accumulated because
 // neither answer table had a foreign key on question_id, so deleting a prompt
-// left its answers behind. Covers both answer tables:
+// left its answers behind. Covers the answer table:
 //   - compatibility_answers       (multiple-choice answers)
-//   - compatibility_answers_free  (free-response answers)
+// (It used to cover compatibility_answers_free too; that table was dropped in
+// backend/supabase/migrations/20261028_drop_compatibility_answers_free.sql.)
 //
 // The companion migration
 //   supabase/migrations/20250101005800_add_compatibility_answers_question_fk.sql
@@ -18,7 +19,7 @@ import {runScript} from './run-script'
 // Dry-run by default: set DELETE=1 in the environment to actually delete.
 // Safe to re-run; idempotent.
 
-const TABLES = ['compatibility_answers', 'compatibility_answers_free'] as const
+const TABLES = ['compatibility_answers'] as const
 
 runScript(async ({pg}) => {
   const dryRun = process.env.DELETE !== '1'

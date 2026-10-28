@@ -1,7 +1,7 @@
 import {FilterFields} from 'common/filters'
 import {Row, run} from 'common/supabase/utils'
 import {removeNullOrUndefinedProps} from 'common/util/object'
-import {filterKeys} from 'web/components/questions-form'
+import {omit} from 'lodash'
 import {api} from 'web/lib/api'
 import {track} from 'web/lib/service/analytics'
 import {db} from 'web/lib/supabase/db'
@@ -34,13 +34,13 @@ export const submitBookmarkedSearch = async (
     search_filters: removeNullOrUndefinedProps(filters),
     location: locationFilterProps?.location ? locationFilterProps : null,
   }
-  const props = {
-    ...filterKeys(
-      row,
-      (key, _) =>
-        !['id', 'created_time', 'last_notified_at', 'last_checked_at', 'creator_id'].includes(key),
-    ),
-  } as BookmarkedSearchSubmitType
+  const props = omit(row, [
+    'id',
+    'created_time',
+    'last_notified_at',
+    'last_checked_at',
+    'creator_id',
+  ]) as BookmarkedSearchSubmitType
 
   await api('create-bookmarked-search', props)
 }

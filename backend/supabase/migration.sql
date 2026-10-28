@@ -13,7 +13,6 @@ BEGIN;
 \i backend/supabase/profile_comments.sql
 \i backend/supabase/compatibility_prompts.sql
 \i backend/supabase/compatibility_answers.sql
-\i backend/supabase/compatibility_answers_free.sql
 \i backend/supabase/compatibility_scores.sql
 \i backend/supabase/profile_likes.sql
 \i backend/supabase/profile_ships.sql
@@ -92,4 +91,5 @@ BEGIN;
 \i backend/supabase/migrations/20261023_compatibility_scores_range.sql
 \i backend/supabase/migrations/20261024_add_banned_networks.sql
 \i backend/supabase/migrations/20261028_add_donations.sql
+\i backend/supabase/migrations/20261028_drop_compatibility_answers_free.sql
 COMMIT;

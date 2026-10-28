@@ -1541,6 +1541,7 @@
   "profile_grid.end_hint": "Assouplissez un filtre pour voir plus de monde, ou soyez prévenu·e quand quelqu'un de nouveau correspond.",
   "profile_grid.relax_refinements": "Votre recherche est peut-être trop restrictive. Essayez de retirer certains des filtres secondaires ci-dessous : ils écartent beaucoup de personnes qui pourraient tout de même très bien vous correspondre.",
   "profile_grid.relax_core": "Votre recherche est peut-être trop restrictive. Essayez une tranche d'âge plus large ou une zone plus étendue.",
+  "profile_grid.relax_radius": "Les membres sont encore dispersés, et vous ne cherchez que dans un rayon de {distance}. Essayez de l'élargir à {suggested} ou plus.",
   "profile_grid.try_removing": "Essayez de retirer",
   "profile_grid.rest_of_search": "Reste de votre recherche",
   "profile_grid.profile_hidden_short": "Vous ne verrez plus {name} dans vos résultats de recherche.",

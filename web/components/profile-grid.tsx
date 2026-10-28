@@ -4,6 +4,7 @@ import {INVERTED_DIET_CHOICES, INVERTED_LANGUAGE_CHOICES} from 'common/choices'
 import {FilterFields} from 'common/filters'
 import {formatFilters, locationType} from 'common/filters-format'
 import {Gender} from 'common/gender'
+import {formatDistance} from 'common/measurement-utils'
 import {isFullyBanned} from 'common/moderation/ban'
 import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Profile} from 'common/profiles/profile'
@@ -89,6 +90,12 @@ type CardSizeConfig = {
 }
 
 const MIN_BIO_LINES = 2
+
+/**
+ * Below this search radius, the empty state singles out distance as the thing to widen first. The
+ * community is still spread thin, so a city-sized radius is the most common reason for zero results.
+ */
+const NARROW_RADIUS_MILES = 250
 
 /**
  * The filters that define who someone is looking for at all: age, place, gender, the kind of
@@ -348,6 +355,19 @@ export const ProfileGrid = (props: {
     return difference(searchSummary, coreSummary)
   }, [searchSummary, filters, locationFilterProps, choicesIdsToLabels, measurementSystem, t])
   const coreSummary = difference(searchSummary, relaxableSummary)
+  const isRadiusNarrow =
+    !!locationFilterProps?.location && locationFilterProps.radius < NARROW_RADIUS_MILES
+  // Shown both when nothing matched and at the end of the results.
+  const relaxRadiusHint =
+    isRadiusNarrow &&
+    t(
+      'profile_grid.relax_radius',
+      "Members are still spread out, and you're only searching within {distance}. Try widening it to {suggested} or more.",
+      {
+        distance: formatDistance(locationFilterProps.radius, measurementSystem, 10),
+        suggested: formatDistance(NARROW_RADIUS_MILES, measurementSystem, 10),
+      },
+    )
 
   const other_profiles = profiles.filter((profile) => profile.user_id !== user?.id)
 
@@ -426,6 +446,7 @@ export const ProfileGrid = (props: {
           <p className="font-medium text-ink-900">
             {t('profile_grid.end_title', "You've seen everyone matching this search")}
           </p>
+          {isRadiusNarrow && <p className="max-w-sm text-sm text-ink-600">{relaxRadiusHint}</p>}
           <p className="max-w-sm text-sm text-ink-500">
             {t(
               'profile_grid.end_hint',
@@ -470,6 +491,7 @@ export const ProfileGrid = (props: {
                     'Your search may be too narrow. Try a wider age range or a larger area.',
                   )}
             </p>
+            {isRadiusNarrow && <p className="max-w-md text-ink-600">{relaxRadiusHint}</p>}
             {relaxableSummary.length > 0 && (
               <Col className="mt-1 max-w-md gap-2 items-center">
                 <div className="text-xs uppercase tracking-wide text-ink-400">

@@ -1542,6 +1542,7 @@
   "profile_grid.end_hint": "Lockere einen Filter, um mehr Leute zu sehen, oder lass dich benachrichtigen, sobald jemand Neues passt.",
   "profile_grid.relax_refinements": "Deine Suche ist vielleicht zu eng. Entferne einige der zusätzlichen Filter unten – sie schließen viele Menschen aus, die trotzdem gut zu dir passen könnten.",
   "profile_grid.relax_core": "Deine Suche ist vielleicht zu eng. Versuche eine größere Altersspanne oder einen größeren Umkreis.",
+  "profile_grid.relax_radius": "Die Mitglieder sind noch weit verstreut, und du suchst nur im Umkreis von {distance}. Versuche, ihn auf {suggested} oder mehr zu erweitern.",
   "profile_grid.try_removing": "Versuche zu entfernen",
   "profile_grid.rest_of_search": "Rest deiner Suche",
   "profile_grid.profile_hidden_short": "Du wirst {name} nicht mehr in deinen Suchergebnissen sehen.",

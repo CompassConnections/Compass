@@ -114,3 +114,43 @@ export const bannedNetworkSignupDiscordMessage = (
     ? `Same browser as a confirmed abuser. Lift the ban if it turns out to be a shared computer.`
     : `They can browse but not message anyone until someone lifts the hold. ` +
       `Addresses are shared and reassigned — compare the two profiles before deciding.`)
+
+/**
+ * The #reports post when a first message is put on hold for being a copy of one the sender already
+ * sent to someone else. The similarity is shown so a reviewer can tell a verbatim paste (the usual
+ * case) from a borderline one worth reading before deciding.
+ */
+export const duplicateOpenerDiscordMessage = (
+  member: DiscordMember,
+  recipient: DiscordMember,
+  match: {similarity: number; earlierOpeners: number},
+): string =>
+  `🔨 **Auto-hold: copy-pasted opener** 🔨\n` +
+  `**User:** ${profileLink(member)} (@${member.username})\n` +
+  `**Reason:** Their first message to ${profileLink(recipient)} is ` +
+  `${Math.round(match.similarity * 100)}% identical to one of the ${match.earlierOpeners} ` +
+  `conversations they opened recently. The account is on hold until someone looks.`
+
+/**
+ * The #reports post for what the model review made of a first message. A hold names the sender
+ * so the review queue can act; a flag is a note next to a message that was delivered anyway; in
+ * shadow mode nothing was applied and the post says so, which is how the mode earns trust.
+ */
+export const openerReviewDiscordMessage = (
+  member: DiscordMember,
+  recipient: DiscordMember,
+  review: {action: 'hold' | 'flag' | 'reject'; reason: string; shadow: boolean},
+): string => {
+  const heading =
+    review.action === 'hold'
+      ? '🔨 **Auto-hold: first message flagged by review**'
+      : review.action === 'reject'
+        ? '↩️ **First message sent back to the sender**'
+        : '👀 **First message delivered, worth a look**'
+  return (
+    `${review.shadow ? '(shadow, nothing applied) ' : ''}${heading}\n` +
+    `**User:** ${profileLink(member)} (@${member.username})\n` +
+    `**To:** ${profileLink(recipient)}\n` +
+    `**Review:** ${review.reason || '(no reason given)'}`
+  )
+}

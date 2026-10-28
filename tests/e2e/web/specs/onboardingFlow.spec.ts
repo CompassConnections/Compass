@@ -9,6 +9,7 @@ test.describe('when given valid input', () => {
     await app.registerWithEmail(onboardingAccount)
     await app.onboarding.clickContinueButton() //First continue
     await app.onboarding.clickContinueButton() //Second continue
+    await app.onboarding.clickContinueButton() //Third continue (the house rules screen follows)
     await app.onboarding.clickGetStartedButton()
     await app.signUp.fillDisplayName(onboardingAccount.display_name)
     await app.signUp.fillUsername(onboardingAccount.username)
@@ -325,6 +326,7 @@ test.describe('when given valid input', () => {
       await app.onboarding.clickBackButton()
       await app.onboarding.clickContinueButton()
       await app.onboarding.clickContinueButton()
+      await app.onboarding.clickContinueButton()
       await app.onboarding.clickGetStartedButton()
       await app.signUp.fillDisplayName(fakerAccount.display_name)
       await app.signUp.fillUsername(fakerAccount.username)
@@ -348,6 +350,7 @@ test.describe('when given valid input', () => {
       await app.onboarding.clickContinueButton()
       await app.onboarding.clickContinueButton()
       await app.onboarding.clickBackButton()
+      await app.onboarding.clickContinueButton()
       await app.onboarding.clickContinueButton()
       await app.onboarding.clickGetStartedButton()
       await app.signUp.fillDisplayName(fakerAccount.display_name)

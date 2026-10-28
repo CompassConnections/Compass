@@ -22,7 +22,8 @@
     "pg-promise": "12.6.1",
     "pg-query-stream": "4.12.0",
     "posthog-node": "4.11.0",
-    "string-similarity": "4.0.4"
+    "string-similarity": "4.0.4",
+    "zod": "^3.25"
   },
   "devDependencies": {
     "@types/jest": "^29",

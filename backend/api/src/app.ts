@@ -102,6 +102,7 @@ import {getOutreachStats} from './get-outreach-stats'
 import {getPrivateUserAdmin} from './get-private-user-admin'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfileFeed} from './get-profile-feed'
+import {getProfileGate} from './get-profile-gate'
 import {getProfiles} from './get-profiles'
 import {getReferralLeaderboardHandler} from './get-referral-leaderboard'
 import {getReferralTreeHandler} from './get-referral-tree'
@@ -730,6 +731,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'update-spotlight': updateSpotlight,
   'get-profile-answers': getProfileAnswers,
   'get-profile-feed': getProfileFeed,
+  'get-profile-gate': getProfileGate,
   'get-countries': getCountries,
   'get-profiles': getProfiles,
   'get-supabase-token': getSupabaseToken,

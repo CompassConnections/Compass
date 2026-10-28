@@ -1,6 +1,16 @@
-import {declineReason, fetchReviewAccountRow, ReviewAccountRow, toReviewAccountFacts,} from 'api/request-review-prompt'
+import {
+  declineReason,
+  fetchReviewAccountRow,
+  ReviewAccountRow,
+  toReviewAccountFacts,
+} from 'api/request-review-prompt'
 import {countBy, sortBy} from 'lodash'
-import {evaluateReviewPrompt, REVIEW_MOMENTS, ReviewMoment, ReviewTrigger,} from 'common/reviews/prompt'
+import {
+  evaluateReviewPrompt,
+  REVIEW_MOMENTS,
+  ReviewMoment,
+  ReviewTrigger,
+} from 'common/reviews/prompt'
 import {runScript} from './run-script'
 
 // READ-ONLY dry run of `request-review-prompt`. For every member, asks: "if their app called the

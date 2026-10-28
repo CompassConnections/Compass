@@ -18,12 +18,17 @@ import {FaFlag, FaRegCopy, FaUserFriends, FaUserMinus} from 'react-icons/fa'
 import {GiSpeakerOff} from 'react-icons/gi'
 import {BackButton} from 'web/components/back-button'
 import {ChatMessageItem, SystemChatMessageItem} from 'web/components/chat/chat-message'
+import {PendingOpenerBubble} from 'web/components/chat/pending-opener'
 import {CommentInputTextArea} from 'web/components/comments/comment-input'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
 import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
-import {AccountOnHoldNotice} from 'web/components/moderation/account-on-hold'
+import {
+  AccountOnHoldNotice,
+  isAutoBanUnderReviewError,
+} from 'web/components/moderation/account-on-hold'
+import {isFirstMessageRejectedError} from 'web/components/moderation/profile-incomplete'
 import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
 import {PageBase} from 'web/components/page-base'
 import {ReportUser} from 'web/components/profile/report-user'
@@ -48,6 +53,7 @@ import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {useVisualViewportHeight} from 'web/hooks/use-visual-viewport-height'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
+import {clearPendingOpener, usePendingOpener} from 'web/lib/pending-openers'
 import {track} from 'web/lib/service/analytics'
 import {useGroupedMessages, usePaginatedScrollingMessages} from 'web/lib/supabase/chat-messages'
 import {copyToClipboard} from 'web/lib/util/copy'
@@ -266,6 +272,15 @@ export const PrivateChat = (props: {
   const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(null)
   // console.log('editingMessage', editingMessage)
 
+  // A first message sent from a profile, still being checked by the API (or just refused). Drawn
+  // below the stored messages until the API answers — see `web/lib/pending-openers.ts`.
+  const pendingOpener = usePendingOpener(channelId)
+  useEffect(() => {
+    if (pendingOpener?.status !== 'sent') return
+    // Accepted: the stored message replaces the pending bubble once it is fetched.
+    fetchMessages().then(() => clearPendingOpener(channelId))
+  }, [pendingOpener?.status, channelId])
+
   const editor = useTextEditor({
     key: `private-message-${channelId}-${user.id}`,
     size: 'sm',
@@ -331,13 +346,20 @@ export const PrivateChat = (props: {
           fetchMessages()
         }
       } catch (e) {
+        // A refused first message carries its reason — too short, nothing in it about the person,
+        // or the account was just put on hold for a copy-pasted opener — and that reason is the
+        // one thing the sender needs to read. Everything else gets the generic line.
+        const explained = isFirstMessageRejectedError(e) || isAutoBanUnderReviewError(e)
         toast.error(
-          editingMessage
-            ? t('messages.toast.edit_failed', "Couldn't edit message.")
-            : t(
-                'messages.toast.send_failed',
-                "Couldn't send message. Please try again later or contact support if the problem persists.",
-              ),
+          explained
+            ? (e as Error).message
+            : editingMessage
+              ? t('messages.toast.edit_failed', "Couldn't edit message.")
+              : t(
+                  'messages.toast.send_failed',
+                  "Couldn't send message. Please try again later or contact support if the problem persists.",
+                ),
+          explained ? {duration: 12000} : undefined,
         )
         console.error(e)
       } finally {
@@ -625,7 +647,17 @@ export const PrivateChat = (props: {
                 })}
               </>
             )}
-            {messages && messages.length === 0 && (
+            {pendingOpener && pendingOpener.status !== 'sent' && messages && (
+              <PendingOpenerBubble
+                pending={pendingOpener}
+                onEdit={() => {
+                  editor?.commands.setContent(pendingOpener.content)
+                  editor?.commands.focus('end')
+                  clearPendingOpener(channelId)
+                }}
+              />
+            )}
+            {messages && messages.length === 0 && !pendingOpener && (
               <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
                 <p className="text-ink-500 text-sm">{t('messages.empty', 'No messages yet.')}</p>
                 <p className="text-ink-300 text-xs mt-1">

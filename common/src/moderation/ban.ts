@@ -1,6 +1,8 @@
 // Max number of new conversations a user may start within a rolling 24h window.
 // Creating one more than this auto-bans them for suspected spam (see
-// `backend/api/src/create-private-user-message-channel.ts`).
+// `backend/api/src/create-private-user-message-channel.ts`). The same `auto_rate_limit` hold is
+// placed on a first message that copies one the sender already sent to someone else (see
+// `backend/api/src/helpers/first-message.ts`).
 export const MAX_NEW_CHANNELS_PER_DAY = 10
 
 // Same, over a short rolling window of BURST_WINDOW_MINUTES. Catches bursts early: a spammer

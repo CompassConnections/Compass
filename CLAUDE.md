@@ -129,7 +129,8 @@ Database: [`docs/database-schema.md`](docs/database-schema.md),
 Releases: [`docs/releases.md`](docs/releases.md) — web, Android and iOS share one version number
 (root `package.json` `version`, `versionName`, `MARKETING_VERSION`); the per-store build counters do not.
 Cross-cutting: [`docs/compatibility-questions.md`](docs/compatibility-questions.md) (how to write
-compatibility prompts), [`docs/feed.md`](docs/feed.md),
+compatibility prompts), [`docs/first-messages.md`](docs/first-messages.md) (what a first message
+must meet, and how it is enforced), [`docs/feed.md`](docs/feed.md),
 [`docs/internationalization.md`](docs/internationalization.md),
 [`docs/profile-fields.md`](docs/profile-fields.md), [`docs/testing.md`](docs/testing.md),
 [`docs/logging-monitoring.md`](docs/logging-monitoring.md),

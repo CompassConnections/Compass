@@ -19,7 +19,7 @@ export const IS_DEV = ENV === 'dev'
 export const ENV_CONFIG = IS_PROD ? PROD_CONFIG : DEV_CONFIG
 
 export function isAdminId(id: string) {
-  if (IS_LOCAL) return true
+  // if (IS_LOCAL) return true
   return isAdminUserId(id)
 }
 

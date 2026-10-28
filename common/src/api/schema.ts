@@ -24,6 +24,7 @@ import {ChatMessage} from 'common/chat-message'
 import {COMMENT_TYPES} from 'common/comment'
 import {FeedItem, MAX_FEED_LIMIT} from 'common/feed/feed'
 import {BAN_REASONS} from 'common/moderation/ban'
+import {ProfileGateIssues} from 'common/moderation/first-message'
 import {Notification} from 'common/notifications'
 import {
   MAX_NEXT_ACTION_LENGTH,
@@ -714,6 +715,20 @@ export const API = (_apiTypeCheck = {
       answers: Row<'compatibility_answers'>[]
     },
     summary: 'Get compatibility answers for a profile',
+    tag: 'Compatibility',
+  },
+  /**
+   * Whether the caller may start a conversation yet, and if not what their own profile is missing.
+   * Asked by the message composer the moment it opens; the floor itself is enforced again in
+   * `create-private-user-message-channel`. See docs/first-messages.md.
+   */
+  'get-profile-gate': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as {issues: ProfileGateIssues | null},
+    summary: 'What the signed-in member still has to fill in before starting a conversation',
     tag: 'Compatibility',
   },
   'get-compatibility-questions': {

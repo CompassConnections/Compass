@@ -6,6 +6,7 @@ import {ComponentType, ReactNode, SVGProps, useEffect, useRef} from 'react'
 import {FaDiscord, FaGithub} from 'react-icons/fa'
 import {ProfileSpotlights} from 'web/components/home/profile-spotlights'
 import {SearchDemo} from 'web/components/home/search-demo'
+import {HouseRulesList} from 'web/components/house-rules'
 import {SignUpButton} from 'web/components/nav/sidebar'
 import {MemberGrowth} from 'web/components/widgets/charts'
 import {DistRow} from 'web/components/widgets/stat-distribution'
@@ -288,8 +289,8 @@ function WhosHere() {
             {/* "No generic adjectives." was one of six one-line mic-drops across the two pages. The
                 sentence that follows is the demonstration; announcing it first was the tell. */}
             {t(
-              'home.who.intro.v2',
-              'Our members tend to be between 25 and 45, highly educated, secular, and more plant-based than average. Most are looking for friends or a long-term partner.',
+              'home.who.intro.v3',
+              'Our members tend to be between 25 and 45, highly educated and secular, and most are effective altruists, rationalists or vegans. Most are looking for friends or a long-term partner.',
             )}
           </p>
           <Link
@@ -423,6 +424,18 @@ function ScoreDiagram() {
  * it, which is describing exactly this. Both messages and the counts are illustrative copy, not a real
  * conversation — nothing here is a claim about who sent what.
  */
+/**
+ * The four house rules as the right-hand card of the "who this is for" claim. Same frame as
+ * `MessageComposerMock` and the other right-hand cards, so the column keeps one edge.
+ */
+function HouseRulesCard() {
+  return (
+    <div className="mt-8 rounded-xl bg-canvas-50 ring-1 ring-canvas-200 p-5 sm:p-6 lg:mt-0 lg:w-96 lg:flex-shrink-0">
+      <HouseRulesList dense />
+    </div>
+  )
+}
+
 function MessageComposerMock() {
   const t = useT()
 
@@ -951,6 +964,20 @@ export function LoggedOutHome() {
               {t('home.features.title.v4', 'What to know before you sign up.')}
             </h2>
             <div className="grid gap-4 sm:gap-5">
+              {/* First, before any mechanism: who this is for. It is the one claim here that can
+                  make a visitor leave, and it is placed where it does that before they sign up
+                  rather than after they have written to three people. The rules card beside it is
+                  the same list the onboarding and /about show, so the promise is identical
+                  everywhere it is made. */}
+              <ClaimBlock
+                title={t('home.rules.title', 'Compass is for people who read.')}
+                visual={<HouseRulesCard />}
+              >
+                {t(
+                  'home.rules.text',
+                  'People who want a deep connection and are willing to work for it: who write down what they value and what they need, who read a profile before writing to the person, and who would rather have one real conversation than twenty openers. Most members are effective altruists, rationalists or vegans. If that is not you, there are faster apps.',
+                )}
+              </ClaimBlock>
               <ClaimBlock
                 title={t('home.profile.title', 'A profile takes twenty minutes to write.')}
                 visual={<FieldChips />}
@@ -991,8 +1018,8 @@ export function LoggedOutHome() {
                 visual={<MessageComposerMock />}
               >
                 {t(
-                  'home.message.text.v2',
-                  'To open a conversation you have to say something about the person you’re writing to, and the composer won’t send until you do. You also need a verified email before your first message.',
+                  'home.message.text.v3',
+                  'To open a conversation you have to say something about the person you’re writing to: the composer refuses a first message that mentions nothing from their profile, and a copy-pasted opener puts the account on hold. You also need a verified email, a bio and a few compatibility answers of your own first.',
                 )}
               </ClaimBlock>
             </div>

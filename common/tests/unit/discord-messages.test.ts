@@ -1,4 +1,9 @@
-import {newMemberDiscordMessage, newProposalDiscordMessage} from 'common/discord/messages'
+import {
+  duplicateOpenerDiscordMessage,
+  newMemberDiscordMessage,
+  newProposalDiscordMessage,
+  openerReviewDiscordMessage,
+} from 'common/discord/messages'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 
 const alice = {name: 'Alice', username: 'alice'}
@@ -61,5 +66,39 @@ describe('newProposalDiscordMessage', () => {
 
   it('omits an empty description entirely', () => {
     expect(newProposalDiscordMessage({...proposal, description: doc('')}, null)).not.toContain('\n')
+  })
+})
+
+describe('duplicateOpenerDiscordMessage', () => {
+  it('names both people and says how close the match was', () => {
+    const message = duplicateOpenerDiscordMessage(alice, bob, {
+      similarity: 0.874,
+      earlierOpeners: 6,
+    })
+    expect(message).toContain('Auto-hold: copy-pasted opener')
+    expect(message).toContain(`[**Alice**](${DEPLOYED_WEB_URL}/alice) (@alice)`)
+    expect(message).toContain(`[**Bob**](${DEPLOYED_WEB_URL}/bob)`)
+    expect(message).toContain('87% identical to one of the 6 conversations')
+  })
+})
+
+describe('openerReviewDiscordMessage', () => {
+  it('posts a hold with both people and the model’s reason', () => {
+    const message = openerReviewDiscordMessage(alice, bob, {
+      action: 'hold',
+      reason: 'Asks to move to Telegram.',
+      shadow: false,
+    })
+    expect(message).toContain('Auto-hold')
+    expect(message).toContain(`[**Alice**](${DEPLOYED_WEB_URL}/alice) (@alice)`)
+    expect(message).toContain(`**To:** [**Bob**](${DEPLOYED_WEB_URL}/bob)`)
+    expect(message).toContain('**Review:** Asks to move to Telegram.')
+    expect(message).not.toContain('shadow')
+  })
+
+  it('says when nothing was applied', () => {
+    expect(
+      openerReviewDiscordMessage(alice, bob, {action: 'flag', reason: '', shadow: true}),
+    ).toMatch(/^\(shadow, nothing applied\) 👀/)
   })
 })

@@ -10,6 +10,11 @@ import {
   MAX_NEW_CHANNELS_PER_BURST,
   MAX_NEW_CHANNELS_PER_DAY,
 } from 'common/moderation/ban'
+import {
+  MIN_ANSWERS_TO_MESSAGE,
+  MIN_BIO_CHARS_TO_MESSAGE,
+  PROFILE_INCOMPLETE_CODE,
+} from 'common/moderation/first-message'
 import {sqlMatch} from 'common/test-utils'
 import * as utilArrayModules from 'common/util/array'
 import * as admin from 'firebase-admin'
@@ -34,6 +39,16 @@ jest.mock('shared/utils')
 jest.mock('firebase-admin', () => ({
   auth: jest.fn(),
 }))
+
+// The profile-gate row for a sender who has done their part. `oneOrNone` serves three different
+// queries in this handler (the recipient's profile, the existing-channel lookup, and this), so the
+// fake answers by SQL rather than by call order.
+const completeProfile = {
+  bio_chars: `${MIN_BIO_CHARS_TO_MESSAGE}`,
+  answers: `${MIN_ANSWERS_TO_MESSAGE}`,
+}
+const oneOrNoneWith = (ownProfile: unknown, fallback: unknown) =>
+  jest.fn((sql: string) => Promise.resolve(sql.includes('bio_chars') ? ownProfile : fallback))
 
 describe('createPrivateUserMessageChannel', () => {
   let mockPg = {} as any
@@ -131,7 +146,7 @@ describe('createPrivateUserMessageChannel', () => {
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)
       ;(utilArrayModules.filterDefined as jest.Mock).mockReturnValue(mockPrivateUsers)
-      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(false)
+      mockPg.oneOrNone = oneOrNoneWith(completeProfile, false)
       // First pg.one is the recent-channel count (under limit), second is the channel insert.
       ;(mockPg.one as jest.Mock)
         .mockResolvedValueOnce({burst_count: '0', day_count: '0'})
@@ -189,7 +204,7 @@ describe('createPrivateUserMessageChannel', () => {
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockCreator)
       ;(utilArrayModules.filterDefined as jest.Mock).mockReturnValue(mockPrivateUsers)
       // getProfile + no-existing-channel lookups both return falsy.
-      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(null)
+      mockPg.oneOrNone = oneOrNoneWith(completeProfile, null)
     })
 
     it('bans the user and notifies admins on the conversation past the daily limit', async () => {
@@ -315,6 +330,92 @@ describe('createPrivateUserMessageChannel', () => {
       expect(updateUser).not.toHaveBeenCalled()
       expect(sendDiscordMessage).not.toHaveBeenCalled()
       expect(privateMessageModules.addUsersToPrivateMessageChannel).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('the profile gate', () => {
+    const mockBody = {userIds: ['123']}
+    const mockAuth = {uid: '321'} as AuthedUser
+    const mockReq = {} as any
+    const mockPrivateUsers = [
+      {id: '123', blockedUserIds: [], blockedByUserIds: []},
+      {id: '321', blockedUserIds: [], blockedByUserIds: []},
+    ]
+
+    beforeEach(() => {
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue({id: '321', username: 'newbie'})
+      ;(utilArrayModules.filterDefined as jest.Mock).mockReturnValue(mockPrivateUsers)
+    })
+
+    it('refuses a sender with no bio, naming what is missing', async () => {
+      mockPg.oneOrNone = oneOrNoneWith({bio_chars: '0', answers: `${MIN_ANSWERS_TO_MESSAGE}`}, null)
+
+      const error = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq).catch(
+        (e) => e,
+      )
+
+      expect(error.code).toBe(403)
+      expect(error.message).toContain(`bio of at least ${MIN_BIO_CHARS_TO_MESSAGE} characters`)
+      expect(error.details).toMatchObject({
+        context: PROFILE_INCOMPLETE_CODE,
+        bio: true,
+        answers: false,
+      })
+      expect(mockPg.one).not.toHaveBeenCalled()
+      expect(privateMessageModules.addUsersToPrivateMessageChannel).not.toHaveBeenCalled()
+    })
+
+    it('refuses a sender with too few compatibility answers', async () => {
+      mockPg.oneOrNone = oneOrNoneWith(
+        {bio_chars: `${MIN_BIO_CHARS_TO_MESSAGE}`, answers: `${MIN_ANSWERS_TO_MESSAGE - 1}`},
+        null,
+      )
+
+      const error = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq).catch(
+        (e) => e,
+      )
+
+      expect(error.details).toMatchObject({
+        context: PROFILE_INCOMPLETE_CODE,
+        bio: false,
+        answers: true,
+      })
+    })
+
+    it('treats a member with no profile row as having nothing filled in', async () => {
+      mockPg.oneOrNone = oneOrNoneWith(null, null)
+
+      const error = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq).catch(
+        (e) => e,
+      )
+
+      expect(error.details).toMatchObject({
+        context: PROFILE_INCOMPLETE_CODE,
+        bio: true,
+        answers: true,
+      })
+    })
+
+    it('does not touch a conversation that already exists', async () => {
+      // Existing channel → returned before the gate is consulted, whatever the profile looks like.
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue({
+        channel_id: '444',
+        allow_direct_messaging: true,
+      })
+
+      const results = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq)
+
+      expect(results.channelId).toBe(444)
+    })
+
+    it('exempts staff', async () => {
+      ;(constants.isModUsername as jest.Mock).mockReturnValue(true)
+      mockPg.oneOrNone = oneOrNoneWith(null, null)
+      ;(mockPg.one as jest.Mock).mockResolvedValueOnce({id: '333'})
+
+      const results = await createPrivateUserMessageChannel(mockBody, mockAuth, mockReq)
+
+      expect(results.status).toBe('success')
     })
   })
 

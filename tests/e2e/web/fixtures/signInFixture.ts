@@ -33,7 +33,7 @@ export const test = base.extend<{
   },
   signedInAccount: async ({app}: {app: App}, use) => {
     const account = testAccounts.faker_account()
-    await seedUser(
+    const seeded = await seedUser(
       account.email,
       account.password,
       undefined,
@@ -41,13 +41,14 @@ export const test = base.extend<{
       account.username,
       true,
     )
+    Object.assign(account, {headline: seeded.headline, bio: seeded.bio, keywords: seeded.keywords})
     await app.signinWithEmail(account)
     await use(account)
     await deleteUser('Email/Password', account)
   },
   signedOutAccount: async ({}, use) => {
     const account = testAccounts.faker_account()
-    await seedUser(
+    const seeded = await seedUser(
       account.email,
       account.password,
       undefined,
@@ -55,6 +56,8 @@ export const test = base.extend<{
       account.username,
       true,
     )
+    // A test writing to this account needs to refer to its profile — see the first-message rules.
+    Object.assign(account, {headline: seeded.headline, bio: seeded.bio, keywords: seeded.keywords})
     await use(account)
     await deleteUser('Email/Password', account)
   },

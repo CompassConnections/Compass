@@ -14,7 +14,11 @@ import {useT} from 'web/lib/locale'
 export const ReportUser = (props: {user: Pick<User, 'id'>; closeModal: () => void}) => {
   const {user, closeModal} = props
   const t = useT()
+  // The first two are what members report most, and naming them is what makes the counts usable:
+  // a pattern across reports is what gets an account removed, and "Other" hides the pattern.
   const reportTypes = [
+    t('report.user.type.generic', 'Generic or copy-pasted first message'),
+    t('report.user.type.looks', 'Commented on my looks'),
     t('report.user.type.spam', 'Spam'),
     t('report.user.type.inappropriate', 'Inappropriate or objectionable content'),
     t('report.user.type.violence', 'Violence or threats'),
@@ -55,6 +59,12 @@ export const ReportUser = (props: {user: Pick<User, 'id'>; closeModal: () => voi
           <span>{t('report.user.thanks', 'Thank you for your report.')}</span>
           <span>
             {t('report.user.review_message', "We'll review the user and take action if necessary.")}
+          </span>
+          <span>
+            {t(
+              'report.user.action_note',
+              'Reports like this are how most removals start. A person reads every one, and accounts that send generic openers or comment on looks are removed.',
+            )}
           </span>
           {/* Someone who has just reported a user is, more often than not, in the middle of the thing
               the guide describes — so this points at the recovery steps, not at the top of the page. */}

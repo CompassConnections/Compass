@@ -1,11 +1,21 @@
 jest.mock('shared/utils')
 jest.mock('shared/supabase/init')
 jest.mock('api/helpers/private-messages')
+jest.mock('api/helpers/first-message')
+// Keep the real constants but stub the staff checks: `isAdminId` returns true for everyone when
+// running locally, which would otherwise exempt the test user from the first-message rules.
+jest.mock('common/envs/constants', () => ({
+  ...jest.requireActual('common/envs/constants'),
+  isAdminId: jest.fn(),
+  isModUsername: jest.fn(),
+}))
 
 import {MAX_COMMENT_JSON_LENGTH} from 'api/create-comment'
 import {createPrivateUserMessage} from 'api/create-private-user-message'
 import {AuthedUser} from 'api/helpers/endpoint'
+import * as firstMessage from 'api/helpers/first-message'
 import * as helpersPrivateMessagesModules from 'api/helpers/private-messages'
+import * as constants from 'common/envs/constants'
 import * as supabaseInit from 'shared/supabase/init'
 import * as sharedUtils from 'shared/utils'
 
@@ -27,6 +37,10 @@ describe('createPrivateUserMessage', () => {
       blockedUserIds: [],
       blockedByUserIds: [],
     })
+    ;(constants.isAdminId as jest.Mock).mockReturnValue(false)
+    ;(constants.isModUsername as jest.Mock).mockReturnValue(false)
+    // Default: the channel already has messages, so nothing here is an opener.
+    ;(firstMessage.isOpener as jest.Mock).mockResolvedValue(false)
   })
 
   afterEach(() => {
@@ -62,6 +76,61 @@ describe('createPrivateUserMessage', () => {
       )
     })
   })
+  describe('the first-message rules', () => {
+    const mockAuth = {uid: '321'} as AuthedUser
+    const body = {content: {a: 'b'}, channelId: 123}
+
+    beforeEach(() => {
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue({id: mockAuth.uid, username: 'sam'})
+    })
+
+    it('checks the opener of a 1:1 conversation before sending it', async () => {
+      ;(firstMessage.isOpener as jest.Mock).mockResolvedValue(true)
+      await createPrivateUserMessage(body, mockAuth, {} as any)
+      expect(firstMessage.assertAcceptableOpener).toBeCalledWith(
+        expect.any(Object),
+        expect.objectContaining({id: mockAuth.uid}),
+        OTHER_USER_ID,
+        body.content,
+      )
+      expect(helpersPrivateMessagesModules.createPrivateUserMessageMain).toBeCalledTimes(1)
+    })
+
+    it('does not send when the opener is refused', async () => {
+      ;(firstMessage.isOpener as jest.Mock).mockResolvedValue(true)
+      ;(firstMessage.assertAcceptableOpener as jest.Mock).mockRejectedValue(new Error('too short'))
+      await expect(createPrivateUserMessage(body, mockAuth, {} as any)).rejects.toThrow('too short')
+      expect(helpersPrivateMessagesModules.createPrivateUserMessageMain).not.toBeCalled()
+    })
+
+    it('leaves replies alone', async () => {
+      ;(firstMessage.isOpener as jest.Mock).mockResolvedValue(false)
+      await createPrivateUserMessage(body, mockAuth, {} as any)
+      expect(firstMessage.assertAcceptableOpener).not.toBeCalled()
+    })
+
+    it('leaves group conversations alone', async () => {
+      ;(firstMessage.isOpener as jest.Mock).mockResolvedValue(true)
+      ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue({
+        manyOrNone: jest.fn().mockResolvedValue([{user_id: OTHER_USER_ID}, {user_id: '222'}]),
+      })
+      ;(sharedUtils.getPrivateUser as jest.Mock).mockResolvedValue({
+        blockedUserIds: [],
+        blockedByUserIds: [],
+      })
+      await createPrivateUserMessage(body, mockAuth, {} as any)
+      expect(firstMessage.assertAcceptableOpener).not.toBeCalled()
+    })
+
+    it('exempts staff', async () => {
+      ;(firstMessage.isOpener as jest.Mock).mockResolvedValue(true)
+      ;(constants.isModUsername as jest.Mock).mockReturnValue(true)
+      await createPrivateUserMessage(body, mockAuth, {} as any)
+      expect(firstMessage.isOpener).not.toBeCalled()
+      expect(firstMessage.assertAcceptableOpener).not.toBeCalled()
+    })
+  })
+
   describe('when an error occurs', () => {
     it('should throw if the content is too long', async () => {
       const mockBody = {

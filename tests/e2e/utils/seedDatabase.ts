@@ -1,4 +1,5 @@
 import {faker} from '@faker-js/faker'
+import {MIN_ANSWERS_TO_MESSAGE} from 'common/moderation/first-message'
 import {debug} from 'common/logger'
 import {PrivateUser} from 'common/user'
 import {getDefaultNotificationPreferences} from 'common/user-notification-preferences'
@@ -153,6 +154,23 @@ export async function seedDbUser(
     })
 
     await insert(tx, 'profiles', profileData)
+
+    // Answers to a few prompts, so a seeded member passes the profile gate on starting a
+    // conversation (`common/src/moderation/first-message.ts`). seed-test-data seeds the prompts
+    // after its bulk users, so those get none; the per-test fixtures run later and do.
+    const prompts = await tx.manyOrNone(
+      `select id from compatibility_prompts order by importance_score desc limit $1`,
+      [MIN_ANSWERS_TO_MESSAGE],
+    )
+    for (const prompt of prompts) {
+      await insert(tx, 'compatibility_answers', {
+        creator_id: userId,
+        question_id: prompt.id,
+        multiple_choice: 0,
+        pref_choices: [0, 1],
+        importance: 1,
+      })
+    }
     return true
   })
 }
@@ -176,4 +194,6 @@ export async function seedUser(
   const created = await seedDbUser(userInfo, profileType ?? 'full')
   if (created) debug('User created in Supabase:', userInfo.email)
   if (verifyUserEmail) await verifyEmail(userInfo.email, userInfo.password)
+  // What was seeded, so a test can write a first message that refers to the recipient's profile.
+  return userInfo
 }

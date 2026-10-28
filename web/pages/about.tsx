@@ -40,6 +40,7 @@ import {RepoActivity} from 'web/components/about/repo-activity'
 import {AlertDemo} from 'web/components/about/search-alert-demo'
 import {SectionLabel} from 'web/components/about/section'
 import {VoteEvidence} from 'web/components/about/vote-evidence'
+import {HouseRulesList} from 'web/components/house-rules'
 import {PageBase} from 'web/components/page-base'
 import {PressLogos} from 'web/components/press/press-logos'
 import {SEO} from 'web/components/SEO'
@@ -472,6 +473,42 @@ function HowItWorks() {
 }
 
 /**
+ * Who Compass is for, said plainly, next to the four rules.
+ *
+ * The same shape as `WhosHere` below — claim on the left, its detail on the right — because the two
+ * sections answer the same question from two sides: who is here, and who it is for. The second
+ * paragraph exists to say the rules are enforced. Without it the list reads as a wish, and a
+ * visitor who has seen "be kind" on every other platform discounts it to zero.
+ */
+function HouseRules() {
+  const t = useT()
+  return (
+    <div className="lg:flex lg:items-start lg:gap-14">
+      <div className="min-w-0 lg:w-[22rem] lg:flex-shrink-0">
+        <h3 className="font-heading font-bold text-ink-900 text-[24px] leading-[1.2] tracking-tight mt-0 mb-4 text-balance">
+          {t('about.rules.title', 'Who Compass is for, in plain terms.')}
+        </h3>
+        <p className="text-base text-ink-600 leading-relaxed">
+          {t(
+            'about.rules.intro',
+            'People who want a deep connection and are willing to work for it: who write down what they value and what they need from a partner or a friend, who read a profile before writing to the person behind it, and who would rather have one real conversation than twenty openers. Most members are effective altruists, rationalists or vegans, or some mix of the three.',
+          )}
+        </p>
+        <p className="mt-4 text-base text-ink-600 leading-relaxed">
+          {t(
+            'about.rules.enforced',
+            'These are rules, not suggestions. The composer refuses a first message that mentions nothing from the profile, a copy-pasted opener puts the account on hold, and reports about comments on looks end in removals.',
+          )}
+        </p>
+      </div>
+      <div className="mt-8 min-w-0 flex-1 lg:mt-0">
+        <HouseRulesList />
+      </div>
+    </div>
+  )
+}
+
+/**
  * "Who's here" — the membership, with its denominators.
  *
  * The long version of the home page's three-line qualifier. Home has to persuade a stranger in seconds and
@@ -552,8 +589,8 @@ function WhosHere() {
         </h3>
         <p className="text-base text-ink-600 leading-relaxed">
           {t(
-            'about.who.intro.v4',
-            'Members skew single, highly educated, secular, and more plant-based than average. They are spread across more than fifty countries, with no single hub.',
+            'about.who.intro.v5',
+            'Members skew single, highly educated and secular, and most are effective altruists, rationalists or vegans. They are spread across more than fifty countries, with no single hub.',
           )}
         </p>
         <Link
@@ -1178,6 +1215,16 @@ export default function About() {
           <SectionLabel>{t('about.how.label', 'How it works')}</SectionLabel>
           <Reveal>
             <HowItWorks />
+          </Reveal>
+        </Section>
+
+        {/* ── How we write to each other ──
+            Directly after the mechanics, before the features: a reader deciding whether to publish a
+            profile here should meet what is expected of them before meeting what they get. */}
+        <Section>
+          <SectionLabel>{t('about.rules.label', 'How we write to each other')}</SectionLabel>
+          <Reveal>
+            <HouseRules />
           </Reveal>
         </Section>
 

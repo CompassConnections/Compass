@@ -2,17 +2,26 @@ import {PlusIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
 import {APIError} from 'common/api/utils'
+import {ProfileGateIssues} from 'common/moderation/first-message'
 import {buildArray} from 'common/util/array'
 import {useRouter} from 'next/router'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {Row} from 'web/components/layout/row'
+import {EmailVerificationPrompt} from 'web/components/messaging/email-verification-prompt'
 import {
   AccountOnHoldNotice,
   isAutoBanUnderReviewError,
 } from 'web/components/moderation/account-on-hold'
+import {
+  profileIncompleteIssues,
+  ProfileIncompleteNotice,
+} from 'web/components/moderation/profile-incomplete'
 import {SelectUsers} from 'web/components/select-users'
+import {useAPIGetter} from 'web/hooks/use-api-getter'
+import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {usePrivateUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
+import {skipEmailVerification} from 'web/lib/dev-flags'
 import {useT} from 'web/lib/locale'
 
 import {Button} from '../buttons/button'
@@ -36,11 +45,25 @@ export default function NewMessageButton() {
 function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) {
   const {open, setOpen} = props
   const privateUser = usePrivateUser()
+  const firebaseUser = useFirebaseUser()
   const router = useRouter()
   const t = useT()
+  // The API refuses an unverified sender on create; say so the moment the modal opens rather than
+  // after someone has been picked. `firebaseUser` is undefined while auth loads, which is not "not
+  // verified". skipEmailVerification is dev-only (web/lib/dev-flags.ts).
+  const emailUnverified = !!firebaseUser && !firebaseUser.emailVerified && !skipEmailVerification
   const [errorText, setErrorText] = useState<string>('')
   // The new-conversation limit auto-ban gets the full explanation panel instead of a red line.
   const [onHold, setOnHold] = useState(false)
+  // The sender's own profile is not written yet: links to where that gets fixed, not a red line.
+  // Asked the moment the modal opens (and again on every open, since they may just have fixed it),
+  // so they hear it before picking anyone — not after. The API still refuses on create; that path
+  // only fills this in if the preview and the real check disagree.
+  const [profileIssues, setProfileIssues] = useState<ProfileGateIssues | null>(null)
+  const {data: gate} = useAPIGetter('get-profile-gate', open && privateUser ? {} : undefined)
+  useEffect(() => {
+    if (gate) setProfileIssues(gate.issues)
+  }, [gate])
   const [submitting, setSubmitting] = useState(false)
 
   const [users, setUsers] = useState<DisplayUser[]>([])
@@ -51,7 +74,9 @@ function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) 
       userIds: users.map((user) => user.id),
     }).catch((e: APIError) => {
       console.error(e)
-      if (isAutoBanUnderReviewError(e)) setOnHold(true)
+      const issues = profileIncompleteIssues(e)
+      if (issues) setProfileIssues(issues)
+      else if (isAutoBanUnderReviewError(e)) setOnHold(true)
       else setErrorText(String(e))
       return
     })
@@ -91,10 +116,20 @@ function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) 
             .concat(privateUser?.blockedUserIds ?? [])
             .concat(buildArray(privateUser?.id))}
         />
+        {emailUnverified && (
+          <div className={'px-5 pb-2'}>
+            <EmailVerificationPrompt t={t} />
+          </div>
+        )}
         {onHold && (
           <div className={'px-5 pb-2'}>
             {/* compact: the modal is a fixed height, so keep this panel to its essentials. */}
             <AccountOnHoldNotice reason={'auto_rate_limit'} compact />
+          </div>
+        )}
+        {profileIssues && (
+          <div className={'px-5 pb-2'}>
+            <ProfileIncompleteNotice issues={profileIssues} compact />
           </div>
         )}
         {errorText && <p className={'text-red-500 px-5 pb-2 text-sm'}>{errorText}</p>}
@@ -107,7 +142,7 @@ function MessageModal(props: {open: boolean; setOpen: (open: boolean) => void}) 
           <Button
             color={'indigo'}
             loading={submitting}
-            disabled={users.length === 0 || onHold}
+            disabled={users.length === 0 || onHold || !!profileIssues || emailUnverified}
             onClick={createChannel}
           >
             {t('messages.create', 'Create')}

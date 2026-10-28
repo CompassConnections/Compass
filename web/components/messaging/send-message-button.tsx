@@ -1,12 +1,20 @@
 import {CheckIcon} from '@heroicons/react/24/outline'
+import {type JSONContent} from '@tiptap/core'
 import {useEditorState} from '@tiptap/react'
 import clsx from 'clsx'
 import {MAX_COMMENT_LENGTH} from 'common/comment'
+import {
+  MIN_FIRST_MESSAGE_CHARS,
+  ProfileGateIssues,
+  profileVocabulary,
+  referencesProfile,
+} from 'common/moderation/first-message'
 import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
+import {richTextToString} from 'common/util/parse'
 import {findKey} from 'lodash'
 import {useRouter} from 'next/router'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useMemo, useRef, useState} from 'react'
 import {BiEnvelope} from 'react-icons/bi'
 import {Button, buttonClass} from 'web/components/buttons/button'
 import {CommentInputTextArea} from 'web/components/comments/comment-input'
@@ -20,13 +28,19 @@ import {
   AccountOnHoldNotice,
   isAutoBanUnderReviewError,
 } from 'web/components/moderation/account-on-hold'
+import {
+  profileIncompleteIssues,
+  ProfileIncompleteNotice,
+} from 'web/components/moderation/profile-incomplete'
 import {useTextEditor} from 'web/components/widgets/editor'
 import {Tooltip} from 'web/components/widgets/tooltip'
+import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {isBlocked, usePrivateUser, useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {skipEmailVerification} from 'web/lib/dev-flags'
 import {useT} from 'web/lib/locale'
+import {setPendingOpener} from 'web/lib/pending-openers'
 import {promptSignIn} from 'web/lib/util/signup'
 
 export const SendMessageButton = (props: {
@@ -67,6 +81,19 @@ export const SendMessageButton = (props: {
   // Set instead of `error` when the new-conversation limit auto-banned them: that case gets the
   // full explanation panel rather than a one-line red error, since the outcome deserves context.
   const [onHold, setOnHold] = useState(false)
+  // The sender's own profile is not written yet (no bio, too few compatibility answers). Also a
+  // panel, with links to where that gets fixed. Asked the moment the composer opens (and again on
+  // every open, since they may just have fixed it), so the panel replaces the editor before a word
+  // is written rather than after. The API still refuses on send; that path only fills this in if
+  // the preview and the real check disagree.
+  const [profileIssues, setProfileIssues] = useState<ProfileGateIssues | null>(null)
+  const {data: gate} = useAPIGetter(
+    'get-profile-gate',
+    openComposeModal && currentUser ? {} : undefined,
+  )
+  useEffect(() => {
+    if (gate) setProfileIssues(gate.issues)
+  }, [gate])
   const [submitting, setSubmitting] = useState(false)
 
   const previousDirectMessageChannel = findKey(
@@ -144,7 +171,9 @@ export const SendMessageButton = (props: {
     const res = await api('create-private-user-message-channel', {
       userIds: [toUser.id],
     }).catch((e) => {
-      if (isAutoBanUnderReviewError(e)) setOnHold(true)
+      const issues = profileIncompleteIssues(e)
+      if (issues) setProfileIssues(issues)
+      else if (isAutoBanUnderReviewError(e)) setOnHold(true)
       else setError(e.message)
       setSubmitting(false)
       return
@@ -152,17 +181,26 @@ export const SendMessageButton = (props: {
     if (!res) return
 
     linkifyUrls(editor)
-    const msgRes = await api('create-private-user-message', {
-      channelId: res.channelId,
-      content: editor.getJSON(),
-    }).catch((e: any) => {
-      setError(e.message)
-      setSubmitting(false)
-      return
-    })
-    if (!msgRes) return
-
-    router.push(`/messages/${res.channelId}`)
+    const content = editor.getJSON()
+    const channelId = res.channelId
+    // Optimistic: the message appears in the conversation at once, in the sender's bubble, while
+    // the API runs the first-message checks behind it — the model review alone takes a few
+    // seconds, and a send button that hangs for that long reads as broken. The conversation page
+    // swaps the pending bubble for the stored message once the API accepts it, or shows why it was
+    // refused; the recipient hears nothing until then. See `web/lib/pending-openers.ts`.
+    setPendingOpener(channelId, {content, status: 'checking'})
+    router.push(`/messages/${channelId}`)
+    api('create-private-user-message', {channelId, content})
+      .then(() => setPendingOpener(channelId, {content, status: 'sent'}))
+      .catch((e: any) =>
+        setPendingOpener(channelId, {
+          content,
+          status: 'rejected',
+          reason: e?.message ?? String(e),
+          // A copy-pasted or scam-flagged opener holds the account; there is nothing to resend.
+          hold: isAutoBanUnderReviewError(e),
+        }),
+      )
   }
 
   const [insertedChips, setInsertedChips] = useState<string[]>([])
@@ -185,17 +223,48 @@ export const SendMessageButton = (props: {
     }
   }
 
-  const MIN_CHARS = 200
+  const MIN_CHARS = MIN_FIRST_MESSAGE_CHARS
 
-  // Subscribe to just the trimmed length; the editor no longer re-renders us per keystroke (see
+  // A card hands us the `card` projection — a truncated `bio_snippet`, no `bio` — and the live
+  // "mention something from their profile" check below needs the whole bio, or it would refuse a
+  // message about something further down than the snippet reaches. Fetched once the modal opens,
+  // and only when the bio is missing: the profile page passes the full document already.
+  const {data: fullProfile} = useAPIGetter(
+    'get-profile',
+    openComposeModal && profile.bio === undefined ? {username: toUser.username} : undefined,
+  )
+  const bioDoc = (profile.bio ?? fullProfile?.profile?.bio) as JSONContent | null | undefined
+  // The same function the API runs (`common/moderation/first-message.ts`), on the same inputs, so
+  // what unlocks here is what the server accepts.
+  const vocabulary = useMemo(
+    () =>
+      profileVocabulary({
+        name: toUser.name,
+        username: toUser.username,
+        headline: profile.headline,
+        keywords: profile.keywords,
+        bioText: bioDoc ? richTextToString(bioDoc) : profile.bio_snippet,
+      }),
+    [toUser.name, toUser.username, profile.headline, profile.keywords, bioDoc, profile.bio_snippet],
+  )
+
+  // Subscribe to the trimmed text; the editor no longer re-renders us per keystroke (see
   // editor.tsx), and this drives the live progress bar / unlock threshold below.
-  const charCount =
+  const draft =
     useEditorState({
       editor,
-      selector: ({editor}) => editor?.getText().trim().length ?? 0,
-    }) ?? 0
+      selector: ({editor}) => editor?.getText().trim() ?? '',
+    }) ?? ''
+  const charCount = draft.length
   const pct = Math.min((charCount / MIN_CHARS) * 100, 100)
-  const isReady = charCount >= MIN_CHARS
+  const longEnough = charCount >= MIN_CHARS
+  // Advisory, not a gate: the word-matching check is too blunt to refuse a message on (a paraphrase
+  // of the bio shares none of its words). Length alone unlocks the button; a message that picks up
+  // nothing from the profile gets a warning beside it, and the API's model review has the last word.
+  // Only shown once the button has unlocked, so it does not nag while the message is still short.
+  const anchored = referencesProfile(draft, vocabulary)
+  const isReady = longEnough
+  const showReferenceWarning = longEnough && !anchored
   const firstName = toUser.name.split(' ')[0]
   // Amber while short, green once it unlocks — the design's signal that the threshold is met. The
   // green is the brand sage rather than the design's raw oklch, so it stays on-palette.
@@ -347,9 +416,13 @@ export const SendMessageButton = (props: {
                 {t('send_message.title', 'Start a meaningful conversation')}
               </h2>
               <p className={'text-ink-500 text-[15px] leading-[1.55] max-w-[92%]'}>
+                {/* The rules, not a mood. "Take a moment to write something genuine" was gentle
+                    enough to ignore, and the reports showed it being ignored. Each clause here names
+                    a consequence the server actually applies. */}
                 {t(
-                  'send_message.guidance',
-                  'Compass is about depth. Take a moment to write something genuine.',
+                  'send_message.guidance.v2',
+                  'Write about something {name} wrote: a value, a prompt answer, a cause. Not their looks, and not a message you’ve sent to anyone else. Copy-pasted openers put your account on hold, and accounts that comment on appearance are removed.',
+                  {name: firstName},
                 )}
               </p>
               <div className={'h-px bg-canvas-200 mt-6'} />
@@ -359,6 +432,8 @@ export const SendMessageButton = (props: {
               still rejects unverified senders. See web/lib/dev-flags.ts. */}
             {onHold ? (
               <AccountOnHoldNotice reason={'auto_rate_limit'} className="max-w-xl mt-2" />
+            ) : profileIssues ? (
+              <ProfileIncompleteNotice issues={profileIssues} className="max-w-xl mt-2" />
             ) : firebaseUser?.emailVerified || skipEmailVerification ? (
               <>
                 {/* Topics box: a 40% tint rather than solid canvas-100. At full strength the fill sat a
@@ -412,7 +487,7 @@ export const SendMessageButton = (props: {
                     user={currentUser}
                     submit={sendMessage}
                     isSubmitting={!editor || submitting}
-                    isDisabled={charCount < MIN_CHARS}
+                    isDisabled={!isReady}
                     hideSubmitButton
                     submitOnEnter={false}
                     // max-h-none: let the editor grow and let the *modal* do the scrolling instead of
@@ -442,7 +517,7 @@ export const SendMessageButton = (props: {
 
           {/* Pinned footer — outside the scroller, so it is visible no matter how long the message is.
             Hidden once the account is on hold: there is nothing left to send until we've reviewed it. */}
-          {(firebaseUser?.emailVerified || skipEmailVerification) && !onHold && (
+          {(firebaseUser?.emailVerified || skipEmailVerification) && !onHold && !profileIssues && (
             <Col className={'w-full shrink-0 gap-3.5 pt-4'}>
               {/* Progress toward the minimum length, with the count beside it. */}
               <div className={'w-full flex items-center gap-3.5'}>
@@ -457,6 +532,23 @@ export const SendMessageButton = (props: {
                 </span>
               </div>
 
+              {/* The brand amber ramp rather than Tailwind's amber-50: the ramp inverts in dark mode,
+                  so the fill stays a tint of the surface and primary-700 stays legible on it. A raw
+                  amber-50 fill under dark-mode ink was a cream box with near-white text. */}
+              {showReferenceWarning && (
+                <p
+                  data-testid="send-message-reference-warning"
+                  className={
+                    'text-primary-700 bg-primary-50 border border-primary-200 rounded-lg px-3 py-2 text-sm'
+                  }
+                >
+                  {t(
+                    'send_message.reference_warning',
+                    "This doesn't seem to mention anything from {name}'s profile. Openers that could be sent to anyone tend to go unanswered, and our review may hold it back.",
+                    {name: firstName},
+                  )}
+                </p>
+              )}
               <button
                 type={'button'}
                 data-testid="send-message-submit"

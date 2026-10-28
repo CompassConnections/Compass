@@ -3,13 +3,14 @@ import clsx from 'clsx'
 import Router from 'next/router'
 import {useState} from 'react'
 import {Button} from 'web/components/buttons/button'
+import {HouseRulesList} from 'web/components/house-rules'
 import {Col} from 'web/components/layout/col'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {StepProgress} from 'web/components/widgets/step-progress'
 import {surface} from 'web/components/widgets/surface'
 import {useT} from 'web/lib/locale'
 
-const TOTAL_STEPS = 3
+const TOTAL_STEPS = 4
 
 interface OnboardingStepProps {
   onNext: () => void
@@ -248,6 +249,44 @@ function Step3CompatibilityInspect({
       onNext={onNext}
       onSkip={onSkip}
       onBack={onBack}
+    />
+  )
+}
+
+/**
+ * The house rules, last and bluntly.
+ *
+ * The three screens before it explain what Compass does; this one says what Compass expects, and
+ * that it is enforced. It is the one screen that may make someone close the tab, and that is the
+ * point: the people it puts off are the ones the reports are about, and everyone else reads it as
+ * a promise about who they will meet.
+ */
+function Step4HowWeWrite({onNext, onSkip, onBack}: OnboardingStepProps & {onBack: () => void}) {
+  const t = useT()
+  const content = (
+    <>
+      <p>
+        {t(
+          'onboarding.step4.rules.body1',
+          'Compass is for people who want a deep connection and are willing to work for it. We strictly envorce those rules:',
+        )}
+      </p>
+      <HouseRulesList dense />
+    </>
+  )
+
+  return (
+    <OnboardingScreen
+      step={4}
+      title={t('onboarding.step4.rules.title', 'How we write to each other here')}
+      content={content}
+      footerText={t(
+        'onboarding.step4.rules.footer',
+        'If you break these rules, we will BAN you. If that sounds like too much, there are faster apps.',
+      )}
+      onNext={onNext}
+      onSkip={onSkip}
+      onBack={onBack}
       continueText={t('onboarding.step3.continue', 'Get started')}
     />
   )
@@ -348,7 +387,9 @@ export default function OnboardingPage() {
         return (
           <Step3CompatibilityInspect onNext={handleNext} onSkip={handleSkip} onBack={handleBack} />
         )
-      // case 3:
+      case 3:
+        return <Step4HowWeWrite onNext={handleNext} onSkip={handleSkip} onBack={handleBack} />
+      // case 4:
       //   return <Step4StayingSafe onNext={handleComplete} onSkip={handleSkip} onBack={handleBack} />
       default:
         return handleComplete()

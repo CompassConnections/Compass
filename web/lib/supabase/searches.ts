@@ -1,21 +1,9 @@
 import {FilterFields} from 'common/filters'
-import {Row, run} from 'common/supabase/utils'
+import {Row} from 'common/supabase/utils'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {omit} from 'lodash'
 import {api} from 'web/lib/api'
 import {track} from 'web/lib/service/analytics'
-import {db} from 'web/lib/supabase/db'
-
-export const getUserBookmarkedSearches = async (userId: string) => {
-  const {data} = await run(
-    db
-      .from('bookmarked_searches')
-      .select('*')
-      .eq('creator_id', userId)
-      .order('id', {ascending: false}),
-  )
-  return data
-}
 
 export type BookmarkedSearchSubmitType = Omit<
   Row<'bookmarked_searches'>,

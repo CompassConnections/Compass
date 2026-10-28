@@ -93,4 +93,5 @@ BEGIN;
 \i backend/supabase/migrations/20261028_add_donations.sql
 \i backend/supabase/migrations/20261028_drop_compatibility_answers_free.sql
 \i backend/supabase/migrations/20261028_lock_likes_ships.sql
+\i backend/supabase/migrations/20261028_lock_client_read_tables.sql
 COMMIT;

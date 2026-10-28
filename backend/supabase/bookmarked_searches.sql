@@ -19,10 +19,9 @@ ALTER TABLE bookmarked_searches
 ALTER TABLE bookmarked_searches ENABLE ROW LEVEL SECURITY;
 
 
--- Policies
-DROP POLICY IF EXISTS "public read" ON bookmarked_searches;
-CREATE POLICY "public read" ON bookmarked_searches
-    FOR SELECT USING (true);
+-- No SELECT policy: RLS is enabled with no read policy AND the anon/authenticated SELECT grant is
+-- revoked, so the client cannot read this table directly (migration 20261028_lock_client_read_tables.sql
+-- dropped the former "public read" policy). The web reads its own rows through get-bookmarked-searches.
 
 -- DROP POLICY IF EXISTS "self delete" ON bookmarked_searches;
 -- CREATE POLICY "self delete" ON bookmarked_searches

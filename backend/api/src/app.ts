@@ -90,6 +90,7 @@ import {deleteUnfinishedSignup} from './delete-unfinished-signup'
 import {getBlogPost} from './get-blog-post'
 import {getBlogPosts} from './get-blog-posts'
 import {getBlogPostsAdmin} from './get-blog-posts-admin'
+import {getBookmarkedSearches} from './get-bookmarked-searches'
 import {getCompatibilityQuestions} from './get-compatibililty-questions'
 import {getConnectionInterestsEndpoint} from './get-connection-interests'
 import {getCountries} from './get-countries'
@@ -105,6 +106,7 @@ import {getOutreachQueue} from './get-outreach-queue'
 import {getOutreachStats} from './get-outreach-stats'
 import {getPrivateUserAdmin} from './get-private-user-admin'
 import {getProfileAnswers} from './get-profile-answers'
+import {getProfileComments} from './get-profile-comments'
 import {getProfileFeed} from './get-profile-feed'
 import {getProfileGate} from './get-profile-gate'
 import {getProfiles} from './get-profiles'
@@ -685,6 +687,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'create-vote': createVote,
   'create-vote-comment': createVoteComment,
   'delete-bookmarked-search': deleteBookmarkedSearch,
+  'get-bookmarked-searches': getBookmarkedSearches,
   'delete-compatibility-answer': deleteCompatibilityAnswer,
   'delete-message': deleteMessage,
   'edit-message': editMessage,
@@ -737,6 +740,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'create-donation': createDonation,
   'delete-donation': deleteDonation,
   'get-profile-answers': getProfileAnswers,
+  'get-profile-comments': getProfileComments,
   'get-profile-feed': getProfileFeed,
   'get-profile-gate': getProfileGate,
   'get-countries': getCountries,

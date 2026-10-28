@@ -26,13 +26,10 @@ ALTER TABLE profile_comments
 -- Row Level Security
 ALTER TABLE profile_comments ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "public read" ON profile_comments;
-CREATE POLICY "public read" ON profile_comments
-    FOR SELECT USING (true);
-
--- Policies
-DROP POLICY IF EXISTS "public read" ON profile_comments;
-CREATE POLICY "public read" ON profile_comments FOR SELECT USING (true);
+-- No SELECT policy: RLS is enabled with no read policy AND the anon/authenticated SELECT grant is
+-- revoked, so the client cannot read this table directly (migration 20261028_lock_client_read_tables.sql
+-- dropped the former "public read" policy). The web reads a profile's comments through
+-- get-profile-comments, which leaves out hidden comments and applies visibility and blocks.
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS profile_comments_user_id_idx

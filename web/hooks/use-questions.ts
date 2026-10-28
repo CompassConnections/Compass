@@ -3,11 +3,13 @@ import {debug} from 'common/logger'
 import {Row} from 'common/supabase/utils'
 import {partition, sortBy} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
+import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useFirebaseUser} from 'web/hooks/use-firebase-user'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
+import {useIsAuthorized} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {useLocale} from 'web/lib/locale'
-import {getAllQuestions, getUserCompatibilityAnswers} from 'web/lib/supabase/questions'
+import {getAllQuestions} from 'web/lib/supabase/questions'
 
 export const useQuestions = () => {
   const [questions, setQuestions] = useState<Row<'compatibility_prompts'>[]>([])
@@ -18,29 +20,27 @@ export const useQuestions = () => {
 }
 
 export const useUserCompatibilityAnswers = (userId: string | undefined) => {
-  const [compatibilityAnswers, setCompatibilityAnswers] = usePersistentInMemoryState<
-    Row<'compatibility_answers'>[]
-  >([], `compatibility-answers-${userId}`)
+  // `get-profile-answers` needs a signed-in caller, so there is nothing to ask until the auth state
+  // has settled and says there is one. Asking earlier would have `api()` log an error and poll for a
+  // user who, on a signed-out profile view, never arrives. The endpoint decides what this viewer may
+  // see of someone else's answers; a profile they may not see comes back empty.
+  const authorized = useIsAuthorized()
+  const {data, refresh} = useAPIGetter(
+    'get-profile-answers',
+    authorized && userId ? {userId} : undefined,
+  )
 
-  useEffect(() => {
-    if (userId) {
-      getUserCompatibilityAnswers(userId).then((answers) => {
-        const sortedAnswers = sortBy(
-          answers,
-          (a) => -a.importance,
-          (a) => (a.explanation ? 0 : 1),
-        )
-        setCompatibilityAnswers(sortedAnswers)
-      })
-    }
-  }, [userId])
+  const compatibilityAnswers = useMemo(
+    () =>
+      sortBy(
+        data?.answers ?? [],
+        (a) => -a.importance,
+        (a) => (a.explanation ? 0 : 1),
+      ),
+    [data],
+  )
 
-  async function refreshCompatibilityAnswers() {
-    if (!userId) return
-    getUserCompatibilityAnswers(userId).then(setCompatibilityAnswers)
-  }
-
-  return {refreshCompatibilityAnswers, compatibilityAnswers}
+  return {refreshCompatibilityAnswers: refresh, compatibilityAnswers}
 }
 
 export const useCompatibilityQuestionsWithAnswerCount = () => {

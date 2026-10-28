@@ -32,10 +32,10 @@ ALTER TABLE compatibility_answers
         UNIQUE (question_id, creator_id);
 
 
--- Policies
-DROP POLICY IF EXISTS "public read" ON compatibility_answers;
-CREATE POLICY "public read" ON compatibility_answers
-    FOR SELECT USING (true);
+-- No SELECT policy: RLS is enabled with no read policy AND the anon/authenticated SELECT grant is
+-- revoked, so the client cannot read this table directly (migration 20261028_lock_client_read_tables.sql
+-- dropped the former "public read" policy). The web reads answers through get-profile-answers, which
+-- applies members-only visibility and blocks.
 
 -- DROP POLICY IF EXISTS "self delete" ON compatibility_answers;
 -- CREATE POLICY "self delete" ON compatibility_answers

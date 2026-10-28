@@ -14,18 +14,3 @@ export const getAllQuestions = async () => {
   return res.data
 }
 
-export const getUserCompatibilityAnswers = async (userId: string) => {
-  const {data} = await run(
-    db
-      .from('compatibility_answers')
-      .select('*')
-      .eq('creator_id', userId)
-      .order('importance', {ascending: false}),
-  )
-  return data
-}
-
-export const getCompatibilityQuestionsWithAnswerCount = async () => {
-  const {data} = await db.rpc('get_compatibility_prompts_with_answer_count' as any)
-  return data
-}

@@ -21,7 +21,7 @@ import {
   MIN_BLOG_TITLE_LENGTH,
 } from 'common/blog/blog'
 import {ChatMessage} from 'common/chat-message'
-import {COMMENT_TYPES} from 'common/comment'
+import {COMMENT_TYPES, type ProfileComment} from 'common/comment'
 import {
   AdminDonation,
   DonorBadge,
@@ -719,7 +719,8 @@ export const API = (_apiTypeCheck = {
       status: 'success'
       answers: Row<'compatibility_answers'>[]
     },
-    summary: 'Get compatibility answers for a profile',
+    summary:
+      'Get compatibility answers for a profile, as the caller may see them (a members-only, disabled or blocked profile comes back empty)',
     tag: 'Compatibility',
   },
   /**
@@ -1182,6 +1183,16 @@ export const API = (_apiTypeCheck = {
     summary: 'Hide or unhide a comment',
     tag: 'Profiles',
   },
+  'get-profile-comments': {
+    method: 'GET',
+    authed: false,
+    rateLimited: true,
+    props: z.object({userId: z.string()}).strict(),
+    returns: {} as {comments: ProfileComment[]},
+    summary:
+      'Visible comments on a profile, as the caller may see them (hidden comments, members-only, disabled or blocked profiles, and blocked authors are left out)',
+    tag: 'Profiles',
+  },
   'get-channel-memberships': {
     method: 'GET',
     authed: true,
@@ -1585,6 +1596,15 @@ export const API = (_apiTypeCheck = {
       id: z.number(),
     }),
     summary: 'Delete a bookmarked search by ID',
+    tag: 'Search',
+  },
+  'get-bookmarked-searches': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as {searches: Row<'bookmarked_searches'>[]},
+    summary: "The caller's own saved searches, newest first",
     tag: 'Search',
   },
   'cancel-event': {

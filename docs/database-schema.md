@@ -567,6 +567,44 @@ All tables implement RLS policies to ensure data privacy:
 - **Private Access**: Users can only access their own private data
 - **Member Access**: Authenticated users have broader access
 
+#### Client read access
+
+The browser talks to PostgREST with the anon key only: there is no per-user Supabase JWT, so
+`firebase_uid()` is null in every client query and "readable by the client" means "readable by
+anyone", in bulk, up to PostgREST's row cap. A `public read ... using (true)` policy is therefore
+only right for data that is public by design (prompts, options, votes and their results, the
+canonical taxonomies). Every table that says something about a member — `profiles`, `users`,
+`compatibility_scores`, `user_activity`, `profile_stars`, `profile_likes`, `profile_ships`,
+`bookmarked_searches`, `compatibility_answers`, `profile_comments`, every `private_*` table — has
+had its `anon`/`authenticated` SELECT grant revoked (migrations
+`20260730_cap_profiles_users_reads.sql`, `20260731_lock_activity_stars_compat.sql`,
+`20261028_lock_likes_ships.sql`, `20261028_lock_client_read_tables.sql`). The client reads them one
+of two ways:
+
+- **A capped `security definer` RPC** (`get_display_users`, `get_profile_by_user_id`,
+  `get_user_activity`, `get_profile_stars`) when the read is the same for every caller: it requires
+  a filter, so it cannot be turned into a full-table pull, but it does not know who is asking.
+- **An API endpoint** (`useAPIGetter`) when the answer depends on the viewer: `get-profile-answers`
+  and `get-profile-comments` apply `canReadProfileContent` (members-only visibility, disabled and
+  banned profiles, blocks in either direction, and for comments the `hidden` flag and blocked
+  authors); `get-bookmarked-searches` returns the caller's own rows only.
+
+When adding a table, do not write a `public read` policy unless the data really is public. Reach for
+an endpoint first, and an RPC only for a read that is identical for everyone.
+
+Longer term, the reason all of this lives outside the database is that RLS cannot see the Firebase
+user. Two ways to change that, in order of how much they move:
+
+1. **Mint a Supabase JWT from the Firebase token** so the client is `authenticated` with a real
+   `firebase_uid()`. Supabase accepts third-party JWTs (Firebase is a supported provider); the web
+   would pass the Firebase ID token to the Supabase client and self-scoped `creator_id =
+firebase_uid()` policies would start doing their job, without an API hop. Every policy that
+   currently assumes `anon` has to be rechecked, and `firebase_uid()` has to read the claim the way
+   the token carries it.
+2. **Move auth to Supabase Auth entirely.** Gives RLS a first-class `auth.uid()`, at the cost of
+   migrating every account, the Capacitor shells, and everything keyed on Firebase uids (which are
+   also the Supabase `users.id`).
+
 ### Authentication
 
 User authentication is managed through Firebase Auth, with user IDs synchronized between Firebase and the database.

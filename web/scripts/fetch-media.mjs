@@ -93,16 +93,44 @@ const exists = async (p) => {
   }
 }
 
+/**
+ * r2.dev occasionally drops a connection mid-body, which undici reports as a bare
+ * "TypeError: terminated". That is transient, so retry it; an HTTP error status is not, so it fails
+ * on the first attempt. The timeout covers a stalled stream, which would otherwise hang the build
+ * until Vercel kills it with no message at all.
+ */
+const ATTEMPTS = 3
+const TIMEOUT_MS = 5 * 60_000
+
+class HttpError extends Error {}
+
+async function downloadOnce(url, target) {
+  const res = await fetch(url, {signal: AbortSignal.timeout(TIMEOUT_MS)})
+  if (!res.ok || !res.body) {
+    throw new HttpError(`${res.status} ${res.statusText}`)
+  }
+  await pipeline(Readable.fromWeb(res.body), createWriteStream(target))
+}
+
 async function download({key, dest}, base) {
   const url = `${base}/${key}`
   const target = join(PUBLIC_DIR, dest)
   await mkdir(dirname(target), {recursive: true})
 
-  const res = await fetch(url)
-  if (!res.ok || !res.body) {
-    throw new Error(`${res.status} ${res.statusText} for ${url}`)
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await downloadOnce(url, target)
+      break
+    } catch (err) {
+      // undici puts the useful part (e.g. "other side closed") in `cause`
+      const reason = err.cause ? `${err.message} (${err.cause.message ?? err.cause})` : err.message
+      if (err instanceof HttpError || attempt === ATTEMPTS) {
+        throw new Error(`${reason} for ${url} (attempt ${attempt}/${ATTEMPTS})`)
+      }
+      console.warn(`[media] ${dest}: ${reason}; retrying (${attempt}/${ATTEMPTS})`)
+      await new Promise((r) => setTimeout(r, 2000 * attempt))
+    }
   }
-  await pipeline(Readable.fromWeb(res.body), createWriteStream(target))
   const {size} = await stat(target)
   console.log(`[media] ${dest} (${(size / 1024).toFixed(0)} KB)`)
 }

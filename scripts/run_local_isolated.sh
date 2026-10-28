@@ -35,13 +35,13 @@ export $(cat .env.local | grep -v '^#' | xargs)
 export $(cat .env.test | grep -v '^#' | xargs)
 
 # Ensure Supabase local stack is running; if not, reset/start it
-STATUS_JSON=$(supabase status --output json 2>/dev/null || echo '')
+STATUS_JSON=$(npx supabase status --output json 2>/dev/null || echo '')
 API_URL=$(echo "$STATUS_JSON" | jq -r '.API_URL // empty')
 
 if [ -z "$API_URL" ]; then
   echo "Supabase is not running. Bootstrapping local stack with: yarn test:db:reset"
   yarn test:db:reset
-  STATUS_JSON=$(supabase status --output json)
+  STATUS_JSON=$(npx supabase status --output json)
 fi
 
 export NEXT_PUBLIC_SUPABASE_URL=$(echo "$STATUS_JSON" | jq -r '.API_URL')

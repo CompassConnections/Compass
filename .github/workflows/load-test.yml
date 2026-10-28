@@ -1,0 +1,117 @@
+name: Load test
+
+# The steps shared by the smoke and full load tests. It doesn't run on its own: load-smoke-test.yml and
+# load-full-test.yml call it with their own settings. See docs/load-testing.md.
+#
+# It tests the API deployed to dev (the plan's default apiHost), not the code in this checkout.
+on:
+  workflow_call:
+    inputs:
+      users:
+        description: Threads for account creation and the load test (one account each)
+        type: number
+        required: true
+      duration:
+        description: Seconds the load test runs
+        type: number
+        required: true
+      max_error_rate:
+        description: Highest error rate allowed for any request, in percent
+        type: number
+        required: true
+      max_p95:
+        description: Highest p95 response time allowed for TEST requests, in milliseconds
+        type: number
+        required: true
+      report_name:
+        description: Name of the uploaded report artifact
+        type: string
+        required: true
+
+env:
+  JMETER_VERSION: '5.6.3'
+  PLAN: compass-testPlan.jmx
+  USERS: ${{ inputs.users }}
+  DURATION: ${{ inputs.duration }}
+  MAX_ERROR_RATE: ${{ inputs.max_error_rate }}
+  MAX_P95: ${{ inputs.max_p95 }}
+
+jobs:
+  load-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # GitHub keeps only one pending run per concurrency group and cancels the one it replaces, so a single
+    # shared group would let a PR push silently cancel a queued run of another PR or the weekly full run.
+    # Instead each PR gets its own smoke group, where a newer push replaces the older run (its accounts are
+    # still deleted by the cleanup step, which runs on cancel), and the full run gets a group of its own.
+    # Smoke runs use only a few users, so one overlapping another run barely skews its results.
+    concurrency:
+      group: load-test-${{ inputs.report_name }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    defaults:
+      run:
+        working-directory: tests/load # folder holding the .jmx and check_results.py
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache JMeter
+        id: jmeter-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/jmeter
+          key: jmeter-${{ env.JMETER_VERSION }}
+
+      - name: Install JMeter
+        if: steps.jmeter-cache.outputs.cache-hit != 'true'
+        run: |
+          cd "$HOME"
+          base="https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz"
+          curl -fsSLO "$base"
+          # make sure the download wasn't corrupted or tampered with
+          echo "$(curl -fsSL "$base.sha512" | cut -d' ' -f1)  apache-jmeter-${JMETER_VERSION}.tgz" | sha512sum -c -
+          mkdir -p jmeter
+          tar -xzf "apache-jmeter-${JMETER_VERSION}.tgz" -C jmeter --strip-components=1
+
+      - name: Add JMeter to PATH
+        run: echo "$HOME/jmeter/bin" >> "$GITHUB_PATH"
+
+      - name: Run load test
+        id: jmeter
+        run: |
+          mkdir -p results
+          # The plan puts the run ID in each account's email and username. The run ID and attempt number keep
+          # them unique, including when a failed job is re-run.
+          jmeter -n -t "$PLAN" -JrunId="${GITHUB_RUN_ID: -5}${GITHUB_RUN_ATTEMPT}" \
+            -JsetupThreads="$USERS" -Jthreads="$USERS" -Jduration="$DURATION" \
+            -l results/results.jtl -j jmeter.log -e -o report
+
+      - name: Check results
+        run: python3 check_results.py results/results.jtl --max-error-rate "$MAX_ERROR_RATE" --max-p95 "$MAX_P95"
+
+      # tearDown normally deletes the accounts. This only runs if JMeter crashed or the job was cancelled.
+      - name: Clean up accounts if the test didn't finish
+        if: always() && steps.jmeter.outcome != 'success'
+        run: |
+          [ -s created_accounts.txt ] || { echo "No accounts to clean up"; exit 0; }
+          jmeter -n -t "$PLAN" \
+            -JcheckLeftovers=0 -JsetupThreads=0 -Jthreads=0 \
+            -l results/cleanup.jtl -j cleanup.log
+
+      - name: Save report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.report_name }}
+          path: |
+            tests/load/report
+            tests/load/results
+            tests/load/errors.xml
+            tests/load/jmeter.log
+            tests/load/cleanup.log
+          if-no-files-found: ignore

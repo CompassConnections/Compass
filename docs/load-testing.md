@@ -43,9 +43,12 @@ A run creates these files next to the plan. They are git-ignored:
 | File or folder         | What it is                                                                              |
 | ---------------------- | --------------------------------------------------------------------------------------- |
 | `created_accounts.txt` | The accounts that exist right now, passed between stages (see below)                    |
-| `errors.xml`           | Details of failed requests                                                              |
+| `errors.xml`           | Details of failed requests, added to on every run                                       |
 | `jmeter.log`           | JMeter's own log, including the warnings the plan's scripts write                       |
 | `results/`, `report/`  | The raw results of each run ([`.jtl` files](#reading-the-results)), and the HTML report |
+
+`created_accounts.txt` and `errors.xml` always land next to the plan, wherever JMeter was started. `jmeter.log` goes to
+the folder JMeter was **started from**, so start the GUI from `tests/load/` too.
 
 ### Choose your setup
 
@@ -129,6 +132,11 @@ the only record of those accounts, so instead this stage fails with a message, a
 `sessionThreads` to 0: this run creates nothing and only deletes the leftovers. Run again afterwards. Skipped when
 `checkLeftovers=0`.
 
+In the GUI, properties last until JMeter is closed, so those zeros would also stop the next run. That's why this stage
+first puts back any thread counts an earlier run set to 0 (it saves them in the `leftoverCheckSaved` property). The
+first run after updating from an older version of the plan is usually cleanup-only once: older versions left deleted
+accounts in the file, and teardown reports them as `Account already deleted`.
+
 **1 - Create accounts** (setUp, `setupThreads` threads, one account each):
 
 1. **Make this thread's account** (JSR223 PreProcessor) sets the thread's email, random password, username and name
@@ -140,13 +148,17 @@ the only record of those accounts, so instead this stage fails with a message, a
    exists; `profileCreated=false` tells teardown how to delete it.
 
 **2 - Browsing session** (`sessionThreads` threads). Each thread takes one line of `created_accounts.txt`, then a
-Runtime Controller repeats a visit for `sessionDuration` seconds. A visit makes the calls the web app makes when someone
-opens it and browses profiles:
+Runtime Controller repeats a visit for `sessionDuration` seconds. A thread whose account has no profile
+(`profileCreated=false`) skips the visit, since every request would fail. A visit makes the calls the web app makes when
+someone opens it and browses profiles:
 
 1. `TEST | /me GET`: the signed-in user. Passes if the code is `200` **and** the returned `name` matches the account.
    Saves the account's `userId` and username for the requests below.
 2. `TEST | get-profile GET (own)`, `TEST | set-last-online-time POST`, `TEST | get-notifications GET` (`limit=450`,
-   as `use-notifications.ts` asks) and `TEST | compatible-profiles GET`: what loads in the background on every page.
+   as `use-notifications.ts` asks), `TEST | get-channel-memberships GET` (`limit=500`, for the messages icon) and
+   `TEST | compatible-profiles GET`: what loads in the background on every page. When the account has message
+   channels, `TEST | get-channel-seen-time GET` also runs, with one `channelIds` parameter per channel (added by a
+   JSR223 PreProcessor). Test accounts have no channels, so it's skipped for now.
 3. `TEST | get-profiles GET (feed)`: the first page of the profile grid, as `profiles-home.tsx` asks for it (20 cards,
    ordered by compatibility with this account). Saves the usernames and the last profile's id.
 4. `TEST | get-profile GET (feed profile)`, `profileViews` times (3 by default): opens a random profile from that page.
@@ -156,16 +168,19 @@ opens it and browses profiles:
 Steps 2 to 5 are skipped when `/me` fails, and 4 and 5 when the feed is empty. **Think time** (a Uniform Random Timer)
 pauses 2 to 5 seconds before each request, like a person reading. It also keeps each account under the API's rate
 limit of 120 requests a minute per user (`API_RATE_LIMIT_PER_MIN_AUTHED`): with no pause, most rate-limited requests
-would come back `429`.
+would come back `429`. One HTTP Header Manager (with the token) and one Response Assertion (code `200`) sit directly
+under the Runtime Controller and cover every request in the visit.
 
 **3 - Delete accounts** (tearDown, 1 thread, one loop per line of `created_accounts.txt`):
 
 1. `TEARDOWN | Firebase Sign in POST` gets a fresh token (setUp's may have expired after 1 hour). If Firebase says the
    account doesn't exist, it is counted as already deleted and passes.
 2. If the profile was created: `TEARDOWN | Delete app user` calls `/me/delete`, which deletes the app user, their
-   files and their Firebase login. It sends the reason `jmeter-load-test`, stored in `deleted_users`.
-3. If there is no profile, or `/me/delete` failed: `TEARDOWN | Firebase delete account` deletes the Firebase login
-   directly, so it doesn't stay behind.
+   files and their Firebase login. It sends the reason `jmeter-load-test`, stored in `deleted_users`. Then
+   `TEARDOWN | Check login is gone POST` signs in again, because `/me/delete` returns `200` even when deleting the
+   Firebase login fails. A `400` there is the expected answer: it passes and counts the account as deleted.
+3. If the login still exists (there's no profile, `/me/delete` failed, or the login survived it):
+   `TEARDOWN | Firebase delete account` deletes the Firebase login directly, so it doesn't stay behind.
 
 Each successful delete is remembered, and **4 - Forget deleted accounts** then rewrites `created_accounts.txt` with
 only the accounts that couldn't be deleted. A warning in `jmeter.log` says how many remain.
@@ -206,8 +221,12 @@ Run these from `tests/load/`. The test runs against the **shared dev API and Fir
 accounts per hour from one IP address, so leave an hour between a smoke test and a full run if you're near that.
 
 ```bash
-jmeter -n -f -t compass-testPlan.jmx -l results/smoke.jtl -e -o report -Jthreads=1 -JsetupRamp=1 -Jramp=1 -Jduration=10
+jmeter -n -f -t compass-testPlan.jmx -l results/smoke.jtl -e -o report -Jthreads=1 -JsetupRamp=1 -Jramp=1 -Jduration=10 -JthinkTimeMs=0 -JthinkRandomMs=0
 ```
+
+The think-time flags matter. With the default 2 to 5 second pauses, 10 seconds only covers the first 3 or so requests
+of a visit. Without pauses it runs about 3 full visits, so every request is checked, and one account for 10 seconds
+stays well under the rate limit.
 
 **Full run with HTML report** (the defaults: 100 threads, 120 seconds):
 
@@ -286,8 +305,8 @@ use **Run → Shutdown**.
 **Specific settings override general ones:** `-Jthreads=50` sets everything to 50 threads; adding `-JsessionThreads=200`
 changes only the browsing session. **Keep `setupThreads` at least as high as the largest load test**, since each load test
 thread needs an account. **Ramp-up** is how long JMeter takes to start all threads; starting them all at once can
-overload sign-in. **Lowering the think time** sends more load per account, but keep the average pause above
-about 0.5 seconds, or the rate limit turns requests into `429`s.
+overload sign-in. **Lowering the think time** sends more load per account, but in runs longer than a short smoke test
+keep the average pause above about 0.5 seconds, or the rate limit turns requests into `429`s.
 
 ---
 
@@ -296,24 +315,24 @@ about 0.5 seconds, or the rate limit turns requests into `429`s.
 To **add** an element in the GUI, right-click the element it should go under → **Add**. To turn one off, right-click →
 **Disable**. Save with **Ctrl+S**.
 
-| Element                         | How it's used here                                                                                                                                                                                                                                                                              |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Test Plan**                   | **Run Thread Groups consecutively** on, so stages run in order. **Run tearDown Thread Groups after shutdown** on, so a graceful stop still cleans up.                                                                                                                                           |
-| **Thread groups**               | Thread counts are properties with fallbacks, e.g. `${__P(setupThreads,${__P(threads,100)})}`, read when the group starts. A group with 0 threads is skipped. All groups **Continue** after a sampler error.                                                                                     |
-| **User Defined Variables**      | `baseAuthUrl`, `apiHost`, `firebaseApiKey`, `runId`, and the Firebase endpoint paths (`signupUrl`, `signinUrl`, `deleteAccountUrl`; `getUserDataUrl` is unused). Wrap a value in `__P` to make it settable with `-J`.                                                                           |
-| **CSV Data Set Config**         | Two, both reading `created_accounts.txt` with `\|` as the delimiter and the sharing mode _Current thread group_, so the load test and teardown each go through every account. **Stop thread on EOF** is on, **Recycle** off.                                                                    |
-| **HTTP Request**                | One per step. Names start with `SETUP \|`, `TEST \|` or `TEARDOWN \|`, so stages are easy to tell apart and the report can filter. Server is `${baseAuthUrl}` or `${apiHost}`, without `https://`.                                                                                              |
-| **HTTP Header Manager**         | Under each request: `Content-Type: application/json`, plus `Authorization: Bearer ${authToken}` where signed in.                                                                                                                                                                                |
-| **JSON Extractor**              | Saves `$.idToken` from sign-up and teardown sign-in as `authToken`.                                                                                                                                                                                                                             |
-| **JSR223 (Groovy)**             | The leftover check, account generation, saving accounts, the teardown sign-in check, remembering deletes and rewriting the file. Scripts use `vars`, `props`, `prev`, `log`, and find files next to the `.jmx` with `FileServer.getFileServer().getBaseDir()`. **Cache compiled script** is on. |
-| **Response Assertion**          | On every request: response code must equal `200`.                                                                                                                                                                                                                                               |
-| **JSON Assertion**              | On `TEST \| /me GET`: `$.name` must equal `${name}`, **not** as a regex (a `.` in a name would break it).                                                                                                                                                                                       |
-| **If Controller**               | In the session, skip requests whose input is missing (`/me` failed, empty feed). In teardown, choose between `/me/delete` and the direct Firebase delete, using `signedIn` and `profileCreated`.                                                                                                |
-| **Loop, Throughput Controller** | Open `profileViews` feed profiles per visit; load the next page in 50% of visits. A random feed profile is `${__V(feedUsername_${__Random(1,${feedUsername_matchNr})})}`.                                                                                                                       |
-| **Runtime Controller**          | Repeats a visit for `${__P(sessionDuration,${__P(duration,120)})}` seconds.                                                                                                                                                                                                                     |
-| **Uniform Random Timer**        | **Think time**: `${__P(thinkTimeMs,2000)}` ms plus a random 0 to `${__P(thinkRandomMs,3000)}` ms before each session request.                                                                                                                                                                   |
-| **Listeners**                   | **Simple Data Writer** saves failed requests only to `errors.xml`, with response bodies but not request bodies (they hold passwords and tokens). **Summary Report** is GUI only. **View Results Tree** is disabled: great for debugging, too heavy for load runs.                               |
-| **Debug Sampler**               | Disabled, at the end of `1 - Create accounts`. Enable it with View Results Tree to see a thread's variables in the GUI; disable both before a load run.                                                                                                                                         |
+| Element                         | How it's used here                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Test Plan**                   | **Run Thread Groups consecutively** on, so stages run in order. **Run tearDown Thread Groups after shutdown** on, so a graceful stop still cleans up.                                                                                                                                                                                                                                                                  |
+| **Thread groups**               | Thread counts are properties with fallbacks, e.g. `${__P(setupThreads,${__P(threads,100)})}`, read when the group starts. A group with 0 threads is skipped. All groups **Continue** after a sampler error.                                                                                                                                                                                                            |
+| **User Defined Variables**      | `baseAuthUrl`, `apiHost`, `firebaseApiKey`, `runId`, and the Firebase endpoint paths (`signupUrl`, `signinUrl`, `deleteAccountUrl`; `getUserDataUrl` is unused). Wrap a value in `__P` to make it settable with `-J`.                                                                                                                                                                                                  |
+| **CSV Data Set Config**         | Two, both reading `created_accounts.txt` with `\|` as the delimiter and the sharing mode _Current thread group_, so the load test and teardown each go through every account. **Stop thread on EOF** is on, **Recycle** off.                                                                                                                                                                                           |
+| **HTTP Request**                | One per step. Names start with `SETUP \|`, `TEST \|` or `TEARDOWN \|`, so stages are easy to tell apart and the report can filter. Server is `${baseAuthUrl}` or `${apiHost}`, without `https://`. Query parameters go in the **Parameters** tab, not the path.                                                                                                                                                        |
+| **HTTP Header Manager**         | In setUp and teardown, under each request: `Content-Type: application/json`, plus `Authorization: Bearer ${authToken}` where signed in. In the browsing session, one under the Runtime Controller sends both for every request.                                                                                                                                                                                        |
+| **JSON Extractor**              | Saves `$.idToken` from sign-up and the teardown sign-ins as `authToken`. In the session: `/me`'s id and username, the feed's usernames and last profile id, and the message channel IDs (`$.channels[*].channel_id`, all matches).                                                                                                                                                                                     |
+| **JSR223 (Groovy)**             | The leftover check (including putting back thread counts an earlier GUI run set to 0), account generation, saving accounts, adding the channel IDs to `get-channel-seen-time`, the teardown sign-in checks, remembering deletes and rewriting the file. Scripts use `vars`, `props`, `prev`, `log`, and find files next to the `.jmx` with `FileServer.getFileServer().getBaseDir()`. **Cache compiled script** is on. |
+| **Response Assertion**          | Response code must equal `200`. In setUp and teardown, one under each request; in the browsing session, one under the Runtime Controller checks every request.                                                                                                                                                                                                                                                         |
+| **JSON Assertion**              | On `TEST \| /me GET`: `$.name` must equal `${name}`, **not** as a regex (a `.` in a name would break it).                                                                                                                                                                                                                                                                                                              |
+| **If Controller**               | In the session, skip the whole visit for an account without a profile, and skip requests whose input is missing (`/me` failed, empty feed, no message channels). In teardown, run `/me/delete` when the profile was created, and the direct Firebase delete when the login still exists (`signedIn` and not yet in `deletedAccounts`).                                                                                 |
+| **Loop, Throughput Controller** | Open `profileViews` feed profiles per visit; load the next page in 50% of visits. A random feed profile is `${__V(feedUsername_${__Random(1,${feedUsername_matchNr})})}`.                                                                                                                                                                                                                                              |
+| **Runtime Controller**          | Repeats a visit for `${__P(sessionDuration,${__P(duration,120)})}` seconds.                                                                                                                                                                                                                                                                                                                                            |
+| **Uniform Random Timer**        | **Think time**: `${__P(thinkTimeMs,2000)}` ms plus a random 0 to `${__P(thinkRandomMs,3000)}` ms before each session request.                                                                                                                                                                                                                                                                                          |
+| **Listeners**                   | **Simple Data Writer** saves failed requests only to `~/errors.xml`, with response bodies but not request bodies (they hold passwords and tokens). The `~/` means the plan's folder, so the file lands there wherever JMeter was started. Each run adds to it. **Summary Report** is GUI only. **View Results Tree** is disabled: great for debugging, too heavy for load runs.                                        |
+| **Debug Sampler**               | Disabled, at the end of `1 - Create accounts`. Enable it with View Results Tree to see a thread's variables in the GUI; disable both before a load run.                                                                                                                                                                                                                                                                |
 
 If you add a column to `created_accounts.txt`, add it to the `join` in **Save account for test and teardown** and to
 the Variable Names of both CSV configs, in the same position.
@@ -325,12 +344,14 @@ the Variable Names of both CSV configs, in the same position.
 New load tests reuse the accounts created by setUp and deleted by tearDown, so you only build the test itself.
 
 1. Right-click `2 - Browsing session` → **Duplicate**, and drag the copy after the last load test. (To add a
-   request to the session instead, put it inside the existing Runtime Controller with a `TEST |` name.)
+   request to the session instead, put it inside the existing Runtime Controller with a `TEST |` name. It gets the
+   shared Header Manager and Response Assertion automatically; put its parameters in the **Parameters** tab.)
 2. Rename it `N - <new test name>` and pick a property prefix, e.g. `<newtest>`:
    - Number of Threads: `${__P(<newtest>Threads,${__P(threads,100)})}`
    - Ramp-up period: `${__P(<newtest>Ramp,${__P(ramp,10)})}`
    - Runtime Controller → Runtime: `${__P(<newtest>Duration,${__P(duration,120)})}`
-3. Add `<newtest>Threads` to the list the leftover check sets to 0, in **SETUP | Check created_accounts.txt is empty**.
+3. Add `<newtest>Threads` to `keys` at the top of **SETUP | Check created_accounts.txt is empty**. The leftover check
+   uses that list both to set the thread counts to 0 and to put them back on the next run.
 4. Keep `CSV - Created accounts` as it is.
 5. Change the HTTP Request (name `TEST | <new request>`, method, path, body) and update the assertions so they check
    **this** response.
@@ -348,13 +369,24 @@ the new group. A test that changes account data (e.g. the name) affects later te
 from it. Useful columns: `elapsed` (response time in ms), `label`, `responseCode`, `success`, `failureMessage`,
 `Latency`, `Connect` and `allThreads` (the load at that moment). Sort by `elapsed` for the slowest requests, or keep
 files from several runs to compare them (`-f` overwrites a file with the same name). It holds no passwords or tokens.
+Only command-line runs with `-l` create it; a run started in the GUI doesn't.
 
 **The HTML report:** in **Statistics**, check `#Samples` fits what you asked for (e.g. 100 sign-ups for 100 threads).
 Failures in `SETUP |` rows mean less load than intended. _Average_ hides slow outliers, so look at the **90th/95th/99th
-pct** columns.
+pct** columns. `SETUP | create-user-and-profile POST` is slow on dev (9 to 15 seconds per account in recent runs), so
+account creation takes a while; it isn't part of the p95 check.
+
+The session requests don't all get the same number of samples, by design:
+
+- `TEST | get-profile GET (feed profile)` runs `profileViews` (3) times per visit.
+- `TEST | get-profiles GET (next page)` runs in about half the visits.
+- `TEST | get-channel-seen-time GET` doesn't appear while the test accounts have no message channels.
+- Each thread's last visit stops when the time runs out, so the requests early in a visit get one more sample than
+  the later ones.
 
 **errors.xml** holds only failed requests, with the response body that shows why. It **adds to itself on every run**,
-so delete it first if you only want one run's errors.
+so delete it first if you only want one run's errors. Check each entry's `ts` (a timestamp in milliseconds) to see
+which run it came from.
 
 ---
 
@@ -362,12 +394,12 @@ so delete it first if you only want one run's errors.
 
 Two workflows run the plan, using the shared steps in `.github/workflows/load-test.yml`:
 
-|             | Smoke test (`load-smoke-test.yml`)                                                                                 | Full test (`load-full-test.yml`)                                      |
-| ----------- | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| Runs when   | A PR into `main` changes `backend/api/`, `backend/shared/`, `common/src/api/`, `tests/load/` or the load workflows | Every Monday at 06:00 UTC                                             |
-| Size        | 3 threads for 30 seconds                                                                                           | 100 threads for 120 seconds                                           |
-| Passes when | No request fails, and the p95 of `TEST \|` requests is at most 2000 ms                                             | At most 1% of each request fails, and `TEST \|` p95 is at most 800 ms |
-| Artifact    | `load-smoke-report`                                                                                                | `load-full-report`                                                    |
+|             | Smoke test (`load-smoke-test.yml`)                                                                                 | Full test (`load-full-test.yml`)                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| Runs when   | A PR into `main` changes `backend/api/`, `backend/shared/`, `common/src/api/`, `tests/load/` or the load workflows | Every Monday at 06:00 UTC                                              |
+| Size        | 3 threads for 30 seconds, with a fixed 200 ms think time so each thread completes several full visits              | 100 threads for 120 seconds, with the default 2 to 5 second think time |
+| Passes when | No request fails, and the p95 of `TEST \|` requests is at most 2000 ms                                             | At most 1% of each request fails, and `TEST \|` p95 is at most 1200 ms |
+| Artifact    | `load-smoke-report`                                                                                                | `load-full-report`                                                     |
 
 Either can also be started by hand from the **Actions** tab → **Run workflow**.
 
@@ -382,8 +414,9 @@ JMeter didn't finish, and uploads the report, results, `errors.xml` and logs.
 runs), and the full test has its own group. A shared group would let one PR's push silently cancel another PR's queued
 run or the weekly full run, because GitHub keeps only one pending run per group.
 
-To change a workflow's size or limits, edit the values under `with:`. Going above 100 accounts needs a higher sign-up
-quota in the Firebase console.
+To change a workflow's size or limits, edit the values under `with:`; `think_time_ms` and `think_random_ms` set the
+plan's `thinkTimeMs` and `thinkRandomMs` (the full test leaves them at the defaults). Going above 100 accounts needs a
+higher sign-up quota in the Firebase console.
 
 ### check_results.py
 
@@ -397,11 +430,11 @@ checks, per request label:
 It also fails when there are no `TEST |` results at all. Run it locally from `tests/load/` (use `python` on Windows):
 
 ```bash
-python3 check_results.py results/results.jtl --max-error-rate 1 --max-p95 800
+python3 check_results.py results/results.jtl --max-error-rate 1 --max-p95 1200
 ```
 
 It prints each label's samples, error rate and p95, then `PASS` or one `FAIL:` line per broken limit, and exits with
-`0` or `1`. The defaults are 1% and 800 ms.
+`0` or `1`. The defaults are 1% and 1200 ms.
 
 ---
 
@@ -410,9 +443,17 @@ It prints each label's samples, error rate and p95, then `PASS` or one `FAIL:` l
 **The run says `created_accounts.txt lists N accounts from an earlier run`.** An earlier run didn't finish cleaning up.
 This run deleted those accounts instead of testing; check the `TEARDOWN |` rows, then run again. Accounts that still
 couldn't be deleted stay in the file, and `jmeter.log` says how many. Don't delete test accounts in the Firebase console
-instead: that only removes the login, and the app user stays in the database.
+instead: that only removes the login, and the app user stays in the database. The first run after updating from an
+older version of the plan usually does this once, and its `TEARDOWN |` rows say `Account already deleted`: that's
+expected.
 
 **Requests fail with `429`.** The think time is too short for the rate limit; raise `thinkTimeMs`.
+
+**A smoke test only shows a few requests, one sample each.** The 2 to 5 second think time used up the run. Add
+`-JthinkTimeMs=0 -JthinkRandomMs=0`, as in the [smoke test command](#commands).
+
+**`jmeter.log` isn't in `tests/load/`.** JMeter writes it to the folder it was started from. Start JMeter from
+`tests/load/`, or look in the folder you started it in.
 
 **Fewer load test threads than expected.** `created_accounts.txt` has fewer lines than the test has threads. Check the
 `SETUP |` rows for failures, and that `setupThreads` is high enough.

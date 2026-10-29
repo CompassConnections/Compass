@@ -26,3 +26,8 @@ jobs:
       max_error_rate: 0
       max_p95: 2000
       report_name: load-smoke-report
+      # The plan's default 2 to 5 second pause before each request would stop a 30 second run partway through the
+      # first visit, so the later requests would never be checked. 200 ms lets each thread finish several visits,
+      # and still keeps each account under the API's 120 rate-limited requests a minute, even if it answered at once.
+      think_time_ms: 200
+      think_random_ms: 0

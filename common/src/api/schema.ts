@@ -1580,6 +1580,19 @@ export const API = (_apiTypeCheck = {
     summary: 'Save a mobile push subscription for the user',
     tag: 'Notifications',
   },
+  'delete-subscription': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as {success: boolean},
+    props: z.object({
+      // The web push endpoint, the native push token, or both — whichever this device holds.
+      endpoint: z.string().optional(),
+      token: z.string().optional(),
+    }),
+    summary: "Remove this device's push subscription for the user, on sign-out",
+    tag: 'Notifications',
+  },
   'create-bookmarked-search': {
     method: 'POST',
     authed: true,

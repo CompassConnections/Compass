@@ -332,6 +332,9 @@ export const PrivateChat = (props: {
     size: 'sm',
     uploadFolder: 'messages',
     placeholder: t('messages.input_placeholder', 'Send a message'),
+    // 16px to match the sent bubble (chat-message.tsx), and because iOS Safari zooms into any
+    // focused field under 16px. `sm` is kept for its tighter spacing.
+    className: '!text-[1rem]',
   })
 
   useEffect(() => {

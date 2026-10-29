@@ -125,7 +125,9 @@ export const SendMessageButton = (props: {
     // The editor sets an inline `min-height` from nRowsMin (editor.tsx), and inline style beats the
     // class below — so nRowsMin, not `min-h-[150px]`, is what actually decides the height. Five rows
     // gives a message with a 200-character minimum somewhere to live.
-    className: 'min-h-[150px]',
+    // `!text-[1rem]`: 16px to match the sent bubble and avoid iOS Safari's focus zoom (see the
+    // conversation composer in pages/messages/[channelId].tsx).
+    className: 'min-h-[150px] !text-[1rem]',
     nRowsMin: 5,
   })
 

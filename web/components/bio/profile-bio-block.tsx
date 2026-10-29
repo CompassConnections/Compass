@@ -11,7 +11,7 @@ import {Tooltip} from 'web/components/widgets/tooltip'
 import {updateProfile} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 
-import {BIO_PARAGRAPH_SPACING, EditableBio} from './editable-bio'
+import {BIO_PARAGRAPH_SPACING, BIO_TEXT_SIZE, EditableBio} from './editable-bio'
 
 export function BioBlock(props: {
   isCurrentUser: boolean
@@ -34,7 +34,7 @@ export function BioBlock(props: {
         {!edit && profile.bio && (
           <Col className="flex w-full flex-grow" data-testid="profile-bio">
             <Content
-              className={clsx('w-full', BIO_PARAGRAPH_SPACING)}
+              className={clsx('w-full', BIO_PARAGRAPH_SPACING, BIO_TEXT_SIZE)}
               content={profile.bio as JSONContent}
               footnotes
             />

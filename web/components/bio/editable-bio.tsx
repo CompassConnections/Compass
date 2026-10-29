@@ -1,5 +1,6 @@
 import {Editor} from '@tiptap/core'
 import {useEditorState} from '@tiptap/react'
+import clsx from 'clsx'
 import {MIN_BIO_LENGTH} from 'common/constants'
 import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
@@ -25,6 +26,13 @@ import {track} from 'web/lib/service/analytics'
  * Must be `!important`: it competes with `prose-p:my-0` on the very same element.
  */
 export const BIO_PARAGRAPH_SPACING = 'prose-p:!my-3'
+
+/**
+ * 17px bio text (prose-base gives 16px): a bio is read in full to decide on someone, so it gets the
+ * comfortable end of the 16–18px body range. Shared by the editor and the profile view so writing and
+ * reading look the same. Font size only, so the line height stays the prose one.
+ */
+export const BIO_TEXT_SIZE = '!text-[1.0625rem]'
 
 export function BioTips({onClick}: {onClick?: () => void}) {
   const t = useT()
@@ -182,7 +190,7 @@ export function BaseBio({defaultValue, onBlur, onEditor, onClickTips}: BaseBioPr
     // `proseClass` zeroes paragraph margins at this size — right for comments and chat bubbles,
     // which are usually a single paragraph, but it makes a multi-paragraph bio render as one
     // undifferentiated wall of text. `!` because it has to beat `prose-p:my-0` on the same element.
-    className: BIO_PARAGRAPH_SPACING,
+    className: clsx(BIO_PARAGRAPH_SPACING, BIO_TEXT_SIZE),
     placeholder: t(
       'profile.bio.placeholder',
       "Tell us all the details about yourself — and what you're looking for!",

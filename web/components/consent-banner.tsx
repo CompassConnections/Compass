@@ -69,10 +69,7 @@ export function ConsentBanner() {
       )}
     >
       <p className="m-0 text-[13px] leading-relaxed text-ink-700">
-        {t(
-          'consent.text',
-          'May we count feature usage to see what is worth building? No ads, and nothing sold.',
-        )}{' '}
+        {t('consent.text', 'We use optional cookies for analytics only. No ads, and nothing sold.')}{' '}
         <Link
           href="/privacy#cookies-and-local-storage"
           className="font-medium text-primary-700 underline decoration-primary-500/35 underline-offset-2 transition-colors hover:decoration-primary-500"

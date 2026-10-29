@@ -80,6 +80,14 @@ export class HomePage {
     return this.sidebar.getByText('Contact')
   }
 
+  get sidebarBlog() {
+    return this.sidebar.getByText('Blog')
+  }
+
+  get sidebarHelp() {
+    return this.sidebar.getByText('Help')
+  }
+
   async goToHomePage() {
     await this.page.goto('/home')
   }
@@ -172,13 +180,17 @@ export class HomePage {
   async verifyHomePageLinks() {
     await expect(this.homePageLink).toBeVisible()
     await expect(this.sidebarAbout).toBeVisible()
-    await expect(this.sidebarFaq).toBeVisible()
+    // FAQ, Socials and Organization left the rail for the footer, and Help replaced Contact (see the
+    // sidebar restructure in `page-base.tsx`).
+    // await expect(this.sidebarFaq).toBeVisible()
     await expect(this.sidebarVote).toBeVisible()
     // await expect(this.sidebarEvents).toBeVisible()
     await expect(this.sidebarWhatsNew).toBeVisible()
-    await expect(this.sidebarSocials).toBeVisible()
-    await expect(this.sidebarOrganization).toBeVisible()
-    await expect(this.sidebarContact).toBeVisible()
+    await expect(this.sidebarBlog).toBeVisible()
+    // await expect(this.sidebarSocials).toBeVisible()
+    // await expect(this.sidebarOrganization).toBeVisible()
+    // await expect(this.sidebarContact).toBeVisible()
+    await expect(this.sidebarHelp).toBeVisible()
     await expect(this.signUpButton).toBeVisible()
     await expect(this.signInLink).toBeVisible()
     await expect(this.localePicker).toBeVisible()
@@ -193,13 +205,17 @@ export class HomePage {
     await expect(this.sidebarMessages).toBeVisible()
     await expect(this.sidebarSettings).toBeVisible()
     await expect(this.sidebarAbout).toBeVisible()
-    await expect(this.sidebarFaq).toBeVisible()
+    // FAQ, Socials and Organization left the rail for the footer, and Help replaced Contact (see the
+    // sidebar restructure in `page-base.tsx`).
+    // await expect(this.sidebarFaq).toBeVisible()
     await expect(this.sidebarVote).toBeVisible()
     // await expect(this.sidebarEvents).toBeVisible()
     await expect(this.sidebarWhatsNew).toBeVisible()
-    await expect(this.sidebarSocials).toBeVisible()
-    await expect(this.sidebarOrganization).toBeVisible()
-    await expect(this.sidebarContact).toBeVisible()
+    await expect(this.sidebarBlog).toBeVisible()
+    // await expect(this.sidebarSocials).toBeVisible()
+    // await expect(this.sidebarOrganization).toBeVisible()
+    // await expect(this.sidebarContact).toBeVisible()
+    await expect(this.sidebarHelp).toBeVisible()
     // Sign out sits behind the "…" menu next to the member's name.
     await this.userMenuButton.click()
     await expect(this.signOutLink).toBeVisible()

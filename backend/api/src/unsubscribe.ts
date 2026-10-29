@@ -56,11 +56,11 @@ export const unsubscribe: APIHandler<'unsubscribe/:token'> = async ({token}, _au
       `UPDATE private_users
        SET data = jsonb_set(
          data,
-         '{notificationPreferences,${notification_type}}',
-         (COALESCE(data->'notificationPreferences'->'${notification_type}', '["email", "browser", "mobile"]'::jsonb) - 'email')
+         array['notificationPreferences', $2::text],
+         (COALESCE(data->'notificationPreferences'->$2::text, '["email", "browser", "mobile"]'::jsonb) - 'email')
        )
        WHERE id = $1`,
-      [user_id],
+      [user_id, notification_type],
     )
   } else {
     // Unsubscribe from all emails by adding email to opt_out_all

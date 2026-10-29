@@ -3,6 +3,8 @@ import {debug} from 'common/logger'
 import {useEffect} from 'react'
 import {useUser} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
+import {NATIVE_PUSH_TOKEN_KEY} from 'web/lib/service/push-logout'
+import {safeLocalStorage} from 'web/lib/util/local'
 import {isNativeApp, nativePlatform} from 'web/lib/util/webview'
 
 /**
@@ -40,6 +42,8 @@ export default function NativePush() {
           platform: nativePlatform() === 'ios' ? 'ios' : 'android',
         })
         debug('Mobile subscription saved:', data)
+        // Kept so sign-out can remove this device's row (see `removePushSubscription`).
+        safeLocalStorage?.setItem(NATIVE_PUSH_TOKEN_KEY, token.value)
       } catch (err) {
         console.error('Failed saving mobile push subscription', err)
       }

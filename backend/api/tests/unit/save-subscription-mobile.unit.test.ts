@@ -47,6 +47,19 @@ describe('saveSubscriptionMobile', () => {
       expect(mockPg.none).toBeCalledWith(expect.anything(), ['iosToken', 'ios', mockAuth.uid])
     })
 
+    // The token used to be reassigned to whoever sent it, which let anyone holding another member's
+    // token redirect their notifications.
+    it('never reassigns a token owned by another member', async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      ;(mockPg.none as jest.Mock).mockResolvedValue(null)
+
+      await saveSubscriptionMobile({token: 'someToken'}, mockAuth, {} as any)
+
+      const sql = (mockPg.none as jest.Mock).mock.calls[0][0] as string
+      expect(sql).not.toMatch(/set[^]*user_id\s*=[^]*where/)
+      expect(sql).toMatch(/where push_subscriptions_mobile\.user_id = excluded\.user_id/)
+    })
+
     // Android builds shipped before iOS existed send only a token.
     it('defaults to android when the client does not say, for builds that predate the field', async () => {
       const mockAuth = {uid: '321'} as AuthedUser

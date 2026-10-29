@@ -9,6 +9,7 @@ import {createVoteComment} from 'api/create-vote-comment'
 import {deleteCompatibilityPrompt} from 'api/delete-compatibility-prompt'
 import {deleteMessage} from 'api/delete-message'
 import {deleteOption} from 'api/delete-option'
+import {deleteSubscription} from 'api/delete-subscription'
 import {editMessage} from 'api/edit-message'
 import {editVoteComment} from 'api/edit-vote-comment'
 import {getChannelMemberships} from 'api/get-channel-memberships'
@@ -765,6 +766,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'remove-pinned-photo': removePinnedPhoto,
   'save-subscription': saveSubscription,
   'save-subscription-mobile': saveSubscriptionMobile,
+  'delete-subscription': deleteSubscription,
   'search-location': searchLocationEndpoint,
   'search-near-city': searchNearCity,
   'search-users': searchUsers,

@@ -491,6 +491,10 @@ export async function revokeAppleToken(): Promise<'revoked' | 'not-applicable' |
  * stored token, and neither is a reason to leave someone half signed out.
  */
 export async function firebaseLogout() {
+  // Before signing out: removing the device's push subscription needs the session that owns it.
+  // Imported lazily because web/lib/api imports this file.
+  const {removePushSubscription} = await import('web/lib/service/push-logout')
+  await removePushSubscription()
   if (isNativeApp()) {
     await Promise.all([
       SocialLogin.logout({provider: 'google'}).catch((e) => debug('Google logout skipped', e)),

@@ -29,51 +29,36 @@ describe('saveSubscription', () => {
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
-      const mockExists = {id: 'mockId'}
 
-      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockExists)
       ;(mockPg.none as jest.Mock).mockResolvedValue(null)
 
       const result = await saveSubscription(mockBody, mockAuth, mockReq)
 
       expect(result.success).toBeTruthy()
-      expect(mockPg.oneOrNone).toBeCalledTimes(1)
-      expect(mockPg.oneOrNone).toBeCalledWith(
-        sqlMatch('select id from push_subscriptions where endpoint = $1'),
-        [mockBody.subscription.endpoint],
-      )
-      expect(mockPg.none).toBeCalledTimes(1)
-      expect(mockPg.none).toBeCalledWith(
-        sqlMatch('update push_subscriptions set keys = $1, user_id = $2 where id = $3'),
-        [mockBody.subscription.keys, mockAuth.uid, mockExists.id],
-      )
-    })
-
-    it('should save user subscription even if this is their first one', async () => {
-      const mockBody = {
-        subscription: {
-          endpoint: 'mockEndpoint',
-          keys: 'mockKeys',
-        },
-      }
-      const mockAuth = {uid: '321'} as AuthedUser
-      const mockReq = {} as any
-
-      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(false)
-      ;(mockPg.none as jest.Mock).mockResolvedValue(null)
-
-      const result = await saveSubscription(mockBody, mockAuth, mockReq)
-
-      expect(result.success).toBeTruthy()
-      expect(mockPg.oneOrNone).toBeCalledTimes(1)
-      expect(mockPg.oneOrNone).toBeCalledWith(
-        sqlMatch('select id from push_subscriptions where endpoint = $1'),
-        [mockBody.subscription.endpoint],
-      )
       expect(mockPg.none).toBeCalledTimes(1)
       expect(mockPg.none).toBeCalledWith(
         sqlMatch('insert into push_subscriptions(endpoint, keys, user_id) values($1, $2, $3)'),
         [mockBody.subscription.endpoint, mockBody.subscription.keys, mockAuth.uid],
+      )
+    })
+
+    // The endpoint used to be reassigned to whoever sent it, which let anyone holding another
+    // member's endpoint redirect their notifications.
+    it("only updates an existing endpoint that is unowned or already the caller's", async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      ;(mockPg.none as jest.Mock).mockResolvedValue(null)
+
+      await saveSubscription(
+        {subscription: {endpoint: 'mockEndpoint', keys: 'mockKeys'}} as any,
+        mockAuth,
+        {} as any,
+      )
+
+      expect(mockPg.none).toBeCalledWith(
+        sqlMatch(
+          'where push_subscriptions.user_id is null or push_subscriptions.user_id = excluded.user_id',
+        ),
+        expect.anything(),
       )
     })
   })

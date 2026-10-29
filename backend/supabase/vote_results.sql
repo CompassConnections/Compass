@@ -18,10 +18,10 @@ add constraint vote_results_vote_id_fkey foreign key (vote_id) references votes 
 -- Row Level Security
 ALTER TABLE vote_results ENABLE ROW LEVEL SECURITY;
 
--- Policies
-DROP POLICY IF EXISTS "public read" ON vote_results;
-CREATE POLICY "public read" ON vote_results
-FOR SELECT USING (true);
+-- No SELECT policy: RLS is enabled with no read policy AND the anon/authenticated SELECT grant is
+-- revoked (migration 20261029_private_votes_and_stars.sql dropped the former "public read" policy).
+-- Ballots and anonymous proposal authors are private; the client reads tallies through the security
+-- definer get_votes_with_results().
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS user_id_idx ON vote_results (user_id);

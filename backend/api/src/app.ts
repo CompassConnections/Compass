@@ -103,6 +103,8 @@ import {getEvents} from './get-events'
 import {getMe} from './get-me'
 import {getMyReferralCount} from './get-my-referral-count'
 import {getMyReferrals} from './get-my-referrals'
+import {getMyStars} from './get-my-stars'
+import {getMyVoteChoices} from './get-my-vote-choices'
 import {getNotifications} from './get-notifications'
 import {getOutreachQueue} from './get-outreach-queue'
 import {getOutreachStats} from './get-outreach-stats'
@@ -690,6 +692,8 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'create-vote-comment': createVoteComment,
   'delete-bookmarked-search': deleteBookmarkedSearch,
   'get-bookmarked-searches': getBookmarkedSearches,
+  'get-my-stars': getMyStars,
+  'get-my-vote-choices': getMyVoteChoices,
   'delete-compatibility-answer': deleteCompatibilityAnswer,
   'delete-message': deleteMessage,
   'edit-message': editMessage,

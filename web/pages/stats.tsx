@@ -203,10 +203,14 @@ function ActivitySection({
   data,
   discussions,
   messages,
+  proposals,
+  ballots,
 }: {
   data: Record<string, number | null>
   discussions: number | null | undefined
   messages: number | null | undefined
+  proposals: number | null | undefined
+  ballots: number | null | undefined
 }) {
   const t = useT()
   const panels = [
@@ -233,8 +237,8 @@ function ActivitySection({
       icon: BuildingLibraryIcon,
       title: t('stats.group.democracy', 'Democracy'),
       rows: [
-        {label: t('stats.proposals', 'Proposals'), value: data.votes},
-        {label: t('stats.votes', 'Votes cast'), value: data.vote_results},
+        {label: t('stats.proposals', 'Proposals'), value: proposals},
+        {label: t('stats.votes', 'Votes cast'), value: ballots},
       ],
     },
   ].filter((p) => p.rows.some((r) => !!r.value))
@@ -408,12 +412,9 @@ export default function Stats() {
       // (`conversations` = channels with at least one message), so the stats page and the
       // home/about stat bands report the same number. Counting the channels table instead also
       // counted channels created but never written in, which read higher than the about page.
-      const tables = [
-        'compatibility_prompts',
-        'compatibility_answers',
-        'votes',
-        'vote_results',
-      ] as const
+      // No 'votes' or 'vote_results' either: neither is readable by the client roles (ballots and
+      // anonymous authors are private), so both counts come from /stats.
+      const tables = ['compatibility_prompts', 'compatibility_answers'] as const
 
       const [settled, statsResult] = await Promise.allSettled([
         Promise.allSettled(tables.map((tbl) => getCount(tbl))),
@@ -503,6 +504,8 @@ export default function Stats() {
               data={data}
               discussions={statsData?.conversations}
               messages={statsData?.messages}
+              proposals={statsData?.proposals}
+              ballots={statsData?.ballots}
             />
           </>
         )}

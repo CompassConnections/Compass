@@ -7,6 +7,7 @@ import {
   PencilSquareIcon,
   SparklesIcon,
   TagIcon,
+  TrophyIcon,
 } from '@heroicons/react/24/outline'
 import {IS_LOCAL} from 'common/hosting/constants'
 import Link from 'next/link'
@@ -32,6 +33,13 @@ const ADMIN_PAGES: {
     name: 'Outreach',
     description: 'Every open conversation plus the newest members nobody has written to yet.',
     icon: EnvelopeIcon,
+  },
+  {
+    href: '/admin/member-value',
+    name: 'Value for Compass',
+    description:
+      'Every member ranked by measured contribution to the mission: conversations, referrals, responsiveness, profile, community.',
+    icon: TrophyIcon,
   },
   {
     href: '/admin/journeys',

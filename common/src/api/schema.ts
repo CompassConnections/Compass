@@ -29,6 +29,7 @@ import {
   MAX_DONATION_USD,
 } from 'common/donations'
 import {FeedItem, MAX_FEED_LIMIT} from 'common/feed/feed'
+import {MemberValueRanking} from 'common/member-value'
 import {BAN_REASONS, MAX_CHANNEL_MEMBERS} from 'common/moderation/ban'
 import {ProfileGateIssues} from 'common/moderation/first-message'
 import {Notification} from 'common/notifications'
@@ -1808,6 +1809,16 @@ export const API = (_apiTypeCheck = {
     props: z.object({}).strict(),
     returns: {} as OutreachStats,
     summary: 'Measured outcome rates per outreach stage and per automated send. Admin only.',
+    tag: 'Admin',
+  },
+  'get-member-value-ranking': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({}).strict(),
+    returns: {} as MemberValueRanking,
+    summary:
+      'Every member with the measured behaviours behind their "value for Compass" score. Admin only.',
     tag: 'Admin',
   },
   'get-my-referrals': {

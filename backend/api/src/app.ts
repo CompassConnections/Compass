@@ -100,6 +100,7 @@ import {getDonationsAdmin} from './get-donations-admin'
 import {getDonorBadge} from './get-donor-badge'
 import {getEvents} from './get-events'
 import {getMe} from './get-me'
+import {getMemberValueRanking} from './get-member-value-ranking'
 import {getMyReferralCount} from './get-my-referral-count'
 import {getMyReferrals} from './get-my-referrals'
 import {getNotifications} from './get-notifications'
@@ -714,6 +715,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'set-option-alias': setOptionAlias,
   'get-outreach-queue': getOutreachQueue,
   'get-outreach-stats': getOutreachStats,
+  'get-member-value-ranking': getMemberValueRanking,
   'get-my-referrals': getMyReferrals,
   'get-my-referral-count': getMyReferralCount,
   'get-referral-tree': getReferralTreeHandler,

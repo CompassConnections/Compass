@@ -2,6 +2,7 @@ import {Img, Link, Section, Text} from '@react-email/components'
 import {DEPLOYED_WEB_URL, DOMAIN} from 'common/envs/constants'
 import {type ProfileRow} from 'common/profiles/profile'
 import {type User} from 'common/user'
+import {ownImageUrlOrUndefined} from 'common/util/image-url'
 import {
   Actions,
   CTAButton,
@@ -45,7 +46,9 @@ export const NewMessageEmail = ({
   const profileUrl = `https://${DOMAIN}/${fromUser.username}`
   // Every client renders <img> reliably, none of them render a CSS-generated placeholder — so an absent
   // avatar falls back to the same asset the web app uses rather than to a broken image icon.
-  const avatarUrl = fromUser.avatarUrl
+  // Only a photo we host: a mail client loads it the moment the email is opened, so one on the
+  // sender's own server would hand them the reader's IP and a read receipt (see `isOwnImageUrl`).
+  const avatarUrl = ownImageUrlOrUndefined(fromUser.avatarUrl)
   const t = createT(locale)
 
   // Age and city are the two facts a reader can act on at a glance; anything more turns the card into a

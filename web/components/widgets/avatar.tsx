@@ -1,5 +1,6 @@
 import {UserIcon, UsersIcon} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
+import {ownImageUrlOrUndefined} from 'common/util/image-url'
 import {floor} from 'lodash'
 import Image from 'next/image'
 import {useRouter} from 'next/router'
@@ -45,10 +46,11 @@ export const Avatar = memo(
       }
     }
     const fallbackInitial = (username || 'U')[0] // first character, not encoded string
+    // Rows written before photo URLs were validated can still point anywhere; in the app build
+    // next/image loads them straight from the viewer's device (see `isOwnImageUrl`).
     const url: string =
-      avatarUrl && avatarUrl.length > 0
-        ? avatarUrl
-        : `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackInitial)}`
+      ownImageUrlOrUndefined(avatarUrl) ??
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackInitial)}`
     // console.log(username, fallbackInitial, url)
 
     // there can be no avatar URL or username in the feed, we show a "submit comment"

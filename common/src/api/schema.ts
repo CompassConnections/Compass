@@ -3,6 +3,7 @@ import {
   arraybeSchema,
   contentSchema,
   dateSchema,
+  ownImageUrl,
   profileSchema,
   zBoolean,
 } from 'common/api/zod-types'
@@ -478,7 +479,7 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       name: z.string().trim().min(1).optional(),
       username: z.string().trim().min(1).optional(),
-      avatarUrl: z.string().optional(),
+      avatarUrl: ownImageUrl.optional(),
     }),
     returns: {} as FullUser,
     summary: 'Update authenticated user profile and settings',

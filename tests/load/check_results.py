@@ -55,7 +55,7 @@ def check_limits(stats, max_error_rate, max_p95):
         if s["error_rate"] > max_error_rate:
             problems.append(f"{label}: error rate {s['error_rate']:.1f}% is over {max_error_rate}%")
         if label.startswith(TEST_LABEL_PREFIX) and s["count"] >= 20 and s["p95"] > max_p95:
-            problems.append(f"{label}: p95 {s['p95']} ms is over {max_p95} ms")
+            problems.append(f"{label}: p95 {s['p95']} ms is over {max_p95}ms")
     return problems
 
 
@@ -63,7 +63,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("jtl", help="results file written by jmeter -l")
     parser.add_argument("--max-error-rate", type=float, default=1.0, help="percent, default 1")
-    parser.add_argument("--max-p95", type=int, default=1200, help="milliseconds, default 800")
+    parser.add_argument("--max-p95", type=int, default=1200, help="milliseconds, default 1200")
     args = parser.parse_args()
 
     samples = load_samples(args.jtl)
@@ -73,7 +73,7 @@ def main():
 
     stats = summarise(samples)
     for label, s in stats.items():
-        print(f"{label}: {s['count']} samples, {s['error_rate']:.1f}% errors, p95 {s['p95']} ms")
+        print(f"{label}: {s['count']} samples, {s['error_rate']:.1f}% errors, p95 {s['p95']}ms")
 
     problems = check_limits(stats, args.max_error_rate, args.max_p95)
     for p in problems:

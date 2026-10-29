@@ -1,7 +1,10 @@
 import {
+  GlobeAltIcon,
   HandThumbUpIcon,
   HomeIcon,
+  InformationCircleIcon,
   LifebuoyIcon,
+  LinkIcon,
   NewspaperIcon,
   PencilSquareIcon,
   QuestionMarkCircleIcon,
@@ -36,6 +39,7 @@ import {useProfile} from 'web/hooks/use-profile'
 import {useTracking} from 'web/hooks/use-tracking'
 import {useUser} from 'web/hooks/use-user'
 import {GoogleOneTapLogin} from 'web/lib/firebase/google-onetap-login'
+import {isNativeApp} from 'web/lib/util/webview'
 
 import Sidebar from './nav/sidebar'
 import {NotificationsIcon, SolidNotificationsIcon} from './notifications-icon'
@@ -154,15 +158,15 @@ const Home = {
   href: '/',
   icon: HomeIcon,
 }
-// Out of the rail: it is in the footer and linked from About, and a thirteen-row rail hid the four
-// rows that matter. Re-add to the "what Compass is" cluster below (with the SolidQuestionIcon
-// import) if it earns its place back.
-// const faq = {
-//   key: 'nav.faq',
-//   name: 'FAQ',
-//   href: '/faq',
-//   icon: SolidQuestionIcon,
-// }
+// Out of the rail: it is in the footer and linked from Help, and a thirteen-row rail hid the four
+// rows that matter. Still defined for the native drawer's `appOnly` cluster below, since the apps
+// have no footer.
+const Faq = {
+  key: 'nav.faq',
+  name: 'FAQ',
+  href: '/faq',
+  icon: InformationCircleIcon,
+}
 const About = {
   key: 'nav.about',
   name: 'About',
@@ -187,19 +191,20 @@ const NotifsSolid = {
   href: `/notifications`,
   icon: SolidNotificationsIcon,
 }
-// const Social = {
-//   key: 'nav.social',
-//   name: 'Socials',
-//   href: '/social',
-//   icon: LinkIcon,
-// }
-// Out of the rail for the same reason as FAQ; the footer's "Organization" column keeps the path.
-// const Organization = {
-//   key: 'nav.organization',
-//   name: 'Organization',
-//   href: '/organization',
-//   icon: GlobeAltIcon,
-// }
+const Social = {
+  key: 'nav.social',
+  name: 'Socials',
+  href: '/social',
+  icon: LinkIcon,
+}
+// Out of the rail for the same reason as FAQ; the footer's "Organization" column keeps the path on
+// the web, the native drawer's `appOnly` cluster in the apps.
+const Organization = {
+  key: 'nav.organization',
+  name: 'Organization',
+  href: '/organization',
+  icon: GlobeAltIcon,
+}
 const Vote = {
   key: 'nav.vote',
   name: 'Vote',
@@ -315,10 +320,15 @@ const getDesktopNavigation = (user: User | null | undefined): NavGroups => ({
   utility: user ? buildArray(Settings, Help, isAdminId(user.id) && Admin) : [Help],
 })
 
+// The rows the native apps would otherwise lose: on the web they live in the footer, which the apps
+// don't render, and nothing else links to /organization or /social.
+const appOnly = [Faq, Organization, Social]
+
 // The drawer behind the bottom bar's menu button. People, Messages, Notifs and Profile are already
-// on the bar itself, so only Invite is left of the daily-use band.
+// on the bar itself, so only Invite is left of the daily-use band. Reading `isNativeApp()` here is
+// hydration-safe: the drawer only mounts once opened, long after the first client render.
 const getMobileSidebar = (user: User | null | undefined, _toggleModal: () => void): NavGroups => ({
   primary: user ? [Invite] : [],
-  secondary,
+  secondary: isNativeApp() ? [...secondary, appOnly] : secondary,
   utility: user ? buildArray(Settings, Help, isAdminId(user.id) && Admin) : [Help],
 })

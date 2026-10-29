@@ -3,7 +3,16 @@ import {FEED_VISIBILITY_LEVELS} from 'common/feed/feed'
 import {MAX_PREF_MAX_DISTANCE, MIN_PREF_MAX_DISTANCE} from 'common/max-distance'
 import {MAX_PROFILE_AGE, MIN_PROFILE_AGE, STORED_BIRTH_DATE_REGEX} from 'common/profiles/birth-date'
 import {arrify} from 'common/util/array'
+import {isOwnImageUrl} from 'common/util/image-url'
 import {z} from 'zod'
+
+/**
+ * A photo URL other members will load: only images we host, so a member cannot point theirs at a
+ * server that logs who views it. See {@link isOwnImageUrl}.
+ */
+export const ownImageUrl = z
+  .string()
+  .refine(isOwnImageUrl, {message: 'Photos must be uploaded to Compass'})
 
 /* GET request array can be like ?a=1 or ?a=1&a=2  */
 export const arraybeSchema = z.array(z.string()).or(z.string()).transform(arrify)
@@ -69,8 +78,9 @@ export const profileSchema = z.object({
   geodb_city_id: z.string().optional().nullable(),
   languages: z.array(z.string()).optional().nullable(),
   looking_for_matches: zBoolean.optional(),
-  photo_urls: z.array(z.string()).optional().nullable(),
-  pinned_url: z.string().optional().nullable(),
+  photo_urls: z.array(ownImageUrl).optional().nullable(),
+  // Empty means "no photo", as for the other optional strings here.
+  pinned_url: ownImageUrl.or(z.literal('')).optional().nullable(),
   pref_age_max: z.number().min(18).max(100).optional().nullable(),
   pref_age_min: z.number().min(18).max(100).optional().nullable(),
   pref_gender: genderTypes.optional().nullable(),

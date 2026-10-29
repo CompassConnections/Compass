@@ -19,12 +19,16 @@ export const saveSubscriptionMobile: APIHandler<'save-subscription-mobile'> = as
 
   try {
     const pg = createSupabaseDirectClient()
+    // A token that already belongs to another member is left alone. It used to be reassigned to
+    // whoever sent it, so anyone holding someone else's token could redirect their notifications to
+    // an account of their own choosing. The response is the same either way, so it does not say whose
+    // token it was.
     await pg.none(
       `
                 insert into push_subscriptions_mobile(token, platform, user_id)
                 values ($1, $2, $3)
-                on conflict(token) do update set platform = excluded.platform,
-                                                 user_id = excluded.user_id
+                on conflict(token) do update set platform = excluded.platform
+                where push_subscriptions_mobile.user_id = excluded.user_id
       `,
       [token, platform, userId],
     )

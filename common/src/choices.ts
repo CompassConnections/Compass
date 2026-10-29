@@ -1,10 +1,12 @@
 import {invert} from 'lodash'
 
+// Key order is display order everywhere connection types are listed (checkboxes, connect buttons,
+// the "Looking for" text).
 export const RELATIONSHIP_CHOICES = {
   // Other: 'other',
-  Collaboration: 'collaboration',
-  Friendship: 'friendship',
   Relationship: 'relationship',
+  Friendship: 'friendship',
+  Collaboration: 'collaboration',
 } as const
 
 // Values match the `profile_visibility` enum on `profiles`. Labels describe the *audience*, not the

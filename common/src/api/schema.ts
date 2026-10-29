@@ -3,6 +3,7 @@ import {
   arraybeSchema,
   contentSchema,
   dateSchema,
+  ownImageUrl,
   profileSchema,
   zBoolean,
 } from 'common/api/zod-types'
@@ -479,7 +480,7 @@ export const API = (_apiTypeCheck = {
     props: z.object({
       name: z.string().trim().min(1).optional(),
       username: z.string().trim().min(1).optional(),
-      avatarUrl: z.string().optional(),
+      avatarUrl: ownImageUrl.optional(),
     }),
     returns: {} as FullUser,
     summary: 'Update authenticated user profile and settings',
@@ -841,6 +842,15 @@ export const API = (_apiTypeCheck = {
       status: 'success'
     },
     summary: 'Star or unstar a profile',
+    tag: 'Relations',
+  },
+  'get-my-stars': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as {targetIds: string[]},
+    summary: 'Ids of the profiles the caller has starred, newest first',
     tag: 'Relations',
   },
   'hide-profile': {
@@ -1473,6 +1483,15 @@ export const API = (_apiTypeCheck = {
     summary: 'Mute or unmute notifications for a proposal discussion',
     tag: 'Votes',
   },
+  'get-my-vote-choices': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as {choices: Record<number, number>},
+    summary: "The caller's own ballot on every proposal: 1 for, 0 abstain, -1 against",
+    tag: 'Votes',
+  },
   'get-vote-mute': {
     method: 'GET',
     authed: true,
@@ -1578,6 +1597,19 @@ export const API = (_apiTypeCheck = {
       platform: z.enum(['ios', 'android']).optional(),
     }),
     summary: 'Save a mobile push subscription for the user',
+    tag: 'Notifications',
+  },
+  'delete-subscription': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as {success: boolean},
+    props: z.object({
+      // The web push endpoint, the native push token, or both — whichever this device holds.
+      endpoint: z.string().optional(),
+      token: z.string().optional(),
+    }),
+    summary: "Remove this device's push subscription for the user, on sign-out",
     tag: 'Notifications',
   },
   'create-bookmarked-search': {

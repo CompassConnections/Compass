@@ -1,7 +1,8 @@
+import {getChangeableOwnMessage} from 'api/helpers/own-message'
 import {broadcastPrivateMessages} from 'api/helpers/private-messages'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-import {APIErrors, APIHandler} from './helpers/endpoint'
+import {APIHandler} from './helpers/endpoint'
 
 // const DELETED_MESSAGE_CONTENT: JSONContent = {
 //   type: 'doc',
@@ -21,18 +22,8 @@ import {APIErrors, APIHandler} from './helpers/endpoint'
 export const deleteMessage: APIHandler<'delete-message'> = async ({messageId}, auth) => {
   const pg = createSupabaseDirectClient()
 
-  // Verify user is the message author and message is not too old
-  const message = await pg.oneOrNone(
-    `SELECT *
-     FROM private_user_messages
-     WHERE id = $1
-       AND user_id = $2`,
-    [messageId, auth.uid],
-  )
-
-  if (!message) {
-    throw APIErrors.notFound('Message not found')
-  }
+  // Verify user is the message author, is still in the chat and is not blocked by anyone in it
+  const message = await getChangeableOwnMessage(pg, messageId, auth.uid)
 
   // Soft delete the message
   // await pg.none(

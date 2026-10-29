@@ -9,6 +9,7 @@ import {createVoteComment} from 'api/create-vote-comment'
 import {deleteCompatibilityPrompt} from 'api/delete-compatibility-prompt'
 import {deleteMessage} from 'api/delete-message'
 import {deleteOption} from 'api/delete-option'
+import {deleteSubscription} from 'api/delete-subscription'
 import {editMessage} from 'api/edit-message'
 import {editVoteComment} from 'api/edit-vote-comment'
 import {getChannelMemberships} from 'api/get-channel-memberships'
@@ -103,6 +104,8 @@ import {getMe} from './get-me'
 import {getMemberValueRanking} from './get-member-value-ranking'
 import {getMyReferralCount} from './get-my-referral-count'
 import {getMyReferrals} from './get-my-referrals'
+import {getMyStars} from './get-my-stars'
+import {getMyVoteChoices} from './get-my-vote-choices'
 import {getNotifications} from './get-notifications'
 import {getOutreachQueue} from './get-outreach-queue'
 import {getOutreachStats} from './get-outreach-stats'
@@ -690,6 +693,8 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'create-vote-comment': createVoteComment,
   'delete-bookmarked-search': deleteBookmarkedSearch,
   'get-bookmarked-searches': getBookmarkedSearches,
+  'get-my-stars': getMyStars,
+  'get-my-vote-choices': getMyVoteChoices,
   'delete-compatibility-answer': deleteCompatibilityAnswer,
   'delete-message': deleteMessage,
   'edit-message': editMessage,
@@ -767,6 +772,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'remove-pinned-photo': removePinnedPhoto,
   'save-subscription': saveSubscription,
   'save-subscription-mobile': saveSubscriptionMobile,
+  'delete-subscription': deleteSubscription,
   'search-location': searchLocationEndpoint,
   'search-near-city': searchNearCity,
   'search-users': searchUsers,

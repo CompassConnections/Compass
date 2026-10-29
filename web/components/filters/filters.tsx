@@ -312,32 +312,6 @@ function Filters(props: {
         <RelationshipFilter filters={filters} updateFilter={updateFilter} />
       </FilterSection>
 
-      {/* LOCATION - Always visible */}
-      <FilterSection
-        title={t('profile.optional.location', 'Living')}
-        openFilter={openFilter}
-        setOpenFilter={setOpenFilter}
-        isActive={!!locationFilterProps.location || !!filters.country}
-        selection={
-          <LocationFilterText
-            location={locationFilterProps.location}
-            radius={locationFilterProps.radius}
-            country={filters.country}
-            youProfile={youProfile}
-            // highlightedClass={!locationFilterProps.location ? 'text-ink-900' : 'text-primary-700'}
-          />
-        }
-      >
-        <LocationFilter
-          youProfile={youProfile}
-          locationFilterProps={locationFilterProps}
-          countryFilterProps={{
-            country: filters.country,
-            setCountry: (country) => updateFilter({country}),
-          }}
-        />
-      </FilterSection>
-
       {/* AGE RANGE - Always visible */}
       <FilterSection
         title={t('profile.optional.age', 'Age')}
@@ -376,16 +350,36 @@ function Filters(props: {
         <GenderFilter filters={filters} updateFilter={updateFilter} profile={youProfile} />
       </FilterSection>
 
-      {/* ACCORDION GROUPS */}
+      {/* LOCATION - Always visible */}
+      <FilterSection
+        title={t('profile.optional.location', 'Living')}
+        openFilter={openFilter}
+        setOpenFilter={setOpenFilter}
+        isActive={!!locationFilterProps.location || !!filters.country}
+        selection={
+          <LocationFilterText
+            location={locationFilterProps.location}
+            radius={locationFilterProps.radius}
+            country={filters.country}
+            youProfile={youProfile}
+            // highlightedClass={!locationFilterProps.location ? 'text-ink-900' : 'text-primary-700'}
+          />
+        }
+      >
+        <LocationFilter
+          youProfile={youProfile}
+          locationFilterProps={locationFilterProps}
+          countryFilterProps={{
+            country: filters.country,
+            setCountry: (country) => updateFilter({country}),
+          }}
+        />
+      </FilterSection>
 
-      {/* Relationship Group */}
+      {/* Relationship criteria - shown whenever the member is looking for a relationship. Orientation
+          and Has kids sit under Background instead: refinements, rarely dealbreakers on their own. */}
       {includeRelationshipFilters && (
-        <FilterGroup
-          title={t('filter.group.relationship', 'Relationship')}
-          openGroup={openGroup}
-          setOpenGroup={setOpenGroup}
-          // icon={<FaHeart className="h-4 w-4" />}
-        >
+        <>
           {/* Relationship Status */}
           <FilterSection
             title={t('profile.optional.relationship_status', 'Status')}
@@ -405,25 +399,6 @@ function Filters(props: {
             }
           >
             <RelationshipStatusFilter filters={filters} updateFilter={updateFilter} />
-          </FilterSection>
-
-          <FilterSection
-            title={t('profile.optional.orientation', 'Orientation')}
-            openFilter={openFilter}
-            setOpenFilter={setOpenFilter}
-            isActive={hasAny((filters as any).orientation || undefined)}
-            selection={
-              <OrientationFilterText
-                options={(filters as any).orientation as string[] | undefined}
-              />
-            }
-          >
-            <OrientationFilter
-              filters={filters}
-              updateFilter={updateFilter}
-              profile={youProfile}
-              className={''}
-            />
           </FilterSection>
 
           {/* Romantic Style */}
@@ -446,26 +421,6 @@ function Filters(props: {
             <RomanticFilter filters={filters} updateFilter={updateFilter} />
           </FilterSection>
 
-          {/* Has Kids */}
-          <FilterSection
-            title={t('profile.optional.has_kids', 'Has kids')}
-            openFilter={openFilter}
-            setOpenFilter={setOpenFilter}
-            isActive={filters.has_kids != null && filters.has_kids !== -1}
-            selection={
-              <HasKidsLabel
-                has_kids={filters.has_kids ?? -1}
-                // highlightedClass={
-                //   filters.has_kids != null && filters.has_kids !== -1
-                //     ? 'text-primary-700'
-                //     : 'text-ink-900'
-                // }
-              />
-            }
-          >
-            <HasKidsFilter filters={filters} updateFilter={updateFilter} />
-          </FilterSection>
-
           {/* Wants Kids */}
           <FilterSection
             title={t('filter.wants_kids.wants_kids', 'Wants kids')}
@@ -482,8 +437,17 @@ function Filters(props: {
           >
             <WantsKidsFilter filters={filters} updateFilter={updateFilter} />
           </FilterSection>
-        </FilterGroup>
+        </>
       )}
+
+      {/* SECONDARY FILTERS - nice to have, so each group stays collapsed until opened. Primary = the
+          same dealbreakers the empty state keeps when it suggests what to relax (CORE_FILTER_KEYS in
+          profile-grid.tsx), except languages and orientation, which stay refinements here. */}
+      <p className="px-3.5 pt-4 pb-1 text-sm text-ink-400">
+        {t('filter.group.more', 'More filters')}
+      </p>
+
+      {/* ACCORDION GROUPS */}
 
       {/* Background Group */}
       <FilterGroup
@@ -566,6 +530,50 @@ function Filters(props: {
         >
           <LanguageFilter filters={filters} updateFilter={updateFilter} />
         </FilterSection>
+
+        {/* Orientation - gender already narrows who shows up, so this is a refinement on top. */}
+        {includeRelationshipFilters && (
+          <FilterSection
+            title={t('profile.optional.orientation', 'Orientation')}
+            openFilter={openFilter}
+            setOpenFilter={setOpenFilter}
+            isActive={hasAny((filters as any).orientation || undefined)}
+            selection={
+              <OrientationFilterText
+                options={(filters as any).orientation as string[] | undefined}
+              />
+            }
+          >
+            <OrientationFilter
+              filters={filters}
+              updateFilter={updateFilter}
+              profile={youProfile}
+              className={''}
+            />
+          </FilterSection>
+        )}
+
+        {/* Has Kids */}
+        {includeRelationshipFilters && (
+          <FilterSection
+            title={t('profile.optional.has_kids', 'Has kids')}
+            openFilter={openFilter}
+            setOpenFilter={setOpenFilter}
+            isActive={filters.has_kids != null && filters.has_kids !== -1}
+            selection={
+              <HasKidsLabel
+                has_kids={filters.has_kids ?? -1}
+                // highlightedClass={
+                //   filters.has_kids != null && filters.has_kids !== -1
+                //     ? 'text-primary-700'
+                //     : 'text-ink-900'
+                // }
+              />
+            }
+          >
+            <HasKidsFilter filters={filters} updateFilter={updateFilter} />
+          </FilterSection>
+        )}
       </FilterGroup>
 
       {/* Lifestyle Group */}

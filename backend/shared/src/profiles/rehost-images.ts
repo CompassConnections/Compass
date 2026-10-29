@@ -1,5 +1,6 @@
 import {JSONContent} from '@tiptap/core'
 import {FIREBASE_STORAGE_URL} from 'common/envs/constants'
+import {isOwnImageUrl} from 'common/util/image-url'
 import {YEAR_SECONDS} from 'common/util/time'
 import {createHash} from 'crypto'
 import {uniq} from 'lodash'
@@ -183,10 +184,12 @@ async function fetchImage(src: string) {
 /**
  * The first image in the document that we serve ourselves — the one worth pinning as the profile
  * photo. Deliberately never an image left hotlinked: an avatar is rendered through next/image
- * everywhere, which 400s on any host missing from `remotePatterns`.
+ * everywhere, which 400s on any host missing from `remotePatterns`. Stricter than {@link isOwnHost}:
+ * a page can embed an image from somebody else's bucket on the same Google host, and the profile
+ * schema refuses that as a `pinned_url` (see `isOwnImageUrl`).
  */
 export function firstOwnedImageSrc(content: JSONContent): string | undefined {
-  return collectImageSrcs(content).find(isOwnHost)
+  return collectImageSrcs(content).find(isOwnImageUrl)
 }
 
 function shouldRehost(src: string): boolean {

@@ -30,6 +30,7 @@ import {OPTION_TABLES} from 'common/profiles/constants'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {SITE_ORDER} from 'common/socials'
 import {cleanUsername} from 'common/util/clean-username'
+import {isOwnImageUrl} from 'common/util/image-url'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {parseJsonContentToText, textToJSONContent} from 'common/util/parse'
 import {HOUR_MS, MINUTE_MS, sleep} from 'common/util/time'
@@ -428,6 +429,10 @@ async function processAndCache(
       callLLM(content, locale, source),
       bio ? rehostExternalImages(bio, imageFolderName) : undefined,
     ])
+    // The model can answer with any URL it saw on the page. Only a photo we host may become the
+    // avatar: anything else would be loaded from its owner's server by everyone who views the
+    // profile, and the profile schema refuses it anyway (see `isOwnImageUrl`).
+    if (!isOwnImageUrl(profile.pinned_url)) profile.pinned_url = undefined
     if (rehostedBio) {
       console.log('rehosted bio')
       profile.bio = rehostedBio

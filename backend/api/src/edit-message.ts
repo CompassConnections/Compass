@@ -1,26 +1,15 @@
+import {getChangeableOwnMessage} from 'api/helpers/own-message'
 import {broadcastPrivateMessages} from 'api/helpers/private-messages'
 import {encryptMessage} from 'shared/encryption'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
-import {APIErrors, APIHandler} from './helpers/endpoint'
+import {APIHandler} from './helpers/endpoint'
 
 export const editMessage: APIHandler<'edit-message'> = async ({messageId, content}, auth) => {
   const pg = createSupabaseDirectClient()
 
-  // Verify user is the message author and message is not too old
-  const message = await pg.oneOrNone(
-    `SELECT *
-     FROM private_user_messages
-     WHERE id = $1
-       AND user_id = $2
---        AND created_time > NOW() - INTERVAL '1 day'
-       AND deleted = FALSE`,
-    [messageId, auth.uid],
-  )
-
-  if (!message) {
-    throw APIErrors.notFound('Message not found or cannot be edited')
-  }
+  // Verify user is the message author, is still in the chat and is not blocked by anyone in it
+  const message = await getChangeableOwnMessage(pg, messageId, auth.uid, {includeDeleted: false})
 
   const plaintext = JSON.stringify(content)
   const {ciphertext, iv, tag} = encryptMessage(plaintext)

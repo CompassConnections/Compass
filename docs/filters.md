@@ -26,6 +26,13 @@
 - Big Five — ranges of the Big Five personality traits.
 - Last Active — how recently they were active on the platform.
 
+The panel splits them in two. The likely dealbreakers are always visible: Seeking, Age, Gender, Living,
+plus Status, Style and Wants Kids for members looking for a relationship. These match
+`CORE_FILTER_KEYS` in `profile-grid.tsx`, which the empty state keeps when it suggests what to relax;
+Languages and Orientation are the exceptions and count as refinements in the panel. Everything else is a
+nice-to-have and sits under "More filters", in collapsed groups (Background, Lifestyle, Values &
+Beliefs, Personality, Advanced).
+
 Two toggles sit above the list, both of which write a whole search rather than one field:
 
 - **Who I'm looking for** — copies the "Who I'm looking for" section of your own profile into the

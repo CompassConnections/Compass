@@ -73,6 +73,11 @@ export type Stats = {
   messages: number
   /** Message channels that carry at least one message — empty channels aren't conversations. */
   conversations: number
+  /** Proposals on /vote. Counted server-side: `votes` is not readable by the client roles. */
+  proposals: number
+  /** Ballots cast across all proposals. Counted server-side: `vote_results` is not readable by the
+   *  client roles. */
+  ballots: number
   genderRatio: Record<string, number>
   genderCounts: Record<string, number>
   /** Every country with at least one member, by profile count descending. Profiles with no country set

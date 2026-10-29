@@ -843,6 +843,15 @@ export const API = (_apiTypeCheck = {
     summary: 'Star or unstar a profile',
     tag: 'Relations',
   },
+  'get-my-stars': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as {targetIds: string[]},
+    summary: 'Ids of the profiles the caller has starred, newest first',
+    tag: 'Relations',
+  },
   'hide-profile': {
     method: 'POST',
     authed: true,
@@ -1471,6 +1480,15 @@ export const API = (_apiTypeCheck = {
       muted: z.boolean(),
     }),
     summary: 'Mute or unmute notifications for a proposal discussion',
+    tag: 'Votes',
+  },
+  'get-my-vote-choices': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as {choices: Record<number, number>},
+    summary: "The caller's own ballot on every proposal: 1 for, 0 abstain, -1 against",
     tag: 'Votes',
   },
   'get-vote-mute': {

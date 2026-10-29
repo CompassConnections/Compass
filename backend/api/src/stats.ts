@@ -149,6 +149,7 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
     countryStats,
     memberGrowthRows,
     activeMembersCount,
+    voteCounts,
     demographicResults,
     groupShareResults,
   ] = await Promise.all([
@@ -192,6 +193,12 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
     // to read the whole user_activity table for this count) into the cached /stats aggregate.
     pg.one(
       `select count(*)::int as count from user_activity where last_online_time > now() - interval '30 days'`,
+    ),
+    // Proposal and ballot counts for the democracy panel. Counted here because neither table is
+    // readable by the client roles any more: individual ballots and anonymous authors are private.
+    pg.one(
+      `select (select count(*)::int from votes) as proposals,
+              (select count(*)::int from vote_results) as ballots`,
     ),
     Promise.all(
       demographicFields.map(([field, {multi}]) =>
@@ -246,6 +253,8 @@ export const stats: APIHandler<'stats'> = async (_, _auth) => {
     upcomingEvents: eventsCount.count,
     messages: messagesCount.count,
     conversations: conversationCount.count,
+    proposals: voteCounts.proposals,
+    ballots: voteCounts.ballots,
     genderRatio: genderPercentage,
     genderCounts: genderRatio,
     // The full ranked list, not a top-N: the /stats world map colours every country with members, and

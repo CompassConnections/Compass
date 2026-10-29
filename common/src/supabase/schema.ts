@@ -4,10 +4,48 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '14.5'
+    PostgrestVersion: '13.0.4'
   }
   public: {
     Tables: {
+      banned_networks: {
+        Row: {
+          created_at: string
+          device_token: string | null
+          expires_at: string | null
+          id: number
+          network: unknown
+          note: string | null
+          source_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_token?: string | null
+          expires_at?: string | null
+          id?: never
+          network?: unknown
+          note?: string | null
+          source_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_token?: string | null
+          expires_at?: string | null
+          id?: never
+          network?: unknown
+          note?: string | null
+          source_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'banned_networks_source_user_id_fkey'
+            columns: ['source_user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       blog_posts: {
         Row: {
           author_id: string | null
@@ -227,51 +265,6 @@ export type Database = {
           },
           {
             foreignKeyName: 'compatibility_answers_question_id_fkey'
-            columns: ['question_id']
-            isOneToOne: false
-            referencedRelation: 'compatibility_prompts'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      compatibility_answers_free: {
-        Row: {
-          created_time: string
-          creator_id: string
-          free_response: string | null
-          id: number
-          integer: number | null
-          multiple_choice: number | null
-          question_id: number
-        }
-        Insert: {
-          created_time?: string
-          creator_id: string
-          free_response?: string | null
-          id?: number
-          integer?: number | null
-          multiple_choice?: number | null
-          question_id: number
-        }
-        Update: {
-          created_time?: string
-          creator_id?: string
-          free_response?: string | null
-          id?: number
-          integer?: number | null
-          multiple_choice?: number | null
-          question_id?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'compatibility_answers_free_creator_id_fkey'
-            columns: ['creator_id']
-            isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          },
-          {
-            foreignKeyName: 'compatibility_answers_free_question_id_fkey'
             columns: ['question_id']
             isOneToOne: false
             referencedRelation: 'compatibility_prompts'
@@ -536,6 +529,51 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      donations: {
+        Row: {
+          admin_id: string | null
+          amount_cents: number
+          created_time: string
+          donated_at: string
+          id: number
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          admin_id?: string | null
+          amount_cents: number
+          created_time?: string
+          donated_at?: string
+          id?: never
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          admin_id?: string | null
+          amount_cents?: number
+          created_time?: string
+          donated_at?: string
+          id?: never
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'donations_admin_id_fkey'
+            columns: ['admin_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'donations_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
       }
       email_unsubscribe_tokens: {
         Row: {

@@ -230,11 +230,13 @@ export default function ProfileHero(props: {
       <div
         ref={bandRef}
         className={clsx(
-          'flex gap-10',
+          // One gap class per branch: two unprefixed gaps tie, and stylesheet order, not this list,
+          // decides which wins.
+          'flex',
           stacked === undefined
-            ? 'flex-col md:flex-row md:items-start md:gap-[72px]'
+            ? 'flex-col gap-10 md:flex-row md:items-start md:gap-[72px]'
             : stacked
-              ? 'flex-col'
+              ? 'flex-col gap-10'
               : clsx('flex-row items-start', splitHero ? 'gap-8' : 'gap-[72px]'),
         )}
       >
@@ -318,10 +320,12 @@ export default function ProfileHero(props: {
 const HERO_STACK_BELOW_REM = 32
 
 /**
- * Band width below which the hero splits (see `splitHero`): 200px wider than the band is at the
- * `md` breakpoint where it first goes side by side (768px less the page's 32px gutters).
+ * Band width below which the hero splits (see `splitHero`). Above it the photo stays large on the
+ * right of all the text: at its cap of 46% of the band, with the 72px gap, this still leaves the
+ * text column ~320px, about the narrowest the tagline reads well at. (It was 904px; that dropped
+ * to the small split photo on ordinary laptop widths where the full layout fit fine.)
  */
-const HERO_SPLIT_BELOW_REM = 56.5
+const HERO_SPLIT_BELOW_REM = 45
 
 const rootFontPx = () =>
   typeof window === 'undefined'

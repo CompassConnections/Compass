@@ -557,7 +557,9 @@ const RAIL_TWO_COLUMNS_MIN_PX = 2 * 400 + 40
 const DETAILS_BESIDE_BIO_MIN_PX = BIO_COLUMN_PX + RAIL_GAP_PX + RAIL_MIN_PX
 
 // Literal class strings (Tailwind only generates what it can read). The two-column set is the old
-// `lg:` set unprefixed; the window set is that same layout keyed to the `lg` breakpoint.
+// `lg:` set unprefixed; the window set is that same layout keyed to the `lg` breakpoint. Each set
+// carries its own display and gaps: unprefixed classes that set the same property tie, and the
+// stylesheet's order, not the class list's, picks the winner.
 const CONTENT_LAYOUT_TWO_COLUMNS = {
   grid: 'grid grid-cols-[minmax(0,650px)_minmax(300px,1fr)] items-start gap-x-12 gap-y-14',
   bio: 'col-start-1 row-start-1',
@@ -566,13 +568,19 @@ const CONTENT_LAYOUT_TWO_COLUMNS = {
   rest: 'col-start-1 row-start-2',
 }
 const CONTENT_LAYOUT_BY_WINDOW = {
-  grid: 'lg:grid lg:grid-cols-[minmax(0,650px)_minmax(300px,1fr)] lg:items-start lg:gap-x-12 lg:gap-y-14',
+  grid: 'flex flex-col gap-14 lg:grid lg:grid-cols-[minmax(0,650px)_minmax(300px,1fr)] lg:items-start lg:gap-x-12 lg:gap-y-14',
   bio: 'lg:col-start-1 lg:row-start-1',
   rail: 'lg:sticky lg:top-6 lg:col-start-2 lg:row-span-2 lg:row-start-1',
   railScroll: 'lg:overflow-y-auto lg:max-h-[calc(100vh-3rem)] lg:pr-5',
   rest: 'lg:col-start-1 lg:row-start-2',
 }
-const CONTENT_LAYOUT_STACKED = {grid: '', bio: '', rail: '', railScroll: '', rest: ''}
+const CONTENT_LAYOUT_STACKED = {
+  grid: 'flex flex-col gap-14',
+  bio: '',
+  rail: '',
+  railScroll: '',
+  rest: '',
+}
 
 function ProfileContent(props: {
   user: User
@@ -649,7 +657,7 @@ function ProfileContent(props: {
           layout identical while mobile reads bio → details → prompts → endorsements → connect. */}
       <div
         ref={contentRef}
-        className={clsx('mt-10 flex flex-col gap-14', layout.grid)}
+        className={clsx('mt-10', layout.grid)}
         style={
           bioColumnPx
             ? {gridTemplateColumns: `${Math.round(bioColumnPx)}px minmax(${RAIL_MIN_PX}px, 1fr)`}

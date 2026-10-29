@@ -1,5 +1,6 @@
 jest.mock('shared/supabase/init')
 jest.mock('api/helpers/private-messages')
+jest.mock('api/helpers/blocks')
 
 import {deleteMessage} from 'api/delete-message'
 import {AuthedUser} from 'api/helpers/endpoint'
@@ -28,6 +29,8 @@ describe('deleteMessage', () => {
       }
       const mockMessage = {
         channel_id: 'mockChannelId',
+        member_status: 'member',
+        other_member_ids: ['456'],
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
@@ -40,9 +43,10 @@ describe('deleteMessage', () => {
       expect(results.success).toBeTruthy()
 
       expect(mockPg.oneOrNone).toBeCalledTimes(1)
-      expect(mockPg.oneOrNone).toBeCalledWith(sqlMatch('SELECT *'), [
+      expect(mockPg.oneOrNone).toBeCalledWith(sqlMatch('from private_user_messages msg'), [
         mockMessageId.messageId,
         mockAuth.uid,
+        true,
       ])
       expect(mockPg.none).toBeCalledTimes(1)
       expect(mockPg.none).toBeCalledWith(sqlMatch('DELETE'), [
@@ -76,6 +80,8 @@ describe('deleteMessage', () => {
       }
       const mockMessage = {
         channel_id: 'mockChannelId',
+        member_status: 'member',
+        other_member_ids: ['456'],
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any

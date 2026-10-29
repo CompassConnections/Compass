@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/node'
 import {type JSONContent} from '@tiptap/core'
-import {type APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, type APIHandler} from 'api/helpers/endpoint'
 import {
   DIET_CHOICES,
   EDUCATION_CHOICES,
@@ -18,6 +18,7 @@ import {
   ROMANTIC_CHOICES,
 } from 'common/choices'
 import {MIN_BIO_LENGTH} from 'common/constants'
+import {isAdminId} from 'common/envs/constants'
 import {OptionTableKey} from 'common/profiles/constants'
 import {parseJsonContentToText} from 'common/util/parse'
 import {getWantsKidsRange} from 'common/wants-kids'
@@ -1173,6 +1174,16 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
 }
 
 export const getProfiles: APIHandler<'get-profiles'> = async (props, auth) => {
+  // Ordering by someone else's compatibility scores is an admin tool. For anyone else it would page
+  // through another member's scores, skipping the block and visibility checks that
+  // `compatible-profiles` applies. Checked outside the try so it answers 403 rather than an empty page.
+  if (
+    props.compatibleWithUserId &&
+    props.compatibleWithUserId !== auth.uid &&
+    !isAdminId(auth.uid)
+  ) {
+    throw APIErrors.forbidden('Only admins can view compatibility scores for another member')
+  }
   try {
     if (!props.skipId) props.skipId = auth.uid
     const {profiles, count} = await loadProfiles({...props, userId: auth.uid})

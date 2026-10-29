@@ -69,6 +69,38 @@ describe('getProfiles', () => {
       expect(profilesModule.loadProfiles).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('when ordering by compatibility score', () => {
+    const props = {
+      limit: 20,
+      orderBy: 'compatibility_score' as const,
+      compatibleWithUserId: 'someone-else',
+      projection: 'card' as const,
+    }
+
+    it("refuses a non-admin asking for another member's scores", async () => {
+      jest.spyOn(profilesModule, 'loadProfiles').mockResolvedValue({profiles: [], count: 0})
+
+      await expect(
+        profilesModule.getProfiles(props as any, {uid: 'me'} as any, {} as any),
+      ).rejects.toMatchObject({code: 403})
+      expect(profilesModule.loadProfiles).not.toHaveBeenCalled()
+    })
+
+    it('lets a member order by their own scores', async () => {
+      jest.spyOn(profilesModule, 'loadProfiles').mockResolvedValue({profiles: [], count: 0})
+
+      await profilesModule.getProfiles(
+        {...props, compatibleWithUserId: 'me'} as any,
+        {uid: 'me'} as any,
+        {} as any,
+      )
+
+      expect(profilesModule.loadProfiles).toHaveBeenCalledWith(
+        expect.objectContaining({compatibleWithUserId: 'me'}),
+      )
+    })
+  })
 })
 
 describe('loadProfiles', () => {

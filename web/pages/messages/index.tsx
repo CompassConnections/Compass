@@ -9,6 +9,7 @@ import {parseJsonContentToText} from 'common/util/parse'
 import {keyBy, uniq} from 'lodash'
 import Link from 'next/link'
 import {useState} from 'react'
+import {FaUserSlash} from 'react-icons/fa'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -30,7 +31,7 @@ import {
   useUnseenPrivateMessageChannels,
 } from 'web/hooks/use-private-messages'
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
-import {useUser} from 'web/hooks/use-user'
+import {isBlocked, usePrivateUser, useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {useT} from 'web/lib/locale'
 import {DisplayUser, MAX_DISPLAY_USERS} from 'web/lib/supabase/users'
@@ -59,9 +60,15 @@ export default function MessagesPage() {
   )
 }
 
+type MessagesView = 'all' | 'banned' | 'blocked'
+
 export function MessagesContent(props: {currentUser: User}) {
   const {currentUser} = props
   const t = useT()
+  const viewLabels: Record<Exclude<MessagesView, 'all'>, string> = {
+    banned: t('messages.menu.banned_users', 'Banned users'),
+    blocked: t('messages.menu.blocked_users', 'Blocked users'),
+  }
   const {channels, memberIdsByChannelId, leftMemberIdsByChannelId} =
     useSortedPrivateMessageMemberships(currentUser.id)
   const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(true)
@@ -95,16 +102,24 @@ export function MessagesContent(props: {currentUser: User}) {
     // undefined while the batch is still loading, so the row keeps its placeholder avatar
     // instead of flashing "Deleted user".
     const otherUsers = allUsers ? filterDefined(userIds.map((id) => usersById[id])) : undefined
-    // Banned when everyone else in the room is banned, the same rule the thread page uses to stop
-    // you writing into it. Unknown while the member batch loads, so those rows stay in the default
-    // list rather than flashing into the banned one.
-    const isBanned = !!otherUsers?.length && otherUsers.every((user) => user.isBannedFromPosting)
-    return {channel, userIds, otherUsers, isBanned}
+    // Blocked when everyone else in the room is someone you blocked; banned when everyone else is
+    // banned, the same rule the thread page uses to stop you writing into it. Your own block wins
+    // over Compass's ban when both apply, since the block is the one you can act on from here.
+    // Unknown while the member batch loads, so those rows stay in the default list rather than
+    // flashing into a side list.
+    const rowView: MessagesView = !otherUsers?.length
+      ? 'all'
+      : otherUsers.every((user) => isBlocked(privateUser, user.id))
+        ? 'blocked'
+        : otherUsers.every((user) => user.isBannedFromPosting)
+          ? 'banned'
+          : 'all'
+    return {channel, userIds, otherUsers, rowView}
   })
 
-  // Banned threads are kept out of the default list and only shown through the menu's
-  // "Banned users" view, which replaces the list rather than adding to it.
-  const listedRows = rows?.filter(({isBanned}) => isBanned === showBanned)
+  // Banned and blocked threads are kept out of the default list and only shown through the menu's
+  // "Banned users" / "Blocked users" views, each of which replaces the list rather than adding to it.
+  const listedRows = rows?.filter(({rowView}) => rowView === view)
 
   // Name and username only — deliberately not message contents, which aren't all loaded here.
   // While the member batch is in flight otherUsers is undefined, so leave every row in place
@@ -145,14 +160,17 @@ export function MessagesContent(props: {currentUser: User}) {
               icon={<EllipsisVerticalIcon className="h-5 w-5" />}
               closeOnClick
               testId="messages-menu"
-              selectedItemName={
-                showBanned ? t('messages.menu.banned_users', 'Banned users') : undefined
-              }
+              selectedItemName={view === 'all' ? undefined : viewLabels[view]}
               items={[
                 {
                   icon: <NoSymbolIcon className="h-5 w-5" />,
-                  name: t('messages.menu.banned_users', 'Banned users'),
-                  onClick: () => setShowBanned(!showBanned),
+                  name: viewLabels.banned,
+                  onClick: () => setView(view === 'banned' ? 'all' : 'banned'),
+                },
+                {
+                  icon: <FaUserSlash className="h-5 w-5" />,
+                  name: viewLabels.blocked,
+                  onClick: () => setView(view === 'blocked' ? 'all' : 'blocked'),
                 },
               ]}
             />
@@ -169,14 +187,14 @@ export function MessagesContent(props: {currentUser: User}) {
             searchIcon
             data-testid="messages-search"
           />
-          {showBanned && (
+          {view !== 'all' && (
             <Row
               className="items-center gap-1 text-primary-700 pl-3 pr-2 py-1 rounded-full text-sm bg-canvas-100 border border-canvas-200"
-              data-testid="messages-banned-tag"
+              data-testid={`messages-${view}-tag`}
             >
-              <span>{t('messages.viewing_banned', 'Banned users')}</span>
+              <span>{viewLabels[view]}</span>
               <button
-                onClick={() => setShowBanned(false)}
+                onClick={() => setView('all')}
                 className="hover:text-ink-500"
                 aria-label={t('messages.close_banned', 'Back to all conversations')}
               >
@@ -187,7 +205,7 @@ export function MessagesContent(props: {currentUser: User}) {
         </Row>
       )}
       <Col className={'w-full overflow-hidden gap-2'} data-testid="messages-table">
-        {channels && listedRows?.length === 0 && !showBanned && (
+        {channels && listedRows?.length === 0 && view === 'all' && (
           <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
             <p className="text-ink-500 text-sm mb-1">
               {t('messages.empty', 'You have no messages, yet.')}
@@ -207,10 +225,17 @@ export function MessagesContent(props: {currentUser: User}) {
             </p>
           </div>
         )}
-        {showBanned && listedRows?.length === 0 && (
+        {view === 'banned' && listedRows?.length === 0 && (
           <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
             <p className="text-ink-500 text-sm">
               {t('messages.banned_empty', 'No conversations with banned users.')}
+            </p>
+          </div>
+        )}
+        {view === 'blocked' && listedRows?.length === 0 && (
+          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
+            <p className="text-ink-500 text-sm">
+              {t('messages.blocked_empty', "No conversations with people you've blocked.")}
             </p>
           </div>
         )}

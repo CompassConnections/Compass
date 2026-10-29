@@ -14,7 +14,7 @@ import Link from 'next/link'
 import {useRouter} from 'next/router'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
-import {FaFlag, FaRegCopy, FaUserFriends, FaUserMinus} from 'react-icons/fa'
+import {FaFlag, FaRegCopy, FaUserFriends, FaUserMinus, FaUserSlash} from 'react-icons/fa'
 import {GiSpeakerOff} from 'react-icons/gi'
 import {BackButton} from 'web/components/back-button'
 import {ChatMessageItem, SystemChatMessageItem} from 'web/components/chat/chat-message'
@@ -33,6 +33,7 @@ import {
 import {isFirstMessageRejectedError} from 'web/components/moderation/profile-incomplete'
 import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
 import {PageBase} from 'web/components/page-base'
+import {blockUser, unblockUser} from 'web/components/profile/block-user'
 import {ReportUser} from 'web/components/profile/report-user'
 import {ConversationSafetyTip} from 'web/components/safety-note'
 import {SEO} from 'web/components/SEO'
@@ -537,9 +538,14 @@ export const PrivateChat = (props: {
           )}
 
           {/* Whoever is in the room, named on the header or not — see the same call in the messages
-            list. Sits outside the name link so a tap on it can't navigate away. */}
-          {members.some((member) => isAdminUserId(member.id)) && <AdminBadge className="ml-1.5" />}
-          {members?.length == 1 && members[0].isBannedFromPosting && <BannedBadge />}
+            list. Sits outside the name link so a tap on it can't navigate away. Hidden with the name
+            when the profile panel is open: a badge with no name next to it reads as noise. */}
+          {!showProfilePanel && members.some((member) => isAdminUserId(member.id)) && (
+            <AdminBadge className="ml-1.5" />
+          )}
+          {!showProfilePanel && members?.length == 1 && members[0].isBannedFromPosting && (
+            <BannedBadge />
+          )}
           <DropdownMenu
             className={'ml-auto [&_button]:p-4'}
             menuWidth={'w-44'}
@@ -592,6 +598,19 @@ export const PrivateChat = (props: {
                 onClick: () => {
                   setReportTarget(members.length === 1 ? members[0] : null)
                   setShowReport(true)
+                },
+              },
+              // Blocking is a call about one person, so it's only offered where there's exactly one
+              // other member. Same action as the profile page's more-options modal; the thread
+              // stays readable afterwards, only the composer goes (see `blockedInChannel`).
+              members.length === 1 && {
+                icon: <FaUserSlash className="h-5 w-5" />,
+                name: isBlocked(privateUser, members[0].id)
+                  ? `${t('block_user.unblock', 'Unblock')} ${getFirstName(members[0].name)}`
+                  : `${t('block_user.block', 'Block')} ${getFirstName(members[0].name)}`,
+                onClick: async () => {
+                  if (isBlocked(privateUser, members[0].id)) await unblockUser(members[0].id, t)
+                  else await blockUser(members[0].id, t)
                 },
               },
               {

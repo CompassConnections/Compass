@@ -8,6 +8,37 @@ import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {withTracking} from 'web/lib/service/analytics'
 
+// Shared by the profile page's more-options modal and the chat header's dropdown, so blocking does
+// the same thing (same toast, same cache patch) wherever it's triggered from.
+//
+// The grid the blocker came from is unmounted, but its result set is still in memory and would be
+// handed straight back on the way there, blocked profile included — so patch it here rather than
+// making them reload to see the block take effect. Unblocking cannot be patched the same way (the
+// profiles to put back are not on the client), so it just forces the next visit to refetch.
+export const blockUser = async (userId: string, t: ReturnType<typeof useT>) => {
+  await toast.promise(api('user/by-id/:id/block', {id: userId}), {
+    loading: t('block_user.toast.loading', 'Blocking...'),
+    success: t(
+      'block_user.toast.success',
+      "Blocked. They're hidden from your search results and neither of you can message the other.",
+    ),
+    error: t('block_user.toast.error', 'Error blocking user'),
+  })
+  removeProfileFromCache(userId)
+}
+
+export const unblockUser = async (userId: string, t: ReturnType<typeof useT>) => {
+  await toast.promise(api('user/by-id/:id/unblock', {id: userId}), {
+    loading: t('block_user.toast.unblock.loading', 'Unblocking...'),
+    success: t(
+      'block_user.toast.unblock.success',
+      'Unblocked. They can show up in your search results and message you again.',
+    ),
+    error: t('block_user.toast.unblock.error', 'Error unblocking user'),
+  })
+  invalidateProfilesCache()
+}
+
 export const BlockUser = (props: {
   user: User
   currentUser: PrivateUser
@@ -19,26 +50,8 @@ export const BlockUser = (props: {
 
   const isBlocked = currentUser.blockedUserIds?.includes(userId)
 
-  // The grid the blocker came from is unmounted, but its result set is still in memory and would be
-  // handed straight back on the way there, blocked profile included — so patch it here rather than
-  // making them reload to see the block take effect. Unblocking cannot be patched the same way (the
-  // profiles to put back are not on the client), so it just forces the next visit to refetch.
-  const onUnblock = async () => {
-    await api('user/by-id/:id/unblock', {id: user.id})
-    invalidateProfilesCache()
-  }
-
-  const onBlock = async () => {
-    await toast.promise(api('user/by-id/:id/block', {id: user.id}), {
-      loading: t('block_user.toast.loading', 'Blocking...'),
-      success: t(
-        'block_user.toast.success',
-        "Blocked. They're hidden from your search results and neither of you can message the other.",
-      ),
-      error: t('block_user.toast.error', 'Error blocking user'),
-    })
-    removeProfileFromCache(userId)
-  }
+  const onUnblock = () => unblockUser(userId, t)
+  const onBlock = () => blockUser(userId, t)
   return (
     <Col>
       <Row className={'justify-between'}>

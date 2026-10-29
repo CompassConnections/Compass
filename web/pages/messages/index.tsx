@@ -67,8 +67,12 @@ export function MessagesContent(props: {currentUser: User}) {
   const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(true)
   const lastMessages = useLastPrivateMessages(currentUser.id)
   const [query, setQuery] = useState('')
-  // In-memory so opening a banned thread and coming back lands on the same list you left.
-  const [showBanned, setShowBanned] = usePersistentInMemoryState(false, 'messages-show-banned')
+  // Which list is showing: the default one, or one of the two side lists that replace it. Banned
+  // (Compass's call about someone) and blocked (your call) are kept apart rather than merged into
+  // one "hidden" list, since you can undo one and not the other. In-memory so opening a thread from
+  // a side list and coming back lands on the same list you left.
+  const [view, setView] = usePersistentInMemoryState<MessagesView>('all', 'messages-view')
+  const privateUser = usePrivateUser()
 
   // One batched fetch for every avatar on the page. get-channel-memberships already told us who is in
   // each channel, so letting each row fetch its own members would be one round-trip per chat.

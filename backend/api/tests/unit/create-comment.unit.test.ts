@@ -24,6 +24,7 @@ describe('createComment', () => {
     jest.resetAllMocks()
     mockPg = {
       one: jest.fn(),
+      oneOrNone: jest.fn(),
     }
     ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
   })
@@ -82,9 +83,10 @@ describe('createComment', () => {
       ;(sharedUtils.getUser as jest.Mock)
         .mockResolvedValueOnce(mockCreator)
         .mockResolvedValueOnce(mockOnUser)
-      ;(sharedUtils.getPrivateUser as jest.Mock)
-        .mockResolvedValueOnce(mockUserId)
-        .mockResolvedValueOnce(mockOnUser)
+      ;(sharedUtils.getPrivateUser as jest.Mock).mockImplementation(async (id: string) =>
+        id === mockOnUser.id ? mockOnUser : {id, blockedUserIds: []},
+      )
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue({comments_enabled: true})
       ;(mockPg.one as jest.Mock).mockResolvedValue(mockComment)
       ;(notificationPrefs.getNotificationDestinationsForUser as jest.Mock).mockReturnValue(
         mockNotificationDestination,
@@ -97,9 +99,11 @@ describe('createComment', () => {
       expect(sharedUtils.getUser).toBeCalledTimes(2)
       expect(sharedUtils.getUser).toHaveBeenNthCalledWith(1, mockAuth.uid)
       expect(sharedUtils.getUser).toHaveBeenNthCalledWith(2, mockUserId.userId)
-      expect(sharedUtils.getPrivateUser).toBeCalledTimes(2)
-      expect(sharedUtils.getPrivateUser).toHaveBeenNthCalledWith(1, mockProps.userId)
-      expect(sharedUtils.getPrivateUser).toHaveBeenNthCalledWith(2, mockOnUser.id)
+      expect(mockPg.oneOrNone).toBeCalledWith(sqlMatch('select comments_enabled from profiles'), [
+        mockProps.userId,
+      ])
+      expect(sharedUtils.getPrivateUser).toHaveBeenCalledWith(mockAuth.uid)
+      expect(sharedUtils.getPrivateUser).toHaveBeenCalledWith(mockOnUser.id)
       expect(mockPg.one).toBeCalledTimes(1)
       expect(mockPg.one).toBeCalledWith(sqlMatch('insert into profile_comments'), [
         mockCreator.id,
@@ -172,8 +176,11 @@ describe('createComment', () => {
         .mockResolvedValueOnce(mockCreator)
         .mockResolvedValueOnce(false)
       ;(sharedUtils.getPrivateUser as jest.Mock).mockResolvedValue(mockUserId)
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue({comments_enabled: true})
 
-      expect(createComment(mockProps, mockAuth, mockReq)).rejects.toThrowError('User not found')
+      await expect(createComment(mockProps, mockAuth, mockReq)).rejects.toThrowError(
+        'User not found',
+      )
     })
 
     it('throw if there is no account associated with the authId', async () => {
@@ -298,9 +305,9 @@ describe('createComment', () => {
       }
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValueOnce(mockCreator)
-      ;(sharedUtils.getPrivateUser as jest.Mock).mockResolvedValue(null)
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(null)
 
-      expect(createComment(mockProps, mockAuth, mockReq)).rejects.toThrowError(
+      await expect(createComment(mockProps, mockAuth, mockReq)).rejects.toThrowError(
         'Other user not found',
       )
     })
@@ -344,11 +351,64 @@ describe('createComment', () => {
       }
 
       ;(sharedUtils.getUser as jest.Mock).mockResolvedValueOnce(mockCreator)
-      ;(sharedUtils.getPrivateUser as jest.Mock).mockResolvedValue(mockUserId)
-
-      expect(createComment(mockProps, mockAuth, mockReq)).rejects.toThrowError(
-        'User has blocked you',
+      ;(sharedUtils.getPrivateUser as jest.Mock).mockImplementation(async (id: string) =>
+        id === mockUserId.userId ? mockUserId : {id, blockedUserIds: []},
       )
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue({comments_enabled: true})
+
+      await expect(createComment(mockProps, mockAuth, mockReq)).rejects.toThrowError(
+        'You can no longer interact with this person',
+      )
+      expect(mockPg.one).not.toHaveBeenCalled()
+    })
+
+    it('throw if you have blocked the user', async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockCreator = {id: '321', name: 'Mock Creator', username: 'mock.creator'}
+      const mockProps = {
+        userId: '123',
+        content: {
+          type: 'doc',
+          content: [{type: 'paragraph', content: [{type: 'text', text: 'Hi'}]}],
+        },
+        replyToCommentId: undefined,
+      } as any
+
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValueOnce(mockCreator)
+      ;(sharedUtils.getPrivateUser as jest.Mock).mockImplementation(async (id: string) =>
+        id === mockAuth.uid ? {id, blockedUserIds: ['123']} : {id, blockedUserIds: []},
+      )
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue({comments_enabled: true})
+
+      await expect(createComment(mockProps, mockAuth, {} as any)).rejects.toThrowError(
+        'You can no longer interact with this person',
+      )
+      expect(mockPg.one).not.toHaveBeenCalled()
+    })
+
+    it('throw if the profile has endorsements turned off', async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockCreator = {id: '321', name: 'Mock Creator', username: 'mock.creator'}
+      const mockProps = {
+        userId: '123',
+        content: {
+          type: 'doc',
+          content: [{type: 'paragraph', content: [{type: 'text', text: 'Hi'}]}],
+        },
+        replyToCommentId: undefined,
+      } as any
+
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValueOnce(mockCreator)
+      ;(sharedUtils.getPrivateUser as jest.Mock).mockImplementation(async (id: string) => ({
+        id,
+        blockedUserIds: [],
+      }))
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue({comments_enabled: false})
+
+      await expect(createComment(mockProps, mockAuth, {} as any)).rejects.toThrowError(
+        'This person has turned off endorsements',
+      )
+      expect(mockPg.one).not.toHaveBeenCalled()
     })
 
     it('throw if the comment is too long', async () => {

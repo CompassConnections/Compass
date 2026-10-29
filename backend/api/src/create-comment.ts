@@ -1,4 +1,5 @@
 import {type JSONContent} from '@tiptap/core'
+import {assertNotBlocked} from 'api/helpers/blocks'
 import {MAX_COMMENT_JSON_LENGTH, validateCommentAuthor} from 'api/helpers/comment'
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {Notification} from 'common/notifications'
@@ -57,10 +58,19 @@ export const createComment: APIHandler<'create-comment'> = async (
 const validateComment = async (userId: string, creatorId: string, content: JSONContent) => {
   const {creator} = await validateCommentAuthor(creatorId, content)
 
-  const otherUser = await getPrivateUser(userId)
-  if (!otherUser) throw APIErrors.notFound('Other user not found')
-  if (otherUser.blockedUserIds.includes(creatorId)) {
-    throw APIErrors.notFound('User has blocked you')
+  const pg = createSupabaseDirectClient()
+  const profile = await pg.oneOrNone<{comments_enabled: boolean}>(
+    `select comments_enabled from profiles where user_id = $1`,
+    [userId],
+  )
+  if (!profile) throw APIErrors.notFound('Other user not found')
+
+  // Blocks run both ways (see `helpers/blocks`): the author can't endorse someone they blocked either.
+  await assertNotBlocked(creatorId, [userId])
+
+  // The switch reads "endorsements from others", so the owner can still post on their own profile.
+  if (creatorId !== userId && !profile.comments_enabled) {
+    throw APIErrors.forbidden('This person has turned off endorsements')
   }
 
   return {content, creator}

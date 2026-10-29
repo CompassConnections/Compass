@@ -11,6 +11,7 @@ import {
 } from 'common/moderation/first-message'
 import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
+import {isOwnImageUrl} from 'common/util/image-url'
 import {richTextToString} from 'common/util/parse'
 import {findKey} from 'lodash'
 import {useRouter} from 'next/router'
@@ -386,9 +387,10 @@ export const SendMessageButton = (props: {
               the content it was introducing. */}
             <Col className={'w-full'}>
               <Row className={'items-center gap-3.5 mb-6'}>
-                {profile.pinned_url && (
+                {/* A plain <img> loads straight from the viewer's browser, so only a photo we host. */}
+                {isOwnImageUrl(profile.pinned_url) && (
                   <img
-                    src={profile.pinned_url}
+                    src={profile.pinned_url!}
                     alt=""
                     className={'h-13 w-13 rounded-full object-cover border border-canvas-200'}
                     style={{width: 52, height: 52}}

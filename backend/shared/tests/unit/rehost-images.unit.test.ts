@@ -255,9 +255,16 @@ describe('rehostExternalImages', () => {
 
 describe('firstOwnedImageSrc', () => {
   it('returns the first image we serve ourselves', async () => {
-    const ours = 'https://firebasestorage.googleapis.com/v0/b/b/o/user-images%2Fa%2Fb.jpg?alt=media'
+    const ours =
+      'https://firebasestorage.googleapis.com/v0/b/compass-130ba.firebasestorage.app/o/user-images%2Fa%2Fb.jpg?alt=media'
 
     expect(firstOwnedImageSrc(docWithImages('https://awlego.com/a.jpg', ours))).toEqual(ours)
+  })
+
+  it("skips an image in somebody else's bucket on the same Google host", async () => {
+    const theirs = 'https://firebasestorage.googleapis.com/v0/b/someone-else/o/a.jpg?alt=media'
+
+    expect(firstOwnedImageSrc(docWithImages(theirs))).toBeUndefined()
   })
 
   it('never returns an image still hosted elsewhere', async () => {

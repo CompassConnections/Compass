@@ -1,3 +1,4 @@
+import {isOwnImageUrl} from 'common/util/image-url'
 import Link from 'next/link'
 import {useUserInStore} from 'web/hooks/use-user-supabase'
 
@@ -22,8 +23,9 @@ export function UserLink({
       href={`/${user.username}`}
       className={`hover:text-primary-700 flex items-center gap-1 ${className}`}
     >
-      {user.avatar_url && (
-        <img src={user.avatar_url} alt={user.name} className="h-5 w-5 rounded-full" />
+      {/* A plain <img> loads straight from the viewer's browser, so only a photo we host. */}
+      {isOwnImageUrl(user.avatar_url) && (
+        <img src={user.avatar_url!} alt={user.name} className="h-5 w-5 rounded-full" />
       )}
       <span>{user.name}</span>
     </Link>

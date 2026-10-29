@@ -13,6 +13,7 @@ import {
   Text,
 } from '@react-email/components'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
+import {ownImageUrlOrUndefined} from 'common/util/image-url'
 import React, {type CSSProperties, type ReactNode} from 'react'
 import {createT} from 'shared/locale'
 
@@ -90,9 +91,8 @@ export const fonts = {
  * silhouette that reads as an empty circle sitting next to members who do have a photo.
  */
 export const avatarSrc = (avatarUrl: string | null | undefined, name?: string | null) =>
-  avatarUrl && avatarUrl.length > 0
-    ? avatarUrl
-    : `https://ui-avatars.com/api/?name=${encodeURIComponent((name || 'U')[0])}&size=128&format=png`
+  ownImageUrlOrUndefined(avatarUrl) ??
+  `https://ui-avatars.com/api/?name=${encodeURIComponent((name || 'U')[0])}&size=128&format=png`
 
 // ─── Shell ────────────────────────────────────────────────────────────────────
 

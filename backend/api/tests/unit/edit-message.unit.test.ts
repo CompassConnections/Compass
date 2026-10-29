@@ -1,6 +1,7 @@
 jest.mock('shared/supabase/init')
 jest.mock('shared/encryption')
 jest.mock('api/helpers/private-messages')
+jest.mock('api/helpers/blocks')
 
 import {editMessage} from 'api/edit-message'
 import {AuthedUser} from 'api/helpers/endpoint'
@@ -32,6 +33,8 @@ describe('editMessage', () => {
       const mockPlainTextContent = JSON.stringify(mockProps.content)
       const mockMessage = {
         channel_id: 'mockChannelId',
+        member_status: 'member',
+        other_member_ids: ['456'],
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any
@@ -53,9 +56,10 @@ describe('editMessage', () => {
 
       expect(result.success).toBeTruthy()
       expect(mockPg.oneOrNone).toBeCalledTimes(1)
-      expect(mockPg.oneOrNone).toBeCalledWith(sqlMatch('SELECT *'), [
+      expect(mockPg.oneOrNone).toBeCalledWith(sqlMatch('from private_user_messages msg'), [
         mockProps.messageId,
         mockAuth.uid,
+        false,
       ])
       expect(encryptionModules.encryptMessage).toBeCalledTimes(1)
       expect(encryptionModules.encryptMessage).toBeCalledWith(mockPlainTextContent)
@@ -86,9 +90,7 @@ describe('editMessage', () => {
 
       ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(null)
 
-      expect(editMessage(mockProps, mockAuth, mockReq)).rejects.toThrow(
-        'Message not found or cannot be edited',
-      )
+      expect(editMessage(mockProps, mockAuth, mockReq)).rejects.toThrow('Message not found')
     })
 
     it('should throw if the message broadcast failed', async () => {
@@ -98,6 +100,8 @@ describe('editMessage', () => {
       }
       const mockMessage = {
         channel_id: 'mockChannelId',
+        member_status: 'member',
+        other_member_ids: ['456'],
       }
       const mockAuth = {uid: '321'} as AuthedUser
       const mockReq = {} as any

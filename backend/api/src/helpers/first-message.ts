@@ -1,5 +1,5 @@
 import {type JSONContent} from '@tiptap/core'
-import {APIErrors} from 'common/api/utils'
+import {APIError, APIErrors} from 'common/api/utils'
 import {sendDiscordMessage} from 'common/discord/core'
 import {duplicateOpenerDiscordMessage, openerReviewDiscordMessage} from 'common/discord/messages'
 import {AUTO_BAN_REVIEW_HOURS, AUTO_BAN_UNDER_REVIEW_CODE} from 'common/moderation/ban'
@@ -9,6 +9,7 @@ import {
   findDuplicateOpener,
   FIRST_MESSAGE_REJECTED_CODE,
   MIN_FIRST_MESSAGE_CHARS,
+  OPENER_REVIEW_REJECTED_CODE,
   profileVocabulary,
   referencesProfile,
 } from 'common/moderation/first-message'
@@ -18,6 +19,7 @@ import {
   decideOpener,
   OPENER_REVIEW_MODE,
   ProfileSummary,
+  PromptAnswer,
   reviewOpener,
 } from 'shared/moderation/opener-review'
 import {log} from 'shared/monitoring/log'
@@ -83,18 +85,66 @@ type MemberRow = {
   keywords: string[] | null
   bio_text: string | null
   bio: JSONContent | null
-  age: number | null
-  gender: string | null
-  city: string | null
-  country: string | null
-  relationship_status: string[] | null
-  pref_relation_styles: string[] | null
-  pref_gender: string[] | null
-  pref_age_min: number | null
-  pref_age_max: number | null
+  interests: string[] | null
+  causes: string[] | null
+  work: string[] | null
+  prompt_answers: PromptAnswer[] | null
+  /** The rest of the profile row, minus the columns in `NOT_PROFILE_CONTENT`. */
+  details: Record<string, unknown> | null
 }
 
-/** A member with the parts of their profile a first message is judged against. */
+/**
+ * Profile columns that are not something the member wrote about themselves: ids, coordinates,
+ * search indexes, settings and consents, timestamps, photos. Everything else on the row goes to the
+ * model. A deny-list on purpose, so a new profile field reaches the review without anyone having to
+ * remember this file. `birth_date` is left out because `age` says the same with less.
+ */
+const NOT_PROFILE_CONTENT = [
+  'id',
+  'user_id',
+  'bio',
+  'bio_text',
+  'bio_length',
+  'bio_tsv',
+  'search_text',
+  'search_tsv',
+  'headline',
+  'keywords',
+  'birth_date',
+  'created_time',
+  'last_modification_time',
+  'city_latitude',
+  'city_longitude',
+  'geodb_city_id',
+  'raised_in_lat',
+  'raised_in_lon',
+  'raised_in_radius',
+  'raised_in_geodb_city_id',
+  'photo_urls',
+  'pinned_url',
+  'referred_by_user_id',
+  'referred_by_username',
+  'visibility',
+  'feed_visibility',
+  'disabled',
+  'looking_for_matches',
+  'allow_direct_messaging',
+  'allow_interest_indicating',
+  'comments_enabled',
+  'messaging_status',
+  'social_media_consent',
+  'spotlight_consent',
+  'donor_badge_hidden',
+]
+
+/** Most prompt answers sent to the model per member, the explained and most important first. */
+const MAX_PROMPT_ANSWERS = 30
+
+/**
+ * A member with everything on their profile a first message can be judged against: the profile
+ * row, their interests, causes and work by name, and their compatibility answers as text.
+ * One round trip — it runs on every first message, inside the request.
+ */
 async function memberRow(pg: SupabaseDirectClient, userId: string): Promise<MemberRow | null> {
   return pg.oneOrNone<MemberRow>(
     `select u.name,
@@ -104,19 +154,38 @@ async function memberRow(pg: SupabaseDirectClient, userId: string): Promise<Memb
             p.keywords,
             p.bio_text,
             p.bio,
-            p.age,
-            p.gender,
-            p.city,
-            p.country,
-            p.relationship_status,
-            p.pref_relation_styles,
-            p.pref_gender,
-            p.pref_age_min,
-            p.pref_age_max
+            to_jsonb(p) - $2::text[] as details,
+            (select array_agg(o.name order by o.name)
+             from profile_interests po
+                      join interests o on o.id = po.option_id
+             where po.profile_id = p.id) as interests,
+            (select array_agg(o.name order by o.name)
+             from profile_causes po
+                      join causes o on o.id = po.option_id
+             where po.profile_id = p.id) as causes,
+            (select array_agg(o.name order by o.name)
+             from profile_work po
+                      join work o on o.id = po.option_id
+             where po.profile_id = p.id) as work,
+            (select jsonb_agg(a.answer)
+             from (select jsonb_build_object(
+                                  'question', cp.question,
+                                  -- options are stored label -> index; the answer is the index
+                                  'answer', (select key
+                                             from jsonb_each(cp.multiple_choice_options)
+                                             where value::int = ca.multiple_choice
+                                             limit 1),
+                                  'explanation', ca.explanation
+                          ) as answer
+                   from compatibility_answers ca
+                            join compatibility_prompts cp on cp.id = ca.question_id
+                   where ca.creator_id = u.id
+                   order by (ca.explanation is null or ca.explanation = ''), ca.importance desc
+                   limit $3) a) as prompt_answers
      from users u
               left join profiles p on p.user_id = u.id
      where u.id = $1`,
-    [userId],
+    [userId, NOT_PROFILE_CONTENT, MAX_PROMPT_ANSWERS],
   )
 }
 
@@ -126,18 +195,14 @@ const bioTextOf = (row: MemberRow) => row.bio_text ?? (row.bio ? richTextToStrin
 
 const summaryOf = (row: MemberRow): ProfileSummary => ({
   name: row.name,
-  age: row.age,
-  gender: row.gender,
-  city: row.city,
-  country: row.country,
   headline: row.headline,
   keywords: row.keywords,
   bioText: bioTextOf(row),
-  relationshipStatus: row.relationship_status,
-  lookingFor: row.pref_relation_styles,
-  prefGender: row.pref_gender,
-  prefAgeMin: row.pref_age_min,
-  prefAgeMax: row.pref_age_max,
+  interests: row.interests,
+  causes: row.causes,
+  work: row.work,
+  promptAnswers: row.prompt_answers,
+  details: row.details,
 })
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -277,7 +342,12 @@ async function reviewWithModel(
   if (shadow || decision.action === 'flag') return
 
   if (decision.action === 'reject') {
-    throw APIErrors.badRequest(decision.reason, {context: FIRST_MESSAGE_REJECTED_CODE})
+    // The second marker tells the composer this came from the model, not a fixed rule, so it can
+    // say the check is new and may be wrong, and point to where to contest it.
+    throw new APIError(400, decision.reason, [
+      {context: FIRST_MESSAGE_REJECTED_CODE},
+      {context: OPENER_REVIEW_REJECTED_CODE},
+    ])
   }
   // A hold. Deliberately not saying what gave it away: naming the signal teaches the next account
   // to avoid it. The copy is the same provisional one the other automatic holds use.

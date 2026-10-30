@@ -23,6 +23,8 @@ export type PendingOpener = {
   reason?: string
   /** The refusal put the account on hold; there is nothing to edit and resend. */
   hold?: boolean
+  /** Refused by the model review, which is new and can be wrong — see `OpenerReviewNote`. */
+  reviewed?: boolean
 }
 
 const store = new Map<number, PendingOpener>()

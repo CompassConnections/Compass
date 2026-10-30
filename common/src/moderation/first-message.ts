@@ -33,6 +33,11 @@ export const MIN_ANSWERS_TO_MESSAGE = 0
  */
 export const PROFILE_INCOMPLETE_CODE = 'profile-incomplete'
 export const FIRST_MESSAGE_REJECTED_CODE = 'first-message-rejected'
+/**
+ * Sent alongside `FIRST_MESSAGE_REJECTED_CODE` when the refusal was the model review's call rather
+ * than a fixed rule, so the composer can say the check is new and can be contested.
+ */
+export const OPENER_REVIEW_REJECTED_CODE = 'opener-review-rejected'
 
 /**
  * Two openers at or above this word-set similarity are the same message with the names swapped.

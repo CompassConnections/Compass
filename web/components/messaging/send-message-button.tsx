@@ -30,6 +30,7 @@ import {
   isAutoBanUnderReviewError,
 } from 'web/components/moderation/account-on-hold'
 import {
+  isOpenerReviewRejection,
   profileIncompleteIssues,
   ProfileIncompleteNotice,
 } from 'web/components/moderation/profile-incomplete'
@@ -202,6 +203,7 @@ export const SendMessageButton = (props: {
           reason: e?.message ?? String(e),
           // A copy-pasted or scam-flagged opener holds the account; there is nothing to resend.
           hold: isAutoBanUnderReviewError(e),
+          reviewed: isOpenerReviewRejection(e),
         }),
       )
   }

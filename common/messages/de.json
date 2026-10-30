@@ -2457,5 +2457,14 @@
   "footer.stats": "Statistiken",
   "footer.support": "Hilfe und Rechtliches",
   "footer.tagline": "Das kostenlose Verzeichnis, um deine Leute zu finden – durchsuchbar nach Werten und Merkmalen. Keine Werbung, kein Swipen.",
-  "footer.terms": "Nutzungsbedingungen"
+  "footer.terms": "Nutzungsbedingungen",
+  "values.seo.title": "Unsere Werte",
+  "values.seo.description": "Wofür Compass steht und welche Regeln wir konsequent durchsetzen, damit Verbindungen tief und sicher bleiben.",
+  "values.label": "Werte",
+  "values.updated": "Zuletzt aktualisiert: 30. Oktober 2026",
+  "footer.values": "Unsere Werte",
+  "messages.review_note.text": "Die Prüfung erster Nachrichten ist eine neue Funktion, die wir testen, damit Verbindungen auf Compass tief bleiben. Wie alles Neue ist sie noch nicht perfekt: Sie können Ihre Nachricht bearbeiten und es erneut versuchen.",
+  "messages.review_note.unfair": "Wenn Ihnen diese Entscheidung unfair oder unvereinbar mit unseren Werten erscheint, sagen Sie es uns bitte.",
+  "messages.review_note.values": "Unsere Werte",
+  "messages.review_note.contact": "Kontakt"
 }

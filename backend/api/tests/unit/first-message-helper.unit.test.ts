@@ -10,7 +10,11 @@ jest.mock('shared/moderation/opener-review', () => ({
 import {assertAcceptableOpener, isOpener, previousOpeners} from 'api/helpers/first-message'
 import {sendDiscordMessage} from 'common/discord/core'
 import {AUTO_BAN_UNDER_REVIEW_CODE} from 'common/moderation/ban'
-import {FIRST_MESSAGE_REJECTED_CODE, MIN_FIRST_MESSAGE_CHARS} from 'common/moderation/first-message'
+import {
+  FIRST_MESSAGE_REJECTED_CODE,
+  MIN_FIRST_MESSAGE_CHARS,
+  OPENER_REVIEW_REJECTED_CODE,
+} from 'common/moderation/first-message'
 import {sqlMatch} from 'common/test-utils'
 import {User} from 'common/user'
 import {reviewOpener} from 'shared/moderation/opener-review'
@@ -35,6 +39,11 @@ const recipient = {
     'I left a career in consulting to work on animal welfare, and I am looking for someone who ' +
     'takes ideas seriously but can also laugh at them. Vegetarian, slowly turning vegan.',
   bio: null,
+  interests: ['Piano'],
+  causes: null,
+  work: null,
+  prompt_answers: null,
+  details: {age: 31, pref_relation_styles: ['friendship']},
 }
 
 // Long enough, and anchored on two things Julie wrote.
@@ -100,6 +109,8 @@ describe('assertAcceptableOpener', () => {
     )
     expect(error.message).toContain(`at least ${MIN_FIRST_MESSAGE_CHARS} characters`)
     expect(error.details).toMatchObject({context: FIRST_MESSAGE_REJECTED_CODE})
+    // A fixed rule, not the model's call: no "this check is new" note.
+    expect(JSON.stringify(error.details)).not.toContain(OPENER_REVIEW_REJECTED_CODE)
     // Nothing was looked up: the length alone decided it.
     expect(pg.oneOrNone).not.toBeCalled()
   })
@@ -186,7 +197,12 @@ describe('assertAcceptableOpener', () => {
       expect(reviewOpener).toBeCalledWith({
         opener: expect.stringContaining('Moral philosophy and climbing'),
         sender: expect.objectContaining({name: recipient.name, accountAgeDays: expect.any(Number)}),
-        recipient: expect.objectContaining({name: recipient.name, keywords: recipient.keywords}),
+        recipient: expect.objectContaining({
+          name: recipient.name,
+          keywords: recipient.keywords,
+          interests: recipient.interests,
+          details: recipient.details,
+        }),
       })
     })
 
@@ -209,7 +225,11 @@ describe('assertAcceptableOpener', () => {
       )
       expect(error.code).toBe(400)
       expect(error.message).toBe('Nothing here is about what Julie wrote.')
-      expect(error.details).toMatchObject({context: FIRST_MESSAGE_REJECTED_CODE})
+      // Tagged as the model's call, so the composer says the check is new and can be contested.
+      expect(error.details).toEqual([
+        {context: FIRST_MESSAGE_REJECTED_CODE},
+        {context: OPENER_REVIEW_REJECTED_CODE},
+      ])
       expect(updateUser).not.toBeCalled()
     })
 

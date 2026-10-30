@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
+import {OpenerReviewNote} from 'web/components/moderation/opener-review-note'
 import {Content} from 'web/components/widgets/editor'
 import {useT} from 'web/lib/locale'
 import {PendingOpener} from 'web/lib/pending-openers'
@@ -40,6 +41,7 @@ export function PendingOpenerBubble(props: {
               {t('messages.pending.refused', 'Not sent')}
             </p>
             {pending.reason && <p className="mt-1 text-ink-700">{pending.reason}</p>}
+            {pending.reviewed && !pending.hold && <OpenerReviewNote className="mt-2" />}
             {!pending.hold && (
               <button
                 type="button"

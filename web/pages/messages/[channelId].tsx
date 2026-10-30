@@ -30,7 +30,10 @@ import {
   AccountOnHoldNotice,
   isAutoBanUnderReviewError,
 } from 'web/components/moderation/account-on-hold'
-import {isFirstMessageRejectedError} from 'web/components/moderation/profile-incomplete'
+import {
+  isFirstMessageRejectedError,
+  isOpenerReviewRejection,
+} from 'web/components/moderation/profile-incomplete'
 import {MultipleOrSingleAvatars} from 'web/components/multiple-or-single-avatars'
 import {PageBase} from 'web/components/page-base'
 import {blockUser, unblockUser} from 'web/components/profile/block-user'
@@ -59,7 +62,7 @@ import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {useVisualViewportHeight} from 'web/hooks/use-visual-viewport-height'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
-import {clearPendingOpener, usePendingOpener} from 'web/lib/pending-openers'
+import {clearPendingOpener, setPendingOpener, usePendingOpener} from 'web/lib/pending-openers'
 import {track} from 'web/lib/service/analytics'
 import {useGroupedMessages, usePaginatedScrollingMessages} from 'web/lib/supabase/chat-messages'
 import {copyToClipboard} from 'web/lib/util/copy'
@@ -422,6 +425,19 @@ export const PrivateChat = (props: {
           fetchMessages()
         }
       } catch (e) {
+        // Refused by the model review: shown the same way as when the opener was sent from a
+        // profile — the message in a refused bubble with the reason, "Edit and try again", and the
+        // note that the check is new and can be contested (`OpenerReviewNote`).
+        if (!editingMessage && isOpenerReviewRejection(e)) {
+          setPendingOpener(channelId, {
+            content: cleanDoc(editor.getJSON()),
+            status: 'rejected',
+            reason: (e as Error).message,
+            reviewed: true,
+          })
+          editor.commands.clearContent(true)
+          return
+        }
         // A refused first message carries its reason — too short, nothing in it about the person,
         // or the account was just put on hold for a copy-pasted opener — and that reason is the
         // one thing the sender needs to read. Everything else gets the generic line.

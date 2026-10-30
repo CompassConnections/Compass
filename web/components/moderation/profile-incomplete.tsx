@@ -4,6 +4,7 @@ import {
   FIRST_MESSAGE_REJECTED_CODE,
   MIN_ANSWERS_TO_MESSAGE,
   MIN_BIO_CHARS_TO_MESSAGE,
+  OPENER_REVIEW_REJECTED_CODE,
   PROFILE_INCOMPLETE_CODE,
   ProfileGateIssues,
 } from 'common/moderation/first-message'
@@ -37,6 +38,15 @@ export function profileIncompleteIssues(e: unknown): ProfileGateIssues | null {
  */
 export function isFirstMessageRejectedError(e: unknown) {
   return detailsOf(e).some((d) => d?.context === FIRST_MESSAGE_REJECTED_CODE)
+}
+
+/**
+ * True when the refusal came from the model review of a first message rather than a fixed rule
+ * (tagged `OPENER_REVIEW_REJECTED_CODE` in `backend/api/src/helpers/first-message.ts`). Those can be wrong, so the
+ * composer says so — see `OpenerReviewNote`.
+ */
+export function isOpenerReviewRejection(e: unknown) {
+  return detailsOf(e).some((d) => d?.context === OPENER_REVIEW_REJECTED_CODE)
 }
 
 /**

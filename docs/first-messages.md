@@ -82,6 +82,24 @@ JSON verdict: an engagement score, a looks-based flag, a scam score, a boundary 
 contradicts-own-profile flag, and one sentence addressed to the sender. The message is fenced and
 the prompt says not to follow instructions inside it.
 
+Each profile is sent whole: headline, keywords, bio, interests, causes and work by name, up to
+`MAX_PROMPT_ANSWERS` compatibility answers (explained ones first), and every other filled column of
+the `profiles` row. `memberRow()` in `api/helpers/first-message.ts` builds it in one query and
+drops the columns in `NOT_PROFILE_CONTENT` (ids, coordinates, settings, photos); it is a deny-list
+so a new profile field reaches the review without editing this code. A model shown only part of the
+profile calls a message about the rest generic, and tells the sender the recipient never mentioned
+it.
+
+What the model sees can still be partial (the bio is cut at `MAX_BIO_CHARS_IN_PROMPT`, answers past
+the cap are left out), so the prompt says so: a detail it cannot find is neither evidence nor a
+reason to lower the score, a message is judged on the parts it can match, and the summary never
+claims the recipient did not write something.
+
+A model refusal carries a second detail, `OPENER_REVIEW_REJECTED_CODE`, next to
+`FIRST_MESSAGE_REJECTED_CODE`. The composer uses it to show `OpenerReviewNote` under the refused
+bubble: the check is new and in testing, the message can be edited and resent, and a decision that
+seems out of line with [/values](../web/public/md/values.md) can be reported through /contact.
+
 `decideOpener()` maps the verdict to one of four actions, and the thresholds live beside it:
 
 - **hold** on a scam score at or above `SCAM_HOLD_THRESHOLD`, or a looks-based opener. Same

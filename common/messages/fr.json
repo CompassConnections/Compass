@@ -2456,5 +2456,14 @@
   "footer.stats": "Statistiques",
   "footer.support": "Aide et mentions légales",
   "footer.tagline": "L’annuaire gratuit pour trouver les vôtres, consultable par valeurs et par profil. Sans publicité, sans swipe.",
-  "footer.terms": "Conditions d'utilisation"
+  "footer.terms": "Conditions d'utilisation",
+  "values.seo.title": "Nos valeurs",
+  "values.seo.description": "Ce que défend Compass, et les règles que nous appliquons strictement pour que les liens restent profonds et sûrs.",
+  "values.label": "Valeurs",
+  "values.updated": "Dernière mise à jour : 30 octobre 2026",
+  "footer.values": "Nos valeurs",
+  "messages.review_note.text": "La vérification des premiers messages est une nouvelle fonctionnalité que nous testons pour que les liens sur Compass restent profonds. Comme tout ce qui est nouveau, elle n'est pas encore parfaite : vous pouvez modifier votre message et réessayer.",
+  "messages.review_note.unfair": "Si cette décision vous semble injuste ou contraire à nos valeurs, dites-le-nous.",
+  "messages.review_note.values": "Nos valeurs",
+  "messages.review_note.contact": "Nous contacter"
 }

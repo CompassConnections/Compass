@@ -13,6 +13,9 @@ export type HouseRule = {title: string; text: string}
  * fair, and each rule names its consequence — the enforcement is real (see
  * `common/src/moderation/first-message.ts` and `docs/first-messages.md`), and a rule without one
  * reads as a suggestion.
+ *
+ * `/values` (`web/public/md/values.md`) restates these in its "Rules we strongly enforce" section,
+ * word for word; change one, change the other.
  */
 export function useHouseRules(): HouseRule[] {
   const t = useT()

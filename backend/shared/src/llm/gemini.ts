@@ -37,6 +37,8 @@ export async function callGemini(
 
   const {maxContextLength = DEFAULT_MAX_CONTEXT_LENGTH, temperature = 0} = opts
 
+  debug(prompt)
+
   for (const model of MODELS) {
     debug(`Calling Gemini ${model}...`)
     const response = await fetch(

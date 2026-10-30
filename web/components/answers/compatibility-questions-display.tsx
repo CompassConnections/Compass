@@ -936,7 +936,8 @@ function CompatibilityDisplay(props: {
           </button>
         </>
       )}
-      <Modal open={open} setOpen={setOpen}>
+      {/* Same width as the answer modal, so comparing doesn't feel cramped next to answering. */}
+      <Modal open={open} setOpen={setOpen} size="lg">
         <Col className={clsx(MODAL_CLASS, ANSWER_MODAL_PANEL_CLASS, '!items-stretch')}>
           {/* Same header as the answer screen — category tag, then the prompt in the heading serif —
               so comparing reads as the other half of answering. */}

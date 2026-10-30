@@ -8,7 +8,10 @@ export const searchLocationEndpoint: APIHandler<'search-location'> = async (body
 }
 
 export async function searchLocation(body: ValidatedAPIParams<'search-location'>) {
-  const {term, limit} = body
+  const {limit} = body
+  // GeoDB only matches city names, so "Bozeman, MT" or "Paris, France" would return nothing —
+  // keep only the part before the first comma.
+  const term = body.term.split(',')[0].trim()
   // Encode the user-supplied term and force limit to a small integer so neither can inject
   // extra query parameters into the external GeoDB request (e.g. a term containing `&`).
   const namePrefix = encodeURIComponent(term)

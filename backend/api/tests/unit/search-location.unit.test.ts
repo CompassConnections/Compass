@@ -64,6 +64,19 @@ describe('searchLocation', () => {
     })
   })
 
+  describe('when the term includes a region after a comma', () => {
+    it('should search on the city name only', async () => {
+      const mockAuth = {uid: '321'} as AuthedUser
+      const mockReq = {} as any
+      ;(geodbModules.geodbFetch as jest.Mock).mockResolvedValue('Pass')
+
+      await searchLocationEndpoint({term: 'bozeman, MT', limit: 8}, mockAuth, mockReq)
+
+      const calledWith = (geodbModules.geodbFetch as jest.Mock).mock.calls[0][0] as string
+      expect(calledWith).toContain('namePrefix=bozeman&limit=8')
+    })
+  })
+
   describe('when the term contains URL metacharacters', () => {
     it('should encode the term so it cannot inject extra query params', async () => {
       const mockBody = {

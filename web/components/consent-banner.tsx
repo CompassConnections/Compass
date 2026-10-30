@@ -74,7 +74,7 @@ export function ConsentBanner() {
           href="/privacy#cookies-and-local-storage"
           className="font-medium text-primary-700 underline decoration-primary-500/35 underline-offset-2 transition-colors hover:decoration-primary-500"
         >
-          {t('consent.details', 'What we store')}
+          {t('consent.details', 'View our privacy policy')}
         </Link>
       </p>
       {/* One row: the CTA takes the space it can, "No thanks" sits beside it at the same height.

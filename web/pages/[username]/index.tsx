@@ -140,6 +140,7 @@ export default function UserPage(props: UserPageProps) {
   // Mods see banned profiles instead of the suspension wall: deciding whether to unban or confirm
   // the ban means reading the profile, which is exactly what the wall hides.
   const isMod = useAdminOrMod()
+  const currentUser = useUser()
   const username = (props.username ?? router.query.username) as string
   const fromSignup = router?.query?.fromSignup === 'true'
 
@@ -244,7 +245,9 @@ export default function UserPage(props: UserPageProps) {
     return <Custom404 customText={fetchedProps.notFoundCustomText} />
   }
 
-  if (fetchedProps.user?.isBannedFromPosting && !isMod) {
+  // The wall is for other people.
+  const isOwnProfile = !!currentUser && currentUser.id === fetchedProps.user?.id
+  if (fetchedProps.user?.isBannedFromPosting && !isMod && !isOwnProfile) {
     return (
       <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
         <Col className="items-center justify-center h-full">

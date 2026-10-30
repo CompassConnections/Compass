@@ -53,7 +53,7 @@ export const MAX_SPOTLIGHT_TAGS = 5
 export const MAX_SPOTLIGHT_TAG_LENGTH = 40
 
 /** How many the home page asks for. Six fills the rail without turning it into a directory. */
-export const HOME_SPOTLIGHT_LIMIT = 6
+export const HOME_SPOTLIGHT_LIMIT = 100
 
 /** Same wire convention as testimonials: ISO-8601 strings, not revived `Date`s. */
 export type IsoTimestamp = string

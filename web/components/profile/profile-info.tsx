@@ -121,10 +121,15 @@ export function ProfileInfo(props: {
           `--tnh` is that inset (globals.css): the bar pins at `top-0` and carries the inset as its
           own padding, so its background fills the status-bar strip while its buttons stay clear of
           the native nav. The variable is 0 in a browser, so one rule covers both.
+          The negative top margin undoes `body.safe-top` (_document.tsx), which already pads the page
+          by the same inset: without it the bar, in its unstuck position at the top of the page, sat
+          *below* that padding and added its own, so the app opened on a status-bar-height black
+          strip above the buttons. Pulled up by the inset, the bar starts at the viewport top in flow
+          exactly as it does once stuck, and the browser (inset 0) is unchanged.
           `hides-on-scroll` slides it away on the same cue as the mobile bottom nav — down while
           reading, back on the first scroll up — so it never sits on a line someone is reading. */}
       <div
-        className="hides-on-scroll bg-canvas-50/95 border-canvas-300 sticky top-0 z-20 mb-6 flex items-center border-b px-4 sm:px-9 py-4 pt-[calc(1rem+var(--tnh))] backdrop-blur"
+        className="hides-on-scroll bg-canvas-50/95 border-canvas-300 sticky top-0 z-20 mb-6 mt-[calc(-1*var(--tnh))] flex items-center border-b px-4 sm:px-9 py-4 pt-[calc(1rem+var(--tnh))] backdrop-blur"
         style={{
           borderBottomWidth: '1px',
           gap: '10px',

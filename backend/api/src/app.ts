@@ -16,6 +16,7 @@ import {getChannelMemberships} from 'api/get-channel-memberships'
 import {getLastSeenChannelTime, setChannelLastSeenTime} from 'api/get-channel-seen-time'
 import {getChannelsCountEndpoint} from 'api/get-channels-count'
 import {getCompatibilityQuestionDegeneracy} from 'api/get-compatibility-question-degeneracy'
+import {getCompatibilityRanking} from 'api/get-compatibility-ranking'
 import {getHiddenProfiles} from 'api/get-hidden-profiles'
 import {getLastMessages} from 'api/get-last-messages'
 import {getMessagesCountEndpoint} from 'api/get-messages-count'
@@ -712,6 +713,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'check-option-name': checkOptionName,
   'delete-compatibility-prompt': deleteCompatibilityPrompt,
   'recompute-all-compatibility-scores': recomputeAllCompatibilityScoresHandler,
+  'get-compatibility-ranking': getCompatibilityRanking,
   'get-compatibility-question-degeneracy': getCompatibilityQuestionDegeneracy,
   'get-options-admin': getOptionsAdmin,
   'merge-options': mergeOptionsEndpoint,

@@ -1,3 +1,4 @@
+import {CompatibilityScore} from 'common/profiles/compatibility-score'
 import {Row} from 'common/supabase/utils'
 
 export type QuestionWithStats = Row<'compatibility_prompts'> & {
@@ -31,9 +32,17 @@ export type PromptDegeneracy = {
   topPrefsCount: number
 }
 
+/** One row of `/admin/compatibility`: who, and the stored score against the member picked there. */
+export type CompatibilityRankingEntry = CompatibilityScore & {
+  userId: string
+  name: string
+  username: string
+  avatarUrl: string | null
+}
+
 /** What a full rebuild of `compatibility_scores` did, for `/admin/compatibility-questions`. */
 export type RecomputeAllResult = {
-  /** Profiles that had at least one scoring answer, i.e. the ones any pair could be built from. */
+  /** Profiles considered — every profile, since a pair without shared answers is scored on its profiles. */
   usersWithAnswers: number
   /** Pairs written. */
   pairs: number

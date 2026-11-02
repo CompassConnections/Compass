@@ -111,7 +111,7 @@ export default function AdminCompatibilityQuestions() {
     act(async () => {
       const result = await api('recompute-all-compatibility-scores', {})
       setDeletedSinceRebuild(false)
-      return `Rebuilt ${result.pairs} pair(s) across ${result.usersWithAnswers} member(s) with answers in ${result.seconds.toFixed(1)}s — the cache held ${result.previousPairs} before.`
+      return `Rebuilt ${result.pairs} pair(s) across ${result.usersWithAnswers} profile(s) in ${result.seconds.toFixed(1)}s — the cache held ${result.previousPairs} before.`
     })
   }
 

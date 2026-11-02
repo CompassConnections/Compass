@@ -1,4 +1,5 @@
 import {PromptDegeneracy, QuestionWithStats, RecomputeAllResult} from 'common/api/types' // mqp: very unscientific, just balancing our willingness to accept load
+import {CompatibilityRankingEntry} from 'common/api/types'
 import {
   arraybeSchema,
   contentSchema,
@@ -786,6 +787,21 @@ export const API = (_apiTypeCheck = {
     props: z.object({}).strict(),
     returns: {} as RecomputeAllResult,
     summary: 'Rebuild the cached compatibility score of every pair. Admins only.',
+    tag: 'Compatibility',
+  },
+  'get-compatibility-ranking': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        userId: z.string(),
+        limit: z.coerce.number().gt(0).lte(200).optional().default(100),
+      })
+      .strict(),
+    returns: [] as CompatibilityRankingEntry[],
+    summary:
+      "A member's most compatible people, in the order the Compatible sort uses. Admins only, for checking the algorithm.",
     tag: 'Compatibility',
   },
   'delete-compatibility-answer': {

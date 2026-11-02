@@ -5,6 +5,7 @@ import {
   HeartIcon,
   MapIcon,
   PencilSquareIcon,
+  ScaleIcon,
   SparklesIcon,
   TagIcon,
   TrophyIcon,
@@ -74,6 +75,13 @@ const ADMIN_PAGES: {
     description:
       'Which prompts have stopped discriminating — the share on the most-picked answer, and on the most-picked accepted set.',
     icon: ChartBarIcon,
+  },
+  {
+    href: '/admin/compatibility',
+    name: 'Compatibility ranking',
+    description:
+      'Pick a member and see their most compatible people in sort order, with the breakdown of any pair.',
+    icon: ScaleIcon,
   },
   {
     href: '/admin/donations',

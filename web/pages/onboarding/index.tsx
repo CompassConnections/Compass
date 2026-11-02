@@ -1,11 +1,13 @@
 import {ArrowRightIcon, CheckIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
+import Link from 'next/link'
 import Router from 'next/router'
 import {useState} from 'react'
 import {Button} from 'web/components/buttons/button'
 import {HouseRulesList} from 'web/components/house-rules'
 import {Col} from 'web/components/layout/col'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {linkClass} from 'web/components/widgets/site-link'
 import {StepProgress} from 'web/components/widgets/step-progress'
 import {surface} from 'web/components/widgets/surface'
 import {useT} from 'web/lib/locale'
@@ -221,8 +223,8 @@ function Step3CompatibilityInspect({
     <>
       <p>
         {t(
-          'onboarding.step3.body1',
-          'Your score with someone comes from the compatibility questions, using three things you set yourself:',
+          'onboarding.step3.body1.v2',
+          'Your score with someone comes from the compatibility questions and from your profiles. On each question you set three things yourself:',
         )}
       </p>
       <Bullets
@@ -234,9 +236,12 @@ function Step3CompatibilityInspect({
       />
       <p>
         {t(
-          'onboarding.step3.body2',
-          'On any profile you can see, question by question, where you agree. The formula is open source, so you can read it and propose changes.',
-        )}
+          'onboarding.step3.body2.v2',
+          'Your profiles add the rest: children, distance, languages, lifestyle. On any profile you can open the breakdown and see, row by row, where you agree. The formula is open source, so you can read it and propose changes.',
+        )}{' '}
+        <Link href="/compatibility-score" className={clsx(linkClass, 'text-primary-700')}>
+          {t('onboarding.step3.link', 'How the score is computed →')}
+        </Link>
       </p>
     </>
   )

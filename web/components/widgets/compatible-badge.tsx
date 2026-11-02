@@ -23,20 +23,80 @@ const getLikelyRange = (compatibility: CompatibilityScore) => {
 }
 
 /**
+ * At or under this, a score (overall or one factor) is drawn in red instead of the brand colour:
+ * the pair clashes on something, and a warm gold dot at 5% read as mildly positive.
+ */
+export const LOW_SCORE_THRESHOLD = 0.3
+export const isLowScore = (score: number) => score <= LOW_SCORE_THRESHOLD
+
+/** Which number a bar shows: the overall, or the prompt-only row of it. */
+export type CompatibilityKind = 'overall' | 'prompt'
+
+/**
  * What the score is, and how firm it is. The number alone read as a fact; a pair with three shared
  * answers and a pair with eighty got the same "72%". The range says how much it could still move,
- * and the count says why.
+ * and what it rests on says why. The overall rests on prompts *and* profiles, so it is the prompt
+ * variant alone that quotes the shared-answer count.
  */
-const useCompatibilityTooltip = (compatibility: CompatibilityScore) => {
+const useCompatibilityTooltip = (
+  compatibility: CompatibilityScore,
+  opts: {kind?: CompatibilityKind; breakdown?: boolean} = {},
+) => {
   const t = useT()
+  const {kind = 'overall', breakdown} = opts
   const range = getLikelyRange(compatibility)
-  const base = t('compatibility.tooltip', 'Compatibility score between you two')
-  if (!range || compatibility.sharedAnswers == null) return base
-  return `${base}. ${t(
-    'compatibility.tooltip_range',
-    "Likely between {low}% and {high}%, based on {count} questions you've both answered. The range narrows as you both answer more.",
-    {low: String(range.low), high: String(range.high), count: String(compatibility.sharedAnswers)},
-  )}`
+  const count = compatibility.sharedAnswers
+  const sentences: string[] = []
+  if (kind === 'prompt') {
+    sentences.push(
+      count != null
+        ? t(
+            'compatibility.tooltip.prompt',
+            "Compatibility from the {count} questions you've both answered",
+            {count: String(count)},
+          )
+        : t(
+            'compatibility.tooltip.prompt_plain',
+            "Compatibility from the questions you've both answered",
+          ),
+    )
+    if (range) {
+      sentences.push(
+        t('compatibility.tooltip.range', 'Likely between {low}% and {high}%', {
+          low: String(range.low),
+          high: String(range.high),
+        }),
+        t('compatibility.tooltip.narrows_answers', 'The range narrows as you both answer more'),
+      )
+    }
+  } else {
+    sentences.push(
+      t(
+        'compatibility.tooltip.overall',
+        'Overall compatibility between you two, from your prompt answers and your profiles',
+      ),
+    )
+    if (range) {
+      sentences.push(
+        t('compatibility.tooltip.range', 'Likely between {low}% and {high}%', {
+          low: String(range.low),
+          high: String(range.high),
+        }),
+        t(
+          'compatibility.tooltip.narrows_profiles',
+          'The range narrows as you both answer more prompts and fill in your profiles',
+        ),
+        t(
+          'compatibility.tooltip.sorted_low',
+          'Sorting by compatibility uses the low end of the range',
+        ),
+      )
+    }
+  }
+  if (breakdown) {
+    sentences.push(t('compatibility.tooltip.breakdown', 'Tap to see the breakdown'))
+  }
+  return sentences.join('. ') + '.'
 }
 
 export const CompatibleBadge = (props: {compatibility: CompatibilityScore; className?: string}) => {
@@ -64,30 +124,58 @@ export const CompatibilityScoreBar = (props: {
   compatibility: CompatibilityScore
   /** Drop the caption where the surrounding heading already says "compatibility". */
   hideLabel?: boolean
+  /** Caption other than "Compatibility" — the prompts section shows the prompt-only number. */
+  label?: string
+  /** Makes the whole bar a button, e.g. to open the breakdown. */
+  onClick?: () => void
+  /** The overall unless told otherwise; the prompts section shows its prompt-only row. */
+  kind?: CompatibilityKind
+  /**
+   * A quieter rendering for a secondary number — the prompt-only score under the prompts, which
+   * must not compete with the overall at the head of the rail: body-size figure in muted ink, a
+   * hairline track and a smaller dot.
+   */
+  compact?: boolean
   className?: string
 }) => {
-  const {compatibility, hideLabel, className} = props
+  const {compatibility, hideLabel, label, onClick, kind, compact, className} = props
   const t = useT()
   const score = clamp(compatibility.score ?? 0, 0, 1)
   const range = getLikelyRange(compatibility)
-  const tooltip = useCompatibilityTooltip(compatibility)
+  const tooltip = useCompatibilityTooltip(compatibility, {kind, breakdown: !!onClick})
+  const Wrapper = onClick ? 'button' : 'div'
+  const low = isLowScore(score)
 
   return (
     <Tooltip text={tooltip}>
-      <div className={clsx('w-full', className)} data-testid="compatibility-score-bar">
+      <Wrapper
+        type={onClick ? 'button' : undefined}
+        onClick={onClick}
+        className={clsx(
+          'w-full text-left',
+          onClick &&
+            'rounded-sm hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
+          className,
+        )}
+        data-testid="compatibility-score-bar"
+      >
         <Row className="items-baseline justify-between gap-3">
           {!hideLabel && (
             <span
               className="text-ink-400 font-dm-sans uppercase"
               style={{fontSize: '10px', letterSpacing: '0.18em'}}
             >
-              {t('compatibility.label', 'Compatibility')}
+              {label ?? t('compatibility.label', 'Compatibility')}
             </span>
           )}
           <Row className="items-baseline gap-2">
             <span
-              className="font-heading text-primary-900 tabular-nums"
-              style={{fontSize: '26px', lineHeight: 1}}
+              className={clsx(
+                'tabular-nums',
+                compact ? 'text-sm font-medium' : 'font-heading',
+                low ? 'text-red-600' : compact ? 'text-ink-700' : 'text-primary-900',
+              )}
+              style={compact ? undefined : {fontSize: '26px', lineHeight: 1}}
             >
               {Math.round(score * 100)}%
             </span>
@@ -110,41 +198,89 @@ export const CompatibilityScoreBar = (props: {
              to the lower bound (the part the pair has almost surely earned); from there to the upper
              bound the range is one uniform band either side of the dot. */
           <div
-            className="relative mt-2 h-4 w-full"
+            className={clsx('relative w-full', compact ? 'mt-1 h-3' : 'mt-2 h-4')}
             data-testid="compatibility-score-interval"
             aria-hidden
           >
             <div className="bg-canvas-300 absolute inset-x-0 top-1/2 h-px -translate-y-1/2" />
             <div
-              className="bg-primary-500/30 absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full"
+              className={clsx(
+                'absolute top-1/2 -translate-y-1/2 rounded-full',
+                compact ? 'h-1' : 'h-1.5',
+                low
+                  ? compact
+                    ? 'bg-red-500/20'
+                    : 'bg-red-500/30'
+                  : compact
+                    ? 'bg-primary-500/20'
+                    : 'bg-primary-500/30',
+              )}
               style={{left: `${range.low}%`, width: `${range.high - range.low}%`}}
             />
             <div
-              className="bg-primary-500 absolute left-0 top-1/2 h-1 -translate-y-1/2 rounded-full transition-[width] duration-500"
+              className={clsx(
+                'absolute left-0 top-1/2 -translate-y-1/2 rounded-full transition-[width] duration-500',
+                compact ? 'h-0.5' : 'h-1',
+                low
+                  ? compact
+                    ? 'bg-red-500/60'
+                    : 'bg-red-500'
+                  : compact
+                    ? 'bg-primary-500/60'
+                    : 'bg-primary-500',
+              )}
               style={{width: `${range.low}%`}}
             />
-            {[range.low, range.high].map((edge, i) => (
-              <div
-                key={i}
-                className="bg-primary-600 absolute top-1/2 h-3 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full"
-                style={{left: `${edge}%`}}
-              />
-            ))}
+            {!compact &&
+              [range.low, range.high].map((edge, i) => (
+                <div
+                  key={i}
+                  className={clsx(
+                    'absolute top-1/2 h-3 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full',
+                    low ? 'bg-red-600' : 'bg-primary-600',
+                  )}
+                  style={{left: `${edge}%`}}
+                />
+              ))}
             <div
-              className="bg-primary-600 ring-canvas-50 absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 transition-[left] duration-500"
+              className={clsx(
+                'ring-canvas-50 absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 transition-[left] duration-500',
+                compact ? 'h-2 w-2' : 'h-3 w-3',
+                low
+                  ? compact
+                    ? 'bg-red-500'
+                    : 'bg-red-600'
+                  : compact
+                    ? 'bg-primary-500'
+                    : 'bg-primary-600',
+              )}
               style={{left: `${score * 100}%`}}
             />
           </div>
         ) : (
           // Rows precomputed before the range existed have no interval to draw yet.
-          <div className="bg-canvas-200 mt-2 h-1.5 w-full overflow-hidden rounded-full">
+          <div
+            className={clsx(
+              'bg-canvas-200 w-full overflow-hidden rounded-full',
+              compact ? 'mt-1 h-0.5' : 'mt-2 h-1.5',
+            )}
+          >
             <div
-              className="bg-primary-500 h-full rounded-full transition-[width] duration-500"
+              className={clsx(
+                'h-full rounded-full transition-[width] duration-500',
+                low
+                  ? compact
+                    ? 'bg-red-500/60'
+                    : 'bg-red-500'
+                  : compact
+                    ? 'bg-primary-500/60'
+                    : 'bg-primary-500',
+              )}
               style={{width: `${score * 100}%`}}
             />
           </div>
         )}
-      </div>
+      </Wrapper>
     </Tooltip>
   )
 }

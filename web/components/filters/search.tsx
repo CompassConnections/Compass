@@ -225,7 +225,12 @@ export const Search = forwardRef<
                 })
               }
             }}
-            value={filters.orderBy || 'created_time'}
+            // Without a profile the server orders by recency whatever is asked, so the control says so.
+            value={
+              youProfile || filters.orderBy !== 'compatibility_score'
+                ? filters.orderBy || 'created_time'
+                : 'created_time'
+            }
             className={clsx(
               // text-sm, not text-xs: this sits in a row of `sm`-size buttons, and being the lone
               // smaller control made it read as secondary to them.

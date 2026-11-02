@@ -80,6 +80,11 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       {key: 'nav.organization', name: 'Organization', href: '/organization'},
       {key: 'footer.financials', name: 'Financials', href: '/financials'},
       {key: 'footer.values', name: 'Our values', href: '/values'},
+      {
+        key: 'footer.compatibility_score',
+        name: 'How the score works',
+        href: '/compatibility-score',
+      },
       {key: 'footer.constitution', name: 'Constitution', href: '/constitution'},
       {key: 'footer.safety', name: 'Safety guide', href: '/safety'},
       {key: 'footer.security', name: 'Security', href: '/security'},

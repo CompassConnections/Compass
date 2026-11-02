@@ -992,13 +992,12 @@ export function LoggedOutHome() {
               </ClaimBlock>
               <ClaimBlock
                 title={t(
-                  'home.score.title',
-                  'Compatibility scores come from your answers to prompts.',
+                  'home.score.title.v2',
+                  'Compatibility scores come from your prompts and your profile.',
                 )}
                 link={{
-                  href: `${githubRepo}/blob/main/common/src/profiles/compatibility-score.ts`,
-                  label: t('home.score.link', 'Read the implementation →'),
-                  external: true,
+                  href: '/compatibility-score',
+                  label: t('home.score.link.v2', 'How it’s computed →'),
                 }}
                 visual={<ScoreDiagram />}
               >
@@ -1006,8 +1005,8 @@ export function LoggedOutHome() {
                       "There is no paying." stays: it is the one closer on the page that earns the
                       full stop before it. */}
                 {t(
-                  'home.score.text.v2',
-                  'For each compatibility question, you give three things: your answer, the answers you’d accept from someone else, and how much it matters to you. The score compares that with the other person.',
+                  'home.score.text.v3',
+                  'For each compatibility question, you give three things: your answer, the answers you’d accept from someone else, and how much it matters to you. The score compares that with the other person, then folds in what your profiles say about children, distance, languages, lifestyle and more.',
                 )}
               </ClaimBlock>
               <ClaimBlock

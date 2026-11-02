@@ -3,6 +3,7 @@ import {debug} from 'common/logger'
 import {presentCompatibilityCategories} from 'common/profiles/compatibility-categories'
 import {User} from 'common/user'
 import {debounce} from 'lodash'
+import Link from 'next/link'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CompatibilityAnswerBlock} from 'web/components/answers/compatibility-questions-display'
 import {CompatibilityCategoryFilter, matchesCategory} from 'web/components/compatibility/category'
@@ -21,6 +22,7 @@ import {SEO} from 'web/components/SEO'
 import {Checkbox} from 'web/components/widgets/checkbox'
 import {Input} from 'web/components/widgets/input'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
+import {linkClass} from 'web/components/widgets/site-link'
 import {Title} from 'web/components/widgets/title'
 import {LoadMoreUntilNotVisible} from 'web/components/widgets/visibility-observer'
 import {useIsMobile} from 'web/hooks/use-is-mobile'
@@ -149,6 +151,17 @@ export default function CompatibilityPage() {
       {user ? (
         <Col className="w-full p-4">
           <Title className="mb-4">{t('compatibility.title', 'Your Compatibility Questions')}</Title>
+          {/* Where the number these feed is explained. The prompts are the heaviest row of the score
+              but no longer the whole of it. */}
+          <p className="text-ink-600 -mt-2 mb-4 text-sm">
+            {t(
+              'compatibility.page_note',
+              'Your answers are the heaviest row of the compatibility score; your profiles supply the rest.',
+            )}{' '}
+            <Link href="/compatibility-score" className={clsx(linkClass, 'text-primary-700')}>
+              {t('compatibility.page_note_link', 'How the score is computed →')}
+            </Link>
+          </p>
           <Row className="flex-wrap gap-2 mb-4 items-start sm:items-center">
             <Input
               ref={searchInputRef}

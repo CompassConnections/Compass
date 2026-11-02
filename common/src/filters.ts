@@ -142,7 +142,10 @@ export const initialFilters: Partial<FilterFields> = {
   big5_neuroticism_min: undefined,
   big5_neuroticism_max: undefined,
   last_active: undefined,
-  orderBy: 'created_time',
+  // Compatibility first: the number the grid is built around is also its default order. Members who are
+  // not looking for matches, and anyone without a profile to score against, get newest-first instead
+  // (`useFilters`, and the server falls back the same way when there is no one to be compatible with).
+  orderBy: 'compatibility_score',
 }
 
 export const FilterKeys = Object.keys(initialFilters) as (keyof FilterFields)[]

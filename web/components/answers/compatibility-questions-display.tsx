@@ -122,6 +122,18 @@ export function CompatibilityQuestionsDisplay(props: {
   const currentUser = useUser()
   const compatibleProfiles = useCompatibleProfiles(currentUser?.id)
   const compatibilityScore = compatibleProfiles?.profileCompatibilityScores?.[profile.user_id]
+  // A row written before the overall score existed carries shared answers but no `prompt`: its
+  // `score` *is* the prompt score, so show that until the admin rebuild fills the column in. A row
+  // with no shared answers has no prompt score to show at all.
+  const promptScore =
+    compatibilityScore?.prompt ??
+    (compatibilityScore?.sharedAnswers
+      ? {
+          score: compatibilityScore.score,
+          low: compatibilityScore.low,
+          high: compatibilityScore.high,
+        }
+      : undefined)
 
   const {pinnedQuestionIds, refreshPinnedQuestionIds} = usePinnedQuestionIds()
 
@@ -313,10 +325,19 @@ export function CompatibilityQuestionsDisplay(props: {
           <div className="border-canvas-200 border-b" />
         </Col>
       )}
-      {/* Score first and full width — it is the number the whole section exists to produce, and it was
-          previously a badge squeezed between the search box and the sort control. No caption: the
-          section heading directly above already reads "Compatibility prompts". */}
-      {compatibilityScore && <CompatibilityScoreBar compatibility={compatibilityScore} hideLabel />}
+      {/* The prompt-only number first and full width — it is what this section produces, and it was
+          previously a badge squeezed between the search box and the sort control. Captioned and
+          compact, because it is no longer *the* score: the overall, which folds the profile in,
+          heads the rail with the large figure, and this is one of its rows. Not a button: the
+          breakdown opens from the rail, and a second door to it here only cluttered the tooltip. */}
+      {compatibilityScore && promptScore && (
+        <CompatibilityScoreBar
+          compatibility={{...compatibilityScore, ...promptScore}}
+          label={t('compatibility.prompts_label', 'Prompt compatibility')}
+          kind="prompt"
+          compact
+        />
+      )}
       <Row className="flex-wrap items-center justify-between gap-x-6 gap-y-3">
         {answeredQuestions.length > 0 && (
           <>

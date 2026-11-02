@@ -10,6 +10,7 @@ import {ProfileBio} from 'web/components/bio/profile-bio'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {SignUpButton} from 'web/components/nav/sidebar'
+import {CompatibilityOverview} from 'web/components/profile/compatibility-overview'
 import {ConnectActions} from 'web/components/profile/connect-actions'
 import {ProfileHeaderActions} from 'web/components/profile/profile-header'
 import ProfileHero from 'web/components/profile/profile-hero'
@@ -671,6 +672,10 @@ function ProfileContent(props: {
         data-testid="profile-content"
       >
         <Col className={clsx('min-w-0 gap-14', layout.bio)}>
+          {/* The number most readers come for, ahead of the prose it summarises. Renders nothing on
+              your own profile or signed out. */}
+          {!isCurrentUser && <CompatibilityOverview profile={profile} />}
+
           {profile.bio && (
             <Section title={t('profile.bio.about_me', 'About Me')}>
               <ProfileBio

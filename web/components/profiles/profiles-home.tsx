@@ -7,6 +7,7 @@ import {removeNullOrUndefinedProps} from 'common/util/object'
 import {DAY_MS} from 'common/util/time'
 import {isEqual} from 'lodash'
 import {Compass as CompassIcon, TrendingUp} from 'lucide-react'
+import Link from 'next/link'
 import {useRouter} from 'next/router'
 import {ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -17,6 +18,7 @@ import {useFilters} from 'web/components/filters/use-filters'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {ProfileGrid, ProfileGridSkeleton} from 'web/components/profile-grid'
+import {linkClass} from 'web/components/widgets/site-link'
 import {useBookmarkedSearches} from 'web/hooks/use-bookmarked-searches'
 import {useDisplayOptions} from 'web/hooks/use-display-options'
 import {useGetter} from 'web/hooks/use-getter'
@@ -409,6 +411,19 @@ export function ProfilesHome() {
                   'profiles.seeing_all_profiles',
                   'You are seeing all profiles. Use search or filters to narrow it down.',
                 )}
+              </p>
+            )}
+            {/* The order will sometimes put an 86 under a 75, and without a word about it that reads
+                as broken. Only under the compatibility sort — nowhere else is the score the order. */}
+            {filters.orderBy === 'compatibility_score' && (
+              <p className={'guidance'}>
+                {t(
+                  'profiles.sorted_by_low_bound',
+                  'Sorted by the low end of our compatibility estimate, so fuller profiles rank higher at the same score.',
+                )}{' '}
+                <Link href="/compatibility-score" className={clsx(linkClass, 'text-primary-700')}>
+                  {t('compatibility.how_it_works', 'How the score works')}
+                </Link>
               </p>
             )}
             <ProfileGrid

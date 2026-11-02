@@ -70,6 +70,267 @@ Enter or paste your release notes for fr-FR here
 
 ---
 
+## 1.47.0 — 2026-11-02
+
+### New features
+
+- **One overall compatibility score per pair.** It starts with the dealbreakers — who you're looking
+  for, connection type, monogamy, wanting children — and a pair that fails one gets no score at all.
+  Otherwise it blends weighted profile factors with the answers you've both given to the compatibility
+  questions, which stay the heaviest row. A block at the top of every profile opens the breakdown:
+  each factor with its weight, value and likely range, the rows still unknown because a field is
+  blank, and the dealbreaker when there is one. Pairs with no shared answers are scored on their
+  profiles alone, so every gender-compatible pair has a number
+- **Every score now shows its likely range**, not a bare percentage. Three shared answers and eighty
+  both used to read "72%"; the badge now draws the range as a whisker, with the estimate as a dot and
+  the count of shared answers in the tooltip
+- **Compatibility is the default order** of the people grid, ranked by the low end of each pair's
+  range so fuller profiles win ties. [/compatibility-score](https://www.compassmeet.com/compatibility-score)
+  walks through every factor, its weight, the aggregation, the evidence we lean on (including what
+  each study did not measure) and what is deliberately left out — in English, French and German
+- **A minimum-compatibility filter**, "at least 50 to 90%", in the Advanced group. It is saved with
+  your search, so an alert fires on new members above your bar instead of on everyone who clears the
+  dealbreakers
+- **Saved searches can be edited in place.** The pencil in a saved search's row loads it into the
+  filters column, "Get notified" becomes "Update search", and saving writes over the same search — so
+  its alert history survives. Deleting one asks for confirmation first. The Get notified button has
+  moved from the search bar into the filters column, with its label
+- **Proposals can be edited** by their author while voting is open. An "(edited)" marker opens the
+  full version history, so nobody votes on text that changed under them without knowing
+- **"Is typing" in 1-on-1 conversations**, and the browser tab title carries your unread count so a
+  background tab tells you when something arrived
+- **Block or unblock straight from a conversation's header.** The inbox gains Blocked, Banned and
+  Deleted accounts views so those threads stay out of your main list, and the thread menu drops mute
+  and report when the other side is gone
+- **The other person's profile beside the chat** on wide screens, so you can read what they wrote
+  without leaving the conversation
+- **A site footer** with link columns, socials and the language picker. FAQ, Organization and Contact
+  move there from the sidebar, which now has three bands: People, Messages, Notifications and Invite
+  pinned under your profile chip; Vote, What's New, Blog and About in the middle; Settings, Help and
+  the app links at the foot. On desktop the sidebar collapses to a single column with one click,
+  remembered per browser
+- **Online communities** on profiles: a free-text field for where you gather online besides Compass —
+  forums, group chats, servers, newsletters. Shown under Links and keyword-searchable
+- **Donation badges** for the members who help keep Compass free and independent
+- **A short video from Martin** asking long-time members to bring a few people in, shown at the
+  moments a member is most likely to share
+- **Sign-in buttons remember your last method** with a "Last used" badge, so you don't have to guess
+  which of three providers you used
+- [/values](https://www.compassmeet.com/values): the platform's values gathered from the about page,
+  FAQ, constitution and terms, ending with the rules we strongly enforce
+
+### Improvements
+
+- Compatibility questions now come in the order the community marked important, on the prompts page
+  and in the answer dialog (random and newest stay available). "Keep answering" after onboarding no
+  longer replays the core questions you just answered. The answer matrix column is now "Accept from
+  them", with a tooltip saying what the ticks do to the score, and comparing answers uses a larger,
+  clearer modal
+- Search: a **Load more** button replaces infinite scroll by default ("Load more as I scroll" is an
+  option under Display). The end of the list says so and suggests which filters to relax; a very
+  narrow search radius gets a warning. The "People" heading above the grid is gone
+- Two-way search no longer reads a blank "interested in" as "anyone": a profile with no stated
+  preference now only passes a searcher of the opposite sex
+- The profile top bar is sticky and slides away while you scroll down, like the bottom nav on mobile,
+  which now hides on scroll too
+- New-message emails in an ongoing conversation no longer re-introduce the sender as if it were an
+  opener. The welcome and unfinished-signup emails are plain letters, and the welcome skips "confirm
+  your email" when Google or Apple already verified the address
+- Home page: a "Community facts" block replaces the "Looking for" chart, social proof counts members
+  rather than conversations, milestones land every 100 profiles, and the spotlight holds up to 100
+- The consent banner has a visible "No thanks" instead of a hidden "Other options"
+- The financials page formats its numbers for your locale
+- Location search copes with "City, Region" instead of returning nothing
+- A page no longer crashes in browsers that block site storage (cookies off, some embedded webviews)
+- The proposal page highlights your own vote without you having to write an argument first
+- Chat input and bio text sizes are standardised, which also stops iOS Safari zooming into the
+  composer
+- The primary colour ramp meets WCAG AA for text contrast
+- Android now requires Android 7.0 or later
+- 1,100+ members, and the counters say so
+
+### Trust & safety
+
+- **First messages are reviewed before they reach anyone.** You need your own profile written first;
+  an opener must be at least 200 characters; an opener copied from one you already sent puts the
+  account on hold; and a model reads both profiles in full and refuses a generic one. A refusal shows
+  under the bubble: the check is new and in testing, the message can be edited and resent, and a
+  decision that seems unfair can be reported. Staff are exempt, replies are never checked, and group
+  conversations skip the opener rules. Details in [docs/first-messages.md](docs/first-messages.md)
+- **The auto-hold on new conversations trips earlier.** Beside the daily cap, three new conversations
+  within twenty minutes now puts the account on the same automatic hold, and one conversation can be
+  started with at most ten people
+- **Confirmed-abuse bans now remember the network.** Banning an account for confirmed abuse records
+  its signup IP (for 90 days) and device; a later signup from the same device is locked out, from the
+  same IP gets the "under review" hold with a report naming the earlier account. Shared VPN exits are
+  never recorded
+- **A security pass closed a long list of holes**, none of which we have any sign were used: ballots,
+  anonymous proposal authors, who starred whom, the like graph, saved searches, compatibility answers
+  and profile comments were all readable in bulk with the public key; the photo bucket could be
+  listed folder by folder; most phone photos kept their GPS metadata; an avatar could point at a
+  server that logged viewers' IP addresses; a push subscription could be redirected to another
+  member; a blocked member could still like, star or declare interest in the person who blocked
+  them; disabled and blocked profiles were only hidden in the browser; event attendee lists were
+  public; messages could be rewritten after leaving a chat or being blocked; and the contact form
+  trusted a client-supplied sender. All fixed; the technical notes have the full list
+
+<!--tech-->
+
+### Database
+
+- New migrations, in order: `20260928_add_share_prompts.sql`,
+  `20261010_add_online_communities_to_profiles.sql`,
+  `20261023_compatibility_prompts_importance_default_zero.sql`,
+  `20261023_compatibility_scores_range.sql`, `20261024_add_banned_networks.sql`,
+  `20261028_add_donations.sql`, `20261028_drop_compatibility_answers_free.sql`,
+  `20261028_lock_client_read_tables.sql`, `20261028_lock_likes_ships.sql`,
+  `20261029_private_votes_and_stars.sql`, `20261029_redact_disabled_profiles.sql`,
+  `20261031_compatibility_scores_prompt.sql`, `20261102_add_vote_edits.sql`
+- `compatibility_scores` gains the credible-interval edges (nullable until the next recompute), then
+  the prompt-only score moves to its own columns and the main columns hold the overall score
+- `compatibility_prompts.importance_score` defaults to 0 — non-zero marks a prompt as core, and
+  member-created prompts were coming in as core
+- New tables: `share_prompts`, `banned_networks`, `donations`, `vote_edits`. Dropped:
+  `compatibility_answers_free` and the two functions that read it (one row in prod, UI only reachable
+  from an unmounted page)
+- Client (anon-key) SELECT revoked on `profile_likes`, `profile_ships`, `bookmarked_searches`,
+  `compatibility_answers`, `profile_comments`, `votes` and `vote_results`; `get_profile_stars` no
+  longer answers for other members. Reads move to `get_votes_with_results` (security definer, creator
+  hidden on anonymous proposals) and the API endpoints below
+- `get_profile_by_user_id` redacts disabled profiles too, keeping the disabled flag
+
+### Backend & API
+
+- New endpoints: `get-compatibility-ranking`, `update-bookmarked-search`, `get-bookmarked-searches`,
+  `edit-vote`, `get-my-proposal-ids`, `get-my-vote-choices`, `get-my-stars`, `get-profile-comments`,
+  `get-profile-gate`, `set-channel-typing`, `delete-subscription`, `request-share-prompt`,
+  `create-donation`, `delete-donation`, `get-donor-badge`, `get-donations-admin`,
+  `get-member-value-ranking`, `get-private-user-admin`. Removed: `get-likes-and-ships` (accepted any
+  userId; the query stays for the owner's data export)
+- Overall score in `common/src/profiles/compatibility-score.ts`: dealbreakers → no row; otherwise a
+  weighted geometric mean of profile factors with the prompt score as the heaviest, each factor
+  carrying a range, blank fields at a neutral value with a wide range and half weight. Profile and
+  option edits trigger the same per-user recompute answers do. The compatibility sort ranks by the
+  low edge, keeps unscored pairs at the bottom, and falls back to newest-first when there is nobody to
+  compare against instead of throwing. `get-profiles` with someone else's `compatibleWithUserId`
+  answers 403 unless the caller is that member or an admin. The `minCompatibility` filter reads the
+  stored point score; the alert job reads live scores on both sides of its diff
+- First messages: `common/src/moderation/first-message.ts` (`MIN_FIRST_MESSAGE_CHARS` 200,
+  `referencesProfile`, `findDuplicateOpener`) shared by the composer and
+  `api/helpers/first-message.ts`; the profile gate in `api/helpers/profile-gate.ts` is previewed by
+  `get-profile-gate` when a composer opens. `shared/moderation/opener-review.ts` sends both profiles
+  whole (options by name, up to 30 answers, every filled column minus a deny-list) and says the
+  profile may be incomplete; a refusal carries `OPENER_REVIEW_REJECTED_CODE`
+- `MAX_NEW_CHANNELS_PER_BURST` 3 in `BURST_WINDOW_MINUTES` 20, beside the daily cap;
+  `MAX_CHANNEL_MEMBERS` 10 enforced in the schema. The Discord report, API error and hold notice name
+  whichever window tripped
+- `banned_networks` replaces the hardcoded device tokens and IPs in `create-user-and-profile.ts`: a
+  `confirmed_abuse` ban writes the signup IP (/32, or /64 for IPv6, 90-day expiry) and device token,
+  lifting it removes them. `getIp` reads the rightmost `X-Forwarded-For` entry (the one Cloud Run
+  appended) instead of the leftmost, which the client could set
+- Security fixes: `isOwnImageUrl` on `pinned_url`, `photo_urls`, `avatarUrl` and at render time in
+  the avatar widget, raw `<img>` tags and emails; upload rules and the client share one content-type
+  allow-list (`image/svg+xml` was matching `image/*`; iPhone/Android video types added);
+  `deleteUserFiles` prefixes end in `/` (deleting `bob` swept `bobby/`) and usernames under 3
+  characters are rejected server-side; `save-subscription*` leave rows owned by someone else alone
+  and sign-out calls `delete-subscription`; `assertCanInteract` on like, ship, star and declared
+  interest; `get-user-and-profile` and `compatible-profiles` redact disabled and blocked profiles
+  server-side; `get-events` sends attendee ids only to signed-in callers minus blocks; `edit-message`
+  and `delete-message` share `getChangeableOwnMessage`; `create-comment` checks `comments_enabled`
+  and two-way blocks; the contact form takes the sender from the token; `requireInternalKey` fails
+  closed when `COMPASS_API_KEY` is unset and compares in constant time; `MOD_USER_IDS` /
+  `VERIFIED_USER_IDS` replace `MOD_USERNAMES`; the unsubscribe endpoint binds `notification_type`
+  as a parameter
+- Storage rules: `allow get` instead of `allow read` on the public bucket (read = get + list)
+- `fetch-media` retries transient connection errors with exponential backoff (`HttpError`)
+- New-message email: one query answers both the daily cap and whether the receiver ever replied,
+  which picks the `opener` / `ongoing` wording. New `plain` email shell for the welcome and
+  unfinished-signup letters
+- Share prompt: `request-share-prompt` evaluates the rules in `docs/share-prompt.md` and records
+  the outcome in `share_prompts`
+- `get-member-value-ranking`: a member's contribution score from messaging patterns, profile
+  completeness, community interactions and referrals, documented with the weights
+- Two-way gender clause: a blank preference passes only the opposite sex of the searcher
+- API version 1.80.0 → 1.92.0
+
+### Web
+
+- New pages: `compatibility-score`, `values`, `admin/compatibility`, `admin/member-value`,
+  `admin/donations`
+- Compatibility block on the profile rail opening the breakdown modal (rows at or under 30% in red,
+  score-based caveats); range whisker on the badge; `AnswerComparison` replaces `PreferredList`;
+  the free-response question UI is gone with its table
+- Saved-search editing in `filters` with the edit banner and Cancel; the save button lives in the
+  filters column header, full width under the chips, count and Reset on one non-wrapping line
+- `PageBase` renders the footer in its own grid row (`hideFooter` for viewport-sized pages); the
+  sidebar takes `NavGroup`s, is as wide as its widest row (capped at 16rem), collapses via a toggle
+  remembered in localStorage, and shows native-app items when running in the shells. Events and
+  Testimonials are commented out of the nav, not deleted
+- `ChatProfilePanel` beside 1-on-1 conversations; block/unblock in the chat header dropdown;
+  Blocked / Banned / Deleted accounts views in the inbox; `useUnseenCountTitle`; typing indicator
+  hook and animation
+- `useHideBottomNavOnScroll` and the sticky profile top bar riding the same body class; the bar
+  carries the native top inset as padding
+- `useDrift` for the home spotlight auto-scroll; `use-signup-cta-visible` keeps the sidebar and page
+  CTAs in step; `AuthSocialButtons` groups the providers with the "Last used" badge;
+  `ShareProfileButton` replaces `ShareCTAButton`
+- Every image upload is re-encoded through the canvas (was: only above 1 MB), with `strict: false`
+  so the original file can never come back with its EXIF
+- The web hooks for saved searches, answers and comments wait for the auth state so a signed-in
+  member is never answered as a visitor
+- The three localStorage readers (theme, font, …) guard against `SecurityError`
+- Admins see a "Private info" button in the profile options modal (signup IP, device, email)
+- Unprefixed Tailwind class tie-breaking follows stylesheet order; `HERO_SPLIT_BELOW_REM` retuned
+- fr/de translations for all of the above (255 lines each)
+
+### Android & iOS
+
+- `minSdkVersion` 24 (Android 7.0)
+- Web-only assets are filtered out of native builds; iOS push messages no longer raise an in-app
+  toast, the unread badge carries it
+- Android `versionCode` 181 → 193, iOS build 26 → 27, both on 1.47.0
+
+### Tooling, scripts & docs
+
+- Load testing: a JMeter plan under `tests/load/` with smoke and full workflows, `check_results.py`
+  failing the run above a 1,200 ms p95 or the error-rate limit; `docs/load-testing.md`
+- `keep-dev-db-awake.yml` pings the dev database so Supabase doesn't pause it; the E2E workflow is
+  pinned to `ubuntu-24.04` for Playwright's browsers
+- New docs: `ui-guidelines.md` (tokens, palette, anti-patterns), `compatibility-score.md`,
+  `first-messages.md`, `share-prompt.md`, the bounties proposal, the ASBL setup guide and the Hungry
+  Minds visual style spec. The FAQ, privacy policy and terms describe the score as arithmetic on
+  answers and fields and link to the explainer; the schema doc describes the client read policy
+- Supabase types regenerated (`banned_networks`, `donations`, minus `compatibility_answers_free`)
+
+**Full Changelog**: https://github.com/CompassConnections/Compass/compare/1.46.0...1.47.0
+
+<!-- Store release notes. Play: paste the tagged block whole (500 chars/language).
+     App Store Connect: paste each language into "What's New in This Version" without the tags.
+
+<en-US>
+• One overall compatibility score per pair, with its likely range and a full breakdown
+• People are sorted by compatibility by default, with a minimum-score filter
+• Saved searches can be edited in place
+• See when someone is typing, and block or unblock from the chat
+• The other person's profile sits beside the conversation on wide screens
+• Tell people where else you gather online
+• First messages are checked so generic openers never reach you
+• A new footer, a tidier sidebar, and many fixes
+</en-US>
+<fr-FR>
+• Un score de compatibilité global par paire, avec fourchette et détail
+• Tri par compatibilité par défaut, avec un filtre de score minimum
+• Les recherches enregistrées se modifient sur place
+• Voyez quand on vous écrit, et bloquez depuis la discussion
+• Le profil de l'autre à côté de la discussion sur grand écran
+• Indiquez où vous vous retrouvez ailleurs en ligne
+• Les premiers messages sont vérifiés : fini les ouvertures génériques
+• Nouveau pied de page, barre latérale rangée et correctifs
+</fr-FR>
+-->
+
+---
+
 ## 1.46.0 — 2026-09-24
 
 ### Improvements

@@ -293,6 +293,8 @@ export function ProfilesHome() {
       raisedInLocationFilterProps={raisedInLocationFilterProps}
       editingSavedSearchId={editingSavedSearchId}
       stopEditingSavedSearch={stopEditingSavedSearch}
+      bookmarkedSearches={bookmarkedSearches}
+      refreshBookmarkedSearches={refreshBookmarkedSearches}
     />
   )
 
@@ -398,7 +400,6 @@ export function ProfilesHome() {
           updateFilter={updateFilter}
           displayOptions={displayOptions}
           updateDisplayOptions={updateDisplayOptions}
-          locationFilterProps={locationFilterProps}
           bookmarkedSearches={bookmarkedSearches}
           refreshBookmarkedSearches={refreshBookmarkedSearches}
           applySavedSearch={applySavedSearch}
@@ -407,8 +408,6 @@ export function ProfilesHome() {
             // Land them straight in the editor: the docked column on desktop, the slide-over on mobile.
             setOpenFiltersModal(true)
           }}
-          editingSavedSearchId={editingSavedSearchId}
-          stopEditingSavedSearch={stopEditingSavedSearch}
           profileCount={profileCount}
           activeFilterCount={activeFilterCount}
           filtersElement={filtersElement}

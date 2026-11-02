@@ -41,7 +41,9 @@ import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {NewBadge} from 'web/components/new-badge'
 import {ResetFiltersButton} from 'web/components/searches/button'
+import {GetNotifiedButton} from 'web/components/searches/get-notified-button'
 import {useAdmin} from 'web/hooks/use-admin'
+import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
 import {useChoicesContext, useEnsureChoiceLabels} from 'web/hooks/use-choices'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {useT} from 'web/lib/locale'
@@ -101,6 +103,8 @@ function SelectedFiltersSummary(props: {
   clearFilters: () => void
   editingSavedSearchId?: number
   stopEditingSavedSearch?: () => void
+  bookmarkedSearches?: BookmarkedSearchesType[]
+  refreshBookmarkedSearches?: () => void
 }) {
   const {
     locationFilterProps,
@@ -109,6 +113,8 @@ function SelectedFiltersSummary(props: {
     clearFilters,
     editingSavedSearchId,
     stopEditingSavedSearch,
+    bookmarkedSearches,
+    refreshBookmarkedSearches,
   } = props
   const t = useT()
   const choicesIdsToLabels = useChoicesContext()
@@ -227,7 +233,23 @@ function SelectedFiltersSummary(props: {
               : t('filter.selected_plural', 'filters selected')}
           </span>
         </Row>
-        <ResetFiltersButton clearFilters={clearFilters} />
+        <Row className="items-center gap-2">
+          {/* The save-this-search button lives with the filters it saves, rather than as a bell in
+              the search bar where it read as a notification toggle. */}
+          {bookmarkedSearches && refreshBookmarkedSearches && (
+            <GetNotifiedButton
+              filters={props.filters}
+              locationFilterProps={locationFilterProps}
+              bookmarkedSearches={bookmarkedSearches}
+              refreshBookmarkedSearches={refreshBookmarkedSearches}
+              editingSavedSearchId={editingSavedSearchId}
+              onSaved={stopEditingSavedSearch}
+              size="xs"
+              color={editingSavedSearchId !== undefined ? 'indigo' : 'indigo-outline'}
+            />
+          )}
+          <ResetFiltersButton clearFilters={clearFilters} />
+        </Row>
       </Row>
       <Row className="flex-wrap gap-2">
         {selectedFilters.map((filter, idx) => (
@@ -262,6 +284,8 @@ function Filters(props: {
   includeRelationshipFilters: boolean | undefined
   editingSavedSearchId?: number
   stopEditingSavedSearch?: () => void
+  bookmarkedSearches?: BookmarkedSearchesType[]
+  refreshBookmarkedSearches?: () => void
 }) {
   const t = useT()
   const {
@@ -277,6 +301,8 @@ function Filters(props: {
     includeRelationshipFilters,
     editingSavedSearchId,
     stopEditingSavedSearch,
+    bookmarkedSearches,
+    refreshBookmarkedSearches,
   } = props
 
   const isAdmin = useAdmin()
@@ -311,6 +337,8 @@ function Filters(props: {
         clearFilters={clearFilters}
         editingSavedSearchId={editingSavedSearchId}
         stopEditingSavedSearch={stopEditingSavedSearch}
+        bookmarkedSearches={bookmarkedSearches}
+        refreshBookmarkedSearches={refreshBookmarkedSearches}
       />
       <FilterGuide className={'justify-between px-4 py-2'} />
 
@@ -1078,6 +1106,8 @@ export function FiltersElement(props: {
   raisedInLocationFilterProps: LocationFilterProps
   editingSavedSearchId?: number
   stopEditingSavedSearch?: () => void
+  bookmarkedSearches?: BookmarkedSearchesType[]
+  refreshBookmarkedSearches?: () => void
 }) {
   const {
     filters,
@@ -1091,6 +1121,8 @@ export function FiltersElement(props: {
     raisedInLocationFilterProps,
     editingSavedSearchId,
     stopEditingSavedSearch,
+    bookmarkedSearches,
+    refreshBookmarkedSearches,
   } = props
   const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
   return (
@@ -1107,6 +1139,8 @@ export function FiltersElement(props: {
       includeRelationshipFilters={youSeekingRelationship}
       editingSavedSearchId={editingSavedSearchId}
       stopEditingSavedSearch={stopEditingSavedSearch}
+      bookmarkedSearches={bookmarkedSearches}
+      refreshBookmarkedSearches={refreshBookmarkedSearches}
     />
   )
 }

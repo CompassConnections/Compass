@@ -14,14 +14,11 @@ import {Col} from 'web/components/layout/col'
 import {RightModal} from 'web/components/layout/right-modal'
 import {Row} from 'web/components/layout/row'
 import {BookmarkSearchButton, BookmarkStarButton} from 'web/components/searches/button'
-import {GetNotifiedButton} from 'web/components/searches/get-notified-button'
 import {Input} from 'web/components/widgets/input'
 import {Select} from 'web/components/widgets/select'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {BookmarkedSearchesType} from 'web/hooks/use-bookmarked-searches'
 import {useT} from 'web/lib/locale'
-
-import {LocationFilterProps} from './location-filter'
 
 function isOrderBy(input: string): input is FilterFields['orderBy'] {
   return ['last_online_time', 'created_time', 'compatibility_score'].includes(input)
@@ -36,7 +33,6 @@ export const Search = forwardRef<
     // filter props
     filters: Partial<FilterFields>
     updateFilter: (newState: Partial<FilterFields>) => void
-    locationFilterProps: LocationFilterProps
     bookmarkedSearches: BookmarkedSearchesType[]
     refreshBookmarkedSearches: () => void
     applySavedSearch: (
@@ -48,8 +44,6 @@ export const Search = forwardRef<
       filters: Partial<FilterFields>,
       location: {location?: OriginLocation | null; radius?: number} | null,
     ) => void
-    editingSavedSearchId: number | undefined
-    stopEditingSavedSearch: () => void
     profileCount: number | undefined
     activeFilterCount?: number
     openFilters?: () => void
@@ -69,14 +63,11 @@ export const Search = forwardRef<
   const {
     youProfile,
     updateFilter,
-    locationFilterProps,
     filters,
     bookmarkedSearches,
     refreshBookmarkedSearches,
     applySavedSearch,
     editSavedSearch,
-    editingSavedSearchId,
-    stopEditingSavedSearch,
     starredUsers,
     refreshStars,
     profileCount,
@@ -254,24 +245,6 @@ export const Search = forwardRef<
             )}
             <option value="last_online_time">{t('common.active', 'Active')}</option>
           </Select>
-          <GetNotifiedButton
-            filters={filters}
-            locationFilterProps={locationFilterProps}
-            bookmarkedSearches={bookmarkedSearches}
-            refreshBookmarkedSearches={refreshBookmarkedSearches}
-            editingSavedSearchId={editingSavedSearchId}
-            onSaved={() => {
-              stopEditingSavedSearch()
-              setOpenBookmarks(true)
-            }}
-            iconOnly
-            size="sm"
-            color="gray-white"
-            className={clsx(
-              '!h-10 !w-10 !rounded-full border border-canvas-200 !p-0',
-              editingSavedSearchId !== undefined && 'sm:!w-auto sm:!px-4',
-            )}
-          />
         </Row>
       </Row>
       <RightModal

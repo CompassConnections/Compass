@@ -15,8 +15,8 @@ import {submitBookmarkedSearch, updateBookmarkedSearch} from 'web/lib/supabase/s
 const MAX_BOOKMARKED_SEARCHES = 10
 
 // Saves the current search as a bookmarked search so the user gets notified when new
-// profiles match it. Shared between the top search bar (icon) and the empty results state
-// (full CTA) so the save/loading/"Saved!" behavior stays identical in both places.
+// profiles match it. Shared between the filters column and the empty results state (full CTA)
+// so the save/loading/"Saved!" behavior stays identical in both places.
 // With `editingSavedSearchId` set, the same button overwrites that saved search instead of creating
 // a new one — the filters column is the only place a search can be built, so editing a saved search
 // is "load it, change it, save it back over itself".
@@ -27,7 +27,6 @@ export function GetNotifiedButton(props: {
   refreshBookmarkedSearches: () => void
   editingSavedSearchId?: number
   onSaved?: () => void
-  iconOnly?: boolean
   size?: SizeType
   color?: ColorType
   className?: string
@@ -39,7 +38,6 @@ export function GetNotifiedButton(props: {
     refreshBookmarkedSearches,
     editingSavedSearchId,
     onSaved,
-    iconOnly,
     size = 'md',
     color = 'none',
     className,
@@ -121,42 +119,14 @@ export function GetNotifiedButton(props: {
       className={clsx(className, !canSave && 'cursor-not-allowed opacity-50')}
       aria-label={label}
     >
-      <Bell className={clsx('h-4 w-4', !iconOnly && 'mr-1.5', bookmarked && 'fill-current')} />
-      {!iconOnly && (loading ? '' : buttonText)}
+      <Bell className={clsx('h-4 w-4 mr-1.5', bookmarked && 'fill-current')} />
+      {loading ? '' : buttonText}
     </Button>
   )
 
-  // An edit changes what the bell does, and an icon alone cannot say so: it gets its text back —
-  // from `sm` up. At phone width the row has no room for it, so there the filled colour is what says
-  // "this is not the usual bell", and the filters column's banner spells the rest out.
-  if (iconOnly && isEditing) {
-    return (
-      // `flex`, not the span's inline default: an inline wrapper carries line-height slack below the
-      // button, so the row centred its neighbours on a box taller than the button itself.
-      <Tooltip text={label} className="flex">
-        <Button
-          disabled={loading}
-          aria-disabled={!canSave || undefined}
-          loading={loading}
-          onClick={handleClick}
-          size={size}
-          color="primary"
-          // `primary` ships an `mb-4` of its own; in a row of 40px controls that margin made this
-          // one's box 56px tall and pushed its neighbours off centre.
-          className={clsx('!mb-0', className, !canSave && 'cursor-not-allowed opacity-50')}
-          aria-label={label}
-          data-testid="update-saved-search"
-        >
-          <Bell className={clsx('h-4 w-4 sm:mr-1.5', bookmarked && 'fill-current')} />
-          <span className="hidden sm:inline">{loading ? '' : buttonText}</span>
-        </Button>
-      </Tooltip>
-    )
-  }
-
-  // The full-width variant normally says what it does on the face of it, but a disabled button with no
-  // explanation is just a dead control — so the reason gets a tooltip there too.
-  return iconOnly || !canSave ? (
+  // The button says what it does on the face of it, but a disabled button with no explanation is just
+  // a dead control — so the reason gets a tooltip.
+  return !canSave ? (
     <Tooltip text={label} className="flex">
       {button}
     </Tooltip>

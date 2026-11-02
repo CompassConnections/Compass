@@ -30,7 +30,13 @@ import {useUser} from 'web/hooks/use-user'
 import {useUserInStore} from 'web/hooks/use-user-supabase'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
-import {getVote, getVoteMeta, getVoteResultsByUser, type VoteMeta} from 'web/lib/supabase/votes'
+import {
+  getMyVoteChoices,
+  getVote,
+  getVoteMeta,
+  getVoteResultsByUser,
+  type VoteMeta,
+} from 'web/lib/supabase/votes'
 import {isNativeMobile} from 'web/lib/util/webview'
 
 type Props = {
@@ -104,10 +110,19 @@ export default function VoteDetailPage({voteId: staticVoteId, meta}: Props) {
   // The full row once the browser has it, the statically fetched one until then — which is the only
   // one a crawler or a link-preview fetcher ever sees, since none of them wait for the client fetch.
   const seoVote: VoteSeoFields | undefined = (vote as Vote | null) ?? meta ?? undefined
-  const {data: choicesByUserId, refresh: refreshChoices} = useGetter(
+  const {data: commenterChoices, refresh: refreshChoices} = useGetter(
     'vote-results',
     validId ? {voteId: voteId!} : undefined,
     getVoteResultsByUser,
+  )
+  // The viewer's own ballot, from the same private endpoint and cache entry the proposal list uses
+  // to light up the button they picked. The commenter map above cannot supply it: that RPC only
+  // returns the ballots of members who commented, so until the viewer wrote an argument their own
+  // vote was shown on the list but not here.
+  const {data: myChoices, refresh: refreshMyChoices} = useGetter(
+    'my-vote-choices',
+    user ? {userId: user.id} : undefined,
+    getMyVoteChoices,
   )
   const {comments, refresh: refreshComments} = useLiveCommentsOnVote(
     validId ? voteId : undefined,
@@ -150,6 +165,13 @@ export default function VoteDetailPage({voteId: staticVoteId, meta}: Props) {
 
   const typedVote = vote as Vote
   const canComment = isCommentable(typedVote.status)
+  const myChoice = user ? myChoices?.[typedVote.id] : undefined
+  // The viewer's ballot folded into the commenter map, so the composer's default stance and the
+  // badge on their own comments agree with the highlighted button even before they have commented.
+  const choicesByUserId: Record<string, number> = {
+    ...(commenterChoices ?? {}),
+    ...(user && myChoice !== undefined ? {[user.id]: myChoice} : {}),
+  }
   // Refetch both the thread and the proposal: the comment list is what renders, and the proposal row
   // carries the SQL-ranked highlighted pair, which a new argument can change.
   const onPosted = () => {
@@ -212,14 +234,13 @@ export default function VoteDetailPage({voteId: staticVoteId, meta}: Props) {
                 abstain: typedVote.votes_abstain,
                 against: typedVote.votes_against,
               }}
-              // The same ballots that label the comments below say which button is the viewer's own,
-              // so the highlight costs no extra query here.
-              userChoice={choiceFromNumber(user ? choicesByUserId?.[user.id] : undefined)}
+              userChoice={choiceFromNumber(myChoice)}
               onVoted={() => {
                 refreshVote()
                 // The ballots feed the "voted For" badges and the composer's default stance, so a
                 // vote cast on this page has to invalidate them too — not just the tallies.
                 refreshChoices()
+                refreshMyChoices()
               }}
               disabled={typedVote.status !== 'voting_open'}
             />
@@ -239,7 +260,7 @@ export default function VoteDetailPage({voteId: staticVoteId, meta}: Props) {
         <VoteCommentSection
           voteId={typedVote.id}
           comments={comments}
-          choicesByUserId={choicesByUserId ?? {}}
+          choicesByUserId={choicesByUserId}
           canComment={canComment}
           highlightedIds={highlightedIds}
           onPosted={onPosted}

@@ -99,8 +99,17 @@ function SelectedFiltersSummary(props: {
   raisedInLocationFilterProps: LocationFilterProps
   updateFilter: (newState: Partial<FilterFields>) => void
   clearFilters: () => void
+  editingSavedSearchId?: number
+  stopEditingSavedSearch?: () => void
 }) {
-  const {locationFilterProps, raisedInLocationFilterProps, updateFilter, clearFilters} = props
+  const {
+    locationFilterProps,
+    raisedInLocationFilterProps,
+    updateFilter,
+    clearFilters,
+    editingSavedSearchId,
+    stopEditingSavedSearch,
+  } = props
   const t = useT()
   const choicesIdsToLabels = useChoicesContext()
   const {measurementSystem} = useMeasurementSystem()
@@ -186,6 +195,29 @@ function SelectedFiltersSummary(props: {
 
   return (
     <Col className="px-4 py-2 gap-2">
+      {/* Nothing else in the column says the next save overwrites a saved search rather than adding
+          one, so it is said here, where the changes are being made. */}
+      {editingSavedSearchId !== undefined && (
+        <Row
+          className="items-center justify-between gap-2 rounded-lg border border-primary-200 bg-primary-50 px-3 py-2 text-sm text-primary-700"
+          data-testid="editing-saved-search-banner"
+        >
+          <span>
+            {t(
+              'saved_searches.editing',
+              'Editing a saved search — press Update search when you are done.',
+            )}
+          </span>
+          {stopEditingSavedSearch && (
+            <button
+              onClick={stopEditingSavedSearch}
+              className="shrink-0 font-medium underline hover:text-primary-800"
+            >
+              {t('common.cancel', 'Cancel')}
+            </button>
+          )}
+        </Row>
+      )}
       <Row className="items-center justify-between">
         <Row className="items-center gap-2">
           <span className="font-semibold text-sm">{filterCount}</span>
@@ -228,6 +260,8 @@ function Filters(props: {
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
   includeRelationshipFilters: boolean | undefined
+  editingSavedSearchId?: number
+  stopEditingSavedSearch?: () => void
 }) {
   const t = useT()
   const {
@@ -241,6 +275,8 @@ function Filters(props: {
     locationFilterProps,
     raisedInLocationFilterProps,
     includeRelationshipFilters,
+    editingSavedSearchId,
+    stopEditingSavedSearch,
   } = props
 
   const isAdmin = useAdmin()
@@ -273,6 +309,8 @@ function Filters(props: {
         raisedInLocationFilterProps={raisedInLocationFilterProps}
         updateFilter={updateFilter}
         clearFilters={clearFilters}
+        editingSavedSearchId={editingSavedSearchId}
+        stopEditingSavedSearch={stopEditingSavedSearch}
       />
       <FilterGuide className={'justify-between px-4 py-2'} />
 
@@ -1038,6 +1076,8 @@ export function FiltersElement(props: {
   isLookingForFilters: boolean
   locationFilterProps: LocationFilterProps
   raisedInLocationFilterProps: LocationFilterProps
+  editingSavedSearchId?: number
+  stopEditingSavedSearch?: () => void
 }) {
   const {
     filters,
@@ -1049,6 +1089,8 @@ export function FiltersElement(props: {
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
+    editingSavedSearchId,
+    stopEditingSavedSearch,
   } = props
   const youSeekingRelationship = youProfile?.pref_relation_styles?.includes('relationship')
   return (
@@ -1063,6 +1105,8 @@ export function FiltersElement(props: {
       locationFilterProps={locationFilterProps}
       raisedInLocationFilterProps={raisedInLocationFilterProps}
       includeRelationshipFilters={youSeekingRelationship}
+      editingSavedSearchId={editingSavedSearchId}
+      stopEditingSavedSearch={stopEditingSavedSearch}
     />
   )
 }

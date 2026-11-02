@@ -33,6 +33,21 @@ export const submitBookmarkedSearch = async (
   await api('create-bookmarked-search', props)
 }
 
+// Same row shape as submitBookmarkedSearch, written over an existing search instead of a new one.
+export const updateBookmarkedSearch = async (
+  id: number,
+  filters: Partial<FilterFields>,
+  locationFilterProps: any,
+) => {
+  if (!filters) return
+  await api('update-bookmarked-search', {
+    id,
+    search_filters: removeNullOrUndefinedProps(filters),
+    location: locationFilterProps?.location ? locationFilterProps : null,
+  })
+  track('bookmarked_searches update', {id})
+}
+
 export const deleteBookmarkedSearch = async (id: number) => {
   if (!id) return
   await api('delete-bookmarked-search', {id})

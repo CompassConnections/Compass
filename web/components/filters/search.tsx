@@ -43,6 +43,13 @@ export const Search = forwardRef<
       filters: Partial<FilterFields>,
       location: {location?: OriginLocation | null; radius?: number} | null,
     ) => void
+    editSavedSearch: (
+      id: number,
+      filters: Partial<FilterFields>,
+      location: {location?: OriginLocation | null; radius?: number} | null,
+    ) => void
+    editingSavedSearchId: number | undefined
+    stopEditingSavedSearch: () => void
     profileCount: number | undefined
     activeFilterCount?: number
     openFilters?: () => void
@@ -67,6 +74,9 @@ export const Search = forwardRef<
     bookmarkedSearches,
     refreshBookmarkedSearches,
     applySavedSearch,
+    editSavedSearch,
+    editingSavedSearchId,
+    stopEditingSavedSearch,
     starredUsers,
     refreshStars,
     profileCount,
@@ -249,11 +259,18 @@ export const Search = forwardRef<
             locationFilterProps={locationFilterProps}
             bookmarkedSearches={bookmarkedSearches}
             refreshBookmarkedSearches={refreshBookmarkedSearches}
-            onSaved={() => setOpenBookmarks(true)}
+            editingSavedSearchId={editingSavedSearchId}
+            onSaved={() => {
+              stopEditingSavedSearch()
+              setOpenBookmarks(true)
+            }}
             iconOnly
             size="sm"
             color="gray-white"
-            className="!h-10 !w-10 !rounded-full border border-canvas-200 !p-0"
+            className={clsx(
+              '!h-10 !w-10 !rounded-full border border-canvas-200 !p-0',
+              editingSavedSearchId !== undefined && 'sm:!w-auto sm:!px-4',
+            )}
           />
         </Row>
       </Row>
@@ -290,6 +307,7 @@ export const Search = forwardRef<
             open={openBookmarks}
             setOpen={setOpenBookmarks}
             applySavedSearch={applySavedSearch}
+            editSavedSearch={editSavedSearch}
           />
 
           <BookmarkStarButton

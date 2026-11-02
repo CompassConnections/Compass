@@ -152,6 +152,7 @@ import {stats} from './stats'
 import {transcribeAudio} from './transcribe-audio'
 import {unsubscribe} from './unsubscribe'
 import {updateBlogPost} from './update-blog-post'
+import {updateBookmarkedSearch} from './update-bookmarked-search'
 import {updateEvent} from './update-event'
 import {updateMe} from './update-me'
 import {updateNotifSettings} from './update-notif-setting'
@@ -692,6 +693,7 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'create-user-and-profile': createUserAndProfile,
   'create-vote': createVote,
   'create-vote-comment': createVoteComment,
+  'update-bookmarked-search': updateBookmarkedSearch,
   'delete-bookmarked-search': deleteBookmarkedSearch,
   'get-bookmarked-searches': getBookmarkedSearches,
   'get-my-stars': getMyStars,

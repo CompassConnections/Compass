@@ -299,6 +299,8 @@ export const ProfileGrid = (props: {
   locationFilterProps: LocationFilterProps
   bookmarkedSearches: BookmarkedSearchesType[]
   refreshBookmarkedSearches: () => void
+  editingSavedSearchId?: number
+  onSavedSearch?: () => void
 }) => {
   const {
     profiles,
@@ -317,6 +319,8 @@ export const ProfileGrid = (props: {
     locationFilterProps,
     bookmarkedSearches,
     refreshBookmarkedSearches,
+    editingSavedSearchId,
+    onSavedSearch,
   } = props
 
   const {cardSize, gridLayout, autoScroll} = displayOptions ?? {}
@@ -479,6 +483,8 @@ export const ProfileGrid = (props: {
             locationFilterProps={locationFilterProps}
             bookmarkedSearches={bookmarkedSearches}
             refreshBookmarkedSearches={refreshBookmarkedSearches}
+            editingSavedSearchId={editingSavedSearchId}
+            onSaved={onSavedSearch}
             color="gray-outline"
             size="sm"
             className="mt-1"
@@ -554,6 +560,8 @@ export const ProfileGrid = (props: {
               locationFilterProps={locationFilterProps}
               bookmarkedSearches={bookmarkedSearches}
               refreshBookmarkedSearches={refreshBookmarkedSearches}
+              editingSavedSearchId={editingSavedSearchId}
+              onSaved={onSavedSearch}
               color="cta"
               size="lg"
               className="mt-1"

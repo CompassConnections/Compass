@@ -1643,6 +1643,19 @@ export const API = (_apiTypeCheck = {
     summary: 'Create a bookmarked search for quick reuse',
     tag: 'Search',
   },
+  'update-bookmarked-search': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as Row<'bookmarked_searches'>,
+    props: z.object({
+      id: z.number(),
+      search_filters: z.any().optional(),
+      location: z.any().optional(),
+    }),
+    summary: 'Replace the filters and location of one of your own saved searches, keeping its id',
+    tag: 'Search',
+  },
   'delete-bookmarked-search': {
     method: 'POST',
     authed: true,

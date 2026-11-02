@@ -79,6 +79,9 @@ export function ProfilesHome() {
     setLookingForFilters,
     applyLookingForFilters,
     applySavedSearch,
+    editSavedSearch,
+    editingSavedSearchId,
+    stopEditingSavedSearch,
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,
@@ -288,6 +291,8 @@ export function ProfilesHome() {
       isLookingForFilters={isLookingForFilters}
       locationFilterProps={locationFilterProps}
       raisedInLocationFilterProps={raisedInLocationFilterProps}
+      editingSavedSearchId={editingSavedSearchId}
+      stopEditingSavedSearch={stopEditingSavedSearch}
     />
   )
 
@@ -397,6 +402,13 @@ export function ProfilesHome() {
           bookmarkedSearches={bookmarkedSearches}
           refreshBookmarkedSearches={refreshBookmarkedSearches}
           applySavedSearch={applySavedSearch}
+          editSavedSearch={(id, savedFilters, savedLocation) => {
+            editSavedSearch(id, savedFilters, savedLocation)
+            // Land them straight in the editor: the docked column on desktop, the slide-over on mobile.
+            setOpenFiltersModal(true)
+          }}
+          editingSavedSearchId={editingSavedSearchId}
+          stopEditingSavedSearch={stopEditingSavedSearch}
           profileCount={profileCount}
           activeFilterCount={activeFilterCount}
           filtersElement={filtersElement}
@@ -443,6 +455,8 @@ export function ProfilesHome() {
               locationFilterProps={locationFilterProps}
               bookmarkedSearches={bookmarkedSearches}
               refreshBookmarkedSearches={refreshBookmarkedSearches}
+              editingSavedSearchId={editingSavedSearchId}
+              onSavedSearch={stopEditingSavedSearch}
             />
           </>
         )}

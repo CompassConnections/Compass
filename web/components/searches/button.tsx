@@ -1,4 +1,4 @@
-import {BookmarkIcon, MagnifyingGlassIcon, XMarkIcon} from '@heroicons/react/24/outline'
+import {BookmarkIcon, MagnifyingGlassIcon, PencilIcon, XMarkIcon} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import {DisplayUser} from 'common/api/user-types'
 import {FilterFields, OriginLocation} from 'common/filters'
@@ -32,8 +32,20 @@ export function BookmarkSearchButton(props: {
     filters: Partial<FilterFields>,
     location: {location?: OriginLocation | null; radius?: number} | null,
   ) => void
+  editSavedSearch?: (
+    id: number,
+    filters: Partial<FilterFields>,
+    location: {location?: OriginLocation | null; radius?: number} | null,
+  ) => void
 }) {
-  const {bookmarkedSearches, refreshBookmarkedSearches, open, setOpen, applySavedSearch} = props
+  const {
+    bookmarkedSearches,
+    refreshBookmarkedSearches,
+    open,
+    setOpen,
+    applySavedSearch,
+    editSavedSearch,
+  } = props
   const user = useUser()
 
   const t = useT()
@@ -58,6 +70,7 @@ export function BookmarkSearchButton(props: {
         bookmarkedSearches={bookmarkedSearches}
         refreshBookmarkedSearches={refreshBookmarkedSearches}
         applySavedSearch={applySavedSearch}
+        editSavedSearch={editSavedSearch}
       />
     </>
   )
@@ -85,8 +98,20 @@ function ButtonModal(props: {
     filters: Partial<FilterFields>,
     location: {location?: OriginLocation | null; radius?: number} | null,
   ) => void
+  editSavedSearch?: (
+    id: number,
+    filters: Partial<FilterFields>,
+    location: {location?: OriginLocation | null; radius?: number} | null,
+  ) => void
 }) {
-  const {open, setOpen, bookmarkedSearches, refreshBookmarkedSearches, applySavedSearch} = props
+  const {
+    open,
+    setOpen,
+    bookmarkedSearches,
+    refreshBookmarkedSearches,
+    applySavedSearch,
+    editSavedSearch,
+  } = props
   const t = useT()
   const choicesIdsToLabels = useChoicesContext()
   const {measurementSystem} = useMeasurementSystem()
@@ -140,6 +165,21 @@ function ButtonModal(props: {
                       setOpen(false)
                     })
                   }
+                  onEdit={
+                    editSavedSearch &&
+                    (() => {
+                      editSavedSearch(
+                        search.id,
+                        (search.search_filters ?? {}) as Partial<FilterFields>,
+                        search.location as {
+                          location?: OriginLocation | null
+                          radius?: number
+                        } | null,
+                      )
+                      track('bookmarked_searches edit', {id: search.id})
+                      setOpen(false)
+                    })
+                  }
                   onDelete={async () => {
                     await deleteBookmarkedSearch(search.id)
                     refreshBookmarkedSearches()
@@ -187,9 +227,28 @@ function ButtonModal(props: {
 // below in case the longest searches make the list unwieldy.
 // const COLLAPSED_CRITERIA_COUNT = 6
 
-function SavedSearchRow(props: {criteria: string[]; onApply?: () => void; onDelete: () => void}) {
-  const {criteria, onApply, onDelete} = props
+function SavedSearchRow(props: {
+  criteria: string[]
+  onApply?: () => void
+  onEdit?: () => void
+  onDelete: () => void
+}) {
+  const {criteria, onApply, onEdit, onDelete} = props
   const t = useT()
+  // One click on the X used to drop the search and its daily alert on the spot, with no undo. The
+  // confirmation stands in for the undo. Native `confirm`, like the rest of the app's deletes.
+  const confirmDelete = () => {
+    if (
+      !confirm(
+        t(
+          'saved_searches.delete_confirm',
+          "Delete this saved search? You'll stop getting alerts when new people match it.",
+        ),
+      )
+    )
+      return
+    onDelete()
+  }
   // const [expanded, setExpanded] = useState(false)
 
   // const hiddenCount = criteria.length - COLLAPSED_CRITERIA_COUNT
@@ -233,8 +292,19 @@ function SavedSearchRow(props: {criteria: string[]; onApply?: () => void; onDele
             {t('saved_searches.apply_short', 'Apply')}
           </button>
         )}
+        {onEdit && (
+          <button
+            data-testid="edit-saved-search"
+            onClick={onEdit}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-canvas-300 bg-canvas-0 text-ink-500 transition-all hover:border-primary-400 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-1 sm:h-8 sm:w-8"
+            aria-label={t('saved_searches.edit', 'Edit this search')}
+            title={t('saved_searches.edit', 'Edit this search')}
+          >
+            <PencilIcon className="h-4 w-4" />
+          </button>
+        )}
         <button
-          onClick={onDelete}
+          onClick={confirmDelete}
           aria-label={t('saved_searches.delete', 'Delete this search')}
           className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-canvas-300 bg-canvas-0 text-ink-500 transition-all hover:border-red-300 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 sm:h-8 sm:w-8"
         >

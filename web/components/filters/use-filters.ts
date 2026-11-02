@@ -7,7 +7,7 @@ import {Profile, ProfileRow} from 'common/profiles/profile'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {getWantsKidsRange} from 'common/wants-kids'
 import {debounce, isEqual, mapValues, omit, omitBy} from 'lodash'
-import {useCallback, useEffect, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useIsLooking} from 'web/hooks/use-is-looking'
 import {useMeasurementSystem} from 'web/hooks/use-measurement-system'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
@@ -136,10 +136,18 @@ export const useFilters = (you: Profile | undefined) => {
     setFilters((prevState) => ({...prevState, ...updatedState}))
   }
 
+  // The saved search the filters column is currently editing, if any. Set by "Edit" on a saved
+  // search, cleared when the edit is saved, cancelled or the filters are reset. In memory only: the
+  // filters themselves survive a reload, but a half-finished edit shouldn't silently turn the next
+  // "Get notified" into an overwrite.
+  const [editingSavedSearchId, setEditingSavedSearchId] = useState<number | undefined>(undefined)
+  const stopEditingSavedSearch = () => setEditingSavedSearchId(undefined)
+
   const clearFilters = () => {
     setFilters(baseFilters)
     setLocation(undefined)
     setRaisedInLocation(undefined)
+    stopEditingSavedSearch()
   }
 
   const {measurementSystem} = useMeasurementSystem()
@@ -265,6 +273,17 @@ export const useFilters = (you: Profile | undefined) => {
     if (savedLocation?.radius) setRadius(savedLocation.radius)
   }
 
+  // "Edit" on a saved search: load it like applySavedSearch does — the filters column is the only
+  // place a search can be built — and remember which row the next save should overwrite.
+  const editSavedSearch = (
+    id: number,
+    savedFilters: Partial<FilterFields>,
+    savedLocation: {location?: OriginLocation | null; radius?: number} | null | undefined,
+  ) => {
+    applySavedSearch(savedFilters, savedLocation)
+    setEditingSavedSearchId(id)
+  }
+
   const setLookingForFilters = (checked: boolean) => {
     applyLookingForFilters(checked ? you : undefined)
   }
@@ -306,6 +325,9 @@ export const useFilters = (you: Profile | undefined) => {
     setLookingForFilters,
     applyLookingForFilters,
     applySavedSearch,
+    editSavedSearch,
+    editingSavedSearchId,
+    stopEditingSavedSearch,
     isLookingForFilters,
     locationFilterProps,
     raisedInLocationFilterProps,

@@ -224,32 +224,16 @@ function SelectedFiltersSummary(props: {
           )}
         </Row>
       )}
-      <Row className="items-center justify-between">
-        <Row className="items-center gap-2">
-          <span className="font-semibold text-sm">{filterCount}</span>
-          <span className="text-sm text-ink-600">
-            {filterCount === 1
-              ? t('filter.selected', 'filter selected')
-              : t('filter.selected_plural', 'filters selected')}
-          </span>
-        </Row>
-        <Row className="items-center gap-2">
-          {/* The save-this-search button lives with the filters it saves, rather than as a bell in
-              the search bar where it read as a notification toggle. */}
-          {bookmarkedSearches && refreshBookmarkedSearches && (
-            <GetNotifiedButton
-              filters={props.filters}
-              locationFilterProps={locationFilterProps}
-              bookmarkedSearches={bookmarkedSearches}
-              refreshBookmarkedSearches={refreshBookmarkedSearches}
-              editingSavedSearchId={editingSavedSearchId}
-              onSaved={stopEditingSavedSearch}
-              size="xs"
-              color={editingSavedSearchId !== undefined ? 'indigo' : 'indigo-outline'}
-            />
-          )}
-          <ResetFiltersButton clearFilters={clearFilters} />
-        </Row>
+      {/* Count and reset on one line that never wraps: the column is 24rem at most, and three
+          controls abreast folded every one of them onto two lines. */}
+      <Row className="items-center justify-between gap-3">
+        <span className="whitespace-nowrap text-sm text-ink-600">
+          <span className="font-semibold text-ink-900">{filterCount}</span>{' '}
+          {filterCount === 1
+            ? t('filter.selected', 'filter selected')
+            : t('filter.selected_plural', 'filters selected')}
+        </span>
+        <ResetFiltersButton clearFilters={clearFilters} />
       </Row>
       <Row className="flex-wrap gap-2">
         {selectedFilters.map((filter, idx) => (
@@ -267,6 +251,22 @@ function SelectedFiltersSummary(props: {
           </Row>
         ))}
       </Row>
+      {/* The save-this-search button lives with the filters it saves, rather than as a bell in the
+          search bar where it read as a notification toggle. Full width, on its own line: it is the
+          one action here that does something with the whole search, so it gets the whole width. */}
+      {bookmarkedSearches && refreshBookmarkedSearches && (
+        <GetNotifiedButton
+          filters={props.filters}
+          locationFilterProps={locationFilterProps}
+          bookmarkedSearches={bookmarkedSearches}
+          refreshBookmarkedSearches={refreshBookmarkedSearches}
+          editingSavedSearchId={editingSavedSearchId}
+          onSaved={stopEditingSavedSearch}
+          size="sm"
+          color={editingSavedSearchId !== undefined ? 'indigo' : 'indigo-outline'}
+          className="mt-1 w-full"
+        />
+      )}
     </Col>
   )
 }

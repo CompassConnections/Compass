@@ -81,7 +81,12 @@ export function ResetFiltersButton(props: {clearFilters: () => void}) {
   const t = useT()
   return (
     <>
-      <Button onClick={clearFilters} color="gray-outline" size={'xs'}>
+      <Button
+        onClick={clearFilters}
+        color="gray-outline"
+        size={'xs'}
+        className="shrink-0 whitespace-nowrap"
+      >
         {t('filter.reset', 'Reset filters')}
       </Button>
     </>

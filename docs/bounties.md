@@ -44,11 +44,11 @@ propose:
 - new and newly completed profiles have a one-week cooling-off period, during which Compass's own alerts get the first
   look.
 
-**Keep quality up.** Every proposal carries a small stake, forfeited to the daters if both reject or ignore it and
-refunded if at least one accepts. Proposals are capped per matchmaker, require a written reason, and build a visible
-track record. Incomplete profiles and inactive daters cannot be proposed to. Payouts are held for two weeks after
-acceptance so that fake or no-show introductions can be reported and refunded. The exact qualification threshold is
-the make-or-break of the whole model, so I specify several designs to test.
+**Keep quality up.** Every proposal carries a small stake, forfeited to the referral fund if both reject or ignore it
+and refunded if at least one accepts
+Proposals are capped per matchmaker, require a written reason, and build a visible track record. Incomplete profiles
+and inactive daters cannot be proposed to. Payouts are released when both daters confirm they talked or met. The exact
+qualification threshold is the make-or-break of the whole model, so I specify several designs to test.
 
 **Roll out in steps, with members' consent.** I won't ship anything before a survey and a vote available to all members.
 Phase 0
@@ -126,13 +126,20 @@ judging in person which one is the match. This is why I make the payout rise as 
    the matchmaker (should not be based on money, but should incite them to tip if they thank him), with an optional
    note, usable again at any time; and reject the match, with a note, which closes
    the chat. Both go on the dater's public payment record (section 5).
-5. **Payout.** Each dater's bounty is split and released after a 14-day hold. During the hold, either dater can report
-   the introduction (fake, no-show, profile misrepresented, or plainly outside the terms the dater wrote); a
-   confirmed report refunds the dater and costs the matchmaker the payout and the stake. The terms are what the
-   report is judged against, which is why they are written down before anyone proposes rather than argued about
-   after. A ban forfeits all pending earnings.
+5. **Payout.** Each dater's bounty is split and released when both daters confirm, from the conversation, that they
+   talked or met (a button next to thank and reject). The trigger is the daters' action, not the calendar: a
+   time-based hold pays out a confederate who chats politely for two weeks and then disappears.. Until released, either dater can report the introduction (fake, no-show, profile misrepresented,
+   or plainly outside the terms the dater wrote); a confirmed report refunds the dater and costs the matchmaker the
+   payout and the stake. The terms are what the report is judged against, which is why they are written down before
+   anyone proposes rather than argued about after. As a backstop for daters who forget, Compass asks both after 14
+   days; a conversation with messages from both sides and no report then releases, and one the dater never engaged
+   in refunds them. A ban forfeits all pending earnings.
 6. **Bringing someone in.** A matchmaker who invites B from outside with a referral link earns the full bounty from A
-   if the pair accepts, plus the referrer share on everything B pays later.
+   if the pair accepts and B has passed identity verification, plus the referrer share on everything B pays later.
+   Verification is a selfie
+   liveness check for B; matchmakers and referrers are identified anyway by the payments partner's onboarding before
+   they can be paid. Outsider payouts are capped per matchmaker per month (say 10) until a human has reviewed their
+   track record, after which the cap is lifted.
 
 ### 3. Pricing an introduction
 
@@ -153,14 +160,14 @@ later option.
 
 If proposals are too cheap, scripts flood daters with low-effort pairs; if they are too costly, nobody matchmakes.
 I specify three designs so they can be tested against each other. All share the guardrails above: written reason,
-incomplete and inactive profiles excluded, payout hold, visible track record, and a per-matchmaker cap on open
-proposals (say 10).
+incomplete and inactive profiles excluded, payout released on the daters' confirmation, visible track record, a
+per-matchmaker cap on open proposals (say 10), and a per-matchmaker monthly cap on outsider payouts until human
+review.
 
 - **A. Stake per proposal.** A fixed amount or a few percent of the bounty. Settlement: refunded if both accept or if
-  one accepts and the other declines or never answers; forfeited to the reviewing daters if both decline, if one
+  one accepts and the other declines or never answers; forfeited to the referral fund if both decline, if one
   declines and the other ignores it, or if both open it and ignore it; refunded if neither opened it (the daters were
-  inactive). Simple, immediate, and it makes bad proposals pay the people whose time they cost. Weakness: a flat
-  stake is noise for a well-funded bot and a barrier for a cautious first-time matchmaker.
+  inactive). Simple and immediate. The forfeit goes to the fund rather than to the reviewing daters.
 - **B. Earned allowance.** New matchmakers get a small weekly budget of proposals (say 3). Each accepted proposal
   raises the budget, each double decline lowers it, and a sustained acceptance rate below a floor (say 20%) pauses
   proposing until a human review. No money changes hands up front, so it is friendlier to newcomers and harder for
@@ -289,7 +296,8 @@ paid tiers on Hinge or Tinder do. Making it optional is not enough on its own; t
 feel their experience got worse, which Phase 1 measures directly.
 
 **Why does it feel like a scam?** Because paying for introductions has historically been a scam. The protections are
-that nothing is paid before both people accept, payouts are held for two weeks and refundable on report, matchmakers
+that nothing is paid before both people accept, payouts are released only once both daters confirm they talked or
+met and are refundable on report, matchmakers
 are accountable through a persistent track record, and a dater can see the payout rule before posting. There is no
 contract, no instalment plan and no obligation beyond the amount the dater chose.
 
@@ -340,10 +348,11 @@ reward plus a share of every bounty the friend ever posts; holding back pays the
 risks someone else referring them first.
 
 **What stops a matchmaker colluding with the other dater?** the other dater can accept anything, but you only pay if you
-also accept,
-and you can report within the hold. A fake or misrepresented other dater costs the matchmaker the payout, the stake and,
-on
-repetition, their account. Verification of daters makes this rarer still.
+also accept, nothing is released until you confirm you talked or met, and you can report before that. A fake or
+misrepresented other dater costs the matchmaker the payout, the stake and, on repetition, their account. A recruited
+real person is the harder case, which is why an outsider only earns once verified, why outsider payouts
+are capped per matchmaker until a human has looked at their record, and why the bounty should stay small enough
+that paying someone a cut to sign up and accept is not worth it.
 
 Sources: [Keeper (Wikipedia)](<https://en.wikipedia.org/wiki/Keeper_(matchmaking_website)>),
 [Tinder Matchmaker (TechCrunch)](https://techcrunch.com/2023/10/23/tinders-app-gets-more-social-by-letting-friends-play-matchmaker),

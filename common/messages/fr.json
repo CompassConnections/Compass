@@ -2543,7 +2543,9 @@
   "compatibility.tooltip.sorted_low": "Le tri par compatibilité utilise le bas de la fourchette",
   "profiles.sorted_by_low_bound": "Trié selon le bas de chaque fourchette probable : à score égal, les profils plus complets passent devant.",
   "compatibility.breakdown.title_pair": "{a} et {b}",
-  "compatibility.breakdown.disclaimer": "Ce n’est qu’une estimation approximative. Concrètement, un score sous 50 % signifie en général que vous achoppez sur un point que l’un de vous considère comme rédhibitoire. Un score élevé ne garantit pas que vous vous entendrez : il fait de cette personne une candidate prometteuse parmi d’autres. Restez donc ouvert et faites connaissance avec des personnes différentes pour découvrir ce qui vous convient.",
+  "compatibility.breakdown.disclaimer_low": "Ce n’est qu’une estimation approximative. Comme votre score est inférieur à 50 %, vous achoppez très probablement sur un point que l’un de vous considère comme rédhibitoire : quelque chose dont l’un a besoin et que l’autre n’offre pas. Ce chiffre n’est pas un verdict pour autant. Restez ouvert et faites connaissance avec des personnes différentes pour découvrir ce qui vous convient.",
+  "compatibility.breakdown.disclaimer_mid": "Ce n’est qu’une estimation approximative. Comme votre score se situe entre 50 % et 80 %, vous êtes peut-être compatibles, peut-être pas : les lignes ci-dessus montrent où vous vous rejoignez et où vous différez, à vous de juger. Restez ouvert et faites connaissance avec des personnes différentes pour découvrir ce qui vous convient.",
+  "compatibility.breakdown.disclaimer_high": "Ce n’est qu’une estimation approximative. Comme votre score dépasse 80 %, cette personne semble bien vous correspondre, mais cela ne garantit pas que vous vous entendrez : cela en fait une candidate prometteuse parmi d’autres. Restez donc ouvert et faites connaissance avec des personnes différentes pour découvrir ce qui vous convient.",
   "compatibility.breakdown.disclaimer_link": "Ce que disent les études →",
   "messages.menu.deleted_users": "Comptes supprimés",
   "messages.deleted_empty": "Aucune conversation avec des comptes supprimés."

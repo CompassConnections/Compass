@@ -59,13 +59,21 @@ export function CompatibilityBreakdownModal(props: {
   )
 
   const name = shortenName(profile.user.name)
+  // The caveat below is worded for the band the number falls in. The live recompute wins when it
+  // ran; a dealbreaker pair has no live score, so the stored one stands in.
+  const score = result?.kind === 'scored' ? result.score : compatibility.score
 
   return (
     <Modal open={open} setOpen={setOpen} size="lg">
       {/* The scroll container is an inner column, never the Modal wrapper: the close button hangs
           above the wrapper's top edge, and an overflow on the wrapper clips it away. */}
       <Col className={clsx(MODAL_CLASS, PANEL_CLASS, '!items-stretch')}>
-        <Col className={clsx('min-h-0 w-full flex-1 gap-6 pb-4 pr-1', SCROLLABLE_MODAL_CLASS)}>
+        <Col
+          className={clsx(
+            'scrollbar-subtle min-h-0 w-full flex-1 gap-6 pb-4 pr-4',
+            SCROLLABLE_MODAL_CLASS,
+          )}
+        >
           <h2 className="font-heading text-primary-900 m-0 text-xl">
             {viewer
               ? t('compatibility.breakdown.title_pair', '{a} and {b}', {
@@ -131,10 +139,20 @@ export function CompatibilityBreakdownModal(props: {
           {/* The caveat the number needs, where the number is: a percentage with two decimals of
             breakdown reads as a measurement, and it is not one. */}
           <p className="text-ink-600 border-canvas-300 m-0 border-t pt-4 text-sm">
-            {t(
-              'compatibility.breakdown.disclaimer',
-              'This is only a rough estimate. A score below 50% usually means the two of you clash on a dealbreaker. A high score does not mean you will get along for sure though: it makes this person one promising candidate among many. So stay open-minded and connect with different people to find out what works for you.',
-            )}{' '}
+            {score < 0.5
+              ? t(
+                  'compatibility.breakdown.disclaimer_low',
+                  'This is only a rough estimate. Since your score is below 50%, the two of you most likely clash on a dealbreaker: something one of you needs that the other does not offer. Still, the number is not a verdict. Stay open-minded and connect with different people to find out what works for you.',
+                )
+              : score <= 0.8
+                ? t(
+                    'compatibility.breakdown.disclaimer_mid',
+                    'This is only a rough estimate. Since your score is between 50% and 80%, the two of you may or may not be compatible: the rows above show where you agree and where you differ, so make your own judgment. Stay open-minded and connect with different people to find out what works for you.',
+                  )
+                : t(
+                    'compatibility.breakdown.disclaimer_high',
+                    'This is only a rough estimate. Since your score is above 80%, this person looks like a good fit, but that does not mean you will get along for sure: it makes this person one promising candidate among many. So stay open-minded and connect with different people to find out what works for you.',
+                  )}{' '}
             <Link href="/compatibility-score" className={clsx(linkClass, 'text-primary-700')}>
               {t(
                 'compatibility.breakdown.how',

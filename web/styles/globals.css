@@ -513,6 +513,31 @@
   background: rgb(var(--color-primary-500) / 0.8);
 }
 
+/* A quieter cousin of .scrollbar-visible for dense panels such as the compatibility breakdown: a hair
+   of primary on a transparent track, so the bar reads as a hint rather than a control. */
+.scrollbar-subtle {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgb(var(--color-primary-400) / 0.35) transparent;
+}
+
+.scrollbar-subtle::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 10px 0;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-primary-400) / 0.35);
+  border-radius: 100px;
+}
+
+.scrollbar-subtle::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-primary-500) / 0.6);
+}
+
 text {
   font-family: icomoon, var(--font-main), emoji, sans-serif;
 }

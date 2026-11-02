@@ -310,19 +310,29 @@ CREATE TABLE compatibility_answers (
 
 ### Compatibility Scores Table
 
-Pre-calculated compatibility scores between users.
+Pre-calculated compatibility scores between pairs of users (`user_id_1 < user_id_2`). `score` is the
+**overall** score — dealbreaker gate, then a weighted geometric mean of profile factors and the prompt score
+(`common/src/profiles/compatibility-factors.ts`, [`compatibility-score.md`](compatibility-score.md)). A row
+exists iff the pair is gender-compatible, at least one side is visible to the other, and no dealbreaker fires.
+No per-factor breakdown is stored; the browser recomputes it from the two profiles plus `prompt_score*`.
 
 ```sql
 CREATE TABLE compatibility_scores (
-  user_id_1 TEXT NOT NULL,
-  user_id_2 TEXT NOT NULL,
-  score NUMERIC(5, 4) NOT NULL,
-  score_low DOUBLE PRECISION, -- likely range of score (~95% credible interval)
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  created_time TIMESTAMPTZ NOT NULL DEFAULT now (),
+  modified_time TIMESTAMPTZ NOT NULL DEFAULT now (), -- trigger-maintained
+  user_id_1 TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  user_id_2 TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  score DOUBLE PRECISION, -- overall, with ±0.0005 tie-breaking noise
+  score_low DOUBLE PRECISION, -- likely range of the overall
   score_high DOUBLE PRECISION,
-  shared_answers INTEGER, -- questions both answered, what the range rests on
-  updated_time TIMESTAMPTZ NOT NULL DEFAULT now (),
-  CONSTRAINT compatibility_scores_pkey PRIMARY KEY (user_id_1, user_id_2)
+  shared_answers INTEGER, -- prompts both answered
+  prompt_score REAL, -- the prompt-only factor and its range; NULL when no shared answers
+  prompt_score_low REAL,
+  prompt_score_high REAL
 );
+
+CREATE UNIQUE INDEX compatibility_scores_user_pair_unique ON compatibility_scores (user_id_1, user_id_2);
 ```
 
 ## Social Features Tables

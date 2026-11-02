@@ -59,7 +59,10 @@ export const areLocationCompatible = (profile1: ProfileRow, profile2: ProfileRow
 }
 
 export const areRelationshipStyleCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
-  if (!profile1.pref_relation_styles?.length || !profile2.pref_relation_styles) return true
+  // Blank on either side passes — and an empty array is blank, the same as null. It used to be
+  // checked for null only on the second side, so someone who had cleared the field was "looking for
+  // a different kind of connection" than everyone who had filled it in.
+  if (!profile1.pref_relation_styles?.length || !profile2.pref_relation_styles?.length) return true
   return profile1.pref_relation_styles.some((style) =>
     profile2.pref_relation_styles?.includes(style),
   )

@@ -392,6 +392,9 @@ export type Database = {
           created_time: string
           id: number
           modified_time: string
+          prompt_score: number | null
+          prompt_score_high: number | null
+          prompt_score_low: number | null
           score: number | null
           score_high: number | null
           score_low: number | null
@@ -403,6 +406,9 @@ export type Database = {
           created_time?: string
           id?: never
           modified_time?: string
+          prompt_score?: number | null
+          prompt_score_high?: number | null
+          prompt_score_low?: number | null
           score?: number | null
           score_high?: number | null
           score_low?: number | null
@@ -414,6 +420,9 @@ export type Database = {
           created_time?: string
           id?: never
           modified_time?: string
+          prompt_score?: number | null
+          prompt_score_high?: number | null
+          prompt_score_low?: number | null
           score?: number | null
           score_high?: number | null
           score_low?: number | null

@@ -5,12 +5,21 @@ CREATE TABLE IF NOT EXISTS compatibility_scores (
     modified_time TIMESTAMPTZ DEFAULT now() NOT NULL,
     user_id_1 TEXT NOT NULL, --- lowest-id user
     user_id_2 TEXT NOT NULL, --- highest-id user
-    -- geometric mean score in range [0,1]
-    score DOUBLE PRECISION,
-    -- likely range of `score` (~95% credible interval) and the shared answers it rests on
-    score_low DOUBLE PRECISION,
-    score_high DOUBLE PRECISION,
-    shared_answers INTEGER
+    -- Overall score in [0,1]: dealbreaker gate, then a weighted geometric mean of profile factors and
+    -- the prompt score (common/src/profiles/compatibility-factors.ts, docs/compatibility-score.md).
+    -- A row exists iff the pair is gender-compatible, at least one side is visible to the other, and
+    -- no dealbreaker fires.
+    score REAL,
+    -- likely range of `score` and the shared prompt answers it partly rests on
+    score_low REAL,
+    score_high REAL,
+    shared_answers INTEGER,
+    -- The prompt-only factor and its range, NULL when the pair shares no answered prompt. All six are
+    -- `real`, not double: the UI shows whole percentages, these carry no tie-breaking noise, and it
+    -- halves the footprint.
+    prompt_score REAL,
+    prompt_score_low REAL,
+    prompt_score_high REAL
 );
 
 -- Ensure canonical ordering and uniqueness of pairs
@@ -55,6 +64,9 @@ FOR EACH ROW EXECUTE FUNCTION set_modified_time_compat_scores();
 -- Helpful indexes
 CREATE INDEX IF NOT EXISTS compatibility_scores_score_desc_idx
     ON public.compatibility_scores (score DESC);
+-- The compatibility sort ranks by the low edge of the range, score breaking ties (see get-profiles).
+CREATE INDEX IF NOT EXISTS compatibility_scores_score_low_desc_idx
+    ON public.compatibility_scores (score_low DESC, score DESC);
 CREATE INDEX IF NOT EXISTS compatibility_scores_user1_idx
     ON public.compatibility_scores (user_id_1);
 CREATE INDEX IF NOT EXISTS compatibility_scores_user2_idx

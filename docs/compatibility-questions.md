@@ -25,8 +25,10 @@ Every prompt is answered along four axes, and a good question has to work on all
 
 Scoring is asymmetric and importance-weighted: A's score counts A's importance weight on the questions where
 **B's** answer is inside **A's** accepted set, and vice versa; the two are combined with a geometric mean and
-shrunk toward 50% until roughly 100 shared answers exist (`getCompatibilityScore`). Three consequences drive
-almost every guideline below:
+shrunk toward 50% until roughly 100 shared answers exist (`getCompatibilityScore`). This prompt score is one
+factor — the heaviest once a pair shares a few answers — of the **overall** compatibility score, which also
+folds in profile fields (age range, distance, kids, languages, …) behind a dealbreaker gate; see
+[`compatibility-score.md`](compatibility-score.md). Three consequences drive almost every guideline below:
 
 1. **A question only ever scores when both people answered it.** A prompt nobody answers is dead weight in
    the list and costs attention from the ones that do work.
@@ -385,7 +387,8 @@ the 300 is really **a core 50 that must be excellent and a tail of 250 that must
 and effort should be spent in that ratio.
 
 Alongside the point estimate, `getCompatibilityScore` returns a **likely range** (`low`, `high`) and the
-shared-answer count it rests on. The shrink toward 50% is the mean of a Beta prior, so the range is that
+shared-answer count it rests on. (Since the overall score exists, the stored `score`/`score_low`/`score_high`
+are the overall's and the prompt numbers sit in `prompt_score*`; the prompt range below feeds the overall's.) The shrink toward 50% is the mean of a Beta prior, so the range is that
 posterior's, computed on the _effective_ number of questions `(Σw)² / Σw²` rather than on points — one
 "very important" match is 25 points but still one question. The edges are stored next to the score and
 shown as a band on the score bar and ring. Roughly: ±30 points at 10 shared answers, ±20 at 40, ±12 at 128. The nominal 95% is optimistic (questions correlate, and are served in a fixed order), so the UI

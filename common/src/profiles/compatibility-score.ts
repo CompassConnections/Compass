@@ -1,13 +1,5 @@
-import {ProfileRow} from 'common/profiles/profile'
 import {Row as rowFor} from 'common/supabase/utils'
 import {clamp, keyBy, sumBy} from 'lodash'
-
-import {
-  areAgeCompatible,
-  areLocationCompatible,
-  areRelationshipStyleCompatible,
-  areWantKidsCompatible,
-} from './compatibility-util'
 
 const importanceToScore = {
   0: 0,
@@ -28,6 +20,12 @@ export type CompatibilityScore = {
   /** Questions both people answered without skipping — what the range is based on. */
   sharedAnswers?: number
   confidence: 'low' | 'medium' | 'high'
+  /**
+   * The prompt-only score and its range, when the pair shares at least one answered prompt. Present
+   * on stored overall scores (see `common/profiles/compatibility-factors`), where `score` is the
+   * overall and this is the one factor the browser cannot recompute by itself.
+   */
+  prompt?: {score: number; low?: number; high?: number}
 }
 
 /** Two-sided 95% under a normal approximation. */
@@ -189,15 +187,6 @@ export function getScoredAnswerCompatibility(
       importanceCompatibility * importanceWeight) /
     2
   )
-}
-
-export const getProfilesCompatibilityFactor = (profile1: ProfileRow, profile2: ProfileRow) => {
-  let multiplier = 1
-  multiplier *= areAgeCompatible(profile1, profile2) ? 1 : 0.5
-  multiplier *= areRelationshipStyleCompatible(profile1, profile2) ? 1 : 0.5
-  multiplier *= areWantKidsCompatible(profile1, profile2) ? 1 : 0.5
-  multiplier *= areLocationCompatible(profile1, profile2) ? 1 : 0.1
-  return multiplier
 }
 
 export const hasAnsweredQuestions = (questions: rowFor<'compatibility_answers'>[]) => {

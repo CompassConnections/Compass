@@ -1,8 +1,9 @@
 import {areGenderCompatible} from 'common/profiles/compatibility-util'
+import {OPTION_TABLES} from 'common/profiles/constants'
 import {type Profile, type ProfileRow} from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
 import {type User} from 'common/user'
-import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 
 export type ProfileAndUserRow = ProfileRow & {
   name: string
@@ -168,4 +169,41 @@ export async function getAnswersForUser(userId: string) {
     [userId],
   )
   return answersSelf
+}
+
+/** The option labels a profile holds in each taxonomy — what the cross-table factor compares. */
+export type ProfileOptionNames = {
+  interests_names: string[]
+  causes_names: string[]
+  work_names: string[]
+}
+
+/**
+ * Option labels for many profiles at once, keyed by `profiles.id`. One query per taxonomy rather than
+ * one per profile, because the compatibility recompute needs them for every candidate. Pass no ids to
+ * load every profile's (the full rebuild).
+ */
+export const getOptionNamesByProfileId = async (
+  profileIds?: number[],
+  client?: SupabaseDirectClient,
+): Promise<Record<number, ProfileOptionNames>> => {
+  const pg = client ?? createSupabaseDirectClient()
+  const where = profileIds ? 'where po.profile_id = any($1)' : ''
+  const params = profileIds ? [profileIds] : []
+  const out: Record<number, ProfileOptionNames> = {}
+  for (const table of OPTION_TABLES) {
+    const rows = await pg.manyOrNone<{profile_id: number; names: string[]}>(
+      `select po.profile_id, array_agg(o.name) as names
+       from profile_${table} po
+                join ${table} o on o.id = po.option_id
+       ${where}
+       group by po.profile_id`,
+      params,
+    )
+    for (const row of rows) {
+      out[row.profile_id] ??= {interests_names: [], causes_names: [], work_names: []}
+      out[row.profile_id][`${table}_names`] = row.names
+    }
+  }
+  return out
 }

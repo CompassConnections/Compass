@@ -49,6 +49,7 @@ import {DietType, RelationshipType, RomanticType} from 'web/lib/util/convert-typ
 
 import {AgeFilter, AgeFilterText, getNoMinMaxAge} from './age-filter'
 import {CannabisFilter, CannabisFilterText} from './cannabis-filter'
+import {CompatibilityFilter, CompatibilityFilterText} from './compatibility-filter'
 import {DrinksFilter, DrinksFilterText, getNoMinMaxDrinks} from './drinks-filter'
 import {GenderFilter, GenderFilterText} from './gender-filter'
 import {HasKidsFilter, HasKidsLabel} from './has-kids-filter'
@@ -831,6 +832,27 @@ function Filters(props: {
         openGroup={openGroup}
         setOpenGroup={setOpenGroup}
       >
+        {/* COMPATIBILITY — the only filter that reads the score rather than the profile. Needs the
+            member's own profile to compare against. Its point is the saved search: an alert that
+            fires on "at least 70%" rather than on every new member who merely clears the
+            dealbreakers. */}
+        {youProfile && (
+          <FilterSection
+            testId="advanced-compatibility"
+            title={t('filter.compatibility.title', 'Compatibility')}
+            openFilter={openFilter}
+            setOpenFilter={setOpenFilter}
+            isActive={!!filters.compatibility_min}
+            selection={<CompatibilityFilterText compatibility_min={filters.compatibility_min} />}
+          >
+            <CompatibilityFilter
+              filters={filters}
+              updateFilter={updateFilter}
+              close={() => setOpenFilter(undefined)}
+            />
+          </FilterSection>
+        )}
+
         {/* LAST ACTIVE */}
         <FilterSection
           title={t('filter.last_active.title', 'Last active')}

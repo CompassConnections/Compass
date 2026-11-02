@@ -100,6 +100,8 @@ export type profileQueryType = {
   wants_kids_range_max?: number | undefined
   /** Also apply the searcher's own profile against each candidate's stated preferences. Needs `userId`. */
   twoWay?: boolean | undefined
+  /** Minimum stored compatibility with the searcher (`compatibleWithUserId`, else `userId`), in percent. */
+  compatibility_min?: number | undefined
   has_kids?: number | undefined
   is_smoker?: boolean | undefined
   exercise?: string[] | undefined
@@ -591,6 +593,7 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     wants_kids_range_min,
     wants_kids_range_max,
     twoWay,
+    compatibility_min,
     has_kids,
     interests,
     causes,
@@ -681,18 +684,23 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
   const causesJoin = getManyToManyJoin('causes')
   const workJoin = getManyToManyJoin('work')
 
+  // Whose scores the pair rows are read against: the member an admin is inspecting, else the
+  // searcher. The alert job runs a saved search with only `userId` set, so the minimum-compatibility
+  // filter has to work from that alone.
+  const scoreUserId = compatibleWithUserId ?? userId
+  const filterCompatibility = !!compatibility_min && compatibility_min > 0 && !!scoreUserId
   const compatibilityScoreJoin = pgp.as.format(
-    `compatibility_scores cs on (cs.user_id_1 = LEAST(profiles.user_id, $(compatibleWithUserId)) and cs.user_id_2 = GREATEST(profiles.user_id, $(compatibleWithUserId)))`,
-    {compatibleWithUserId},
+    `compatibility_scores cs on (cs.user_id_1 = LEAST(profiles.user_id, $(scoreUserId)) and cs.user_id_2 = GREATEST(profiles.user_id, $(scoreUserId)))`,
+    {scoreUserId},
   )
 
   const joins = [
     (orderByParam === 'last_online_time' || last_active) && leftJoin(userActivityJoin),
     // Left, not inner: as the default order, this must not drop the profiles that have no stored
     // score against the viewer (a dealbreaker, a new member not yet recomputed, the viewer's own
-    // missing profile). They sort last instead, newest first among themselves.
-    orderByParam === 'compatibility_score' &&
-      compatibleWithUserId &&
+    // missing profile). They sort last instead, newest first among themselves. The minimum-
+    // compatibility filter below does drop them, since a missing row cannot clear a threshold.
+    ((orderByParam === 'compatibility_score' && compatibleWithUserId) || filterCompatibility) &&
       leftJoin(compatibilityScoreJoin),
     joinInterests && leftJoin(interestsJoin),
     joinCauses && leftJoin(causesJoin),
@@ -969,6 +977,15 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
           relationshipOnly: isRelationshipOnly(pref_relation_styles),
         })
       : []),
+
+    // On the point estimate the card shows, not the low edge the sort uses: "at least 70%" should
+    // mean the number the member reads. A pair with no row (a dealbreaker between them, or not yet
+    // recomputed) fails the comparison and is out, which is the point. In the search-alert job the
+    // rows come from `public` even on the snapshot side (see profile-snapshot.ts), so a score that
+    // crosses the threshold without a profile edit does not raise an alert on its own; a new member
+    // who clears it does.
+    filterCompatibility &&
+      where('cs.score >= $(compatibility_min)', {compatibility_min: compatibility_min! / 100}),
 
     has_kids === 0 && where(`has_kids IS NULL OR has_kids = 0`),
     has_kids && has_kids > 0 && where(`has_kids > 0`),

@@ -26,6 +26,11 @@ export type FilterFields = {
   // Two-way search: on top of everything else here, require that the searcher *also* passes what
   // each candidate said they were looking for. Every other field in this type points one way.
   twoWay: boolean | null | undefined
+  // Only profiles whose stored compatibility with the searcher is at least this many percent
+  // (0-100). Scored on `compatibility_scores.score`, the number the card shows, against the member
+  // running the search; pairs with no row (a dealbreaker between them) never pass. Exists mostly so
+  // a saved search, and the email alert built on it, can ask for more than the dealbreakers alone.
+  compatibility_min: number | null | undefined
   cannabis: string[] | null | undefined
   psychedelics: string[] | null | undefined
   // Scalar on the profile, multi-select as a filter — same shape as `cannabis` above.
@@ -72,6 +77,9 @@ export type FilterFields = {
     | 'neurotype'
   >
 
+/** The thresholds the compatibility filter offers, in percent. */
+export const COMPATIBILITY_MIN_CHOICES = [50, 60, 70, 80, 90] as const
+
 export const orderProfiles = (profiles: Profile[], starredUserIds: string[] | undefined) => {
   if (!profiles) return
 
@@ -106,6 +114,7 @@ export const initialFilters: Partial<FilterFields> = {
   wants_kids_range_min: undefined,
   wants_kids_range_max: undefined,
   twoWay: undefined,
+  compatibility_min: undefined,
   is_smoker: undefined,
   exercise: undefined,
   psychedelics: undefined,

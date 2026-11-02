@@ -25,6 +25,13 @@
 - MBTI — Myers–Briggs personality type.
 - Big Five — ranges of the Big Five personality traits.
 - Last Active — how recently they were active on the platform.
+- Compatibility — a minimum stored compatibility score with the searcher (`compatibility_min`, in
+  percent, on the point estimate the card shows). The one filter that reads `compatibility_scores`
+  rather than the profile; pairs with no row (a dealbreaker between them) never pass. Shown only to
+  members with a profile, first in the Advanced group. Its main use is a saved search: the email
+  alert then fires on new members above the threshold instead of on everyone who clears the
+  dealbreakers. The alert job reads live scores on both sides of its diff, so a score that crosses
+  the threshold without a profile edit does not raise an alert by itself.
 
 The panel splits them in two. The likely dealbreakers are always visible: Seeking, Age, Gender, Living,
 plus Status, Style and Wants Kids for members looking for a relationship. These match

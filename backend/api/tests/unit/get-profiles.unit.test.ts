@@ -329,6 +329,30 @@ describe('loadProfiles', () => {
         expect(query).toContain(`<= 40`)
       })
 
+      it('that contains a minimum compatibility filter against the searcher', async () => {
+        await profilesModule.loadProfiles({
+          userId: 'searcher-id',
+          compatibility_min: 70,
+        })
+
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
+
+        expect(query).toContain('compatibility_scores cs')
+        expect(query).toContain(`'searcher-id'`)
+        expect(query).toContain('cs.score >= 0.7')
+      })
+
+      it('ignores a minimum compatibility filter with nobody to score against', async () => {
+        await profilesModule.loadProfiles({
+          compatibility_min: 70,
+        })
+
+        const [query, _values, _cb] = mockPg.map.mock.calls[0]
+
+        expect(query).not.toContain('compatibility_scores')
+        expect(query).not.toContain('cs.score')
+      })
+
       it('that contains a minimum drinks per month filter', async () => {
         await profilesModule.loadProfiles({
           drinks_min: 4,

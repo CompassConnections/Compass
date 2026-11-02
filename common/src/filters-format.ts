@@ -58,6 +58,7 @@ const filterLabels: Record<string, string> = {
   languages: '',
   mbti: 'MBTI',
   last_active: 'Active',
+  compatibility_min: 'Compatibility',
   Psychedelics_intention: 'Psychedelics (intentions)',
   Cannabis_intention: 'Cannabis (intentions)',
 }
@@ -171,6 +172,11 @@ export function formatFilters(
     else if (key === 'hasPhoto')
       stringValue = value && translate('filter.has_photo.title', 'Has photos')
     else if (key === 'twoWay') stringValue = translate('filter.two_way.title', 'Two-way search')
+    else if (key === 'compatibility_min')
+      stringValue = translate('filter.compatibility.at_least', 'At least {value}%').replace(
+        '{value}',
+        String(value),
+      )
 
     if (Array.isArray(value)) {
       if (choicesIdsToLabels[key]) {

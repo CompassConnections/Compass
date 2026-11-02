@@ -974,6 +974,8 @@ export const API = (_apiTypeCheck = {
         wants_kids_range_max: z.coerce.number().optional(),
         // Also require that the *searcher* passes what each candidate is looking for.
         twoWay: zBoolean.optional(),
+        // Minimum stored compatibility with the searcher, in percent.
+        compatibility_min: z.coerce.number().min(0).max(100).optional(),
         has_kids: z.coerce.number().optional(),
         is_smoker: zBoolean.optional().optional(),
         exercise: arraybeSchema.optional(),

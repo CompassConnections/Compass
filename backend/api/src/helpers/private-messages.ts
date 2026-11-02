@@ -199,24 +199,35 @@ const notifyOtherUserInChannelIfInactive = async (
     console.error('Failed to send mobile notification:', err)
   }
   const startOfDay = dayjs().tz('America/Los_Angeles').startOf('day').toISOString()
-  const previousMessagesThisDayBetweenTheseUsers = await pg.one(
-    `select count(*)
-     from private_user_messages
-     where channel_id = $1
-       and user_id = $2
-       and created_time > $3
-    `,
-    [channelId, creator.id, startOfDay],
-  )
+  // One pass over the channel answers both questions the email needs: the daily cap, and whether
+  // the receiver has ever written back. The second picks the email's wording — an opener introduces
+  // the sender to someone who has never spoken to them, a message in an ongoing conversation does
+  // not need to.
+  const {today_count: previousMessagesThisDayBetweenTheseUsers, receiver_replied: receiverReplied} =
+    await pg.one<{today_count: string; receiver_replied: boolean}>(
+      `select count(*) filter (where user_id = $2 and created_time > $3) as today_count,
+              coalesce(bool_or(user_id = $4), false) as receiver_replied
+       from private_user_messages
+       where channel_id = $1
+      `,
+      [channelId, creator.id, startOfDay, receiverId],
+    )
   log('previous messages this day', previousMessagesThisDayBetweenTheseUsers)
-  if (previousMessagesThisDayBetweenTheseUsers.count > 1) return
+  if (Number(previousMessagesThisDayBetweenTheseUsers) > 1) return
 
-  await createNewMessageNotification(creator, receiver, channelId)
+  await createNewMessageNotification(creator, receiver, channelId, receiverReplied)
 }
 
-const createNewMessageNotification = async (fromUser: User, toUser: User, channelId: number) => {
+const createNewMessageNotification = async (
+  fromUser: User,
+  toUser: User,
+  channelId: number,
+  receiverReplied: boolean,
+) => {
   const privateUser = await getPrivateUser(toUser.id)
   debug('privateUser:', privateUser)
   if (!privateUser) return
-  await sendNewMessageEmail(privateUser, fromUser, toUser, channelId)
+  await sendNewMessageEmail(privateUser, fromUser, toUser, channelId, {
+    stage: receiverReplied ? 'ongoing' : 'opener',
+  })
 }

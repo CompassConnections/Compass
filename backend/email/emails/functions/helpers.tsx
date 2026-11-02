@@ -22,7 +22,7 @@ import {getOptionsIdsToLabels} from 'shared/supabase/options'
 import {createUnsubscribeToken, getUnsubscribeUrlOneClick} from 'shared/unsubscribe-tokens'
 
 import {NewEndorsementEmail} from '../new-endorsement'
-import {NewMessageEmail} from '../new-message'
+import {NewMessageEmail, type NewMessageStage} from '../new-message'
 import {ProposalCommentEmail} from '../proposal-comment'
 import {Test} from '../test'
 import {sendEmail} from './send-email'
@@ -62,6 +62,8 @@ export const sendNewMessageEmail = async (
   fromUser: User,
   toUser: User,
   channelId: number,
+  // Defaults to the opener so an older caller keeps the email it always sent.
+  {stage = 'opener'}: {stage?: NewMessageStage} = {},
 ) => {
   const {sendToEmail, unsubscribeUrl} = getNotificationDestinationsForUser(
     privateUser,
@@ -80,9 +82,18 @@ export const sendNewMessageEmail = async (
   const t = createT(locale)
   console.log(`Sending email to ${privateUser.email} in ${locale}`)
 
-  const subject = t('email.new_message.subject', '{creatorName} sent you a message!', {
-    creatorName: fromUser.name,
-  })
+  // Once the reader has written back, the subject line drops the exclamation and the "sent you a
+  // message" of a first hello: a message from someone they are already talking to is a different
+  // event from a stranger's opener. Not "replied" — the thread may have gone quiet for weeks, or
+  // the sender may be writing twice in a row.
+  const subject =
+    stage === 'ongoing'
+      ? t('email.new_message.ongoing.subject', 'New message from {creatorName}', {
+          creatorName: fromUser.name,
+        })
+      : t('email.new_message.subject', '{creatorName} sent you a message!', {
+          creatorName: fromUser.name,
+        })
 
   return await sendEmail({
     from: fromEmail,
@@ -94,6 +105,7 @@ export const sendNewMessageEmail = async (
         fromUserProfile={profile}
         toUser={toUser}
         channelId={channelId}
+        stage={stage}
         unsubscribeUrl={unsubscribeUrl}
         email={privateUser.email}
         locale={locale}

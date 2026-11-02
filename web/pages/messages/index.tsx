@@ -1,4 +1,9 @@
-import {EllipsisVerticalIcon, NoSymbolIcon, XMarkIcon} from '@heroicons/react/24/solid'
+import {
+  EllipsisVerticalIcon,
+  NoSymbolIcon,
+  UserMinusIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {ChatMessage} from 'common/chat-message'
 import {isAdminUserId} from 'common/envs/constants'
@@ -60,7 +65,7 @@ export default function MessagesPage() {
   )
 }
 
-type MessagesView = 'all' | 'banned' | 'blocked'
+type MessagesView = 'all' | 'banned' | 'blocked' | 'deleted'
 
 export function MessagesContent(props: {currentUser: User}) {
   const {currentUser} = props
@@ -68,16 +73,17 @@ export function MessagesContent(props: {currentUser: User}) {
   const viewLabels: Record<Exclude<MessagesView, 'all'>, string> = {
     banned: t('messages.menu.banned_users', 'Banned users'),
     blocked: t('messages.menu.blocked_users', 'Blocked users'),
+    deleted: t('messages.menu.deleted_users', 'Deleted accounts'),
   }
   const {channels, memberIdsByChannelId, leftMemberIdsByChannelId} =
     useSortedPrivateMessageMemberships(currentUser.id)
   const {lastSeenChatTimeByChannelId} = useUnseenPrivateMessageChannels(true)
   const lastMessages = useLastPrivateMessages(currentUser.id)
   const [query, setQuery] = useState('')
-  // Which list is showing: the default one, or one of the two side lists that replace it. Banned
-  // (Compass's call about someone) and blocked (your call) are kept apart rather than merged into
-  // one "hidden" list, since you can undo one and not the other. In-memory so opening a thread from
-  // a side list and coming back lands on the same list you left.
+  // Which list is showing: the default one, or one of the three side lists that replace it. Banned
+  // (Compass's call about someone), blocked (your call) and deleted (theirs) are kept apart rather
+  // than merged into one "hidden" list, since you can undo one and not the others. In-memory so
+  // opening a thread from a side list and coming back lands on the same list you left.
   const [view, setView] = usePersistentInMemoryState<MessagesView>('all', 'messages-view')
   const privateUser = usePrivateUser()
 
@@ -102,23 +108,29 @@ export function MessagesContent(props: {currentUser: User}) {
     // undefined while the batch is still loading, so the row keeps its placeholder avatar
     // instead of flashing "Deleted user".
     const otherUsers = allUsers ? filterDefined(userIds.map((id) => usersById[id])) : undefined
-    // Blocked when everyone else in the room is someone you blocked; banned when everyone else is
-    // banned, the same rule the thread page uses to stop you writing into it. Your own block wins
-    // over Compass's ban when both apply, since the block is the one you can act on from here.
+    // Deleted when nobody else is in the room and nobody left it either — the account is gone, the
+    // same test the thread page uses for its "they deleted their account" notice — or when everyone
+    // who is left resolves to a user without a name. Known from the memberships alone, so it needs
+    // no batch. Blocked when everyone else in the room is someone you blocked; banned when everyone
+    // else is banned, the same rule the thread page uses to stop you writing into it. Your own block
+    // wins over Compass's ban when both apply, since the block is the one you can act on from here.
     // Unknown while the member batch loads, so those rows stay in the default list rather than
     // flashing into a side list.
-    const rowView: MessagesView = !otherUsers?.length
-      ? 'all'
-      : otherUsers.every((user) => isBlocked(privateUser, user.id))
-        ? 'blocked'
-        : otherUsers.every((user) => user.isBannedFromPosting)
-          ? 'banned'
-          : 'all'
+    const rowView: MessagesView =
+      userIds.length === 0 || (!!otherUsers?.length && otherUsers.every((user) => !user.name))
+        ? 'deleted'
+        : !otherUsers?.length
+          ? 'all'
+          : otherUsers.every((user) => isBlocked(privateUser, user.id))
+            ? 'blocked'
+            : otherUsers.every((user) => user.isBannedFromPosting)
+              ? 'banned'
+              : 'all'
     return {channel, userIds, otherUsers, rowView}
   })
 
-  // Banned and blocked threads are kept out of the default list and only shown through the menu's
-  // "Banned users" / "Blocked users" views, each of which replaces the list rather than adding to it.
+  // Banned, blocked and deleted threads are kept out of the default list and only shown through the
+  // menu's side views, each of which replaces the list rather than adding to it.
   const listedRows = rows?.filter(({rowView}) => rowView === view)
 
   // Name and username only — deliberately not message contents, which aren't all loaded here.
@@ -171,6 +183,11 @@ export function MessagesContent(props: {currentUser: User}) {
                   icon: <FaUserSlash className="h-5 w-5" />,
                   name: viewLabels.blocked,
                   onClick: () => setView(view === 'blocked' ? 'all' : 'blocked'),
+                },
+                {
+                  icon: <UserMinusIcon className="h-5 w-5" />,
+                  name: viewLabels.deleted,
+                  onClick: () => setView(view === 'deleted' ? 'all' : 'deleted'),
                 },
               ]}
             />
@@ -236,6 +253,13 @@ export function MessagesContent(props: {currentUser: User}) {
           <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
             <p className="text-ink-500 text-sm">
               {t('messages.blocked_empty', "No conversations with people you've blocked.")}
+            </p>
+          </div>
+        )}
+        {view === 'deleted' && listedRows?.length === 0 && (
+          <div className="bg-canvas-50 border border-canvas-200 rounded-xl p-8 text-center mt-4">
+            <p className="text-ink-500 text-sm">
+              {t('messages.deleted_empty', 'No conversations with deleted accounts.')}
             </p>
           </div>
         )}

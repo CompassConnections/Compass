@@ -2523,5 +2523,7 @@
   "profiles.sorted_by_low_bound": "Sortiert nach dem unteren Ende jedes wahrscheinlichen Bereichs: Bei gleichem Wert stehen vollständigere Profile weiter oben.",
   "compatibility.breakdown.title_pair": "{a} und {b}",
   "compatibility.breakdown.disclaimer": "Das ist nur eine grobe Schätzung. Konkret heißt ein Wert unter 50 % meist, dass Sie beide bei etwas auseinanderliegen, das für eine Seite ein K.-o.-Kriterium ist. Ein hoher Wert bedeutet nicht, dass Sie sicher zueinander passen: Er macht diese Person zu einem vielversprechenden Kandidaten unter vielen. Bleiben Sie also offen und lernen Sie unterschiedliche Menschen kennen, um herauszufinden, was für Sie passt.",
-  "compatibility.breakdown.disclaimer_link": "Was die Forschung sagt →"
+  "compatibility.breakdown.disclaimer_link": "Was die Forschung sagt →",
+  "messages.menu.deleted_users": "Gelöschte Konten",
+  "messages.deleted_empty": "Keine Unterhaltungen mit gelöschten Konten."
 }

@@ -308,6 +308,10 @@ export const PrivateChat = (props: {
 
   // Check ban status for messaging restrictions
   const allUsersBanned = members.length > 0 && members.every((member) => member.isBannedFromPosting)
+  // Nothing can arrive from a deleted or banned account, so muting it is moot, and there is nobody
+  // left to report — the one case the moderators have already handled, the other no longer exists.
+  const accountDeleted = noOtherUser && leftMembers.length === 0
+  const otherSideGone = accountDeleted || allUsersBanned
 
   const {topVisibleRef, showMessages, innerDiv, outerDiv} = usePaginatedScrollingMessages(
     messages,
@@ -574,7 +578,7 @@ export const PrivateChat = (props: {
                   setShowUsers(true)
                 },
               },
-              {
+              !otherSideGone && {
                 icon: <GiSpeakerOff className="h-5 w-5" />,
                 name: t('messages.menu.mute_1_day', 'Mute 1 day'),
                 onClick: async () => {
@@ -591,7 +595,7 @@ export const PrivateChat = (props: {
                   )
                 },
               },
-              {
+              !otherSideGone && {
                 icon: <GiSpeakerOff className="h-5 w-5" />,
                 name: t('messages.menu.mute_forever', 'Mute forever'),
                 onClick: async () => {
@@ -608,7 +612,7 @@ export const PrivateChat = (props: {
                   )
                 },
               },
-              {
+              !otherSideGone && {
                 icon: <FaFlag className="h-5 w-5" />,
                 name: t('messages.menu.report', 'Report'),
                 onClick: () => {

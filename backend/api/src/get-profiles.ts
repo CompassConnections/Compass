@@ -613,7 +613,7 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     raised_in_lon,
     raised_in_radius,
     compatibleWithUserId,
-    orderBy: orderByParam = 'created_time',
+    orderBy: orderByRequested = 'created_time',
     lastModificationWithin,
     userIds,
     skipCount,
@@ -636,10 +636,12 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     : []
   // console.debug('keywords:', keywords)
 
-  if (orderByParam === 'compatibility_score' && !compatibleWithUserId) {
-    console.error('Incompatible with user ID')
-    throw Error('Incompatible with user ID')
-  }
+  // Compatibility is the default order now, and it needs someone to be compatible with. A signed-out
+  // visitor, or a caller that never set `compatibleWithUserId`, gets newest-first rather than an error.
+  const orderByParam =
+    orderByRequested === 'compatibility_score' && !compatibleWithUserId
+      ? 'created_time'
+      : orderByRequested
 
   const tablePrefix =
     orderByParam === 'compatibility_score'
@@ -686,16 +688,34 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
 
   const joins = [
     (orderByParam === 'last_online_time' || last_active) && leftJoin(userActivityJoin),
-    orderByParam === 'compatibility_score' && compatibleWithUserId && join(compatibilityScoreJoin),
+    // Left, not inner: as the default order, this must not drop the profiles that have no stored
+    // score against the viewer (a dealbreaker, a new member not yet recomputed, the viewer's own
+    // missing profile). They sort last instead, newest first among themselves.
+    orderByParam === 'compatibility_score' &&
+      compatibleWithUserId &&
+      leftJoin(compatibilityScoreJoin),
     joinInterests && leftJoin(interestsJoin),
     joinCauses && leftJoin(causesJoin),
     joinWork && leftJoin(workJoin),
   ]
 
+  // The compatibility sort ranks by the *low edge* of each pair's likely range, not the point
+  // estimate the card shows. Two 86%s are not equal when one is "80–90" and the other "56–98": the
+  // second is a sparse profile that happens to match on the few fields it filled in, and the sort
+  // should prefer the pair we know more about. A lower bound does exactly that — the same reason
+  // review sites rank by the low end of a rating rather than its mean — and it means filling in a
+  // profile or answering prompts moves a member up the grid, while leaving fields blank never does.
+  // `score` (which carries the tie-breaking noise) breaks ties, and the keyset cursor compares the
+  // same pair of columns so pagination never skips or repeats a row. Rows written before the range
+  // existed fall back to the score.
+  // Unscored pairs rank at -1, below any real score, and `profiles.created_time` is the third key so
+  // that the keyset cursor stays strict inside that group too.
+  const compatibilityRank = 'coalesce(cs.score_low, cs.score, -1)'
+  const compatibilityKeys = `${compatibilityRank}, coalesce(cs.score, -1), profiles.created_time`
   const _orderBy =
-    orderByParam === 'compatibility_score' ? 'cs.score' : `${tablePrefix}.${orderByParam}`
+    orderByParam === 'compatibility_score' ? compatibilityRank : `${tablePrefix}.${orderByParam}`
   const afterFilter = renderSql(
-    select(_orderBy),
+    select(orderByParam === 'compatibility_score' ? compatibilityKeys : _orderBy),
     from('profiles'),
     ...joins,
     where('profiles.id = $(after)', {after}),
@@ -1067,10 +1087,6 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
                     : '90 days',
       }),
 
-    // Precomputed scores can be nulled out (e.g. after the user deletes their last shared
-    // prompt) instead of the row being removed — don't surface those as matches.
-    orderByParam === 'compatibility_score' && where('cs.score IS NOT NULL'),
-
     // Exclude profiles that the requester has chosen to hide
     userId &&
       where(
@@ -1147,8 +1163,17 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     select(selectCols),
     ...tableSelection,
     ...filters,
-    orderBy(`${_orderBy} DESC`),
-    after && where(`${_orderBy} < (${afterFilter})`),
+    orderBy(
+      orderByParam === 'compatibility_score'
+        ? `${compatibilityRank} DESC, coalesce(cs.score, -1) DESC, profiles.created_time DESC`
+        : `${_orderBy} DESC`,
+    ),
+    after &&
+      where(
+        orderByParam === 'compatibility_score'
+          ? `(${compatibilityKeys}) < (${afterFilter})`
+          : `${_orderBy} < (${afterFilter})`,
+      ),
     limitParam && limit(limitParam),
   )
   // console.debug('query:', query)

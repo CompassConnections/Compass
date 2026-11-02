@@ -1,6 +1,13 @@
 import {type APIHandler} from 'api/helpers/endpoint'
 import {canReadProfileContent} from 'api/helpers/profile-visibility'
+import {type CompatibilityScore} from 'common/profiles/compatibility-score'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
+
+/** Same thresholds as `getCompatibilityScore`; the wire type requires it and the row does not store it. */
+const confidenceFor = (sharedAnswers: number | null): CompatibilityScore['confidence'] => {
+  const n = sharedAnswers ?? 0
+  return n < 10 ? 'low' : n < 100 ? 'medium' : 'high'
+}
 
 /**
  * Someone's compatibility scores against everyone else. Any member may ask about any member, but
@@ -34,7 +41,18 @@ export const getCompatibleProfiles = async (userId: string) => {
           low: r.score_low ?? undefined,
           high: r.score_high ?? undefined,
           sharedAnswers: r.shared_answers ?? undefined,
-        },
+          confidence: confidenceFor(r.shared_answers),
+          // The prompt-only factor, null when the pair shares no answered prompt (or the row predates
+          // the column). The breakdown modal recomputes every other factor from the two profiles.
+          prompt:
+            r.prompt_score == null
+              ? undefined
+              : {
+                  score: r.prompt_score,
+                  low: r.prompt_score_low ?? undefined,
+                  high: r.prompt_score_high ?? undefined,
+                },
+        } satisfies CompatibilityScore,
       ] as const,
   )
 

@@ -1,6 +1,7 @@
 jest.mock('shared/supabase/init')
 jest.mock('shared/supabase/utils')
 jest.mock('common/util/try-catch')
+jest.mock('shared/compatibility/compute-scores')
 jest.mock('shared/profiles/parse-photos')
 jest.mock('shared/supabase/users')
 
@@ -8,6 +9,7 @@ import {AuthedUser} from 'api/helpers/endpoint'
 import {updateProfileEndpoint} from 'api/update-profile'
 import {sqlMatch} from 'common/test-utils'
 import {tryCatch} from 'common/util/try-catch'
+import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
 import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
 import * as supabaseInit from 'shared/supabase/init'
 import * as supabaseUsers from 'shared/supabase/users'
@@ -39,9 +41,12 @@ describe('updateProfiles', () => {
         .mockResolvedValueOnce({data: true})
         .mockResolvedValueOnce({data: mockData, error: null})
 
-      const result = await updateProfileEndpoint(mockProps, mockAuth, mockReq)
+      const result: any = await updateProfileEndpoint(mockProps, mockAuth, mockReq)
 
-      expect(result).toBe(mockData)
+      expect(result.result).toBe(mockData)
+      // Profile fields are compatibility factors, so the pair cache follows the edit.
+      await result.continue()
+      expect(recomputeCompatibilityScoresForUser).toBeCalledWith(mockAuth.uid)
       expect(mockPg.oneOrNone).toBeCalledTimes(1)
       expect(mockPg.oneOrNone).toBeCalledWith(
         sqlMatch('select * from profiles where user_id = $1'),

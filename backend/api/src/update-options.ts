@@ -4,6 +4,7 @@ import {normalizeOptionName, optionNameProblem} from 'common/profiles/option-nam
 import {validateTable} from 'common/profiles/options'
 import {tryCatch} from 'common/util/try-catch'
 import {uniqBy} from 'lodash'
+import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
 import {createSupabaseDirectClient, SupabaseDirectClient} from 'shared/supabase/init'
 import {createOption, resolveOptionName} from 'shared/supabase/options'
 import {log} from 'shared/utils'
@@ -108,5 +109,11 @@ export const updateOptions: APIHandler<'update-options'> = async ({table, values
     throw APIErrors.internalServerError('Error updating profile options')
   }
 
-  return {updatedIds: true}
+  // Interests, causes and work are a compatibility factor, so the pair cache follows the edit.
+  return {
+    result: {updatedIds: true},
+    continue: async () => {
+      await recomputeCompatibilityScoresForUser(auth.uid)
+    },
+  }
 }

@@ -2,10 +2,12 @@ import {AuthedUser} from 'api/helpers/endpoint'
 import {setProfileOptions, updateOptions} from 'api/update-options'
 import {sqlMatch} from 'common/test-utils'
 import {tryCatch} from 'common/util/try-catch'
+import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
 import * as supabaseInit from 'shared/supabase/init'
 import * as options from 'shared/supabase/options'
 
 jest.mock('common/util/try-catch')
+jest.mock('shared/compatibility/compute-scores')
 jest.mock('shared/supabase/init')
 jest.mock('shared/supabase/options')
 
@@ -64,7 +66,10 @@ describe('updateOptions', () => {
 
       const result: any = await updateOptions(mockProps, mockAuth, mockReq)
 
-      expect(result.updatedIds).toStrictEqual(true)
+      expect(result.result.updatedIds).toStrictEqual(true)
+      // The options are a compatibility factor, so the pair cache follows the edit.
+      await result.continue()
+      expect(recomputeCompatibilityScoresForUser).toBeCalledWith(mockAuth.uid)
       expect(mockPg.oneOrNone).toBeCalledTimes(1)
       expect(mockPg.oneOrNone).toBeCalledWith(
         sqlMatch('SELECT id FROM profiles WHERE user_id = $1'),

@@ -455,13 +455,16 @@ describe('loadProfiles', () => {
     })
   })
 
-  describe('when an error occurs', () => {
-    it('throw if there is no compatibility', async () => {
-      const props = {
-        orderBy: 'compatibility_score',
-      }
+  describe('when there is nobody to be compatible with', () => {
+    it('falls back to newest first instead of throwing', async () => {
+      ;(mockPg.map as jest.Mock).mockResolvedValue([])
+      ;(mockPg.one as jest.Mock).mockResolvedValue(0)
 
-      expect(profilesModule.loadProfiles(props)).rejects.toThrowError('Incompatible with user ID')
+      await profilesModule.loadProfiles({orderBy: 'compatibility_score'})
+
+      const [query] = mockPg.map.mock.calls[0]
+      expect(query).toContain('profiles.created_time DESC')
+      expect(query).not.toContain('compatibility_scores')
     })
   })
 
@@ -666,7 +669,7 @@ describe('loadProfiles', () => {
   })
 
   describe('when ordering by compatibility score', () => {
-    it('excludes profiles whose precomputed score was nulled out', async () => {
+    it('keeps unscored profiles, ranked last, newest first among themselves', async () => {
       ;(mockPg.map as jest.Mock).mockResolvedValue([])
       ;(mockPg.one as jest.Mock).mockResolvedValue(0)
 
@@ -677,7 +680,12 @@ describe('loadProfiles', () => {
 
       const [query] = mockPg.map.mock.calls[0]
 
-      expect(query).toContain('cs.score IS NOT NULL')
+      expect(query).toContain('left join compatibility_scores cs')
+      expect(query).not.toContain('cs.score IS NOT NULL')
+      // Ranked by the low edge of the likely range, the point estimate breaking ties, then recency.
+      expect(query).toContain(
+        'coalesce(cs.score_low, cs.score, -1) DESC, coalesce(cs.score, -1) DESC, profiles.created_time DESC',
+      )
     })
   })
 })

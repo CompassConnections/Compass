@@ -2,6 +2,7 @@ import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {trimStrings} from 'common/parsing'
 import {type Row} from 'common/supabase/utils'
 import {tryCatch} from 'common/util/try-catch'
+import {recomputeCompatibilityScoresForUser} from 'shared/compatibility/compute-scores'
 import {removePinnedUrlFromPhotoUrls} from 'shared/profiles/parse-photos'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {updateProfile, updateUser} from 'shared/supabase/users'
@@ -51,5 +52,12 @@ export const updateProfileEndpoint: APIHandler<'update-profile'> = async (parsed
     throw APIErrors.internalServerError('Error updating profile')
   }
 
-  return data
+  // Most profile fields feed the compatibility score (common/profiles/compatibility-factors), so the
+  // pair cache is rebuilt for this member after the response, as answering a prompt does.
+  return {
+    result: data,
+    continue: async () => {
+      await recomputeCompatibilityScoresForUser(auth.uid)
+    },
+  }
 }

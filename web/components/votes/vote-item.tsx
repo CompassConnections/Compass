@@ -6,13 +6,17 @@ import {convertVoteComment} from 'common/supabase/comment'
 import {Row as rowFor} from 'common/supabase/utils'
 import {richTextToString} from 'common/util/parse'
 import {STANCE_CHOICES, STATUS_CHOICES} from 'common/votes/constants'
+import {EyeOff} from 'lucide-react'
 import Link from 'next/link'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {VoteButtons, type VoteChoice} from 'web/components/votes/vote-buttons'
+import {VoteEditedMarker} from 'web/components/votes/vote-edited-marker'
 import {Avatar} from 'web/components/widgets/avatar'
 import {Content} from 'web/components/widgets/editor'
 import {eyebrow, surface} from 'web/components/widgets/surface'
+import {Tooltip} from 'web/components/widgets/tooltip'
+import {useUser} from 'web/hooks/use-user'
 import {useT} from 'web/lib/locale'
 
 export type Vote = rowFor<'votes'> & {
@@ -84,6 +88,33 @@ export function Creator(props: {creator: DisplayUser | undefined}) {
   )
 }
 
+// What the author of an anonymous proposal sees in the slot everyone else sees as "Anonymous": their
+// own name, so they can tell their proposals apart from the rest, and a pill right next to it saying
+// the name is hidden — without it, seeing yourself credited on a proposal you asked to be anonymous
+// reads as the setting having failed. Nobody else is ever handed the author of an anonymous
+// proposal: `creator_id` is nulled in SQL, and "is this mine" comes from the API as the caller.
+export function OwnAnonymousAuthor() {
+  const user = useUser()
+  const t = useT()
+  if (!user) return null
+  return (
+    <Row className="items-center gap-2">
+      <Creator creator={user} />
+      <Tooltip
+        text={t(
+          'vote.anonymous.only_you',
+          'Only you can see that you wrote this. Everyone else sees it as anonymous.',
+        )}
+      >
+        <span className="inline-flex items-center gap-1 rounded-full bg-canvas-200 px-2 py-0.5 text-xs font-medium text-ink-600 whitespace-nowrap">
+          <EyeOff className="h-3 w-3 shrink-0" aria-hidden />
+          {t('vote.detail.anonymous_author', 'Anonymous')}
+        </span>
+      </Tooltip>
+    </Row>
+  )
+}
+
 // A short taste of each side's case, so the list itself carries some of the discussion rather than
 // only a comment count. A count tells you a thread exists; this tells you whether it raised anything
 // that should change your mind before you hit a vote button that is right there on the card.
@@ -124,9 +155,11 @@ export function VoteItem(props: {
   vote: Vote
   creator?: DisplayUser
   userChoice?: VoteChoice
+  /** Whether the viewer wrote this proposal — the only way an anonymous one gets a byline. */
+  isMine?: boolean
   onVoted?: () => void | Promise<void>
 }) {
-  const {vote, creator, userChoice, onVoted} = props
+  const {vote, creator, userChoice, isMine, onVoted} = props
   const t = useT()
   const topFor = vote.top_for ? convertVoteComment(vote.top_for) : undefined
   const topAgainst = vote.top_against ? convertVoteComment(vote.top_against) : undefined
@@ -169,7 +202,14 @@ export function VoteItem(props: {
 
       <Row className="mt-3 items-center justify-between gap-2 flex-wrap text-sm">
         <Row className="items-center gap-3">
-          {!vote.is_anonymous ? <Creator creator={creator} /> : <span />}
+          {!vote.is_anonymous ? (
+            <Creator creator={creator} />
+          ) : isMine ? (
+            <OwnAnonymousAuthor />
+          ) : (
+            <span />
+          )}
+          <VoteEditedMarker voteId={vote.id} editedTime={vote.edited_time} />
           <Link
             href={`/vote/${vote.id}`}
             className="text-ink-500 hover:text-primary-700 whitespace-nowrap"

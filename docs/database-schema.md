@@ -423,7 +423,16 @@ Proposals (`/vote`), the votes cast on them, and their discussion threads.
 ### Votes / Vote Results Tables
 
 `votes` holds a proposal (title + rich-text description + status); `vote_results` holds one row per
-person per proposal (`choice` in -1/0/1, plus a priority for "for" votes). Both are public-read.
+person per proposal (`choice` in -1/0/1, plus a priority for "for" votes). Neither is readable by the
+client roles: tallies come through the security-definer `get_votes_with_results()`, which also nulls
+the author of an anonymous proposal.
+
+The author can edit the title and description while the proposal is still open (`draft`,
+`under_review`, `voting_open`); `edit-vote` stamps `votes.edited_time` and archives the previous
+title and description in `vote_edits`, which is public-read like `vote_comment_edits`. A proposal is
+what people voted on, so the earlier versions have to be checkable by anyone — the "(edited)" marker
+on the card and the page opens them. `vote_edits` carries no author column, so it does not leak the
+author of an anonymous proposal.
 
 ### Vote Comments Table
 

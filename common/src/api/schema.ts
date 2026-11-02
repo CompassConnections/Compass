@@ -1489,6 +1489,19 @@ export const API = (_apiTypeCheck = {
     summary: 'Edit your own comment on a proposal',
     tag: 'Votes',
   },
+  'edit-vote': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    returns: {} as {status: 'success'},
+    props: z.object({
+      voteId: z.number(),
+      title: z.string().min(1),
+      description: contentSchema,
+    }),
+    summary: 'Edit your own proposal; the earlier versions stay public',
+    tag: 'Votes',
+  },
   'set-vote-mute': {
     method: 'POST',
     authed: true,
@@ -1508,6 +1521,15 @@ export const API = (_apiTypeCheck = {
     props: z.object({}).strict(),
     returns: {} as {choices: Record<number, number>},
     summary: "The caller's own ballot on every proposal: 1 for, 0 abstain, -1 against",
+    tag: 'Votes',
+  },
+  'get-my-proposal-ids': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as {ids: number[]},
+    summary: 'The ids of the proposals the caller authored, anonymous ones included',
     tag: 'Votes',
   },
   'get-vote-mute': {

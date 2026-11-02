@@ -5,7 +5,9 @@ CREATE TABLE IF NOT EXISTS votes (
     title TEXT NOT NULL,
     is_anonymous BOOLEAN NOT NULL,
     description JSONB,
-    status TEXT
+    status TEXT,
+    -- Set on every edit by the author; the earlier versions live in vote_edits (public read).
+    edited_time TIMESTAMPTZ
 );
 
 -- Foreign Keys

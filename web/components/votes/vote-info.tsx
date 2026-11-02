@@ -24,7 +24,7 @@ import {useUser} from 'web/hooks/use-user'
 import {useUsersInStore} from 'web/hooks/use-user-supabase'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
-import {getMyVoteChoices, getVotes} from 'web/lib/supabase/votes'
+import {getMyProposalIds, getMyVoteChoices, getVotes} from 'web/lib/supabase/votes'
 
 import {ShowMore} from '../widgets/show-more'
 
@@ -41,6 +41,14 @@ export function VoteComponent() {
     'my-vote-choices',
     user ? {userId: user.id} : undefined,
     getMyVoteChoices,
+  )
+
+  // Which cards are the viewer's own anonymous proposals, so those can carry their name where everyone
+  // else sees nothing. Same cache entry as the proposal page's "Edit" button.
+  const {data: myProposalIds} = useGetter(
+    'my-proposal-ids',
+    user ? {userId: user.id} : undefined,
+    getMyProposalIds,
   )
 
   // The tallies and the viewer's own ballot come from two queries, so a vote has to invalidate both —
@@ -339,6 +347,7 @@ export function VoteComponent() {
                 vote={vote}
                 creator={creatorsById[vote.creator_id]}
                 userChoice={choiceFromNumber(myChoices?.[vote.id])}
+                isMine={myProposalIds?.includes(vote.id)}
                 onVoted={onVoted}
               />
             )

@@ -11,6 +11,7 @@ import {deleteMessage} from 'api/delete-message'
 import {deleteOption} from 'api/delete-option'
 import {deleteSubscription} from 'api/delete-subscription'
 import {editMessage} from 'api/edit-message'
+import {editVote} from 'api/edit-vote'
 import {editVoteComment} from 'api/edit-vote-comment'
 import {getChannelMemberships} from 'api/get-channel-memberships'
 import {getLastSeenChannelTime, setChannelLastSeenTime} from 'api/get-channel-seen-time'
@@ -103,6 +104,7 @@ import {getDonorBadge} from './get-donor-badge'
 import {getEvents} from './get-events'
 import {getMe} from './get-me'
 import {getMemberValueRanking} from './get-member-value-ranking'
+import {getMyProposalIds} from './get-my-proposal-ids'
 import {getMyReferralCount} from './get-my-referral-count'
 import {getMyReferrals} from './get-my-referrals'
 import {getMyStars} from './get-my-stars'
@@ -697,10 +699,12 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'delete-bookmarked-search': deleteBookmarkedSearch,
   'get-bookmarked-searches': getBookmarkedSearches,
   'get-my-stars': getMyStars,
+  'get-my-proposal-ids': getMyProposalIds,
   'get-my-vote-choices': getMyVoteChoices,
   'delete-compatibility-answer': deleteCompatibilityAnswer,
   'delete-message': deleteMessage,
   'edit-message': editMessage,
+  'edit-vote': editVote,
   'edit-vote-comment': editVoteComment,
   'get-channel-memberships': getChannelMemberships,
   'get-channel-messages': getChannelMessagesEndpoint,

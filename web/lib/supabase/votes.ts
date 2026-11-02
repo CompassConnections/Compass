@@ -64,3 +64,11 @@ export const getVoteResultsByUser = async (params: {voteId: number}) => {
 
   return Object.fromEntries(((data ?? []) as any[]).map((r) => [r.user_id, r.choice]))
 }
+
+// The proposals the viewer authored, anonymous ones included — the list and the page hide the
+// author of an anonymous proposal from everyone, the author too, so this is how they get their
+// "Edit" button. `userId` only keys the cache, like `getMyVoteChoices`.
+export const getMyProposalIds = async (_params: {userId: string}) => {
+  const {ids} = await api('get-my-proposal-ids', {})
+  return ids
+}

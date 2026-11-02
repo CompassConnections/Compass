@@ -97,4 +97,5 @@ BEGIN;
 \i backend/supabase/migrations/20261029_redact_disabled_profiles.sql
 \i backend/supabase/migrations/20261029_private_votes_and_stars.sql
 \i backend/supabase/migrations/20261031_compatibility_scores_prompt.sql
+\i backend/supabase/migrations/20261102_add_vote_edits.sql
 COMMIT;

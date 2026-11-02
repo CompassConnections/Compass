@@ -4,12 +4,13 @@ import {truncateAtWord} from 'common/feed/feed'
 import {filterDefined} from 'common/util/array'
 import {richTextToString} from 'common/util/parse'
 import {isCommentable, STATUS_CHOICES, VOTE_STATUSES, type VoteStatus} from 'common/votes/constants'
-import {ArrowLeft} from 'lucide-react'
+import {ArrowLeft, Pencil} from 'lucide-react'
 import {GetStaticPropsContext} from 'next'
 import Link from 'next/link'
 import {useRouter} from 'next/router'
 import {useEffect, useState} from 'react'
 import toast from 'react-hot-toast'
+import {IconButton} from 'web/components/buttons/button'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {PageBase} from 'web/components/page-base'
@@ -17,11 +18,14 @@ import {RelativeTimestamp} from 'web/components/relative-timestamp'
 import {SEO} from 'web/components/SEO'
 import {choiceFromNumber, VoteButtons} from 'web/components/votes/vote-buttons'
 import {VoteCommentSection} from 'web/components/votes/vote-comments'
-import {Creator, STATUS_COLOR, Vote} from 'web/components/votes/vote-item'
+import {VoteEditedMarker} from 'web/components/votes/vote-edited-marker'
+import {VoteEditor} from 'web/components/votes/vote-editor'
+import {Creator, OwnAnonymousAuthor, STATUS_COLOR, Vote} from 'web/components/votes/vote-item'
 import {Content} from 'web/components/widgets/editor'
 import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import ShortToggle from 'web/components/widgets/short-toggle'
 import {surface} from 'web/components/widgets/surface'
+import {Tooltip} from 'web/components/widgets/tooltip'
 import {useAdmin} from 'web/hooks/use-admin'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useLiveCommentsOnVote} from 'web/hooks/use-comments-on-vote'
@@ -31,6 +35,7 @@ import {useUserInStore} from 'web/hooks/use-user-supabase'
 import {api} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {
+  getMyProposalIds,
   getMyVoteChoices,
   getVote,
   getVoteMeta,
@@ -128,6 +133,14 @@ export default function VoteDetailPage({voteId: staticVoteId, meta}: Props) {
     validId ? voteId : undefined,
     refreshVote,
   )
+  // Whether the viewer wrote this proposal. Not read off `creator_id`: the row nulls it on anonymous
+  // proposals for everyone, the author included, so the only reliable answer comes from the API.
+  const {data: myProposalIds} = useGetter(
+    'my-proposal-ids',
+    user ? {userId: user.id} : undefined,
+    getMyProposalIds,
+  )
+  const [isEditing, setIsEditing] = useState(false)
 
   // Anchor from a notification link (/vote/12#comment-34) — read once on mount rather than watched,
   // since the thread scrolls itself to the target and shouldn't yank the page afterwards.
@@ -172,6 +185,10 @@ export default function VoteDetailPage({voteId: staticVoteId, meta}: Props) {
     ...(commenterChoices ?? {}),
     ...(user && myChoice !== undefined ? {[user.id]: myChoice} : {}),
   }
+  // Editing freezes with the discussion: once a proposal is settled, the decision refers to the text
+  // as it stood. The API enforces the same two conditions.
+  const isMine = !!myProposalIds?.includes(typedVote.id)
+  const canEdit = canComment && isMine
   // Refetch both the thread and the proposal: the comment list is what renders, and the proposal row
   // carries the SQL-ranked highlighted pair, which a new argument can change.
   const onPosted = () => {
@@ -198,25 +215,51 @@ export default function VoteDetailPage({voteId: staticVoteId, meta}: Props) {
         </Link>
 
         <Col className={clsx(surface, 'p-4 sm:p-5 gap-3')}>
-          <Row className="items-start justify-between gap-3">
-            <h1 className="font-heading font-medium text-2xl text-ink-900 leading-snug">
-              {typedVote.title}
-            </h1>
-            {typedVote.status && (
-              <span
-                className={clsx(
-                  'rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap',
-                  STATUS_COLOR[typedVote.status] ?? 'bg-canvas-200 text-ink-600',
-                )}
-              >
-                {t(`vote.status.${typedVote.status}`, STATUS_CHOICES[typedVote.status])}
-              </span>
-            )}
-          </Row>
+          {isEditing ? (
+            <VoteEditor
+              vote={typedVote}
+              onDone={() => setIsEditing(false)}
+              onSaved={() => {
+                setIsEditing(false)
+                refreshVote()
+              }}
+            />
+          ) : (
+            <>
+              <Row className="items-start justify-between gap-3">
+                <h1 className="font-heading font-medium text-2xl text-ink-900 leading-snug">
+                  {typedVote.title}
+                </h1>
+                <Row className="items-center gap-2">
+                  {typedVote.status && (
+                    <span
+                      className={clsx(
+                        'rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap',
+                        STATUS_COLOR[typedVote.status] ?? 'bg-canvas-200 text-ink-600',
+                      )}
+                    >
+                      {t(`vote.status.${typedVote.status}`, STATUS_CHOICES[typedVote.status])}
+                    </span>
+                  )}
+                  {canEdit && (
+                    <Tooltip text={t('vote.edit.button', 'Edit proposal')} placement="bottom">
+                      <IconButton
+                        size="xs"
+                        className="text-ink-500"
+                        onClick={() => setIsEditing(true)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Row>
+              </Row>
 
-          <Byline vote={typedVote} />
+              <Byline vote={typedVote} isMine={isMine} />
 
-          <Content className="w-full" content={typedVote.description as JSONContent} />
+              <Content className="w-full" content={typedVote.description as JSONContent} />
+            </>
+          )}
 
           <div className="h-px bg-canvas-200/60" />
 
@@ -328,23 +371,29 @@ function VoteSEO(props: {vote?: VoteSeoFields; voteId?: number}) {
  *
  * Anonymous proposals say so rather than rendering an empty row: the list can leave the slot blank
  * because the card has other things in it, but here the byline is the only line in that position and
- * a gap would read as a failed lookup.
+ * a gap would read as a failed lookup. The author of one sees their own name with an "Anonymous"
+ * pill instead, as on the list.
  */
-function Byline(props: {vote: Vote}) {
-  const {vote} = props
+function Byline(props: {vote: Vote; isMine: boolean}) {
+  const {vote, isMine} = props
   const t = useT()
   const creator = useUserInStore(vote.is_anonymous ? null : vote.creator_id)
 
   return (
     <Row className="items-center gap-2 text-sm text-ink-500">
       {vote.is_anonymous ? (
-        <span>{t('vote.detail.anonymous_author', 'Anonymous')}</span>
+        isMine ? (
+          <OwnAnonymousAuthor />
+        ) : (
+          <span>{t('vote.detail.anonymous_author', 'Anonymous')}</span>
+        )
       ) : (
         <Creator creator={creator ?? undefined} />
       )}
       {vote.created_time && (
         <RelativeTimestamp time={new Date(vote.created_time).valueOf()} shortened />
       )}
+      <VoteEditedMarker voteId={vote.id} editedTime={vote.edited_time} />
     </Row>
   )
 }

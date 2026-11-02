@@ -2327,6 +2327,38 @@ export type Database = {
           },
         ]
       }
+      vote_edits: {
+        Row: {
+          created_time: string
+          description: Json | null
+          id: number
+          title: string
+          vote_id: number
+        }
+        Insert: {
+          created_time?: string
+          description?: Json | null
+          id?: never
+          title: string
+          vote_id: number
+        }
+        Update: {
+          created_time?: string
+          description?: Json | null
+          id?: never
+          title?: string
+          vote_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'vote_edits_vote_id_fkey'
+            columns: ['vote_id']
+            isOneToOne: false
+            referencedRelation: 'votes'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       vote_results: {
         Row: {
           choice: number
@@ -2413,6 +2445,7 @@ export type Database = {
           created_time: string
           creator_id: string
           description: Json | null
+          edited_time: string | null
           id: number
           is_anonymous: boolean | null
           status: string | null
@@ -2422,6 +2455,7 @@ export type Database = {
           created_time?: string
           creator_id: string
           description?: Json | null
+          edited_time?: string | null
           id?: never
           is_anonymous?: boolean | null
           status?: string | null
@@ -2431,6 +2465,7 @@ export type Database = {
           created_time?: string
           creator_id?: string
           description?: Json | null
+          edited_time?: string | null
           id?: never
           is_anonymous?: boolean | null
           status?: string | null
@@ -2702,6 +2737,7 @@ export type Database = {
           created_time: string
           creator_id: string
           description: Json
+          edited_time: string
           id: number
           is_anonymous: boolean
           priority: number

@@ -35,6 +35,10 @@ und du Beziehungen suchst, die auf **geteilten Werten, Vertrauen und Verständni
 - **Benachrichtigungssystem**: Erhalte Hinweise, wenn neue Personen deinen Suchkriterien entsprechen — kein endloses
   Scrollen nötig.
 - **Persönlichkeitszentriert**: Werte und Ideen stehen im Vordergrund. Fotos sind zweitrangig.
+- **Echte Gespräche**: Eine erste Nachricht muss auf etwas eingehen, das die Person geschrieben hat, nie ein kopierter
+  Einstieg, und du brauchst ein ausgefülltes Profil, bevor du eine senden kannst.
+- **Ein echter Pool**: Anmeldungen über VPNs und aus Netzwerken, die frühere Missbraucher genutzt haben, werden
+  zurückgehalten, bis ein Mensch sie geprüft hat, bevor sie jemandem schreiben können.
 - **Demokratisch & Open Source**: Von der Community für die Community — keine Werbung, keine versteckte Monetarisierung.
 - **Events**: Erstelle und nimm an realen oder virtuellen Treffen teil, um tiefere Verbindungen zu knüpfen.
 
@@ -76,17 +80,25 @@ verwandeln.
 
 ### Wie wird der Kompatibilitätsscore berechnet?
 
-Der **Kompatibilitätsscore** basiert auf Antworten auf **Kompatibilitätsfragen**. Jede Person gibt an:
+Der **Kompatibilitätsscore** schätzt, wie wahrscheinlich zwei Menschen auf lange Sicht miteinander glücklich wären.
+Er beruht auf zwei Arten von Angaben:
 
-- **Ihre eigene Antwort**
-- **Antworten, die sie von anderen akzeptieren würde**
-- **Den Wichtigkeitsgrad** jeder Frage
+- **Kompatibilitätsfragen.** Zu jeder Frage geben Sie Ihre Antwort, die Antworten, die Sie von anderen akzeptieren
+  würden, und wie wichtig Ihnen die Frage ist. Übereinstimmungen werden danach bewertet, wie gut die Antworten und
+  akzeptierten Antworten beider Personen in beide Richtungen zusammenpassen, gewichtet nach Wichtigkeit. Dieses
+  [Video](https://www.youtube.com/watch?v=m9PiPlRuy6E) erklärt die zugrunde liegende Mathematik.
+- **Ihre Profile.** Altersbereich, Entfernung, Kinderwunsch, Beziehungsstil und -status, Sprachen, Religion, Politik,
+  Ernährung, Substanzen, Persönlichkeit sowie gemeinsame Interessen, Anliegen und Arbeitsfelder fügen je eine
+  gewichtete Zeile hinzu. Einige strukturelle Unvereinbarkeiten — gesuchtes Geschlecht, Art der Verbindung,
+  Monogamie, gegensätzliche Antworten zum Kinderwunsch — sind Ausschlusskriterien, die den Score ganz entfallen
+  lassen.
 
-Übereinstimmungen werden danach bewertet, wie gut die Antworten und akzeptierten Antworten zweier Personen
-zusammenpassen, gewichtet nach Wichtigkeit. Dieses [Video](https://www.youtube.com/watch?v=m9PiPlRuy6E) erklärt die
-zugrunde liegende Mathematik.
+Die Zeilen werden als gewichtetes geometrisches Mittel kombiniert: Eine schlechte Zeile bei etwas Wichtigem zieht den
+Wert nach unten, statt im Durchschnitt zu verschwinden. Jeder Score kommt mit einem wahrscheinlichen Bereich, und auf
+jedem Profil können Sie die **Aufschlüsselung** öffnen und jede Zeile sehen.
+[Wie der Score berechnet wird](/compatibility-score) erklärt jede Regel und jedes Gewicht.
 
-Die [vollständige Implementierung](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts)
+Die [vollständige Implementierung](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-factors.ts)
 ist **Open Source** und offen für Überprüfung, Feedback und Verbesserungen durch die Community.
 
 ## Sicherheit

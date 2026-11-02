@@ -43,9 +43,10 @@ wieder.
 
 ## KI-Funktionen und was die Plattform verlässt
 
-Compass nutzt für einige wenige Funktionen KI-Dienste von Dritten. Sie alle starten Sie selbst — keine davon
-läuft im Hintergrund über Ihr Profil oder Ihre Nachrichten —, aber Sie sollten genau wissen, was wohin gesendet
-wird, bevor Sie sie verwenden.
+Compass nutzt für einige wenige Funktionen KI-Dienste von Dritten. Zwei davon starten Sie selbst. Eine läuft
+von allein: eine automatische Prüfung der ersten Nachricht jeder neuen Unterhaltung, die Spam, Betrug und Bots
+aus den Postfächern hält. Sonst läuft nichts im Hintergrund über Ihr Profil oder Ihre Nachrichten, aber Sie
+sollten genau wissen, was wohin gesendet wird.
 
 ### Ein Profil aus einem Dokument, einem Link oder Ihrer Stimme ausfüllen
 
@@ -68,12 +69,41 @@ Substanzkonsum —, weil das Profilformular diese Felder anbietet. Wenn Sie ein 
 Angaben enthält, senden Sie diese Informationen an einen KI-Anbieter. Wenn Sie das nicht möchten, füllen Sie
 das Formular von Hand aus: Jedes Feld ist direkt bearbeitbar, und die KI-Funktionen sind vollständig optional.
 
+### Die erste Nachricht einer Unterhaltung prüfen
+
+Wenn Sie jemandem die erste Nachricht senden oder eine erhalten, wird diese Nachricht zusammen mit beiden
+Profilen an **Googles Gemini-API** gesendet. Das Modell wird gefragt, ob die Nachricht generisch ist, sich aufs
+Aussehen bezieht, nach Betrug aussieht oder etwas übergeht, worum die empfangende Person gebeten hat. Das gilt
+für beide Mitglieder der Unterhaltung: Ihr Profil wird gesendet, wenn Sie jemandem schreiben, und wenn jemand
+Ihnen schreibt.
+
+- **Was gesendet wird**: der Text der ersten Nachricht, beide Profile, wie sie auf der Seite zu lesen sind
+  (Name, Überschrift, Stichwörter, Biografie, Interessen, Anliegen, Arbeit, bis zu 30 Kompatibilitätsantworten
+  und jedes weitere ausgefüllte Feld, was die oben genannten sensiblen einschließen kann), und das Kontoalter
+  der sendenden Person. Fotos, Koordinaten, E-Mail-Adresse und Einstellungen werden nicht gesendet.
+- **Nur die erste Nachricht** einer Unterhaltung wird geprüft. Spätere Nachrichten gehen an keinen KI-Anbieter.
+- **Was aus der Antwort folgt**: Eine generische Nachricht geht mit einer einzeiligen Begründung an die
+  sendende Person zurück und kann bearbeitet und erneut gesendet werden. Eine Nachricht, die nach Betrug
+  aussieht oder sich aufs Aussehen der empfangenden Person bezieht, setzt das Konto der sendenden Person aus,
+  bis ein Mensch sie innerhalb von 24 Stunden prüft. Eine Grenzfall-Nachricht wird zugestellt und der
+  Moderation gemeldet. Die empfangende Person sieht die Antwort des Modells nie, und eine abgelehnte Nachricht
+  erreicht sie nie.
+- **Antwortet das Modell nicht** innerhalb von 30 Sekunden oder ist es nicht erreichbar, geht die Nachricht
+  allein über unsere eigenen regelbasierten Prüfungen durch.
+
+Die Prüfung lässt sich nicht pro Mitglied abschalten. Mit der Nutzung der Nachrichtenfunktion akzeptieren Sie,
+dass die erste Nachricht jeder Unterhaltung und Ihr Profil auf diese Weise geprüft werden. Die genauen
+Eingaben, Schwellenwerte und der
+[Code sind öffentlich](https://github.com/CompassConnections/Compass/blob/main/backend/shared/src/moderation/opener-review.ts),
+und eine Entscheidung, die unseren [Werten](/values) zu widersprechen scheint, kann über [/contact](/contact)
+gemeldet werden.
+
 ### Was nicht an einen KI-Anbieter gesendet wird
 
-Für den Betrieb der Plattform gibt Compass **weder** Ihre Biografie, Ihre Kompatibilitätsantworten, Ihren
-Suchverlauf **noch** Ihre privaten Nachrichten an ein KI-Modell. Der Kompatibilitätswert ist reine Rechnung auf
-Ihren eigenen Antworten — der
-[Code ist öffentlich](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts),
+Über die Prüfung der ersten Nachricht hinaus gibt Compass **weder** Ihre Biografie, Ihre
+Kompatibilitätsantworten, Ihren Suchverlauf **noch** Ihre privaten Nachrichten an ein KI-Modell. Der Kompatibilitätswert ist reine Rechnung auf
+Ihren eigenen Antworten und Profilfeldern — [so funktioniert er](/compatibility-score), der
+[Code ist öffentlich](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-factors.ts),
 und es ist kein Modell beteiligt.
 
 Administratorinnen und Administratoren, die die Website moderieren oder eine Vorstellung vorbereiten, dürfen

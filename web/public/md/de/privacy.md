@@ -30,7 +30,8 @@ und herauszufinden, was als Nächstes verbessert werden sollte.
 - Wir **verkaufen Ihre personenbezogenen Daten nicht** und schalten keine Werbung.
 - Wir geben Ihren genauen Standort nicht ohne Ihre ausdrückliche Einwilligung an andere Mitglieder weiter.
 - Wir trainieren kein Modell mit Ihren Inhalten und verkaufen oder teilen sie nicht für fremde Werbung.
-  Compass sendet Material an KI-Anbieter für zwei optionale Funktionen, die Sie selbst auslösen — siehe
+  Compass sendet Material an KI-Anbieter für zwei optionale Funktionen, die Sie selbst auslösen, und um die
+  erste Nachricht jeder neuen Unterhaltung auf Spam, Betrug und Bots zu prüfen — siehe
   [KI-Funktionen](/privacy#ki-funktionen-und-was-wir-ihnen-senden) weiter unten, wo genau steht, was wohin
   geht.
 - Aggregierte, nicht personenbezogene Zahlen — Mitgliederzahlen, Wachstum, Aktivität — veröffentlichen wir
@@ -123,8 +124,9 @@ lohnt:
 - **[Resend](https://resend.com/legal/privacy-policy)** — versendet unsere E-Mails an Sie und verarbeitet dabei
   Ihre E-Mail-Adresse und den Inhalt dieser E-Mails.
 - **[Google Gemini](https://ai.google.dev/gemini-api/terms)** und
-  **[OpenAI](https://openai.com/policies/privacy-policy/)** — der optionale Profil-Assistent, im nächsten
-  Abschnitt vollständig beschrieben.
+  **[OpenAI](https://openai.com/policies/privacy-policy/)** — der optionale Profil-Assistent und (nur Gemini)
+  die automatische Prüfung der ersten Nachricht einer Unterhaltung, beide im nächsten Abschnitt vollständig
+  beschrieben.
 - **[Notion](https://www.notion.so/privacy) und [Google Docs](https://policies.google.com/privacy)** — keine
   Auftragsverarbeiter von uns, aber wenn Sie den Profil-Assistenten auf eine dort gehostete Seite richten,
   rufen wir diese ab, und sie sehen die Anfrage danach.
@@ -142,9 +144,10 @@ lohnt:
 
 ## KI-Funktionen und was wir ihnen senden
 
-Zwei Funktionen senden Ihr Material an einen externen KI-Anbieter. Beide starten Sie selbst — nichts davon
-läuft im Hintergrund über Ihr Profil, Ihre Antworten oder Ihre Nachrichten —, aber an dieser Stelle verlassen
-Ihre Worte unsere Infrastruktur, deshalb hier das Ganze.
+Drei Dinge senden Ihr Material an einen externen KI-Anbieter. Zwei sind Funktionen, die Sie selbst starten.
+Das dritte läuft einmal pro Unterhaltung, auf deren erster Nachricht, ob Sie sie gesendet oder erhalten haben.
+Sonst läuft nichts im Hintergrund über Ihr Profil, Ihre Antworten oder Ihre Nachrichten. An diesen Stellen
+verlassen Ihre Worte unsere Infrastruktur, deshalb hier das Ganze.
 
 **Ein Profil aus einem Dokument, einem Link oder Ihrer Stimme aufbauen.** Wenn Sie Text einfügen, einen Link
 angeben oder eine Antwort diktieren, statt sie zu tippen:
@@ -167,10 +170,45 @@ vollständig optional: Jedes Feld lässt sich direkt eintippen, und Tippen koste
 verwenden, das niemand einsehen soll — die kostenlose und die kostenpflichtige Stufe dieser API unterscheiden
 sich erheblich darin, ob eingereichte Inhalte zur Verbesserung von Googles Produkten verwendet werden dürfen.
 
-**Sonst geht nichts an ein Modell.** Ihre Biografie, Ihre Kompatibilitätsantworten, Ihr Suchverlauf und Ihre
-privaten Nachrichten werden für den Betrieb von Compass an keinen KI-Anbieter gesendet. Der
-Kompatibilitätswert ist Rechnung, und
-[sein Code ist öffentlich](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts).
+**Die erste Nachricht einer Unterhaltung prüfen.** Wenn Sie jemandem die erste Nachricht schreiben oder
+jemand Ihnen seine erste schreibt, wird diese Nachricht zusammen mit beiden Profilen an **Googles Gemini-API**
+gesendet, und das Modell wird gefragt, ob sie generisch ist, sich aufs Aussehen bezieht, nach Betrug aussieht
+oder etwas übergeht, worum die empfangende Person gebeten hat. Es ist die einzige Stelle, an der Ihr Profil an
+ein Modell geht, ohne dass Sie es ausgelöst haben, und es gilt für beide Personen der Unterhaltung: Ihr Profil
+wird gesendet, wenn Sie jemandem schreiben, und wenn jemand Ihnen schreibt.
+
+- **Was gesendet wird**: der Text der ersten Nachricht und beide Profile, wie sie auf der Seite zu lesen sind
+  — Name, Überschrift, Stichwörter, Biografie, Interessen, Anliegen, Arbeit, bis zu 30 Kompatibilitätsantworten
+  und jedes weitere Feld, das Sie ausgefüllt haben, was die oben genannten sensiblen einschließen kann. Das
+  Kontoalter der sendenden Person geht ebenfalls mit. Fotos, Koordinaten, E-Mail-Adresse und Einstellungen
+  nicht.
+- **Nur die Eröffnungsnachricht.** Jede spätere Nachricht dieser Unterhaltung bleibt zwischen Ihnen beiden
+  und wird nirgendwohin gesendet.
+- **Was die Antwort bewirkt.** Eine Nachricht, die das Modell für generisch hält, geht mit einer
+  einzeiligen Begründung an die sendende Person zurück, die darauf reagieren kann. Eine Nachricht, die nach
+  Betrug aussieht oder sich aufs Aussehen bezieht, setzt das Konto der sendenden Person aus, bis ein Mensch
+  sie innerhalb von 24 Stunden prüft. Eine Grenzfall-Nachricht wird zugestellt und einer Moderatorin oder
+  einem Moderator gemeldet. Die empfangende Person sieht die Antwort des Modells nie, und eine abgelehnte
+  Nachricht erreicht sie nie.
+- **Was wir behalten**: das Urteil in unseren Server-Logs, mit der Konto-ID der sendenden Person. Wird eine
+  Nachricht ausgesetzt, zurückgeschickt oder gemeldet, wird der Satz des Modells zusammen mit den beiden
+  Benutzernamen im privaten Kanal der Moderation veröffentlicht, damit ein Mensch die Entscheidung prüfen
+  kann. Nachrichtentext und Profile werden durch diesen Schritt nicht über das hinaus gespeichert, was Compass
+  ohnehin hält.
+- **Antwortet das Modell nicht** innerhalb von 30 Sekunden oder ist es nicht erreichbar, geht die Nachricht
+  allein über unsere eigenen regelbasierten Prüfungen durch. Die Prüfung lässt sich nicht pro Mitglied
+  abschalten: Sie hält Massennachrichten und Betrug aus den Postfächern, und die Alternative wäre ein Mensch,
+  der jede erste Nachricht liest.
+
+Alles in einer Nachricht, auch der ersten, behandelt das Modell als zu beurteilende Daten, nicht als zu
+befolgende Anweisungen. Wenn eine Entscheidung unseren [Werten](/values) zu widersprechen scheint, sagen Sie
+es uns über [/contact](/contact).
+
+**Sonst geht nichts an ein Modell.** Über die erste Nachricht einer Unterhaltung hinaus werden Ihre privaten
+Nachrichten an keinen KI-Anbieter gesendet. Ihre Biografie, Ihre Kompatibilitätsantworten und Ihr Suchverlauf
+werden für den Betrieb von Compass ebenfalls an keinen gesendet, außer im Rahmen dieser Prüfung der ersten
+Nachricht. Der Kompatibilitätswert ist Rechnung auf Ihren Antworten und Profilfeldern —
+[so funktioniert er](/compatibility-score), und [sein Code ist öffentlich](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-factors.ts).
 Administratorinnen und Administratoren, die moderieren oder eine Vorstellung vorbereiten, dürfen Hilfsmittel
 einschließlich KI-Assistenten einsetzen — auf Profilinhalte und auf Unterhaltungen, an denen sie selbst
 beteiligt sind, nie auf private Unterhaltungen zwischen anderen Personen.

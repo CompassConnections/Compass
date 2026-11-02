@@ -27,56 +27,67 @@ grounded in **shared values, trust, and understanding**, Compass is for you.
 - **Transparent Directory**: See all profiles, apply filters, and search freely — no hidden algorithms.
 - **Notification System**: Get alerts when new people match your searches — no endless scrolling required.
 - **Personality-Centered**: Values and ideas first. Photos stay secondary.
+- **Real Conversations**: A first message must react to something the person wrote, never a pasted opener, and you
+  need a written profile before you can send one.
+- **A Real Pool**: Signups from VPNs and from networks used by past abusers are held for a human to check before they
+  can message anyone. Since everyone sees everyone else's profile, scams get quickly reported. Members praised us for being one of the few platforms they used without encountering scams / bots.
 - **Democratic & Open Source**: Built by the community, for the community — no ads, no hidden monetization.
-- **Events**: Create and join real-world or virtual gatherings to form deeper connections.
+
+[//]: # '- **Events**: Create and join real-world or virtual gatherings to form deeper connections.'
 
 ### Is Compass for dating or friendship?
 
 Both, and others things. You can specify whether you’re looking for **platonic, romantic, or collaborative
 connections**.
 
-### What are Events and why do they matter?
-
-**Events** are at the core of Compass's mission to foster deep, meaningful connections. While profiles and compatibility
-scores help you discover kindred spirits, events create the space where genuine relationships actually form.
-
-**Why events matter for our mission:**
-
-- **Depth through shared experience**: Meeting in person (or virtually) allows for the nuanced conversations, laughter,
-  and spontaneous moments that build real trust and understanding.
-- **Community building**: Events transform individual connections into a thriving ecosystem of people supporting each
-  other's growth and goals.
-- **Purposeful gathering**: Unlike generic social platforms, Compass events are organized around shared values,
-  interests, and intentions — creating natural alignment from the start.
-- **Accessibility**: Both online and in-person events ensure everyone can participate, regardless of geography or
-  mobility.
-
-Examples of events you might find or create:
-
-- **Book clubs** — Discuss ideas that shape our worldview
-- **Walking groups** — Explore nature while exploring ideas
-- **Coffee chats** — One-on-one or small group deep conversations
-- **Creative workshops** — Learn and create together
-- **Philosophy discussions** — Explore life's big questions
-- **Sustainability meetups** — Collaborate on positive impact
-- **Game nights** — Bond over shared play
-- **Hobby exchanges** — Teach and learn skills from each other
-
-Anyone can [create an event](/events) — whether you're looking to find a hiking buddy, start a writers' circle, or host
-a discussion about effective altruism. Events are how we turn shared values into shared lives.
+[//]: # '### What are Events and why do they matter?'
+[//]: #
+[//]: # "**Events** are at the core of Compass's mission to foster deep, meaningful connections. While profiles and compatibility"
+[//]: # 'scores help you discover kindred spirits, events create the space where genuine relationships actually form.'
+[//]: #
+[//]: # '**Why events matter for our mission:**'
+[//]: #
+[//]: # '- **Depth through shared experience**: Meeting in person (or virtually) allows for the nuanced conversations, laughter,'
+[//]: # '  and spontaneous moments that build real trust and understanding.'
+[//]: # '- **Community building**: Events transform individual connections into a thriving ecosystem of people supporting each'
+[//]: # "  other's growth and goals."
+[//]: # '- **Purposeful gathering**: Unlike generic social platforms, Compass events are organized around shared values,'
+[//]: # '  interests, and intentions — creating natural alignment from the start.'
+[//]: # '- **Accessibility**: Both online and in-person events ensure everyone can participate, regardless of geography or'
+[//]: # '  mobility.'
+[//]: #
+[//]: # 'Examples of events you might find or create:'
+[//]: #
+[//]: # '- **Book clubs** — Discuss ideas that shape our worldview'
+[//]: # '- **Walking groups** — Explore nature while exploring ideas'
+[//]: # '- **Coffee chats** — One-on-one or small group deep conversations'
+[//]: # '- **Creative workshops** — Learn and create together'
+[//]: # "- **Philosophy discussions** — Explore life's big questions"
+[//]: # '- **Sustainability meetups** — Collaborate on positive impact'
+[//]: # '- **Game nights** — Bond over shared play'
+[//]: # '- **Hobby exchanges** — Teach and learn skills from each other'
+[//]: #
+[//]: # "Anyone can [create an event](/events) — whether you're looking to find a hiking buddy, start a writers' circle, or host"
+[//]: # 'a discussion about effective altruism. Events are how we turn shared values into shared lives.'
 
 ### How is the compatibility score calculated?
 
-The **compatibility score** comes from answers to **compatibility prompts**. Each user provides:
+The **compatibility score** estimates how likely two people would be happy together in the long run. It is built
+from your entire profile
 
-- **Their answer**
-- **Answers they would accept from others**
-- **A degree of importance** for each question
+- **Compatibility prompts.** For each question you give your answer, the answers you would accept from others, and
+  how much it matters to you. Matches are scored on how well both people's answers and accepted answers align, in
+  both directions, weighted by importance. See this [TED-Ed video](https://www.youtube.com/watch?v=m9PiPlRuy6E) to understand with visuals how it typically works.
+- **Your profiles.** Age range, distance, wanting children, relationship style and status, languages, religion,
+  politics, diet, substances, personality, and shared interests, causes and work each add a weighted bit to the score. A few
+  structural mismatches — gender sought, kind of connection, opposite answers on children — are
+  dealbreakers that stop the score altogether.
 
-Matches are scored based on how well two people’s responses and accepted answers align, weighted by importance. See
-this [video](https://www.youtube.com/watch?v=m9PiPlRuy6E) for the math behind it.
+The rows combine as a weighted geometric mean, so one bad row on something that matters pulls the number down rather
+than averaging out. Every score comes with a likely range, and on any profile you can open the **breakdown** to see
+each row. [How the score is computed](/compatibility-score) explains every rule and weight.
 
-The [full implementation](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts)
+The [full implementation](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-factors.ts)
 is **open source** and open to review, feedback, and improvement by the community.
 
 ## Safety

@@ -33,6 +33,23 @@ new fits it, instead of scrolling. Whether a conversation is for friendship, rom
 is stated up front, and respecting what someone said they are and are not looking for is part of
 reading their profile.
 
+## Evidence-based
+
+We build on what the research on relationships actually shows, and we say plainly where it runs out. The
+evidence is thin: nobody has run the study that would settle whether an algorithm can pick your partner,
+and the companies that deployed one at scale never published their data. What the studies do support is
+narrower. Dealbreakers — children, distance, religion, the kind of connection you want — reliably predict
+that two people will not work out, similarity in values and life plans relates to a relationship lasting
+where similarity in personality largely does not, and most of what makes two people compatible only shows
+up once they talk.
+
+So the [compatibility score](/compatibility-score) does exactly that and no more: it screens out
+structural mismatches, surfaces a pool of promising candidates rather than claiming to find "the one",
+and gives you something specific to talk about. The page walks through every study we rely on, what each
+one can and cannot tell us, and how each factor is weighted. If you know of evidence we have missed, in
+either direction, [send it](/contact); the score has changed before on exactly that basis, and it will
+again.
+
 ## Free, for everyone, forever
 
 There is nothing to buy. No subscriptions, no paid tiers, no advertising, and no selling of your data

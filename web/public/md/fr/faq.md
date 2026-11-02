@@ -25,6 +25,10 @@ Pour toute personne qui souhaite autre chose que des discussions superficielles 
 - **Système de notifications** : Recevez des alertes lorsque de nouvelles personnes correspondent à vos critères — pas
   de scroll infini.
 - **Centré sur la personnalité** : Valeurs et idées d’abord. Les photos restent secondaires.
+- **De vraies conversations** : Un premier message doit réagir à ce que la personne a écrit, jamais un texte copié-collé,
+  et il faut un profil rédigé avant de pouvoir en envoyer un.
+- **Un vrai annuaire** : Les inscriptions via VPN ou depuis des réseaux utilisés par d’anciens abuseurs sont retenues
+  pour vérification humaine avant de pouvoir écrire à qui que ce soit.
 - **Démocratique et open-source** : Construit par la communauté, pour la communauté — pas de publicité, pas de
   monétisation cachée.
 - **Événements** : Créez et participez à des rencontres réelles ou virtuelles pour tisser des liens plus profonds.
@@ -67,15 +71,24 @@ transformons les valeurs partagées en vies partagées.
 
 ### Comment le score de compatibilité est-il calculé ?
 
-Le **score de compatibilité** provient des réponses aux **questions de compatibilité**. Chaque utilisateur fournit :
+Le **score de compatibilité** estime la probabilité que deux personnes soient heureuses ensemble sur le long terme. Il
+repose sur deux types d’informations :
 
-- **Sa réponse**
-- **Les réponses qu’il accepterait chez les autres**
-- **Un degré d’importance** pour chaque question
+- **Les questions de compatibilité.** Pour chaque question, vous donnez votre réponse, les réponses que vous
+  accepteriez chez les autres et l’importance que vous y accordez. Les correspondances sont évaluées selon
+  l’alignement des réponses et des réponses acceptées, dans les deux sens, pondéré par l’importance. Voir cette
+  [vidéo](https://www.youtube.com/watch?v=m9PiPlRuy6E) pour les calculs.
+- **Vos profils.** Tranche d’âge, distance, désir d’enfants, style et statut relationnels, langues, religion,
+  politique, alimentation, substances, personnalité, ainsi que les centres d’intérêt, causes et domaines de travail
+  partagés ajoutent chacun une ligne pondérée. Quelques incompatibilités structurelles — genre recherché, type de
+  lien, monogamie, réponses opposées sur les enfants — sont des critères éliminatoires qui suppriment le score.
 
-Les correspondances sont évaluées selon l’alignement des réponses et des réponses acceptées, pondéré par l’importance. Voir cette [vidéo](https://www.youtube.com/watch?v=m9PiPlRuy6E) pour les calculs.
+Les lignes se combinent en une moyenne géométrique pondérée : une mauvaise ligne sur un sujet important fait baisser
+le score au lieu d’être noyée dans la moyenne. Chaque score est accompagné d’une fourchette probable, et sur tout
+profil vous pouvez ouvrir le **détail** pour voir chaque ligne. [Comment le score est calculé](/compatibility-score)
+explique chaque règle et chaque poids.
 
-L’[implémentation complète](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts) est **open source** et ouverte à la révision, aux retours et aux améliorations de la communauté.
+L’[implémentation complète](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-factors.ts) est **open source** et ouverte à la révision, aux retours et aux améliorations de la communauté.
 
 ## Sécurité
 

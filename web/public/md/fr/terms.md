@@ -42,9 +42,11 @@ spotlight que si vous l'avez activé dans les paramètres, et le désactiver le 
 
 ## Fonctions d'IA, et ce qui quitte la plateforme
 
-Compass utilise des services d'IA tiers pour un petit nombre de fonctionnalités. Ce sont toutes des actions que
-vous déclenchez vous-même — aucune ne tourne en arrière-plan sur votre profil ou vos messages —, mais vous
-devriez savoir exactement ce qui est envoyé et où avant de les utiliser.
+Compass utilise des services d'IA tiers pour un petit nombre de fonctionnalités. Deux sont des actions que vous
+déclenchez vous-même. Une s'exécute d'elle-même : une vérification automatique du premier message de chaque
+nouvelle conversation, là pour tenir le spam, les arnaques et les bots hors des boîtes de réception. Rien
+d'autre ne tourne en arrière-plan sur votre profil ou vos messages, mais vous devriez savoir exactement ce qui
+est envoyé et où.
 
 ### Remplir un profil à partir d'un document, d'un lien ou de votre voix
 
@@ -68,12 +70,39 @@ contient, vous envoyez ces informations à un prestataire d'IA tiers. Si vous pr
 formulaire à la main : chaque champ est modifiable directement et les fonctions d'IA sont entièrement
 facultatives.
 
+### Vérifier le premier message d'une conversation
+
+Lorsque vous envoyez le premier message à quelqu'un, ou en recevez un, ce message est envoyé à l'**API Gemini
+de Google** avec les deux profils. Il est demandé au modèle si le message est générique, porte sur le physique,
+ressemble à une arnaque, ou ignore quelque chose que le destinataire a demandé. Cela vaut pour les deux membres
+de la conversation : votre profil est envoyé quand vous écrivez à quelqu'un, et quand quelqu'un vous écrit.
+
+- **Ce qui est envoyé** : le texte du premier message, les deux profils tels qu'ils se lisent sur le site (nom,
+  titre, mots-clés, biographie, centres d'intérêt, causes, travail, jusqu'à 30 réponses de compatibilité, et
+  tout autre champ rempli, ce qui peut inclure les données sensibles ci-dessus), et l'ancienneté du compte de
+  l'expéditeur. Les photos, les coordonnées, l'adresse e-mail et les réglages ne sont pas envoyés.
+- **Seul le premier message** d'une conversation est vérifié. Les messages suivants ne sont envoyés à aucun
+  prestataire d'IA.
+- **Ce qui découle de la réponse** : un message générique est renvoyé à l'expéditeur avec une phrase
+  d'explication et peut être modifié puis renvoyé. Un message qui ressemble à une arnaque ou qui porte sur le
+  physique du destinataire met le compte de l'expéditeur en attente jusqu'à ce qu'une personne l'examine, sous
+  24 heures. Un message limite est livré et signalé à un modérateur. Le destinataire ne voit jamais la réponse
+  du modèle, et un message refusé ne lui parvient jamais.
+- **Si le modèle ne répond pas** dans les 30 secondes, ou est indisponible, le message passe sur nos seules
+  règles automatiques.
+
+La vérification ne peut pas être désactivée par membre. En utilisant la messagerie, vous acceptez que le
+premier message de chaque conversation, ainsi que votre profil, soient examinés de cette manière. Les entrées
+exactes, les seuils et le
+[code sont publics](https://github.com/CompassConnections/Compass/blob/main/backend/shared/src/moderation/opener-review.ts),
+et une décision qui semble contraire à [nos valeurs](/values) peut être signalée via [/contact](/contact).
+
 ### Ce qui n'est pas envoyé à un prestataire d'IA
 
-Pour faire fonctionner la plateforme, Compass n'envoie **ni** votre biographie, **ni** vos réponses de
-compatibilité, **ni** votre historique de recherche, **ni** vos messages privés à un modèle d'IA. Le score de
-compatibilité est un calcul sur vos propres réponses — le
-[code est public](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts)
+Au-delà de la vérification du premier message ci-dessus, Compass n'envoie **ni** votre biographie, **ni** vos
+réponses de compatibilité, **ni** votre historique de recherche, **ni** vos messages privés à un modèle d'IA. Le score de
+compatibilité est un calcul sur vos propres réponses et les champs de votre profil —
+[voici comment il fonctionne](/compatibility-score), le [code est public](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-factors.ts)
 et aucun modèle n'intervient.
 
 Les administrateurs qui modèrent le site ou préparent une mise en relation peuvent utiliser des outils

@@ -38,9 +38,10 @@ Being featured on the home page is separate and opt-in: Compass only quotes your
 
 ## AI features, and what leaves the platform
 
-Compass uses third-party AI services for a small number of features. They are all things you start yourself —
-none of them run over your profile or your messages in the background — but you should know exactly what is
-sent where before you use them.
+Compass uses third-party AI services for a small number of features. Two of them are things you start
+yourself. One runs on its own: an automatic check on the first message of every new conversation, there to keep
+spam, scams and bots out of inboxes. Nothing else runs over your profile or your messages in the background,
+but you should know exactly what is sent where.
 
 ### Filling in a profile from a document, a link or your voice
 
@@ -62,11 +63,35 @@ the profile form offers. If you paste a document containing them, you are sendin
 third-party AI provider. If you would rather not, fill the form in by hand: every field is editable directly
 and the AI features are entirely optional.
 
+### Screening the first message of a conversation
+
+When you send the first message to someone, or receive one, that message is sent to **Google's Gemini API**
+together with both profiles. The model is asked whether the message is generic, about looks, a likely scam, or
+ignores something the recipient asked for. This applies to both members of the conversation: your profile is
+sent when you write to someone, and when someone writes to you.
+
+- **What is sent**: the text of the first message, both profiles as they read on the site (name, headline,
+  keywords, bio, interests, causes, work, up to 30 compatibility answers, and every other field filled in,
+  which can include the sensitive ones above), and the sender's account age. Photos, coordinates, email
+  address and settings are not sent.
+- **Only the first message** of a conversation is checked. Later messages are not sent to any AI provider.
+- **What follows from the answer**: a generic message is sent back to the sender with a one-line reason and
+  can be edited and resent. A message that reads as a scam or is about the recipient's looks places the
+  sender's account on hold until a person reviews it, within 24 hours. A borderline message is delivered and
+  noted for a moderator. The recipient never sees the model's answer, and a refused message never reaches them.
+- **If the model does not answer** within 30 seconds, or is unavailable, the message goes through on our own
+  rule-based checks alone.
+
+The check cannot be switched off per member. By using the messaging feature you accept that the first message
+of each conversation, and your profile, are reviewed this way. The exact inputs, thresholds and
+[code are public](https://github.com/CompassConnections/Compass/blob/main/backend/shared/src/moderation/opener-review.ts),
+and a decision that seems out of line with [our values](/values) can be reported through [/contact](/contact).
+
 ### What is not sent to an AI provider
 
-As part of running the platform, Compass does **not** feed your bio, your compatibility answers, your search
-history or your private messages to any AI model. The compatibility score is arithmetic on your own answers —
-the [code is public](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts)
+Beyond the first-message check above, Compass does **not** feed your bio, your compatibility answers, your
+search history or your private messages to any AI model. The compatibility score is arithmetic on your own answers and
+profile fields — [how it works](/compatibility-score), the [code is public](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-factors.ts)
 and there is no model involved.
 
 Administrators moderating the site or preparing an introduction may use assistive tools, including AI

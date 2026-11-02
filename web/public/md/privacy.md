@@ -27,7 +27,8 @@ out what to improve next.
 - We **do not sell your personal information**, and we do not run ads.
 - We do not share your precise location with other members without your explicit consent.
 - We do not train any model on your content, and we do not sell or share it for anyone else's advertising.
-  Compass does send material to AI providers for two optional features you trigger yourself — see
+  Compass does send material to AI providers for two optional features you trigger yourself, and to screen the
+  first message of every new conversation for spam, scams and bots — see
   [AI features](/privacy#ai-features-and-what-we-send-them) below, which spells out exactly what goes where.
 - Aggregate, non-identifying numbers — member counts, growth, activity — are published openly on
   [/stats](/stats), because a platform asking you to trust it should show its own figures.
@@ -105,8 +106,8 @@ data on our behalf, and each has its own privacy policy worth reading:
 - **[Resend](https://resend.com/legal/privacy-policy)** — sends the emails we send you, so it processes your
   email address and the contents of those emails.
 - **[Google Gemini](https://ai.google.dev/gemini-api/terms)** and
-  **[OpenAI](https://openai.com/policies/privacy-policy/)** — the optional profile assistant, described in
-  full in the next section.
+  **[OpenAI](https://openai.com/policies/privacy-policy/)** — the optional profile assistant, and (Gemini only)
+  the automatic check on the first message of a conversation, both described in full in the next section.
 - **[Notion](https://www.notion.so/privacy) and [Google Docs](https://policies.google.com/privacy)** — not
   processors of ours, but if you point the profile assistant at a page hosted there, we fetch it, so they see
   a request for it.
@@ -122,9 +123,10 @@ data on our behalf, and each has its own privacy policy worth reading:
 
 ## AI features, and what we send them
 
-Two features send your material to an external AI provider. Both are things you start yourself — nothing here
-runs over your profile, your answers or your messages in the background — but they are the point at which your
-words leave our infrastructure, so here is the whole of it.
+Three things send your material to an external AI provider. Two are features you start yourself. The third
+runs once per conversation, on its first message, whether you sent it or received it. Nothing else runs over
+your profile, your answers or your messages in the background. These are the points at which your words leave
+our infrastructure, so here is the whole of it.
 
 **Building a profile from a document, a link, or your voice.** If you paste text, give a link, or dictate an
 answer instead of typing it:
@@ -149,9 +151,37 @@ reviewed. As of this writing, content should not be used to improve Google's pro
 > responses to improve our products, and will process your prompts and responses in accordance with the Data Processing
 > Addendum for Products Where Google is a Data Processor.
 
-**Nothing else goes to a model.** Your bio, compatibility answers, search history and private messages are not
-sent to any AI provider as part of running Compass. The compatibility score is arithmetic, and
-[its code is public](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts).
+**Screening the first message of a conversation.** When you write the first message to someone, or someone
+writes their first message to you, that message is sent to **Google's Gemini API** together with both profiles,
+and the model is asked whether it is generic, about looks, a likely scam, or ignores something the recipient
+asked for. It is the one place where your profile goes to a model without you starting it, and it runs for
+both people in the conversation: your profile is sent when you write to someone, and when someone writes to you.
+
+- **What is sent**: the text of the first message, and both profiles as they read on the site — name, headline,
+  keywords, bio, interests, causes, work, up to 30 compatibility answers, and every other field you filled in,
+  which can include the sensitive ones listed above. The sender's account age goes too. Photos, coordinates,
+  email address and settings do not.
+- **Only the opening message.** Every later message in that conversation stays between the two of you and is
+  not sent anywhere.
+- **What the answer does.** A message the model finds generic is sent back to the sender with a one-line reason
+  they can act on. A message that reads as a scam or is about the recipient's looks puts the sender's account
+  on hold until a person reviews it, within 24 hours. A borderline message is delivered and noted for a
+  moderator. The recipient never sees the model's answer, and a refused message never reaches them.
+- **What we keep**: the verdict in our server logs, with the sender's account id. When a message is held, sent
+  back or flagged, the model's one-line summary is posted to the moderators' private channel together with
+  the two usernames, so a person can review the decision. The message text and profiles are not stored by this
+  step beyond what Compass already holds.
+- **If the model does not answer** within 30 seconds, or is down, the message goes through on our own
+  rule-based checks alone. The check cannot be switched off per member: it is what keeps bulk messaging and
+  scams out of inboxes, and the alternative is a person reading every first message.
+
+Anything in a message, including the first one, is treated by the model as data to judge, not as instructions
+to follow. If a decision seems out of line with [our values](/values), tell us through [/contact](/contact).
+
+**Nothing else goes to a model.** Beyond the first message of a conversation, your private messages are not sent
+to any AI provider. Your bio, compatibility answers and search history are not sent to one as part of running
+Compass, except as part of that first-message check. The compatibility score is arithmetic on your answers and
+profile fields — [how it works](/compatibility-score), and [its code is public](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-factors.ts).
 Admins moderating the site or preparing an introduction may use assistive tools, including AI assistants, on
 profile content and on conversations they are themselves part of — never on private conversations between
 other people.

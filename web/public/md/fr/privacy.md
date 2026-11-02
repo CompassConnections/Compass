@@ -30,7 +30,8 @@ comme vous, et à déterminer quoi améliorer ensuite.
 - Nous ne partageons pas votre position précise avec d'autres membres sans votre consentement explicite.
 - Nous n'entraînons aucun modèle sur vos contenus, et nous ne les vendons ni ne les partageons pour la
   publicité de qui que ce soit. Compass envoie en revanche du contenu à des prestataires d'IA pour deux
-  fonctions facultatives que vous déclenchez vous-même — voir
+  fonctions facultatives que vous déclenchez vous-même, et pour vérifier le premier message de chaque nouvelle
+  conversation contre le spam, les arnaques et les bots — voir
   [Fonctions d'IA](/privacy#fonctions-d-ia-et-ce-que-nous-leur-envoyons) ci-dessous, qui détaille exactement
   ce qui part où.
 - Les chiffres agrégés et non identifiants — nombre de membres, croissance, activité — sont publiés ouvertement
@@ -123,8 +124,9 @@ partie de vos données pour notre compte, et chacun a sa propre politique de con
 - **[Resend](https://resend.com/legal/privacy-policy)** — envoie les e-mails que nous vous adressons, et traite
   donc votre adresse e-mail et le contenu de ces messages.
 - **[Google Gemini](https://ai.google.dev/gemini-api/terms)** et
-  **[OpenAI](https://openai.com/policies/privacy-policy/)** — l'assistant de profil facultatif, décrit en
-  entier dans la section suivante.
+  **[OpenAI](https://openai.com/policies/privacy-policy/)** — l'assistant de profil facultatif et (Gemini
+  seulement) la vérification automatique du premier message d'une conversation, tous deux décrits en entier
+  dans la section suivante.
 - **[Notion](https://www.notion.so/privacy) et [Google Docs](https://policies.google.com/privacy)** — ce ne
   sont pas nos sous-traitants, mais si vous pointez l'assistant de profil vers une page hébergée chez eux,
   nous allons la chercher, et ils voient donc passer la requête.
@@ -142,9 +144,10 @@ partie de vos données pour notre compte, et chacun a sa propre politique de con
 
 ## Fonctions d'IA, et ce que nous leur envoyons
 
-Deux fonctions envoient votre contenu à un prestataire d'IA externe. Toutes deux sont déclenchées par vous —
-rien ici ne tourne en arrière-plan sur votre profil, vos réponses ou vos messages —, mais c'est le moment où
-vos mots quittent notre infrastructure, alors voici l'ensemble.
+Trois choses envoient votre contenu à un prestataire d'IA externe. Deux sont des fonctions que vous déclenchez
+vous-même. La troisième s'exécute une fois par conversation, sur son premier message, que vous l'ayez envoyé
+ou reçu. Rien d'autre ne tourne en arrière-plan sur votre profil, vos réponses ou vos messages. Ce sont les
+moments où vos mots quittent notre infrastructure, alors voici l'ensemble.
 
 **Construire un profil à partir d'un document, d'un lien ou de votre voix.** Si vous collez du texte, donnez un
 lien, ou dictez une réponse au lieu de la taper :
@@ -170,10 +173,44 @@ que du temps.
 avec quoi que ce soit que vous ne voudriez pas voir relu : l'offre gratuite et l'offre payante de cette API
 diffèrent nettement quant à l'utilisation possible du contenu soumis pour améliorer les produits de Google.
 
-**Rien d'autre ne part vers un modèle.** Votre biographie, vos réponses de compatibilité, votre historique de
-recherche et vos messages privés ne sont envoyés à aucun prestataire d'IA dans le cadre du fonctionnement de
-Compass. Le score de compatibilité est un calcul, et
-[son code est public](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-score.ts).
+**Vérifier le premier message d'une conversation.** Lorsque vous écrivez un premier message à quelqu'un, ou
+que quelqu'un vous écrit le sien, ce message est envoyé à l'**API Gemini de Google** avec les deux profils, et
+il est demandé au modèle si le message est générique, porte sur le physique, ressemble à une arnaque, ou ignore
+quelque chose que le destinataire a demandé. C'est le seul endroit où votre profil part vers un modèle sans
+que vous l'ayez déclenché, et cela vaut pour les deux personnes de la conversation : votre profil est envoyé
+quand vous écrivez à quelqu'un, et quand quelqu'un vous écrit.
+
+- **Ce qui est envoyé** : le texte du premier message, et les deux profils tels qu'ils se lisent sur le site —
+  nom, titre, mots-clés, biographie, centres d'intérêt, causes, travail, jusqu'à 30 réponses de compatibilité,
+  et tout autre champ que vous avez rempli, ce qui peut inclure les données sensibles citées plus haut.
+  L'ancienneté du compte de l'expéditeur part aussi. Pas les photos, les coordonnées, l'adresse e-mail ni les
+  réglages.
+- **Seulement le message d'ouverture.** Tous les messages suivants de cette conversation restent entre vous
+  deux et ne sont envoyés nulle part.
+- **Ce que fait la réponse.** Un message jugé générique est renvoyé à l'expéditeur avec une phrase
+  d'explication sur laquelle il peut agir. Un message qui ressemble à une arnaque ou qui porte sur le physique
+  du destinataire met le compte de l'expéditeur en attente jusqu'à ce qu'une personne l'examine, sous 24
+  heures. Un message limite est livré et signalé à un modérateur. Le destinataire ne voit jamais la réponse du
+  modèle, et un message refusé ne lui parvient jamais.
+- **Ce que nous gardons** : le verdict dans les journaux de notre serveur, avec l'identifiant de compte de
+  l'expéditeur. Quand un message est mis en attente, renvoyé ou signalé, la phrase du modèle est publiée dans
+  le canal privé des modérateurs avec les deux noms d'utilisateur, pour qu'une personne puisse revoir la
+  décision. Le texte du message et les profils ne sont pas stockés par cette étape au-delà de ce que Compass
+  détient déjà.
+- **Si le modèle ne répond pas** dans les 30 secondes, ou est indisponible, le message passe sur nos seules
+  règles automatiques. La vérification ne peut pas être désactivée par membre : c'est elle qui tient les
+  envois en masse et les arnaques hors des boîtes de réception, et l'alternative est une personne lisant
+  chaque premier message.
+
+Tout ce qui figure dans un message, y compris le premier, est traité par le modèle comme une donnée à juger,
+pas comme une instruction à suivre. Si une décision vous semble contraire à [nos valeurs](/values), dites-le
+nous via [/contact](/contact).
+
+**Rien d'autre ne part vers un modèle.** Au-delà du premier message d'une conversation, vos messages privés ne
+sont envoyés à aucun prestataire d'IA. Votre biographie, vos réponses de compatibilité et votre historique de
+recherche ne le sont pas non plus dans le cadre du fonctionnement de Compass, sauf dans cette vérification du
+premier message. Le score de compatibilité est un calcul sur vos réponses et les champs de votre profil —
+[voici comment il fonctionne](/compatibility-score), et [son code est public](https://github.com/CompassConnections/Compass/blob/main/common/src/profiles/compatibility-factors.ts).
 Les administrateurs qui modèrent ou préparent une mise en relation peuvent utiliser des outils d'assistance, y
 compris des assistants d'IA, sur des contenus de profil et sur des conversations auxquelles ils participent
 eux-mêmes — jamais sur des conversations privées entre d'autres personnes.

@@ -24,6 +24,20 @@ under a new name. Decisions already taken:
 - Pairs with **no shared prompt answers still get a score** (profile factors only) and appear in the
   "Compatible" sort.
 - Profile edits trigger a per-user recompute **in the `continue` continuation**, like answers do today.
+  The profile form sends interests, causes and work inside the same `update-profile` request (they are
+  written in one transaction with the row), so a save is one request and one recompute; `update-options`
+  remains for callers that edit a single list.
+- The per-user recompute is **one read, scoring in memory, one write**. The read returns the member's own
+  row and every member with no dealbreaker against them (eligibility and the four dealbreakers below are
+  expressed in SQL, mirroring `getDealbreakers`, which still runs on every row returned), each with the
+  scored columns (`SCORING_PROFILE_COLUMNS`, never `p.*`: the row is ~9 KB, more than half of it bio text
+  and search vectors), the answers without `explanation`, and the option labels as array columns. The
+  scoring functions are typed against that column list, so a factor reading an unlisted column fails to
+  compile. The write is a single statement: a CTE deletes every row of the member's that was not just
+  scored, and the kept rows are upserted through one `unnest`, so there is no parameter ceiling and no
+  chunking. The delete is what makes an edit that moves a pair out of the compatible set (changing gender
+  or `pref_gender`) take effect: the other side is no longer returned, so an upsert alone never touched
+  their old row and it survived with a score for a profile that no longer existed.
 - Hard dealbreakers: gender sought, **connection type**, **monogamy conflict**, **wants-kids opposite
   halves**. Age range and max distance are _not_ dealbreakers: both are graded factors, heavily discounted
   (near-zero) outside the stated bounds.
@@ -205,7 +219,7 @@ alone — pushing them down would turn "unknown" into "bad", which the blank rul
   - `recomputeAllCompatibilityScores`: load full profiles (`select p.*, eligible…`) instead of the three
     gender columns, plus the three option-name maps; same per-pair call. The O(n²) loop now runs over all
     gender-compatible pairs rather than only "scorable" ones — note in the log line.
-  - `backend/shared/src/profiles/supabase.ts`: no change needed (`getGenderCompatibleProfiles` already
+  - `backend/shared/src/profiles/supabase.ts`: no change needed (the candidate query already
     returns full rows).
   - Update `backend/shared/tests/unit/compute-score.unit.test.ts` (mock `getOverallCompatibility`;
     assert delete-on-dealbreaker and the 10-column upsert).

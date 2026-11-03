@@ -80,9 +80,18 @@ const getSideEstimate = (
   }
 }
 
+/**
+ * What the prompt score reads of an answer. The backend recompute selects exactly these columns —
+ * `explanation` is free text and the only wide column on the row — and a full row satisfies it.
+ */
+export type AnswerForScoring = Pick<
+  rowFor<'compatibility_answers'>,
+  'question_id' | 'importance' | 'pref_choices' | 'multiple_choice'
+>
+
 export const getCompatibilityScore = (
-  answers1: rowFor<'compatibility_answers'>[],
-  answers2: rowFor<'compatibility_answers'>[],
+  answers1: AnswerForScoring[],
+  answers2: AnswerForScoring[],
 ): CompatibilityScore => {
   const {
     score: score1,
@@ -117,10 +126,7 @@ export const getCompatibilityScore = (
   return {score: geometricMean, low, high, sharedAnswers: answerCount, confidence}
 }
 
-const getAnswersCompatibility = (
-  answers1: rowFor<'compatibility_answers'>[],
-  answers2: rowFor<'compatibility_answers'>[],
-) => {
+const getAnswersCompatibility = (answers1: AnswerForScoring[], answers2: AnswerForScoring[]) => {
   const answers2ByQuestionId = keyBy(answers2, 'question_id')
   let maxScore = 0
   // Σw² alongside Σw (`maxScore`), for the effective question count behind the range.
@@ -145,17 +151,14 @@ const getAnswersCompatibility = (
 }
 
 export function getAnswerCompatibilityImportanceScore(
-  answer1: rowFor<'compatibility_answers'>,
-  answer2: rowFor<'compatibility_answers'>,
+  answer1: AnswerForScoring,
+  answer2: AnswerForScoring,
 ) {
   const importanceScore = importanceToScore[answer1.importance] ?? 0
   return answer1.pref_choices.includes(answer2.multiple_choice) ? importanceScore : 0
 }
 
-export function getAnswerCompatibility(
-  answer1: rowFor<'compatibility_answers'>,
-  answer2: rowFor<'compatibility_answers'>,
-) {
+export function getAnswerCompatibility(answer1: AnswerForScoring, answer2: AnswerForScoring) {
   if (answer1.importance < 0 || answer2.importance < 0) {
     return false
   }
@@ -166,10 +169,7 @@ export function getAnswerCompatibility(
   return compatibility1to2 && compatibility2to1
 }
 
-export function getScoredAnswerCompatibility(
-  answer1: rowFor<'compatibility_answers'>,
-  answer2: rowFor<'compatibility_answers'>,
-) {
+export function getScoredAnswerCompatibility(answer1: AnswerForScoring, answer2: AnswerForScoring) {
   if (answer1.importance < 0 || answer2.importance < 0) {
     return 0
   }
@@ -189,7 +189,7 @@ export function getScoredAnswerCompatibility(
   )
 }
 
-export const hasAnsweredQuestions = (questions: rowFor<'compatibility_answers'>[]) => {
+export const hasAnsweredQuestions = (questions: AnswerForScoring[]) => {
   if (!questions?.length) return false
   for (const question of questions) {
     if (question.importance >= 0) return true

@@ -1,4 +1,3 @@
-import {areGenderCompatible} from 'common/profiles/compatibility-util'
 import {OPTION_TABLES} from 'common/profiles/constants'
 import {type Profile, type ProfileRow} from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
@@ -59,26 +58,6 @@ export const getProfiles = async (userIds: string[]) => {
     [userIds],
     convertRow,
   )
-}
-
-export const getGenderCompatibleProfiles = async (profile: ProfileRow) => {
-  const pg = createSupabaseDirectClient()
-  const profiles = await pg.map(
-    `
-        select ${PROFILE_COLS}
-        from profiles
-                 join
-             users on users.id = profiles.user_id
-        where user_id != $(user_id)
-          and looking_for_matches
-          and not is_banned_from_posting
---           and (data ->> 'userDeleted' != 'true' or data ->> 'userDeleted' is null)
-          and profiles.pinned_url is not null
-    `,
-    {...profile},
-    convertRow,
-  )
-  return profiles.filter((l: Profile) => areGenderCompatible(profile, l))
 }
 
 export const getCompatibleProfiles = async (profile: ProfileRow, radiusKm: number | undefined) => {

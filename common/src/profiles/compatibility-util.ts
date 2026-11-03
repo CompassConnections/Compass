@@ -18,6 +18,49 @@ const isPreferredGender = (
   return preferredGenders.includes(gender) || gender === 'non-binary'
 }
 
+/**
+ * The profile columns the compatibility score reads — dealbreakers and factors alike. The backend
+ * recompute selects exactly these (the row is ~80 columns and ~9 KB, more than half of it bio text
+ * and search vectors nobody scores, and a recompute reads every eligible profile), and the scoring
+ * functions are typed against this list rather than the full row, so a factor that starts reading a
+ * column not listed here fails to compile instead of silently scoring `undefined`.
+ */
+export const SCORING_PROFILE_COLUMNS = [
+  'gender',
+  'pref_gender',
+  'age',
+  'pref_age_min',
+  'pref_age_max',
+  'city',
+  'city_latitude',
+  'city_longitude',
+  'pref_max_distance',
+  'pref_relation_styles',
+  'pref_romantic_styles',
+  'relationship_status',
+  'wants_kids_strength',
+  'languages',
+  'religion',
+  'political_beliefs',
+  'diet',
+  'is_smoker',
+  'drinks_per_month',
+  'cannabis',
+  'cannabis_pref',
+  'psychedelics',
+  'psychedelics_pref',
+  'exercise',
+  'education_level',
+  'big5_openness',
+  'big5_conscientiousness',
+  'big5_extraversion',
+  'big5_agreeableness',
+  'big5_neuroticism',
+] as const satisfies readonly (keyof ProfileRow)[]
+
+/** What the scorer needs of a profile. A full `ProfileRow` satisfies it. */
+export type ScoringProfile = Pick<ProfileRow, (typeof SCORING_PROFILE_COLUMNS)[number]>
+
 /** Widened to the two columns it reads, so callers holding only those need not fake a whole row. */
 export type GenderFields = Pick<ProfileRow, 'gender' | 'pref_gender'>
 
@@ -29,18 +72,18 @@ export const areGenderCompatible = (profile1: GenderFields, profile2: GenderFiel
   )
 }
 
-const satisfiesAgeRange = (profile: ProfileRow, age: number | null | undefined) => {
+const satisfiesAgeRange = (profile: ScoringProfile, age: number | null | undefined) => {
   return (
     (age ?? MAX_INT) >= (profile.pref_age_min ?? MIN_INT) &&
     (age ?? MIN_INT) <= (profile.pref_age_max ?? MAX_INT)
   )
 }
 
-export const areAgeCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
+export const areAgeCompatible = (profile1: ScoringProfile, profile2: ScoringProfile) => {
   return satisfiesAgeRange(profile1, profile2.age) && satisfiesAgeRange(profile2, profile1.age)
 }
 
-export const areLocationCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
+export const areLocationCompatible = (profile1: ScoringProfile, profile2: ScoringProfile) => {
   if (
     !profile1.city_latitude ||
     !profile2.city_latitude ||
@@ -58,7 +101,10 @@ export const areLocationCompatible = (profile1: ProfileRow, profile2: ProfileRow
   return root < 2.5
 }
 
-export const areRelationshipStyleCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
+export const areRelationshipStyleCompatible = (
+  profile1: ScoringProfile,
+  profile2: ScoringProfile,
+) => {
   // Blank on either side passes — and an empty array is blank, the same as null. It used to be
   // checked for null only on the second side, so someone who had cleared the field was "looking for
   // a different kind of connection" than everyone who had filled it in.
@@ -68,7 +114,7 @@ export const areRelationshipStyleCompatible = (profile1: ProfileRow, profile2: P
   )
 }
 
-export const areWantKidsCompatible = (profile1: ProfileRow, profile2: ProfileRow) => {
+export const areWantKidsCompatible = (profile1: ScoringProfile, profile2: ScoringProfile) => {
   const {wants_kids_strength: kids1} = profile1
   const {wants_kids_strength: kids2} = profile2
 

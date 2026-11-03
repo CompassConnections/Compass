@@ -18,7 +18,7 @@ import {CompassLoadingIndicator} from 'web/components/widgets/loading-indicator'
 import {useProfileByUser} from 'web/hooks/use-profile'
 import {useRedirectIfSignedOut} from 'web/hooks/use-redirect-if-signed-out'
 import {useUser} from 'web/hooks/use-user'
-import {api, updateProfile, updateUser} from 'web/lib/api'
+import {updateProfile, updateUser} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 
 export default function ProfilePage() {
@@ -76,12 +76,12 @@ function ProfilePageInner(props: {user: User; profile: Profile}) {
     const {interests, causes, work, ...otherProfileProps} = finalProfile ?? profile
     const parsedProfile = removeUndefinedProps(otherProfileProps) as any
     debug('parsedProfile', parsedProfile)
+    // Interests, causes and work go in the same request as the rest of the profile. They used to be
+    // three `update-options` calls alongside this one, and each of the four rebuilt the member's
+    // compatibility scores after responding — four full recomputes per save.
     const promises: Promise<any>[] = filterDefined([
-      updateProfile(parsedProfile),
+      updateProfile({...parsedProfile, interests, causes, work}),
       baseUser && updateUser({name: baseUser.name, username: baseUser.username}),
-      interests && api('update-options', {table: 'interests', values: interests}),
-      causes && api('update-options', {table: 'causes', values: causes}),
-      work && api('update-options', {table: 'work', values: work}),
     ])
     try {
       await Promise.all(promises)

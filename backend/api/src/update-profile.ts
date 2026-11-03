@@ -1,4 +1,5 @@
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
+import {setProfileOptions} from 'api/update-options'
 import {trimStrings} from 'common/parsing'
 import {type Row} from 'common/supabase/utils'
 import {tryCatch} from 'common/util/try-catch'
@@ -45,7 +46,23 @@ export const updateProfileEndpoint: APIHandler<'update-profile'> = async (parsed
     await updateUser(auth.uid, {avatarUrl: parsedBody.pinned_url})
   }
 
-  const {data, error} = await tryCatch(updateProfile(auth.uid, parsedBody))
+  // Interests, causes and work live in their own join tables, not on `profiles`, so they are split
+  // off and written through `setProfileOptions` in the same transaction as the row. They used to be
+  // separate `update-options` calls from the profile form, and since every one of those rebuilt the
+  // compatibility cache after its response, one save ran the recompute four times in parallel.
+  const {interests, causes, work, ...profileFields} = parsedBody
+  const {data, error} = await tryCatch(
+    pg.tx(async (tx) => {
+      const updated = await updateProfile(auth.uid, profileFields, tx)
+      if (interests !== undefined)
+        await setProfileOptions(tx, existingProfile.id, auth.uid, 'interests', interests)
+      if (causes !== undefined)
+        await setProfileOptions(tx, existingProfile.id, auth.uid, 'causes', causes)
+      if (work !== undefined)
+        await setProfileOptions(tx, existingProfile.id, auth.uid, 'work', work)
+      return updated
+    }),
+  )
 
   if (error) {
     log('Error updating profile', error)

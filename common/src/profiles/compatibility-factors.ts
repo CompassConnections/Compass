@@ -1,10 +1,13 @@
-import {ProfileOptions, ProfileRow} from 'common/profiles/profile'
-import {Row} from 'common/supabase/utils'
+import {ProfileOptions} from 'common/profiles/profile'
 import {WANTS_KIDS_TOLERANCE} from 'common/wants-kids'
 import {clamp, intersection, max, mean, sumBy, union, uniq} from 'lodash'
 
-import {CompatibilityScore, getCompatibilityScore} from './compatibility-score'
-import {areGenderCompatible, areRelationshipStyleCompatible} from './compatibility-util'
+import {AnswerForScoring, CompatibilityScore, getCompatibilityScore} from './compatibility-score'
+import {
+  areGenderCompatible,
+  areRelationshipStyleCompatible,
+  ScoringProfile,
+} from './compatibility-util'
 
 /**
  * The overall compatibility score: a dealbreaker gate, then a weighted geometric mean of per-field
@@ -19,8 +22,11 @@ import {areGenderCompatible, areRelationshipStyleCompatible} from './compatibili
  * the two agree whenever nothing has changed since the last recompute.
  */
 
-/** A profile row with the option labels the cross-table factor compares. */
-export type ProfileForScoring = ProfileRow &
+/**
+ * The scored columns of a profile (`SCORING_PROFILE_COLUMNS`) with the option labels the cross-table
+ * factor compares. A full `Profile` satisfies it, which is what the browser passes.
+ */
+export type ProfileForScoring = ScoringProfile &
   Pick<ProfileOptions, 'interests_names' | 'causes_names' | 'work_names'>
 
 // ---------------------------------------------------------------------------------------------------
@@ -30,12 +36,12 @@ export type ProfileForScoring = ProfileRow &
 export const DEALBREAKER_KEYS = ['gender', 'connection_type', 'monogamy', 'wants_kids'] as const
 export type DealbreakerKey = (typeof DEALBREAKER_KEYS)[number]
 
-const seeksRelationship = (p: ProfileRow) => !!p.pref_relation_styles?.includes('relationship')
-const bothSeekRelationship = (a: ProfileRow, b: ProfileRow) =>
+const seeksRelationship = (p: ScoringProfile) => !!p.pref_relation_styles?.includes('relationship')
+const bothSeekRelationship = (a: ScoringProfile, b: ScoringProfile) =>
   seeksRelationship(a) && seeksRelationship(b)
 
 /** `null` and the form's `-1` ("no preference") are both "not answered". */
-const wantsKidsAnswered = (p: ProfileRow) =>
+const wantsKidsAnswered = (p: ScoringProfile) =>
   p.wants_kids_strength != null && p.wants_kids_strength >= 0
 
 const overlaps = (a: string[] | null | undefined, b: string[] | null | undefined) =>
@@ -45,7 +51,7 @@ const overlaps = (a: string[] | null | undefined, b: string[] | null | undefined
  * The structural mismatches that make everything else moot. Symmetric; a blank passes (except the
  * gender preference, which `areGenderCompatible` reads as it always has). Empty means "scorable".
  */
-export const getDealbreakers = (a: ProfileRow, b: ProfileRow): DealbreakerKey[] => {
+export const getDealbreakers = (a: ScoringProfile, b: ScoringProfile): DealbreakerKey[] => {
   const out: DealbreakerKey[] = []
   if (!areGenderCompatible(a, b)) out.push('gender')
   if (!areRelationshipStyleCompatible(a, b)) out.push('connection_type')
@@ -140,8 +146,8 @@ export const flatEarthMiles = (lat1: number, lon1: number, lat2: number, lon2: n
   return Math.sqrt(dLat * dLat + dLon * dLon) * MILES_PER_DEGREE
 }
 
-const hasCoords = (p: ProfileRow) => p.city_latitude != null && p.city_longitude != null
-const hasCity = (p: ProfileRow) => !!p.city?.trim()
+const hasCoords = (p: ScoringProfile) => p.city_latitude != null && p.city_longitude != null
+const hasCity = (p: ScoringProfile) => !!p.city?.trim()
 const normalizeCity = (city: string) => city.trim().toLowerCase()
 
 /** 1 up to 25 mi, then a gentle log slide to a floor of 0.6 from 1600 mi. */
@@ -164,12 +170,12 @@ const yearsOutsideRange = (age: number, min: number | null, max: number | null) 
 const gradeYearsOutside = (years: number) =>
   years === 0 ? 1 : years <= 2 ? 0.5 : years <= 5 ? 0.2 : SCORE_FLOOR
 
-const ageDirection = (me: ProfileRow, other: ProfileRow) => {
+const ageDirection = (me: ScoringProfile, other: ScoringProfile) => {
   if (me.pref_age_min == null && me.pref_age_max == null) return 1
   return gradeYearsOutside(yearsOutsideRange(other.age!, me.pref_age_min, me.pref_age_max))
 }
 
-const hasAgeRange = (p: ProfileRow) => p.pref_age_min != null || p.pref_age_max != null
+const hasAgeRange = (p: ScoringProfile) => p.pref_age_min != null || p.pref_age_max != null
 
 /** The `cannabis` / `psychedelics` values, from `CANNABIS_CHOICES` and `PSYCHEDELICS_CHOICES`. */
 type SubstanceUse =
@@ -222,7 +228,7 @@ const BIG5_KEYS = [
   'big5_neuroticism',
 ] as const
 
-const hasBig5 = (p: ProfileRow) => BIG5_KEYS.every((k) => p[k] != null)
+const hasBig5 = (p: ScoringProfile) => BIG5_KEYS.every((k) => p[k] != null)
 
 const normalizeOptionName = (name: string) => name.trim().toLowerCase()
 
@@ -276,7 +282,7 @@ const DIET_RANK: Record<string, number> = {
   paleo: 0,
 }
 /** The strictest entry a side picked, or `undefined` when nothing rankable (only "other", or blank). */
-const strictestDiet = (p: ProfileRow) => {
+const strictestDiet = (p: ScoringProfile) => {
   const ranked = (p.diet ?? []).filter((d) => DIET_RANK[d] != null)
   if (!ranked.length) return undefined
   const entry = ranked.reduce((best, d) => (DIET_RANK[d] > DIET_RANK[best] ? d : best))
@@ -368,10 +374,10 @@ export const FACTORS: FactorDef[] = [
     score: (a, b) => {
       if (!bothSeekRelationship(a, b)) return undefined
       if (!a.relationship_status?.length || !b.relationship_status?.length) return undefined
-      const taken = (p: ProfileRow) =>
+      const taken = (p: ScoringProfile) =>
         !!p.relationship_status?.some((s) => s === 'married' || s === 'long_term')
-      const single = (p: ProfileRow) => !!p.relationship_status?.includes('single')
-      const nonExclusive = (p: ProfileRow) =>
+      const single = (p: ScoringProfile) => !!p.relationship_status?.includes('single')
+      const nonExclusive = (p: ScoringProfile) =>
         !!p.pref_romantic_styles?.some((s) => s === 'poly' || s === 'open')
       const mismatch = (single(a) && taken(b)) || (single(b) && taken(a))
       return mismatch && !nonExclusive(a) && !nonExclusive(b) ? 0.1 : 1
@@ -604,7 +610,7 @@ const weightedGeometricMean = (items: {value: number; weight: number}[]) => {
  * at all (no stored prompt score — scored as zero shared answers).
  */
 export type PromptInput =
-  | {answersA: Row<'compatibility_answers'>[]; answersB: Row<'compatibility_answers'>[]}
+  | {answersA: AnswerForScoring[]; answersB: AnswerForScoring[]}
   | Pick<CompatibilityScore, 'score' | 'low' | 'high' | 'sharedAnswers'>
   | undefined
 

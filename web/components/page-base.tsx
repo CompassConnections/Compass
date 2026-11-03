@@ -88,6 +88,11 @@ export function PageBase(props: {
     ?.split(' ')
     .filter((c) => !c.startsWith('col-span-'))
     .join(' ')
+  // Centre a narrower page in the ten page columns, the way the footer centres its content in the
+  // same span: a `col-span-8` page starts at column 3, leaving one empty column on each side. Spelt
+  // out as literals so Tailwind sees the class names. Odd spans can't centre on the grid and keep the
+  // default (left-aligned) placement.
+  const colStart = COL_STARTS[colSpan] ?? ''
 
   return (
     <>
@@ -126,7 +131,7 @@ export function PageBase(props: {
         <main
           id="main-content"
           tabIndex={-1}
-          className={clsx('flex flex-1 flex-col lg:mt-6 xl:px-2', colSpan, restClassName)}
+          className={clsx('flex flex-1 flex-col lg:mt-6 xl:px-2', colStart, colSpan, restClassName)}
         >
           {children}
         </main>
@@ -142,6 +147,15 @@ export function PageBase(props: {
       )}
     </>
   )
+}
+
+// Column 1 is the sidebar; the page columns are 2–11.
+const COL_STARTS: Record<string, string> = {
+  'col-span-2': 'lg:col-start-6',
+  'col-span-4': 'lg:col-start-5',
+  'col-span-6': 'lg:col-start-4',
+  'col-span-8': 'lg:col-start-3',
+  'col-span-10': 'lg:col-start-2',
 }
 
 // Outline in the rail, solid on the bottom bar — same split as Messages and Notifs.

@@ -98,7 +98,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       {key: 'nav.contact', name: 'Contact', href: '/contact'},
       {key: 'footer.privacy', name: 'Privacy policy', href: '/privacy'},
       {key: 'footer.terms', name: 'Terms of service', href: '/terms'},
-      {key: 'footer.delete_account', name: 'Delete your account', href: '/delete-account'},
+      // {key: 'footer.delete_account', name: 'Delete your account', href: '/delete-account'},
     ],
   },
 ]

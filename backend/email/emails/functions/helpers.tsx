@@ -315,7 +315,7 @@ export const sendShareCompassEmail = async (
 
   return await sendEmail({
     from: 'Martin from Compass <martin@compassmeet.com>',
-    replyTo: 'martin@compassmeet.com',
+    replyTo: 'hello@compassmeet.com',
     subject,
     to: email,
     html: await render(
@@ -369,7 +369,7 @@ export const sendEmptyRoomEmail = async (
     // From Martin rather than from Compass: it is a message admitting the product does not work for
     // them yet, and that is not a thing a platform says about itself.
     from: 'Martin from Compass <martin@compassmeet.com>',
-    replyTo: 'martin@compassmeet.com',
+    replyTo: 'hello@compassmeet.com',
     subject: t('email.empty_room.subject', 'The honest number for {city}', {city: density.city}),
     to: email,
     html: await render(
@@ -420,7 +420,7 @@ export const sendUnfinishedSignupEmail = async (
 export const sendTestEmail = async (toEmail: string) => {
   return await sendEmail({
     from: 'Martin from Compass <martin@compassmeet.com>',
-    replyTo: 'martin@compassmeet.com',
+    replyTo: 'hello@compassmeet.com',
     subject: 'Test email from Compass',
     to: toEmail,
     html: await render(<Test name="Test User" />),

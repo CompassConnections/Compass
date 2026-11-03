@@ -8,10 +8,11 @@ import {log} from 'shared/monitoring/log'
  * rather than failing the request.
  */
 const MODELS = [
-  'gemini-2.5-flash',
-  'gemini-3-flash-preview',
-  'gemini-2.5-flash-lite',
-  'gemini-3.1-flash-preview',
+  'gemini-3.8-flash',
+  'gemini-3.5-flash',
+  'gemini-3.5-flash-lite',
+  // Google-maintained alias, so the chain still has a live model after the pinned ones are retired.
+  'gemini-flash-latest',
 ]
 
 /** Default ceiling on prompt size, inherited from the profile extractor that this was factored out of. */

@@ -909,7 +909,7 @@ export function ProfilePreview(props: {
             <span
               key={i}
               className={clsx(
-                'rounded-full border border-canvas-300 bg-canvas-100 text-ink-700 transition-colors group-hover:border-primary-200',
+                'rounded-full border border-canvas-300 bg-canvas-100 text-ink-700 transition-colors',
                 config.keywordClass,
               )}
             >
@@ -949,13 +949,9 @@ export function ProfilePreview(props: {
           'relative overflow-hidden rounded-xl bg-canvas-50 person-card',
           // Stops the hold from turning into a text selection / iOS link callout.
           'select-none [-webkit-touch-callout:none]',
-          !showRing && 'border border-canvas-300',
+          !showRing && 'border border-canvas-200',
           'transition-all duration-[120ms] ease-in',
-          'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[4px]',
-          'before:bg-[#C17F3E] before:rounded-l-lg',
-          'before:opacity-0 before:transition-opacity before:duration-[120ms]',
-          'hover:before:opacity-100',
-          'hover:border-primary-300 hover:shadow-lg',
+          'hover:border-canvas-300 hover:shadow-md',
           'relative z-10 cursor-pointer group block rounded-xl overflow-hidden bg-transparent h-full',
           'text-ink-600',
         )}

@@ -7,6 +7,7 @@ import {SCORING_PROFILE_COLUMNS, ScoringProfile} from 'common/profiles/compatibi
 import {OPTION_TABLES} from 'common/profiles/constants'
 import {ProfileRow} from 'common/profiles/profile'
 import {WANTS_KIDS_TOLERANCE} from 'common/wants-kids'
+import {chunk} from 'lodash'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 // Canonicalize pair ordering (user_id_1 < user_id_2 lexicographically)
@@ -47,8 +48,18 @@ const toRow = (userA: string, userB: string, result: ScoredCompatibility) => {
 type ScoreRow = ReturnType<typeof toRow>
 
 /**
- * The rows as one array per column, so that any number of them travel as nine parameters and are
- * written with a single `unnest` — no parameter-count ceiling, no chunking.
+ * Pairs per insert in the full rebuild. pg-promise inlines the `unnest` arrays into the SQL text, so
+ * one statement for every pair (a few hundred thousand) is tens of MB of text through the Supavisor
+ * pooler. That held a pooled connection for minutes and starved every other request
+ * (`ECHECKOUTTIMEOUT ... in Transaction mode`). 5000 pairs is well under 1 MB a statement.
+ */
+const REBUILD_CHUNK_SIZE = 5000
+
+/**
+ * The rows as one array per column, so that they travel as nine parameters and are written with a
+ * single `unnest`. pg-promise formats parameters client-side, though, so the arrays are still inlined
+ * into the query text: the size of a statement grows with its row count, and the full rebuild has to
+ * chunk (see `REBUILD_CHUNK_SIZE`).
  */
 const toColumns = (rows: ScoreRow[]) => SCORE_COLUMNS.map((_, k) => rows.map((row) => row[k]))
 
@@ -315,14 +326,16 @@ export async function recomputeAllCompatibilityScores(): Promise<RecomputeAllRes
   const previousPairs = await pg.tx(async (tx) => {
     const before = await tx.one<{count: string}>('select count(*) from compatibility_scores')
     await tx.none('delete from compatibility_scores')
-    // One `unnest` insert whatever the pair count: nine array parameters, no chunking. Written as a
-    // plain insert rather than `bulkInsert` because that returns every row it wrote, and echoing back
-    // a few hundred thousand pairs costs more than the write itself.
-    await tx.none(
-      `insert into compatibility_scores (${SCORE_COLUMNS.join(', ')})
-       select * from ${unnestSql(1)}`,
-      toColumns(rows),
-    )
+    // One `unnest` insert per chunk of `REBUILD_CHUNK_SIZE` pairs, never one for everything (see
+    // there). Written as a plain insert rather than `bulkInsert` because that returns every row it
+    // wrote, and echoing back a few hundred thousand pairs costs more than the write itself.
+    for (const batch of chunk(rows, REBUILD_CHUNK_SIZE)) {
+      await tx.none(
+        `insert into compatibility_scores (${SCORE_COLUMNS.join(', ')})
+         select * from ${unnestSql(1)}`,
+        toColumns(batch),
+      )
+    }
     return Number(before.count)
   })
 

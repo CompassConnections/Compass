@@ -6,7 +6,8 @@ import {useIsAuthorized} from './use-user'
  * The comments on a profile, kept current over the websocket.
  *
  * The list always comes from `get-profile-comments`, which decides what this viewer may see. The
- * topic is open to anyone, so it only says that something changed, and this refetches.
+ * topic is open to anyone, so it only says that something changed, and this refetches. `refresh` is
+ * for the poster: showing their own comment must not depend on the websocket being up.
  */
 export function useLiveCommentsOnProfile(userId: string) {
   // Ask only once the auth state is known. The endpoint is open to visitors, but a signed-in member
@@ -23,5 +24,5 @@ export function useLiveCommentsOnProfile(userId: string) {
     onBroadcast: () => void refresh(),
   })
 
-  return data?.comments ?? []
+  return {comments: data?.comments ?? [], refresh}
 }

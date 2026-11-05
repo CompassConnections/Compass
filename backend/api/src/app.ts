@@ -209,7 +209,7 @@ const requestMonitoring: RequestHandler = (req, _res, next) => {
 }
 
 const apiErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
-  if (error instanceof APIError) {
+  if (error instanceof APIError && error.code !== 500) {
     log.info(error)
     if (!res.headersSent) {
       res.status(error.code).json(error.toJSON())
@@ -217,11 +217,9 @@ const apiErrorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
   } else {
     log.error(error)
     if (!res.headersSent) {
-      const apiError = APIErrors.internalServerError(error.message || 'Internal server error', {
-        originalError: error.toString(),
-        context: 'Unhandled exception in request processing',
-      })
-      res.status(500).json(apiError.toJSON())
+      // Generic on purpose, including for a thrown APIError 500: many handlers build those from
+      // `error.message`, which can carry Postgres constraint and column names. The detail is in the log.
+      res.status(500).json(APIErrors.internalServerError('Internal server error').toJSON())
     }
   }
 }

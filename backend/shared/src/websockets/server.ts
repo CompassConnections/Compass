@@ -6,6 +6,7 @@ import {
   CLIENT_MESSAGE_SCHEMA,
   ClientMessage,
   ServerMessage,
+  WS_MAX_SESSION_MS,
 } from 'common/api/websockets'
 import {IS_LOCAL} from 'common/hosting/constants'
 import {debug} from 'common/logger'
@@ -181,7 +182,6 @@ export function listen(server: HttpServer, path: string) {
   let deadConnectionCleaner: NodeJS.Timeout | undefined
 
   const HEARTBEAT_INTERVAL = 25000 // 25s
-  const MAX_SESSION_DURATION = 4 * 60 * 1000 // 4 minutes
 
   wss.on('listening', () => {
     log.info(`Web socket server listening on ${path}. ${getWebsocketUrl()}`)
@@ -205,14 +205,14 @@ export function listen(server: HttpServer, path: string) {
     ws.isAlive = true
     // debug('Received pong from client');
 
-    // 2. Hard Session Limit: Sever connection after 5 mins to allow Scale-to-Zero
+    // 2. Hard Session Limit: Sever connection after 4 mins to allow Scale-to-Zero
     // This stops bots/idle users from resetting the Cloud Run 15-min idle timer indefinitely.
     const sessionTimeout = setTimeout(() => {
       if (ws.readyState === WebSocket.OPEN) {
-        debug('Closing WS: Max session duration reached (5m)')
+        debug('Closing WS: Max session duration reached')
         ws.close(1000, 'Session limit reached') // 1000 is a normal closure
       }
-    }, MAX_SESSION_DURATION)
+    }, WS_MAX_SESSION_MS)
 
     ws.on('pong', () => (ws.isAlive = true))
 

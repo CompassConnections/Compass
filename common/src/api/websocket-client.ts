@@ -1,4 +1,4 @@
-import {ClientMessage, ClientMessageType, ServerMessage} from './websockets'
+import {ClientMessage, ClientMessageType, ServerMessage, WS_MAX_SESSION_MS} from './websockets'
 
 // mqp: useful for debugging
 const VERBOSE_LOGGING = false
@@ -7,6 +7,15 @@ const VERBOSE_LOGGING = false
 const TIMEOUT_MS = 5000
 
 const RECONNECT_WAIT_MS = 5000
+
+// Spreads out the tabs that all lost their connection at once, after a deploy for instance.
+const RECONNECT_JITTER_MS = 3000
+
+const ACTIVITY_EVENTS = ['pointerdown', 'keydown', 'touchstart', 'scroll', 'focus']
+
+const isTabVisible = () => typeof document === 'undefined' || document.visibilityState === 'visible'
+
+const jitter = () => Math.random() * RECONNECT_JITTER_MS
 
 type ConnectingState = typeof WebSocket.CONNECTING
 type OpenState = typeof WebSocket.OPEN
@@ -42,7 +51,12 @@ type OutstandingTxn = {
 
 /** Client for the API websocket realtime server. Automatically manages reconnection
  * and resubscription on disconnect, and allows subscribers to get a callback
- * when something is broadcasted. */
+ * when something is broadcasted.
+ *
+ * It only reconnects for a tab someone is using: visible, with activity during the last session.
+ * An open socket keeps a Cloud Run instance awake, so a forgotten tab has to let go of it, and comes
+ * back on the next sign of life. Broadcasts sent in between are lost, which is what `onReconnect` is
+ * for. */
 export class APIRealtimeClient {
   ws!: WebSocket
   url: string
@@ -57,6 +71,10 @@ export class APIRealtimeClient {
   identified: boolean
   // identify calls run one at a time, so a slow sign-in cannot land after the sign-out that followed
   identityQueue: Promise<void>
+  lastActivity: number
+  closedManually: boolean
+  hasOpened: boolean
+  reconnectHandlers: Set<() => void>
 
   constructor(url: string, getIdentity?: () => Promise<RealtimeIdentity | undefined>) {
     this.url = url
@@ -66,7 +84,43 @@ export class APIRealtimeClient {
     this.getIdentity = getIdentity
     this.identified = false
     this.identityQueue = Promise.resolve()
+    this.lastActivity = Date.now()
+    this.closedManually = false
+    this.hasOpened = false
+    this.reconnectHandlers = new Set()
     this.connect()
+    this.listenForActivity()
+  }
+
+  listenForActivity() {
+    if (typeof window === 'undefined' || !window.addEventListener) return
+    const onActivity = () => this.noteActivity()
+    // Capture, because a scroll inside an element does not bubble up to the window.
+    for (const event of ACTIVITY_EVENTS) {
+      window.addEventListener(event, onActivity, {capture: true, passive: true})
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (isTabVisible()) this.noteActivity()
+    })
+  }
+
+  noteActivity() {
+    this.lastActivity = Date.now()
+    if (this.state === WebSocket.CLOSED && !this.closedManually) {
+      this.waitAndReconnect(jitter())
+    }
+  }
+
+  get inUse() {
+    return isTabVisible() && Date.now() - this.lastActivity < WS_MAX_SESSION_MS
+  }
+
+  /** Runs after a reconnect, not the first connect, to fetch what was broadcast in between. */
+  onReconnect(handler: () => void) {
+    this.reconnectHandlers.add(handler)
+    return () => {
+      this.reconnectHandlers.delete(handler)
+    }
   }
 
   get state() {
@@ -74,6 +128,7 @@ export class APIRealtimeClient {
   }
 
   close() {
+    this.closedManually = true
     this.ws.close(1000, 'Closed manually.')
     clearTimeout(this.connectTimeout)
   }
@@ -89,7 +144,7 @@ export class APIRealtimeClient {
       console.error('API websocket error: ', ev)
       // this can fire without an onclose if this is the first time we ever try
       // to connect, so we need to turn on our reconnect in that case
-      this.waitAndReconnect()
+      if (this.inUse) this.waitAndReconnect()
     }
     this.ws.onopen = (_ev) => {
       if (VERBOSE_LOGGING) {
@@ -103,7 +158,12 @@ export class APIRealtimeClient {
       }, 25000)
       this.identified = false
       this.resubscribe().catch(console.error)
-      this.refreshIdentity()
+      const isReconnect = this.hasOpened
+      this.hasOpened = true
+      // After the identity, so the private topics are live again before anyone refetches.
+      void this.refreshIdentity().then(() => {
+        if (isReconnect) this.reconnectHandlers.forEach((handler) => handler())
+      })
     }
     this.ws.onclose = (ev) => {
       // note that if the connection closes due to an error, onerror fires and then this
@@ -121,19 +181,19 @@ export class APIRealtimeClient {
       }
       this.txns.clear()
 
-      // 1000 is RFC code for normal on-purpose closure
-      if (ev.code !== 1000) {
-        this.waitAndReconnect()
+      // 1000 is also what the server sends at the session limit, so it does not mean we are done.
+      if (!this.closedManually && this.inUse) {
+        this.waitAndReconnect(ev.code === 1000 ? jitter() : RECONNECT_WAIT_MS)
       }
     }
   }
 
-  waitAndReconnect() {
+  waitAndReconnect(delayMs = RECONNECT_WAIT_MS) {
     if (this.connectTimeout == null) {
       this.connectTimeout = setTimeout(() => {
         this.connectTimeout = undefined
         this.connect()
-      }, RECONNECT_WAIT_MS)
+      }, delayMs)
     }
   }
 

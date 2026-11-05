@@ -59,6 +59,7 @@ export function usePrivateMessages(channelId: number, limit: number, userId: str
       // console.debug('private-user-messages broadcast', channelId)
       fetchMessages()
     },
+    onReconnect: () => fetchMessages(),
   })
 
   return {messages, fetchMessages, setMessages}

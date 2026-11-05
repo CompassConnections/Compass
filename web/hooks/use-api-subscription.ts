@@ -3,6 +3,7 @@ import {APIRealtimeClient} from 'common/api/websocket-client'
 import {ServerMessage} from 'common/api/websockets'
 import {onAuthStateChanged} from 'firebase/auth'
 import {useEffect} from 'react'
+import {useEvent} from 'web/hooks/use-event'
 import {auth} from 'web/lib/firebase/users'
 
 const getIdentity = async () => {
@@ -21,15 +22,21 @@ export type SubscriptionOptions = {
   onBroadcast: (msg: ServerMessage<'broadcast'>) => void
   onError?: (err: Error) => void
   enabled?: boolean
+  /** Refetch here: nothing is replayed, so whatever was broadcast while disconnected is gone. */
+  onReconnect?: () => void
 }
 
 export function useApiSubscription(opts: SubscriptionOptions) {
+  const onReconnect = useEvent(opts.onReconnect)
+
   useEffect(() => {
     const ws = client
     if (ws != null) {
       if (opts.enabled ?? true) {
         ws.subscribe(opts.topics, opts.onBroadcast).catch(opts.onError)
+        const stopListening = ws.onReconnect(onReconnect)
         return () => {
+          stopListening()
           ws.unsubscribe(opts.topics, opts.onBroadcast).catch(opts.onError)
         }
       }

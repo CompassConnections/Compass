@@ -36,6 +36,7 @@ export function useLiveCommentsOnVote(voteId: number | undefined, onComment?: ()
   useApiSubscription({
     enabled: voteId !== undefined,
     topics: [`vote/${voteId}/comment`],
+    onReconnect: () => void refresh(),
     onBroadcast: ({data}) => {
       const incoming = data.comment as VoteComment | undefined
       if (!incoming) return

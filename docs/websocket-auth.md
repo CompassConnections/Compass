@@ -25,9 +25,17 @@ The server verifies the token and takes the uid from it; the `uid` field of the 
 An `identify` without a token signs the connection out. The token is only checked at `identify`, which is
 safe because the server closes every connection after 4 minutes, so no identity outlives that.
 
-The client does not reconnect after that close, because it comes with code 1000, which the client reads as
-deliberate. A tab open longer than 4 minutes gets no live updates, so nothing a member needs to see right
-away should depend on a broadcast alone.
+## Reconnecting
+
+An open socket keeps a Cloud Run instance awake, so the client only reconnects for a tab someone is using:
+visible, with a click, key press, scroll or touch during the last session. Otherwise it stays disconnected
+until the next activity or the tab becoming visible. A forgotten tab lets go within two sessions (8
+minutes) of the last activity, which is what lets the API scale to zero. Abnormal closes follow the same
+rule.
+
+Nothing is replayed, so whatever was broadcast while disconnected is gone. A subscription that shows server
+state should pass `onReconnect` to `useApiSubscription` and refetch there. Background tabs miss live updates
+by design, including the unread count in the tab title, until they are looked at again.
 
 A refused topic is dropped and still acked as a success. Older clients have nothing handling a failed ack,
 and the current client subscribes before its token is verified, then again once it is.

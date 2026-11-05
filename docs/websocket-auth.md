@@ -13,6 +13,11 @@ decides who may listen to what, and refuses anything it does not list.
 | `private-user-messages/<uid>`        | `<uid>` only      |
 | `private-user-messages/<uid>/typing` | `<uid>` only      |
 
+A public topic must not carry anything that depends on the viewer. `user/<uid>/comment` is an empty
+"something changed" signal for that reason: subscribers refetch from `get-profile-comments`, which applies
+the members-only, block and hidden rules. `vote/<id>/comment` still carries the comment, because
+`vote_comments` can be read with the anon key anyway.
+
 ## How a connection is identified
 
 The client sends `identify` with a Firebase ID token on every connect and on every sign-in or sign-out.

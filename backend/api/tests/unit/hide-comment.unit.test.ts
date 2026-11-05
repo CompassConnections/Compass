@@ -1,7 +1,6 @@
 import {AuthedUser} from 'api/helpers/endpoint'
 import {hideComment} from 'api/hide-comment'
 import * as envConsts from 'common/envs/constants'
-import {convertComment} from 'common/supabase/comment'
 import {sqlMatch} from 'common/test-utils'
 import * as supabaseInit from 'shared/supabase/init'
 import * as websocketHelpers from 'shared/websockets/helpers'
@@ -44,11 +43,9 @@ describe('hideComment', () => {
         user_name: 'mockUserName',
         user_username: 'mockUserUsername',
       }
-      const mockConvertedComment = 'mockConvertedCommentValue'
 
       ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockComment)
       jest.spyOn(envConsts, 'isAdminId').mockReturnValue(true)
-      ;(convertComment as jest.Mock).mockReturnValue(mockConvertedComment)
 
       await hideComment(mockProps, mockAuth, mockReq)
 
@@ -59,10 +56,10 @@ describe('hideComment', () => {
       )
       expect(envConsts.isAdminId).toBeCalledTimes(1)
       expect(envConsts.isAdminId).toBeCalledWith(mockAuth.uid)
-      expect(convertComment).toBeCalledTimes(1)
-      expect(convertComment).toBeCalledWith(mockComment)
-      expect(websocketHelpers.broadcastUpdatedComment).toBeCalledTimes(1)
-      expect(websocketHelpers.broadcastUpdatedComment).toBeCalledWith(mockConvertedComment)
+      expect(websocketHelpers.broadcastProfileCommentsChanged).toBeCalledTimes(1)
+      expect(websocketHelpers.broadcastProfileCommentsChanged).toBeCalledWith(
+        mockComment.on_user_id,
+      )
     })
 
     it('should successfully hide the comment if the user is the one who made the comment', async () => {

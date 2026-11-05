@@ -30,6 +30,8 @@ export function formatState(state: ReadyState) {
   }
 }
 
+export type RealtimeIdentity = {uid: string; token: string}
+
 export type BroadcastHandler = (msg: ServerMessage<'broadcast'>) => void
 
 type OutstandingTxn = {
@@ -51,12 +53,19 @@ export class APIRealtimeClient {
   subscriptions: Map<string, BroadcastHandler[]>
   connectTimeout?: NodeJS.Timeout
   heartbeat?: number | undefined
+  getIdentity?: () => Promise<RealtimeIdentity | undefined>
+  identified: boolean
+  // identify calls run one at a time, so a slow sign-in cannot land after the sign-out that followed
+  identityQueue: Promise<void>
 
-  constructor(url: string) {
+  constructor(url: string, getIdentity?: () => Promise<RealtimeIdentity | undefined>) {
     this.url = url
     this.txid = 0
     this.txns = new Map()
     this.subscriptions = new Map()
+    this.getIdentity = getIdentity
+    this.identified = false
+    this.identityQueue = Promise.resolve()
     this.connect()
   }
 
@@ -92,11 +101,9 @@ export class APIRealtimeClient {
           this.sendMessage('ping', {}).catch(console.error)
         }
       }, 25000)
-      if (this.subscriptions.size > 0) {
-        this.sendMessage('subscribe', {
-          topics: Array.from(this.subscriptions.keys()),
-        }).catch(console.error)
-      }
+      this.identified = false
+      this.resubscribe().catch(console.error)
+      this.refreshIdentity()
     }
     this.ws.onclose = (ev) => {
       // note that if the connection closes due to an error, onerror fires and then this
@@ -194,8 +201,27 @@ export class APIRealtimeClient {
     }
   }
 
-  async identify(uid: string) {
-    return await this.sendMessage('identify', {uid})
+  async resubscribe() {
+    if (this.subscriptions.size > 0) {
+      await this.sendMessage('subscribe', {topics: Array.from(this.subscriptions.keys())})
+    }
+  }
+
+  /** Tell the server who is signed in. Call on connect and whenever that changes. */
+  refreshIdentity() {
+    this.identityQueue = this.identityQueue.then(() => this.sendIdentity()).catch(console.error)
+    return this.identityQueue
+  }
+
+  private async sendIdentity() {
+    if (!this.getIdentity) return
+    const identity = await this.getIdentity()
+    if (!identity && !this.identified) return
+    await this.sendMessage('identify', identity ?? {uid: ''})
+    this.identified = !!identity
+    // The server drops private topics it could not yet match to this connection, which includes
+    // anything subscribed while the token was still being verified, so send them again.
+    if (identity) await this.resubscribe()
   }
 
   async subscribe(topics: string[], handler: BroadcastHandler) {

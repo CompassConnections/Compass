@@ -23,6 +23,7 @@ backend/shared/src/
 │   ├── users.ts, messages.ts, notifications.ts, options.ts   Domain queries
 ├── websockets/
 │   ├── server.ts, switchboard.ts
+│   ├── topics.ts           who may subscribe to what (closed by default)
 │   └── helpers.ts          broadcastUpdatedUser, broadcastUpdatedPrivateUser, ...
 │                           (topics here are what the web `useApiSubscription` listens to)
 ├── monitoring/
@@ -40,7 +41,8 @@ backend/shared/src/
 - **SQL**: never string-concatenate. Use the helpers in `supabase/utils` for inserts/updates, or compose with
   `sql-builder` for reads. Lowercase SQL by convention.
 - **New websocket topic**: add a `broadcastX` function in `websockets/helpers.ts` so the frontend has a typed
-  topic to subscribe to.
+  topic to subscribe to, and list the topic in `websockets/topics.ts`, or subscribers are refused. See
+  [`docs/websocket-auth.md`](../../docs/websocket-auth.md).
 - **Logging**: `log` from `monitoring/log`. `debug()` from `common/logger` is fine for verbose dev logs but
   `log` carries structured context to Cloud Logging.
 - **Adding a domain helper**: if a query is reused by more than one API endpoint, lift it into

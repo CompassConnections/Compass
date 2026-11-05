@@ -9,11 +9,13 @@ import {
 } from 'common/api/websockets'
 import {IS_LOCAL} from 'common/hosting/constants'
 import {debug} from 'common/logger'
+import * as admin from 'firebase-admin'
 import {isError} from 'lodash'
 import {log, metrics} from 'shared/utils'
 import {RawData, Server as WebSocketServer, WebSocket} from 'ws'
 
 import {Switchboard} from './switchboard'
+import {canSubscribe, holdsForeignTopic} from './topics'
 
 // Extend the type definition locally
 interface HeartbeatWebSocket extends WebSocket {
@@ -60,18 +62,60 @@ function parseMessage(data: RawData): ClientMessage {
   }
 }
 
-function processMessage(ws: HeartbeatWebSocket, data: RawData): ServerMessage<'ack'> {
+// Off until the store apps that predate `identify` have aged out: they can't authenticate, so turning
+// this on stops their live updates. See docs/websocket-auth.md.
+const enforceTopicAuth = () => process.env.WS_ENFORCE_TOPIC_AUTH === 'true'
+
+async function identify(ws: HeartbeatWebSocket, token: string | undefined) {
+  let uid: string | undefined
+  let invalid = false
+  if (token) {
+    try {
+      uid = (await admin.auth().verifyIdToken(token)).uid
+    } catch (err) {
+      debug('Websocket identify failed', err)
+      invalid = true
+    }
+  }
+  // The socket can close while the token is being verified.
+  if (!SWITCHBOARD.clients.has(ws)) return
+
+  if (uid) SWITCHBOARD.identify(ws, uid)
+  else SWITCHBOARD.deidentify(ws)
+
+  // The connection may have just changed hands, so what it held under the last identity goes.
+  if (enforceTopicAuth()) {
+    const client = SWITCHBOARD.getClient(ws)
+    const lost = Array.from(client.subscriptions).filter((topic) => !canSubscribe(topic, uid))
+    SWITCHBOARD.unsubscribe(ws, ...lost)
+  }
+
+  if (invalid) throw new Error('Invalid token.')
+}
+
+function subscribe(ws: HeartbeatWebSocket, topics: string[]) {
+  const {uid} = SWITCHBOARD.getClient(ws)
+  // A refused topic is dropped, not failed: nothing in the older clients handles a failed ack, and
+  // the current one subscribes before its token is verified, then again after.
+  const allowed = enforceTopicAuth() ? topics.filter((topic) => canSubscribe(topic, uid)) : topics
+  SWITCHBOARD.subscribe(ws, ...allowed)
+}
+
+async function processMessage(
+  ws: HeartbeatWebSocket,
+  data: RawData,
+): Promise<ServerMessage<'ack'>> {
   try {
     const msg = parseMessage(data)
     const {type, txid} = msg
     try {
       switch (type) {
         case 'identify': {
-          SWITCHBOARD.identify(ws, msg.uid)
+          await identify(ws, msg.token)
           break
         }
         case 'subscribe': {
-          SWITCHBOARD.subscribe(ws, ...msg.topics)
+          subscribe(ws, msg.topics)
           break
         }
         case 'unsubscribe': {
@@ -177,8 +221,8 @@ export function listen(server: HttpServer, path: string) {
     debug('WS client connected.')
     SWITCHBOARD.connect(ws)
 
-    ws.on('message', (data) => {
-      const result = processMessage(ws, data)
+    ws.on('message', async (data) => {
+      const result = await processMessage(ws, data)
       // mqp: check ws.readyState before sending?
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(result))
@@ -190,6 +234,8 @@ export function listen(server: HttpServer, path: string) {
       metrics.inc('ws/connections_terminated')
       metrics.set('ws/open_connections', wss.clients.size)
       debug(`WS client disconnected.`, {code, reason: reason.toString()})
+      const {uid, subscriptions} = SWITCHBOARD.getClient(ws)
+      if (holdsForeignTopic(subscriptions, uid)) metrics.inc('ws/unauthed_private_sessions')
       SWITCHBOARD.disconnect(ws)
     })
 

@@ -4,7 +4,11 @@ export const CLIENT_MESSAGE_SCHEMAS = {
   identify: z.object({
     type: z.literal('identify'),
     txid: z.number(),
+    // Ignored by the server, which takes the identity from `token` alone. Still sent because an API
+    // revision without token support requires the field.
     uid: z.string(),
+    // A Firebase ID token. Leaving it out signs the connection out.
+    token: z.string().optional(),
   }),
   subscribe: z.object({
     type: z.literal('subscribe'),

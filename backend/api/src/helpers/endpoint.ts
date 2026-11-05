@@ -91,7 +91,6 @@ export const parseCredentials = async (req: Request): Promise<Credentials> => {
         console.error('Error verifying Firebase JWT: ', err, scheme, {
           jwtHeader: _header,
         })
-        debug('Failing Firebase JWT payload: ', payload)
         Sentry.captureException(err, {
           extra: {jwtHeader: _header},
         })
@@ -116,7 +115,7 @@ export const lookupUser = async (creds: Credentials): Promise<AuthedUser> => {
       const key = creds.data
       const privateUser = await getPrivateUserByKey(key)
       if (!privateUser) {
-        debug('No private user exists with API key', key)
+        debug('No private user exists with the provided API key')
         throw APIErrors.unauthorized('No private user exists with the provided API key.')
       }
       return {uid: privateUser.id, creds: {privateUser, ...creds}}

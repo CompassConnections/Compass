@@ -3,6 +3,16 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 import {APIErrors, APIHandler} from './helpers/endpoint'
 
+// `reactions` maps each emoji to the ids of the members who used it. This takes one member ($2) off
+// one emoji ($1), and drops the emoji once they were the last on it. The scalar comparison covers old
+// rows holding a bare id rather than a list, which `MessageReactions` also tolerates.
+const WITHOUT_REACTOR = `
+  CASE
+    WHEN reactions -> $1 IN (to_jsonb($2::text), to_jsonb(ARRAY [$2::text]))
+      THEN reactions - $1
+    ELSE jsonb_set(reactions, ARRAY [$1], (reactions -> $1) - $2::text)
+  END`
+
 export const reactToMessage: APIHandler<'react-to-message'> = async (
   {messageId, reaction, toDelete},
   auth,
@@ -28,10 +38,10 @@ export const reactToMessage: APIHandler<'react-to-message'> = async (
     // Remove the reaction
     await pg.none(
       `UPDATE private_user_messages
-       SET reactions = reactions - $1
-       WHERE id = $2
-       AND reactions -> $1 ? $3`,
-      [reaction, messageId, auth.uid],
+       SET reactions = ${WITHOUT_REACTOR}
+       WHERE id = $3
+       AND reactions -> $1 ? $2`,
+      [reaction, auth.uid, messageId],
     )
   } else {
     // Toggle reaction
@@ -39,8 +49,8 @@ export const reactToMessage: APIHandler<'react-to-message'> = async (
       `UPDATE private_user_messages
        SET reactions =
                CASE
-                   WHEN reactions -> $1 IS NOT NULL
-                       THEN reactions - $1
+                   WHEN reactions -> $1 ? $2
+                       THEN ${WITHOUT_REACTOR}
                    ELSE jsonb_set(
                            COALESCE(reactions, '{}'::jsonb),
                            ARRAY [$1],

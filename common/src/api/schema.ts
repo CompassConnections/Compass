@@ -491,7 +491,9 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     authed: true,
     rateLimited: true,
-    props: profileSchema.partial(),
+    // The referrer is set once, at signup. Being editable afterwards would let a member credit
+    // themselves or anyone else in the referral stats.
+    props: profileSchema.omit({referred_by_username: true}).partial(),
     returns: {} as ProfileRow,
     summary:
       'Update profile fields for the authenticated user. `interests`, `causes` and `work` (option ids or new names) are written in the same transaction, so a form save is one request and one compatibility recompute.',

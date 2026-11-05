@@ -12,6 +12,7 @@ import {bannedFromWritingError, type BanReason} from 'common/moderation/ban'
 import {PrivateUser} from 'common/user'
 import {NextFunction, Request, Response} from 'express'
 import * as admin from 'firebase-admin'
+import {getIp} from 'shared/analytics'
 import {getPrivateUserByKey, log} from 'shared/utils'
 import {z} from 'zod'
 
@@ -202,6 +203,7 @@ export type APIHandler<N extends APIPath> = (
 //   API_RATE_LIMIT_PER_MIN_UNAUTHED
 // Endpoints can be exempted by adding their name to RATE_LIMIT_EXEMPT (comma-separated)
 const __rateLimitState: Map<string, {windowStart: number; count: number}> = new Map()
+let __rateLimitWindow = 0
 
 function getRateLimitConfig() {
   const authed = Number(process.env.API_RATE_LIMIT_PER_MIN_AUTHED ?? 120)
@@ -211,8 +213,9 @@ function getRateLimitConfig() {
 
 function rateLimitKey(name: string, req: Request, auth?: AuthedUser) {
   if (auth) return `uid:${auth.uid}`
-  // fallback to IP for unauthenticated requests
-  return `ip:${req.ip}`
+  // fallback to IP for unauthenticated requests. Not `req.ip`: there is no `trust proxy`, so behind
+  // Cloud Run that is Google's front end, and every visitor would share a single bucket.
+  return `ip:${getIp(req)}`
 }
 
 function checkRateLimit(name: string, req: Request, res: Response, auth?: AuthedUser) {
@@ -223,6 +226,13 @@ function checkRateLimit(name: string, req: Request, res: Response, auth?: Authed
   const now = Date.now()
   const windowMs = 60_000
   const windowStart = Math.floor(now / windowMs) * windowMs
+
+  // Entries from a past window are never read again, and one key per client IP would otherwise grow
+  // for as long as the instance lives.
+  if (windowStart !== __rateLimitWindow) {
+    __rateLimitState.clear()
+    __rateLimitWindow = windowStart
+  }
 
   let state = __rateLimitState.get(key)
   if (!state || state.windowStart !== windowStart) {

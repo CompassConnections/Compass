@@ -2,7 +2,9 @@ export const IS_WEBVIEW_DEV_PHONE = process.env.NEXT_PUBLIC_WEBVIEW_DEV_PHONE ==
 export const IS_LOCAL_ANDROID =
   IS_WEBVIEW_DEV_PHONE || process.env.NEXT_PUBLIC_LOCAL_ANDROID === '1'
 export const IS_WEBVIEW = !!process.env.NEXT_PUBLIC_WEBVIEW
-export const IS_GOOGLE_CLOUD = !!process.env.GOOGLE_CLOUD_PROJECT
+// `K_SERVICE` is set by Cloud Run itself. GOOGLE_CLOUD_PROJECT comes from our own config, and losing it
+// alone must not turn a deployment into "local", which skips the internal-route key check.
+export const IS_GOOGLE_CLOUD = !!process.env.GOOGLE_CLOUD_PROJECT || !!process.env.K_SERVICE
 export const IS_VERCEL = !!process.env.NEXT_PUBLIC_VERCEL
 export const IS_DEPLOYED = IS_GOOGLE_CLOUD || IS_VERCEL || IS_WEBVIEW
 export const IS_LOCAL = !IS_DEPLOYED

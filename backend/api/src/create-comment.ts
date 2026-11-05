@@ -3,7 +3,6 @@ import {assertNotBlocked} from 'api/helpers/blocks'
 import {MAX_COMMENT_JSON_LENGTH, validateCommentAuthor} from 'api/helpers/comment'
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {Notification} from 'common/notifications'
-import {convertComment} from 'common/supabase/comment'
 import {type Row} from 'common/supabase/utils'
 import {User} from 'common/user'
 import {getNotificationDestinationsForUser} from 'common/user-notification-preferences'
@@ -13,7 +12,7 @@ import {sendNewEndorsementEmail} from 'email/functions/helpers'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insertNotificationToSupabase} from 'shared/supabase/notifications'
 import {getPrivateUser, getUser} from 'shared/utils'
-import {broadcastUpdatedComment} from 'shared/websockets/helpers'
+import {broadcastProfileCommentsChanged} from 'shared/websockets/helpers'
 
 export {MAX_COMMENT_JSON_LENGTH}
 
@@ -50,7 +49,7 @@ export const createComment: APIHandler<'create-comment'> = async (
       comment.id,
     )
 
-  broadcastUpdatedComment(convertComment(comment))
+  broadcastProfileCommentsChanged(onUser.id)
 
   return {status: 'success'}
 }

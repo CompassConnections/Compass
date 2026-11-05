@@ -19,7 +19,9 @@ export const sendDiscordMessage = async (content: string, channel: string) => {
   const response = await fetch(webhookUrl!, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({content}),
+    // Messages quote text from visitors (the contact form, reports), which must not be able to ping
+    // @everyone or a role in the staff channels.
+    body: JSON.stringify({content, allowed_mentions: {parse: []}}),
   })
 
   if (!response.ok) {

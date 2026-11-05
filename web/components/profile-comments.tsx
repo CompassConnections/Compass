@@ -285,7 +285,7 @@ function DotMenu(props: {onUser: User; comment: Comment; onHide: () => void}) {
                 else toast.error(`You can't report your own comment`)
               },
             },
-          (isAdmin || isCurrentUser || isOwner) && {
+          (isAdmin || ((isCurrentUser || isOwner) && !comment.hidden)) && {
             name: comment.hidden ? 'Undelete' : 'Delete',
             icon: <EyeSlashIcon className="h-5 w-5 text-red-500" />,
             onClick: async () => {

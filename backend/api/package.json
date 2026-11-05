@@ -34,7 +34,7 @@
     "compression": "^1.8.0",
     "cors": "2.8.5",
     "dayjs": "1.11.19",
-    "express": "5.0.0",
+    "express": "5.2.1",
     "firebase-admin": "13.5.0",
     "gcp-metadata": "6.1.0",
     "jsdom": "29.0.1",

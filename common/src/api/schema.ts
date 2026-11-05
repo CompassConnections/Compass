@@ -89,6 +89,12 @@ import {FullUser, HiddenProfile} from './user-types' // mqp: very unscientific, 
 
 // mqp: very unscientific, just balancing our willingness to accept load
 // with user willingness to put up with stale data
+// `z.string().url()` alone accepts any scheme, `javascript:` included.
+const httpUrl = z
+  .string()
+  .url()
+  .regex(/^https?:\/\//i, 'Must be an http(s) URL')
+
 export const DEFAULT_CACHE_STRATEGY = 'public, max-age=5, stale-while-revalidate=10'
 
 /**
@@ -1745,7 +1751,7 @@ export const API = (_apiTypeCheck = {
       description: z.string().max(2000).optional(),
       locationType: z.enum(['in_person', 'online']),
       locationAddress: z.string().max(500).optional(),
-      locationUrl: z.string().url().max(500).optional(),
+      locationUrl: httpUrl.max(500).optional(),
       eventStartTime: z.string().datetime(),
       eventEndTime: z.string().datetime().optional(),
       maxParticipants: z.number().int().min(1).optional(),
@@ -1778,7 +1784,7 @@ export const API = (_apiTypeCheck = {
         description: z.string().max(2000).optional(),
         locationType: z.enum(['in_person', 'online']),
         locationAddress: z.string().max(500).optional(),
-        locationUrl: z.string().url().max(500).optional(),
+        locationUrl: httpUrl.max(500).optional(),
         eventStartTime: z.string(),
         eventEndTime: z.string().optional(),
         maxParticipants: z.number().min(1).max(1000).optional(),

@@ -78,9 +78,11 @@ describe('reactToMessage', () => {
       expect(result.success).toBeTruthy()
       expect(mockPg.oneOrNone).toBeCalledTimes(1)
       expect(mockPg.none).toBeCalledTimes(1)
-      expect(params1).toEqual([mockProps.reaction, mockProps.messageId, mockAuth.uid])
+      expect(params1).toEqual([mockProps.reaction, mockAuth.uid, mockProps.messageId])
       expect(sql1).toEqual(sqlMatch('UPDATE private_user_messages'))
-      expect(sql1).toEqual(sqlMatch('SET reactions = reactions - $1'))
+      // Takes this member off the emoji; the emoji key itself goes only with its last reactor.
+      expect(sql1).toEqual(sqlMatch('(reactions -> $1) - $2::text'))
+      expect(sql1).toEqual(sqlMatch('AND reactions -> $1 ? $2'))
     })
   })
   describe('when an error occurs', () => {

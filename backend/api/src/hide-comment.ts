@@ -9,6 +9,12 @@ export const hideComment: APIHandler<'hide-comment'> = async (
   {commentId, hide, commentType},
   auth,
 ) => {
+  // Nothing records who hid a comment, so an author who could un-hide their own comment could also
+  // reverse a removal by a moderator or by the profile owner.
+  if (!hide && !isAdminId(auth.uid)) {
+    throw APIErrors.forbidden('Only admins can restore a hidden comment')
+  }
+
   const pg = createSupabaseDirectClient()
 
   if (commentType === 'vote') {

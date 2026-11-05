@@ -70,13 +70,15 @@ export function VoteCommentSection(props: {
   const {voteId, comments, choicesByUserId, canComment, highlightedIds, onPosted, idInUrl} = props
   const t = useT()
   const user = useUser()
+  const isAdmin = useAdmin()
   const [filter, setFilter] = useState<StanceFilter>('all')
 
   // A comment the viewer deleted stays visible to them (as a "deleted" tombstone) so the delete
-  // reads as having worked; for everyone else it's simply gone.
+  // reads as having worked; for everyone else it's simply gone. Admins keep seeing it too, since only
+  // they can restore it.
   const visible = useMemo(
-    () => comments.filter((c) => !c.hidden || c.userId === user?.id),
-    [comments, user?.id],
+    () => comments.filter((c) => !c.hidden || c.userId === user?.id || isAdmin),
+    [comments, user?.id, isAdmin],
   )
   const threads = useMemo(() => buildThreads(visible), [visible])
   const threadsById = useMemo(() => new Map(threads.map((th) => [th.parent.id, th])), [threads])
@@ -685,7 +687,7 @@ function VoteCommentDotMenu(props: {
             },
           // A proposal's author is deliberately not on this list: letting them delete arguments
           // against their own proposal would defeat the point of having the thread.
-          (isAdmin || isCurrentUser) && {
+          (isAdmin || (isCurrentUser && !comment.hidden)) && {
             name: comment.hidden ? 'Undelete' : 'Delete',
             icon: <EyeSlashIcon className="h-5 w-5 text-red-500" />,
             onClick: async () => {

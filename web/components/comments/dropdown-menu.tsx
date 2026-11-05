@@ -49,6 +49,8 @@ export default function DropdownMenu(props: {
 
   const icon = props.icon ?? <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
 
+  if (items.length === 0) return null
+
   return (
     <Popover className={clsx('relative inline-block text-left', className)}>
       {({open, close}) => (

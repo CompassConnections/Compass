@@ -594,10 +594,11 @@ anyone", in bulk, up to PostgREST's row cap. A `public read ... using (true)` po
 only right for data that is public by design (prompts, options, votes and their results, the
 canonical taxonomies). Every table that says something about a member — `profiles`, `users`,
 `compatibility_scores`, `user_activity`, `profile_stars`, `profile_likes`, `profile_ships`,
-`bookmarked_searches`, `compatibility_answers`, `profile_comments`, every `private_*` table — has
-had its `anon`/`authenticated` SELECT grant revoked (migrations
+`bookmarked_searches`, `compatibility_answers`, `profile_comments`, `user_notifications`, every
+`private_*` table — has had its `anon`/`authenticated` SELECT grant revoked (migrations
 `20260730_cap_profiles_users_reads.sql`, `20260731_lock_activity_stars_compat.sql`,
-`20261028_lock_likes_ships.sql`, `20261028_lock_client_read_tables.sql`). The client reads them one
+`20261028_lock_likes_ships.sql`, `20261028_lock_client_read_tables.sql`,
+`20261105_lock_user_notifications.sql`). The client reads them one
 of two ways:
 
 - **A capped `security definer` RPC** (`get_display_users`, `get_profile_by_user_id`,

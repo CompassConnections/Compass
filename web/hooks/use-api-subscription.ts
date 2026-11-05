@@ -1,9 +1,20 @@
 import {getWebsocketUrl} from 'common/api/utils'
 import {APIRealtimeClient} from 'common/api/websocket-client'
 import {ServerMessage} from 'common/api/websockets'
+import {onAuthStateChanged} from 'firebase/auth'
 import {useEffect} from 'react'
+import {auth} from 'web/lib/firebase/users'
 
-const client = typeof window !== 'undefined' ? new APIRealtimeClient(getWebsocketUrl()) : undefined
+const getIdentity = async () => {
+  await auth.authStateReady()
+  const user = auth.currentUser
+  return user ? {uid: user.uid, token: await user.getIdToken()} : undefined
+}
+
+const client =
+  typeof window !== 'undefined' ? new APIRealtimeClient(getWebsocketUrl(), getIdentity) : undefined
+
+if (client) onAuthStateChanged(auth, () => void client.refreshIdentity())
 
 export type SubscriptionOptions = {
   topics: string[]

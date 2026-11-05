@@ -136,6 +136,7 @@ must meet, and how it is enforced), [`docs/feed.md`](docs/feed.md),
 [`docs/profile-fields.md`](docs/profile-fields.md), [`docs/testing.md`](docs/testing.md),
 [`docs/load-testing.md`](docs/load-testing.md) (JMeter load tests),
 [`docs/logging-monitoring.md`](docs/logging-monitoring.md),
+[`docs/websocket-auth.md`](docs/websocket-auth.md) (who may subscribe to what, and turning enforcement on),
 [`docs/troubleshooting.md`](docs/troubleshooting.md).
 Mobile: [`android/README.md`](android/README.md), [`ios/README.md`](ios/README.md),
 [`docs/ios.md`](docs/ios.md) (iOS plan and remaining manual steps),

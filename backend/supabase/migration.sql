@@ -98,4 +98,6 @@ BEGIN;
 \i backend/supabase/migrations/20261029_private_votes_and_stars.sql
 \i backend/supabase/migrations/20261031_compatibility_scores_prompt.sql
 \i backend/supabase/migrations/20261102_add_vote_edits.sql
+\i backend/supabase/migrations/20261105_lock_user_notifications.sql
+\i backend/supabase/migrations/20261105_lock_deleted_users_insert.sql
 COMMIT;

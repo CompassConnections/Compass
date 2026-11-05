@@ -41,6 +41,8 @@ export function ProfileProfileCommentThread(props: {
   idInUrl?: string
   showReplies?: boolean
   className?: string
+  /** Refetch the thread after a post, so showing the new comment never depends on the websocket. */
+  onPosted?: () => void
 }) {
   const {
     onUser,
@@ -51,6 +53,7 @@ export function ProfileProfileCommentThread(props: {
     idInUrl,
     showReplies,
     className,
+    onPosted,
   } = props
   const [replyToUserInfo, setReplyToUserInfo] = useState<ReplyToUserInfo>()
 
@@ -125,6 +128,7 @@ export function ProfileProfileCommentThread(props: {
             clearReply={clearReply}
             trackingLocation={trackingLocation}
             className="w-full min-w-0 grow"
+            onPosted={onPosted}
           />
         </div>
       )}
@@ -285,7 +289,7 @@ function DotMenu(props: {onUser: User; comment: Comment; onHide: () => void}) {
                 else toast.error(`You can't report your own comment`)
               },
             },
-          (isAdmin || isCurrentUser || isOwner) && {
+          (isAdmin || ((isCurrentUser || isOwner) && !comment.hidden)) && {
             name: comment.hidden ? 'Undelete' : 'Delete',
             icon: <EyeSlashIcon className="h-5 w-5 text-red-500" />,
             onClick: async () => {
@@ -349,9 +353,17 @@ export function ProfileCommentInput(props: {
   parentCommentId?: string
   clearReply?: () => void
   trackingLocation: string
+  onPosted?: () => void
 }) {
-  const {parentCommentId, onUserId, replyToUserInfo, className, clearReply, trackingLocation} =
-    props
+  const {
+    parentCommentId,
+    onUserId,
+    replyToUserInfo,
+    className,
+    clearReply,
+    trackingLocation,
+    onPosted,
+  } = props
   const t = useT()
   const user = useUser()
   const onSubmitComment = useEvent(async (editor: Editor) => {
@@ -366,6 +378,7 @@ export function ProfileCommentInput(props: {
       replyToCommentId: parentCommentId,
     })
     clearReply?.()
+    onPosted?.()
     track('comment', {
       location: trackingLocation,
     })

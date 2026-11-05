@@ -1,14 +1,23 @@
 import {APIErrors, APIHandler} from 'api/helpers/endpoint'
 import {isAdminId} from 'common/envs/constants'
-import {convertComment, convertVoteComment} from 'common/supabase/comment'
+import {convertVoteComment} from 'common/supabase/comment'
 import {Row} from 'common/supabase/utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {broadcastUpdatedComment, broadcastUpdatedVoteComment} from 'shared/websockets/helpers'
+import {
+  broadcastProfileCommentsChanged,
+  broadcastUpdatedVoteComment,
+} from 'shared/websockets/helpers'
 
 export const hideComment: APIHandler<'hide-comment'> = async (
   {commentId, hide, commentType},
   auth,
 ) => {
+  // Nothing records who hid a comment, so an author who could un-hide their own comment could also
+  // reverse a removal by a moderator or by the profile owner.
+  if (!hide && !isAdminId(auth.uid)) {
+    throw APIErrors.forbidden('Only admins can restore a hidden comment')
+  }
+
   const pg = createSupabaseDirectClient()
 
   if (commentType === 'vote') {
@@ -44,5 +53,5 @@ export const hideComment: APIHandler<'hide-comment'> = async (
 
   await pg.none(`update profile_comments set hidden = $2 where id = $1`, [commentId, hide])
 
-  broadcastUpdatedComment(convertComment(comment))
+  broadcastProfileCommentsChanged(comment.on_user_id)
 }

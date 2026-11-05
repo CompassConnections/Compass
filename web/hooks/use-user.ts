@@ -28,8 +28,24 @@ export const useWebsocketUser = (userId: string | undefined) => {
 
   const isPageVisible = useIsPageVisible()
 
+  const fetchUser = () => {
+    if (userId) {
+      getFullUserById(userId)
+        .then((result) => {
+          setUser(result)
+        })
+        .catch(() => {
+          console.error('Failed to fetch user')
+          setUser(null)
+        })
+    } else {
+      setUser(null)
+    }
+  }
+
   useApiSubscription({
     topics: [`user/${userId ?? '_'}`],
+    onReconnect: fetchUser,
     onBroadcast: ({data}) => {
       debug('User broadcast', {data})
       setUser((user) => {
@@ -48,18 +64,7 @@ export const useWebsocketUser = (userId: string | undefined) => {
   useEffect(() => {
     if (!isPageVisible) return
 
-    if (userId) {
-      getFullUserById(userId)
-        .then((result) => {
-          setUser(result)
-        })
-        .catch(() => {
-          console.error('Failed to fetch user')
-          setUser(null)
-        })
-    } else {
-      setUser(null)
-    }
+    fetchUser()
   }, [userId, isPageVisible])
 
   return user
@@ -68,14 +73,19 @@ export const useWebsocketUser = (userId: string | undefined) => {
 export const useWebsocketPrivateUser = (userId: string | undefined) => {
   const [privateUser, setPrivateUser] = useState<PrivateUser | null | undefined>()
 
+  const refetch = () => {
+    getPrivateUserSafe().then((result) => {
+      if (result) {
+        setPrivateUser(result)
+      }
+    })
+  }
+
   useApiSubscription({
     topics: [`private-user/${userId ?? '_'}`],
-    onBroadcast: () => {
-      getPrivateUserSafe().then((result) => {
-        if (result) {
-          setPrivateUser(result)
-        }
-      })
+    onBroadcast: refetch,
+    onReconnect: () => {
+      if (userId) refetch()
     },
   })
 

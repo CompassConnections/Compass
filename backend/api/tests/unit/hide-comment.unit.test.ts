@@ -1,7 +1,6 @@
 import {AuthedUser} from 'api/helpers/endpoint'
 import {hideComment} from 'api/hide-comment'
 import * as envConsts from 'common/envs/constants'
-import {convertComment} from 'common/supabase/comment'
 import {sqlMatch} from 'common/test-utils'
 import * as supabaseInit from 'shared/supabase/init'
 import * as websocketHelpers from 'shared/websockets/helpers'
@@ -44,11 +43,9 @@ describe('hideComment', () => {
         user_name: 'mockUserName',
         user_username: 'mockUserUsername',
       }
-      const mockConvertedComment = 'mockConvertedCommentValue'
 
       ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockComment)
       jest.spyOn(envConsts, 'isAdminId').mockReturnValue(true)
-      ;(convertComment as jest.Mock).mockReturnValue(mockConvertedComment)
 
       await hideComment(mockProps, mockAuth, mockReq)
 
@@ -59,10 +56,10 @@ describe('hideComment', () => {
       )
       expect(envConsts.isAdminId).toBeCalledTimes(1)
       expect(envConsts.isAdminId).toBeCalledWith(mockAuth.uid)
-      expect(convertComment).toBeCalledTimes(1)
-      expect(convertComment).toBeCalledWith(mockComment)
-      expect(websocketHelpers.broadcastUpdatedComment).toBeCalledTimes(1)
-      expect(websocketHelpers.broadcastUpdatedComment).toBeCalledWith(mockConvertedComment)
+      expect(websocketHelpers.broadcastProfileCommentsChanged).toBeCalledTimes(1)
+      expect(websocketHelpers.broadcastProfileCommentsChanged).toBeCalledWith(
+        mockComment.on_user_id,
+      )
     })
 
     it('should successfully hide the comment if the user is the one who made the comment', async () => {
@@ -117,6 +114,38 @@ describe('hideComment', () => {
       await hideComment(mockProps, mockAuth, mockReq)
     })
   })
+  describe('when restoring a hidden comment', () => {
+    const mockAuth = {uid: '321'} as AuthedUser
+    const mockReq = {} as any
+    const mockComment = {hidden: true, id: 123, on_user_id: '321', user_id: '321'}
+
+    it.each([undefined, 'vote'] as const)(
+      'should refuse the author and the profile owner (commentType %s)',
+      async (commentType) => {
+        ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockComment)
+        jest.spyOn(envConsts, 'isAdminId').mockReturnValue(false)
+
+        await expect(
+          hideComment({commentId: 'mockCommentId', hide: false, commentType}, mockAuth, mockReq),
+        ).rejects.toThrow('Only admins can restore a hidden comment')
+
+        expect(mockPg.none).not.toBeCalled()
+      },
+    )
+
+    it('should let an admin restore it', async () => {
+      ;(mockPg.oneOrNone as jest.Mock).mockResolvedValue(mockComment)
+      jest.spyOn(envConsts, 'isAdminId').mockReturnValue(true)
+
+      await hideComment({commentId: 'mockCommentId', hide: false}, mockAuth, mockReq)
+
+      expect(mockPg.none).toBeCalledWith(sqlMatch('update profile_comments set hidden = $2'), [
+        'mockCommentId',
+        false,
+      ])
+    })
+  })
+
   describe('when an error occurs', () => {
     it('should throw if the comment was not found', async () => {
       const mockProps = {

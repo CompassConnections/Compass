@@ -1,4 +1,4 @@
-import {type ProfileComment, type VoteComment} from 'common/comment'
+import {type VoteComment} from 'common/comment'
 import {type User} from 'common/user'
 
 import {broadcast, broadcastMulti} from './server'
@@ -12,8 +12,10 @@ export function broadcastUpdatedUser(user: Partial<User> & {id: string}) {
   broadcast(`user/${user.id}`, {user})
 }
 
-export function broadcastUpdatedComment(comment: ProfileComment) {
-  broadcast(`user/${comment.onUserId}/comment`, {comment})
+// Carries no comment on purpose: this topic is open to anyone, while who may read a profile's comments
+// depends on the viewer. Subscribers refetch, and `get-profile-comments` applies those rules.
+export function broadcastProfileCommentsChanged(onUserId: string) {
+  broadcast(`user/${onUserId}/comment`, {})
 }
 
 export function broadcastUpdatedVoteComment(comment: VoteComment) {

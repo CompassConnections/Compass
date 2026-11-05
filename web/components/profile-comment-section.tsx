@@ -20,7 +20,8 @@ export const ProfileCommentSection = (props: {
 }) => {
   const {onUser, currentUser, simpleView} = props
   const t = useT()
-  const comments = useLiveCommentsOnProfile(onUser.id).filter((c) => !c.hidden)
+  const {comments: liveComments, refresh} = useLiveCommentsOnProfile(onUser.id)
+  const comments = liveComments.filter((c) => !c.hidden)
   const parentComments = comments.filter((c) => !c.replyToCommentId)
   const commentsByParent = groupBy(comments, (c) => c.replyToCommentId ?? '_')
   const [profile, setProfile] = useState<Profile>(props.profile)
@@ -64,6 +65,7 @@ export const ProfileCommentSection = (props: {
                   className="mb-4 mr-px mt-px"
                   onUserId={onUser.id}
                   trackingLocation={'contract page'}
+                  onPosted={refresh}
                 />
               ) : (
                 /* One compact row, not a panel. This is an invitation, and as a 170px box it
@@ -124,6 +126,7 @@ export const ProfileCommentSection = (props: {
             onUser={onUser}
             showReplies={true}
             inTimeline={false}
+            onPosted={refresh}
           />
         ))}
     </Col>

@@ -1,10 +1,18 @@
 import {z} from 'zod'
 
+// The server closes every connection after this long, so idle clients cannot hold a Cloud Run instance
+// awake. The client uses the same figure to decide whether anyone is still there to reconnect for.
+export const WS_MAX_SESSION_MS = 4 * 60 * 1000
+
 export const CLIENT_MESSAGE_SCHEMAS = {
   identify: z.object({
     type: z.literal('identify'),
     txid: z.number(),
+    // Ignored by the server, which takes the identity from `token` alone. Still sent because an API
+    // revision without token support requires the field.
     uid: z.string(),
+    // A Firebase ID token. Leaving it out signs the connection out.
+    token: z.string().optional(),
   }),
   subscribe: z.object({
     type: z.literal('subscribe'),

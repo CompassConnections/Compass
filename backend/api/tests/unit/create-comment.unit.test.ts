@@ -1,6 +1,5 @@
 import {createComment} from 'api/create-comment'
 import {AuthedUser} from 'api/helpers/endpoint'
-import {convertComment} from 'common/supabase/comment'
 import {sqlMatch} from 'common/test-utils'
 import * as notificationPrefs from 'common/user-notification-preferences'
 import {richTextToString} from 'common/util/parse'
@@ -78,7 +77,6 @@ describe('createComment', () => {
         content: mockContent.content,
         replyToCommentId: mockReplyToCommentId,
       }
-      const mockConvertCommentReturn = 'mockConverComment'
 
       ;(sharedUtils.getUser as jest.Mock)
         .mockResolvedValueOnce(mockCreator)
@@ -91,7 +89,6 @@ describe('createComment', () => {
       ;(notificationPrefs.getNotificationDestinationsForUser as jest.Mock).mockReturnValue(
         mockNotificationDestination,
       )
-      ;(convertComment as jest.Mock).mockReturnValue(mockConvertCommentReturn)
 
       const results = await createComment(mockProps, mockAuth, mockReq)
 
@@ -128,8 +125,8 @@ describe('createComment', () => {
         mockOnUser,
         richTextToString(mockProps.content),
       )
-      expect(websocketHelpers.broadcastUpdatedComment).toBeCalledTimes(1)
-      expect(websocketHelpers.broadcastUpdatedComment).toBeCalledWith(mockConvertCommentReturn)
+      expect(websocketHelpers.broadcastProfileCommentsChanged).toBeCalledTimes(1)
+      expect(websocketHelpers.broadcastProfileCommentsChanged).toBeCalledWith(mockOnUser.id)
     })
   })
 

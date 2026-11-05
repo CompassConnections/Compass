@@ -71,14 +71,18 @@ function useNotifications(userId: string, count = 15 * NOTIFICATIONS_PER_PAGE) {
     'notifications-' + userId,
   )
   const {locale} = useLocale()
-  useEffect(() => {
+  const fetchNotifications = () => {
     if (userId)
       api('get-notifications', {limit: count, locale}).then((data) => {
         setNotifications(data)
       })
+  }
+  useEffect(() => {
+    fetchNotifications()
   }, [userId, locale])
   useApiSubscription({
     topics: [`user-notifications/${userId}`],
+    onReconnect: fetchNotifications,
     onBroadcast: ({data}) => {
       setNotifications((notifs) => [data.notification as Notification, ...(notifs ?? [])])
     },

@@ -1,5 +1,9 @@
 import {z} from 'zod'
 
+// The server closes every connection after this long, so idle clients cannot hold a Cloud Run instance
+// awake. The client uses the same figure to decide whether anyone is still there to reconnect for.
+export const WS_MAX_SESSION_MS = 4 * 60 * 1000
+
 export const CLIENT_MESSAGE_SCHEMAS = {
   identify: z.object({
     type: z.literal('identify'),

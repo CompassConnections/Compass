@@ -28,6 +28,7 @@ export function UnseenMessageChannelsProvider(props: {children: ReactNode}) {
   useApiSubscription({
     topics: ['private-user-messages/' + privateUser?.id],
     onBroadcast: () => refresh(),
+    onReconnect: () => refresh(),
     enabled: !!privateUser,
   })
 

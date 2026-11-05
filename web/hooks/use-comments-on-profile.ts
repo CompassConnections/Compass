@@ -22,6 +22,7 @@ export function useLiveCommentsOnProfile(userId: string) {
   useApiSubscription({
     topics: [`user/${userId}/comment`],
     onBroadcast: () => void refresh(),
+    onReconnect: () => void refresh(),
   })
 
   return {comments: data?.comments ?? [], refresh}

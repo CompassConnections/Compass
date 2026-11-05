@@ -137,6 +137,18 @@ const nextConfig: NextConfig = {
     }
     return [
       {
+        source: '/(.*)',
+        headers: [
+          {key: 'X-Frame-Options', value: 'DENY'},
+          // Microphone is for voice messages. `payment` is left out so the Open Collective iframe on
+          // /donate keeps access to it.
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), geolocation=(), microphone=(self), usb=()',
+          },
+        ],
+      },
+      {
         // Universal Links: iOS refuses to associate the app with the domain unless this file comes
         // back as JSON, and it has no extension for the static handler to infer that from. It must
         // also be served with no redirect — a 301 from apex to www, or the other way, breaks the

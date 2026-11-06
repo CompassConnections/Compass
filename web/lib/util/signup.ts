@@ -12,6 +12,7 @@ import {
 } from 'web/lib/firebase/users'
 import {db} from 'web/lib/supabase/db'
 import {safeLocalStorage} from 'web/lib/util/local'
+import {safeRedirectPath} from 'web/lib/util/safe-redirect'
 
 export function setOnboardingFlag() {
   debug('setOnboardingFlag')
@@ -157,7 +158,7 @@ export async function signinSignupRedirect(
       clearOnboardingFlag()
       // force refresh of AuthContext to load user and privateUser
       await auth.currentUser?.getIdToken(true)
-      await Router.push(path ?? '/')
+      await Router.push(safeRedirectPath(path) ?? '/')
     } else {
       await Router.push('/onboarding')
     }

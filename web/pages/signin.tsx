@@ -32,6 +32,7 @@ import {
   googleLogin,
 } from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
+import {safeRedirectPath} from 'web/lib/util/safe-redirect'
 import {
   getLastSignInMethod,
   rememberSignInMethod,
@@ -74,7 +75,8 @@ function RegisterComponent() {
     } else if (error) {
       setError('An error occurred during login')
     }
-    setRedirectPath(searchParams.get('redirect'))
+    // Checked here as well as at the redirect, because the banner below prints this value.
+    setRedirectPath(safeRedirectPath(searchParams.get('redirect')))
   }, [searchParams, t])
 
   const checkAndRedirect = async (userId: string | undefined) => {

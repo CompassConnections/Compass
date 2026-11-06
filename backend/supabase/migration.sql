@@ -19,7 +19,6 @@ BEGIN;
 \i backend/supabase/profile_stars.sql
 \i backend/supabase/user_events.sql
 \i backend/supabase/user_notifications.sql
-\i backend/supabase/functions_others.sql
 \i backend/supabase/reports.sql
 \i backend/supabase/bookmarked_searches.sql
 \i backend/supabase/causes.sql
@@ -103,4 +102,5 @@ BEGIN;
 \i backend/supabase/migrations/20261106_vote_tables_allow_account_deletion.sql
 \i backend/supabase/migrations/20261106_compatibility_answers_importance_range.sql
 \i backend/supabase/migrations/20261106_remove_deleted_members_from_likes_ships_alerts.sql
+\i backend/supabase/migrations/20261106_redact_banned_profiles.sql
 COMMIT;

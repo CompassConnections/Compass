@@ -20,7 +20,7 @@ backend/supabase/
 ├── migrations/             Active migrations — YYYYMMDD_<name>.sql, applied in filename order (source of truth)
 ├── migration.sql           Ordered \i list of every table file + migration — rebuilds the schema from scratch
 ├── users.sql, profiles.sql, ...   Reference shapes — one file per table
-├── functions.sql, functions_others.sql   Postgres functions
+├── functions.sql           Postgres functions
 ├── extensions.sql          Postgres extensions
 └── firebase.sql            Firebase-auth bridge
 ```

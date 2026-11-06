@@ -2598,10 +2598,6 @@ export type Database = {
       }
       firebase_uid: {Args: never; Returns: string}
       get_average_rating: {Args: {user_id: string}; Returns: number}
-      get_compatibility_prompts_with_answer_count: {
-        Args: never
-        Returns: Record<string, unknown>[]
-      }
       get_display_users: {
         Args: {ids: string[]}
         Returns: {

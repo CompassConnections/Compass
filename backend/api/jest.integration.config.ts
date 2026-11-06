@@ -6,6 +6,9 @@ module.exports = {
   ...base,
   testMatch: ['<rootDir>/tests/integration/**/*.integration.test.ts'],
   testPathIgnorePatterns: ['/node_modules/'],
+  // Uploaded alongside the unit report, which is what holds the thresholds.
+  coverageDirectory: 'coverage/integration',
+  coverageThreshold: {},
   setupFiles: ['<rootDir>/tests/integration/helpers/env.ts'],
   // Every test truncates the one shared database, so files must not run in parallel.
   maxWorkers: 1,

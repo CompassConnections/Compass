@@ -1,0 +1,8 @@
+coverage:
+  status:
+    # Overall coverage is held by the `coverageThreshold` ratchet in each Jest config (docs/testing.md).
+    project: off
+    # Every change is judged on the lines it adds, however low the rest of the workspace sits.
+    patch:
+      default:
+        target: 80%

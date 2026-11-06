@@ -150,6 +150,18 @@ table, so seed what the test needs in `beforeEach`. `asAnon()` runs SQL as the b
 grants apply. `yarn --cwd=backend/api test` does not run them. The wider
 plan is in [test-coverage-plan.md](test-coverage-plan.md).
 
+### Coverage ratchet
+
+Coverage can only go up. Each workspace's Jest config sets a `coverageThreshold`, and `yarn test:coverage` fails
+below it. When coverage rises, raise the thresholds to match: take the new figure, round it down, and subtract 1.
+That margin stops a trivial change from failing the build. Never lower a threshold to get a change through.
+
+Separately, `codecov.yml` asks for 80% coverage on the lines a change adds, counting unit and integration tests
+together. It reports as a status on the commit or pull request, and does not stop a direct push to `main`.
+
+A high number is not the goal: a mocked test raises it without proving much. See
+[test-coverage-plan.md](test-coverage-plan.md).
+
 ### Best Practices
 
 - Test Behavior, Not Implementation. Don’t test internal state or function calls unless you’re testing utilities or very

@@ -38,7 +38,20 @@ jobs:
         run: ./scripts/supabase_start.sh
 
       - name: Run integration tests
-        run: yarn test:integration
+        run: yarn test:integration --coverage
+
+      # Without this, code covered only by integration tests counts against the patch target.
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        if: success() && env.CODECOV_TOKEN != ''
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: backend/api/coverage/integration/lcov.info
+          flags: integration
+          fail_ci_if_error: false
+          slug: CompassConnections/Compass
 
   test:
     name: Jest Tests

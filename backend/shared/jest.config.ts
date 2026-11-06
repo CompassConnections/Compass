@@ -26,6 +26,10 @@ module.exports = {
   },
 
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts'],
+  // The ratchet: only ever raise these, see docs/testing.md.
+  coverageThreshold: {
+    global: {statements: 39, branches: 30, functions: 37, lines: 40},
+  },
   silent: true,
   // Each ts-jest worker is a full TS-compiling process; the default (cpus - 1) can spawn enough
   // of them in parallel to exhaust memory on high-core-count machines. CI runners only have a

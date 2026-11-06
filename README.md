@@ -114,7 +114,7 @@ just ask us on [Discord](https://discord.gg/8Vd7jzqjun).
 - [x] Search through most profile variables
 - [x] Set up chat / direct messaging
 - [x] Set up domain name (compassmeet.com)
-- [ ] Cover more than 90% with tests (unit, integration, e2e)
+- [ ] Keep raising test coverage through the [ratchet](docs/testing.md#coverage-ratchet), and hold new code to 80%
 - [x] Add Android mobile app
 - [x] Add iOS mobile app
 - [x] Add better onboarding (tooltips, modals, etc.)
@@ -141,7 +141,7 @@ contributors.
 - [x] Add email verification
 - [x] Add password reset
 - [x] Add automated welcome email
-- [ ] Security audit and penetration testing
+- [x] Security audit and penetration testing
 - [ ] Add Content-Security-Policy and other security headers
 - [ ] Add automated dependency and secret scanning to CI
 - [x] Make `deploy-api.sh` run automatically on push to `main` branch

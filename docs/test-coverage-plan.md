@@ -1,6 +1,6 @@
 # Test coverage plan
 
-> **Draft.** Edit freely. Steps 2 onwards are proposals, not commitments.
+> **Draft.** Edit freely. Step 4 is still a proposal; the other steps are done.
 
 ## The problem
 
@@ -67,10 +67,19 @@ Do not try to cover all the components. Add Playwright flows for sign-up, profil
 account deletion, and use Jest for hooks, `lib/` logic and components with real branching. The two backend e2e
 specs are stubs of 8–9 lines, to be filled in or removed.
 
-## Step 5: coverage ratchet
+## Step 5: coverage ratchet (done)
 
-Measure the baseline, set each workspace's threshold just below it, and only ever raise it. Add a patch coverage
-target on new code. Replace the README's 90% goal with this ratchet.
+Unit test coverage when the ratchet was set, on 2026-11-06:
+
+| Workspace        | Statements | Branches | Functions | Lines |
+| ---------------- | ---------- | -------- | --------- | ----- |
+| `common`         | 52.4%      | 47.6%    | 46.8%     | 51.6% |
+| `backend/api`    | 47.8%      | 39.6%    | 46.6%     | 47.9% |
+| `backend/shared` | 40.6%      | 31.8%    | 38.6%     | 41.1% |
+| `web`            | 4.8%       | 2.1%     | 2.2%      | 4.6%  |
+
+`web` had never been measured: its Jest config collected from a `src` folder that does not exist. `backend/email`
+has no tests, so it has no threshold. How the ratchet works is in [testing.md](testing.md).
 
 ## Open questions
 

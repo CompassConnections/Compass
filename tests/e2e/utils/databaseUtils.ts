@@ -53,3 +53,50 @@ export async function dbUserExists(username: string): Promise<boolean> {
   const result = await db.query(query, [username])
   return result.length > 0
 }
+
+/** Sets columns on a member's profile, for state the UI cannot reach or a test should not wait on. */
+export async function setProfileColumns(username: string, columns: Record<string, unknown>) {
+  const db = createSupabaseDirectClient()
+  await db.none(
+    `update profiles
+     set ${sets(columns)}
+     where user_id = (select id from users where username = $(username))`,
+    {...columns, username},
+  )
+}
+
+const sets = (columns: Record<string, unknown>) =>
+  Object.keys(columns)
+    .map((column) => `"${column}" = $(${column})`)
+    .join(', ')
+
+export async function banUser(username: string, banReason: string) {
+  const db = createSupabaseDirectClient()
+  await db.none(
+    `update users set is_banned_from_posting = true, ban_reason = $2 where username = $1`,
+    [username, banReason],
+  )
+}
+
+/** Answers every compatibility prompt on a member's behalf, so that others have someone to score against. */
+export async function seedCompatibilityAnswers(username: string) {
+  const db = createSupabaseDirectClient()
+  await db.none(
+    `insert into compatibility_answers (creator_id, question_id, multiple_choice, pref_choices, importance)
+     select (select id from users where username = $1), id, 0, '{0, 1}', 1
+     from compatibility_prompts`,
+    [username],
+  )
+}
+
+export async function notificationPreferencesOf(username: string) {
+  const db = createSupabaseDirectClient()
+  const {preferences} = await db.one(
+    `select pu.data -> 'notificationPreferences' as preferences
+     from private_users pu
+     join users u on u.id = pu.id
+     where u.username = $1`,
+    [username],
+  )
+  return preferences
+}

@@ -1,6 +1,6 @@
 # Test coverage plan
 
-> **Draft.** Edit freely. Step 4 is still a proposal; the other steps are done.
+> **Draft.** Edit freely. All five steps are done.
 
 ## The problem
 
@@ -61,11 +61,21 @@ these tests fail.
 Still not covered: rate limiting, websocket subscriptions, the `/internal` job endpoints, and the results of the
 outreach and ranking queries.
 
-## Step 4: web, by user journey
+## Step 4: web, by user journey (done)
 
-Do not try to cover all the components. Add Playwright flows for sign-up, profile edit, search, messaging and
-account deletion, and use Jest for hooks, `lib/` logic and components with real branching. The two backend e2e
-specs are stubs of 8–9 lines, to be filled in or removed.
+**Goal:** a broken journey or a broken browser-side rule fails CI, rather than a coverage figure. Playwright does
+not count towards Jest or Codecov coverage, so these journeys barely move `web`'s coverage.
+
+- **CI:** the E2E job is split in two with `--shard`, because one worker was close to its 15-minute timeout.
+- **New Playwright journeys:** signed-out visitors, banned and held members, blocking, profile editing, disabling a
+  profile, compatibility scores, endorsements reaching notifications, and settings persisting.
+- **Tidying:** `db.test.ts` is gone, the age filter test runs again (it needed to poll, not skip), and people and
+  messaging tests moved out of `signIn.spec.ts`.
+- **Jest:** `jest-environment-jsdom` is installed, and a test opts in with `/** @jest-environment jsdom */`. The
+  review and share prompt rules needed no work: they already live in `common/` with tests.
+
+Not covered: what staff see, and presentational components or static pages. Collecting coverage from Playwright is
+possible, but it adds build instrumentation to chase a number.
 
 ## Step 5: coverage ratchet (done)
 
@@ -93,6 +103,10 @@ change it to a plain `it`.
 
 - **Fixed: a banned member's full profile was sent to everyone,** with only the browser hiding it. `getUserAndProfile`
   and `get_profile_by_user_id` now redact it, except for the owner and staff through `get-profile`.
+- **Fixed: a member could see a redacted copy of a profile they may read in full.** On a full page load
+  `useProfileByUser` reads signed out and then signed in, and whichever answer landed last won.
+- **Fixed: a direct link to a members-only profile said endorsements were off,** and offered no way to write one.
+  `ProfileCommentSection` kept the redacted profile it first rendered with.
 - **Open: `ban_reason` is readable by anyone,** through `get_display_users` and `get-user-and-profile`. It says
   whether a moderator confirmed abuse or a hold is provisional.
 - **Fixed: the data export crashed for an account with no profile, and left out likes and ships** of anyone without

@@ -290,6 +290,15 @@ export class ProfilePage {
     await this.shareButton.click()
   }
 
+  async goTo(username: string) {
+    await this.page.goto(`/${username}`)
+  }
+
+  async blockOrUnblock(action: 'Block' | 'Unblock', displayName: string) {
+    await this.page.getByTestId('more-options-user').click()
+    await this.page.getByRole('button', {name: `${action} ${displayName}`}).click()
+  }
+
   async clickEditProfileButton() {
     await expect(this.editProfileButton).toBeVisible()
     await this.editProfileButton.click()

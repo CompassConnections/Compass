@@ -150,6 +150,11 @@ table, so seed what the test needs in `beforeEach`. `asAnon()` runs SQL as the b
 grants apply. `yarn --cwd=backend/api test` does not run them. The wider
 plan is in [test-coverage-plan.md](test-coverage-plan.md).
 
+### Rendering in web tests
+
+Web tests run in `node`. One that needs a DOM opts in with a first line of `/** @jest-environment jsdom */`, then
+uses `@testing-library/react`. See `web/tests/unit/use-profile.test.ts`.
+
 ### Coverage ratchet
 
 Coverage can only go up. Each workspace's Jest config sets a `coverageThreshold`, and `yarn test:coverage` fails

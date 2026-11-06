@@ -1,7 +1,7 @@
 import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {groupBy, orderBy} from 'lodash'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {toast} from 'react-hot-toast'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
@@ -25,6 +25,9 @@ export const ProfileCommentSection = (props: {
   const parentComments = comments.filter((c) => !c.replyToCommentId)
   const commentsByParent = groupBy(comments, (c) => c.replyToCommentId ?? '_')
   const [profile, setProfile] = useState<Profile>(props.profile)
+  // The first render of a page can hold the redacted profile, whose `comments_enabled` is empty, so
+  // without this the section went on saying endorsements were off after the whole profile arrived.
+  useEffect(() => setProfile(props.profile), [props.profile])
   const [showCommentInput, setShowCommentInput] = useState(false)
   const isCurrentUser = currentUser?.id === onUser.id
 

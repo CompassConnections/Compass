@@ -6,7 +6,7 @@ import {
 } from 'common/profiles/profile'
 import {Row} from 'common/supabase/utils'
 import {User} from 'common/user'
-import {createContext, ReactNode, useContext, useEffect} from 'react'
+import {createContext, ReactNode, useContext, useEffect, useRef} from 'react'
 import {usePersistentInMemoryState} from 'web/hooks/use-persistent-in-memory-state'
 import {usePersistentLocalState} from 'web/hooks/use-persistent-local-state'
 import {useUser} from 'web/hooks/use-user'
@@ -73,9 +73,13 @@ export const useProfileByUser = (user: User | undefined) => {
     undefined,
     `profile-user-${userId}`,
   )
+  const latestRefresh = useRef(0)
 
   function refreshProfile() {
     if (userId && user) {
+      // On a full page load this runs signed out, then again once the session is restored. Whichever
+      // answer lands last used to win, so a slow redacted read could overwrite the member's whole one.
+      const refresh = ++latestRefresh.current
       // console.debug('Refreshing profile in useProfileByUser for', user?.username, profile);
       // A member is entitled to the whole profile, which the direct read no longer gives out; a
       // signed-out visitor gets the same redaction either way, so they stay on the cheaper path.
@@ -84,11 +88,13 @@ export const useProfileByUser = (user: User | undefined) => {
         : getProfileRowWithFrontendSupabase(userId, db)
       fetched
         .then((profile) => {
+          if (refresh !== latestRefresh.current) return
           if (!profile) setProfile(null)
           else setProfile({...profile, user})
         })
         .catch((error) => {
           debug('Warning: profile not found', user?.username, error)
+          if (refresh !== latestRefresh.current) return
           setProfile(null)
           return
         })

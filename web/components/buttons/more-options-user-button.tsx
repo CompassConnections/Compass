@@ -56,6 +56,7 @@ export function MoreOptionsUserButton(props: {user: User}) {
     <>
       <Tooltip text={t('more_options_user.more_options', 'More Options')} noTap>
         <Button
+          data-testid="more-options-user"
           color={'gray-white'}
           className="border-canvas-300 flex items-center gap-1.5 rounded-lg border px-[8px] py-2 text-sm text-primary-700 transition-colors hover:border-primary-400 hover:bg-primary-50"
           onClick={() => setIsModalOpen(true)}

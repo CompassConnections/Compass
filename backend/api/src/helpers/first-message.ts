@@ -131,7 +131,6 @@ const NOT_PROFILE_CONTENT = [
   'allow_direct_messaging',
   'allow_interest_indicating',
   'comments_enabled',
-  'messaging_status',
   'social_media_consent',
   'spotlight_consent',
   'donor_badge_hidden',

@@ -321,7 +321,7 @@ deliberately.
 | Tags for age, gender, country, intent | Full filter set incl. relationship & romantic styles ([`filters.md`](filters.md)) |
 | Rate limits as anti-spam              | One like per day (`has-free-like`), per-endpoint `rateLimited`                    |
 | Blocking / reporting / bans           | `block-user`, `report`, `ban-user`, account-on-hold                               |
-| Receiver control over who can message | `allow_direct_messaging`, `allow_interest_indicating`, `messaging_status`         |
+| Receiver control over who can message | `allow_direct_messaging`, `allow_interest_indicating`                             |
 | AI help writing a profile             | `llm-extract-profile`, `/tips-bio`, bio editor assistance                         |
 | Published platform statistics         | `/stats`, `/financials`, `repo-stats`                                             |
 | Free-text accessibility info          | `accessibility_notes` (see §1.2 for the structured upgrade)                       |

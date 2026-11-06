@@ -14,8 +14,7 @@ test.describe('blocking', () => {
     await app.profile.goTo(blocked.username)
     await app.profile.blockOrUnblock('Block', blocked.display_name)
     await expect(app.page.getByText('Blocked.', {exact: false})).toBeVisible()
-
-    await app.page.keyboard.press('Escape')
+    await expect(app.page.getByRole('dialog')).toHaveCount(0)
 
     const searchFor = async (searcher: typeof app, name: string) => {
       await searcher.home.clickPeopleLink()
@@ -33,8 +32,6 @@ test.describe('blocking', () => {
     await app.profile.goTo(blocked.username)
     await app.profile.blockOrUnblock('Unblock', blocked.display_name)
     await expect(app.page.getByText('Unblocked.', {exact: false})).toBeVisible()
-
-    await app.page.keyboard.press('Escape')
 
     await searchFor(app, blocked.display_name)
     await expect(noResults(app)).toHaveCount(0)

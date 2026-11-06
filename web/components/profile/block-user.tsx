@@ -44,14 +44,15 @@ export const BlockUser = (props: {
   currentUser: PrivateUser
   closeModal: () => void
 }) => {
-  const {user, currentUser} = props
+  const {user, currentUser, closeModal} = props
   const {id: userId} = user
   const t = useT()
 
   const isBlocked = currentUser.blockedUserIds?.includes(userId)
 
-  const onUnblock = () => unblockUser(userId, t)
-  const onBlock = () => blockUser(userId, t)
+  // Closed only on success: if the request fails, the toast says so and the button stays to retry.
+  const onUnblock = () => unblockUser(userId, t).then(closeModal)
+  const onBlock = () => blockUser(userId, t).then(closeModal)
   return (
     <Col>
       <Row className={'justify-between'}>

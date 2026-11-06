@@ -31,12 +31,17 @@ mocked.
 
 Run it with `yarn test:integration` (see [testing.md](testing.md)).
 
-## Step 2: check every query against the real schema
+## Step 2: check every query against the real schema (done)
 
-Capture the SQL and params that the mocked unit tests already send, then run `explain` on each one against the
-integration database. This finds wrong tables, columns, types and syntax in every query those tests reach,
-without writing a test per query. It does not find wrong results, and it only sees queries the unit tests
-execute.
+`queries-match-schema.integration.test.ts` parses the API and shared source for query strings and runs `prepare`
+on each one against the integration database. That resolves tables, columns, functions and types without
+executing anything, so it needs no sample values and covers files with no tests at all. New queries are included
+automatically.
+
+It checks about 230 queries. It does not find wrong results. It also skips about 85: around 70 built at runtime
+with `${...}` or a variable, and 14 that splice in identifiers or lists through pg-promise (`:name`, `:list`).
+Resolving constants such as `${TESTIMONIAL_COLUMNS}` would bring some of the first group in. The `renderSql`
+builder, which `get-profiles` uses, remains out of reach, so those need the behavioural tests in step 3.
 
 ## Step 3: integration tests, ordered by risk
 
@@ -64,6 +69,9 @@ target on new code. Replace the README's 90% goal with this ratchet.
 
 ## Findings so far
 
+- **Open: `trackAuditEvent` inserts into `audit_events`, a table that does not exist.** It is a leftover from the
+  Manifold code. `ban-user` reaches it through `trackPublicEvent`, and `tryOrLogError` swallows the failure, so bans
+  are silently not recorded. The table is absent from the migrations, `schema.ts` and dev. Either delete the call or create the table. Listed in `KNOWN_FAILURES`.
 - **Fixed: deleting an account left the member's ID in other members' rows,** in `profile_likes.target_id`,
   `profile_ships.target1_id` and `target2_id`, and `search_alert_sends.matched_user_ids`. Migration
   `20261106_remove_deleted_members_from_likes_ships_alerts.sql` and `delete-me` now clear them.

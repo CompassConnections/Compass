@@ -69,9 +69,9 @@ target on new code. Replace the README's 90% goal with this ratchet.
 
 ## Findings so far
 
-- **Open: `trackAuditEvent` inserts into `audit_events`, a table that does not exist.** It is a leftover from the
-  Manifold code. `ban-user` reaches it through `trackPublicEvent`, and `tryOrLogError` swallows the failure, so bans
-  are silently not recorded. The table is absent from the migrations, `schema.ts` and dev. Either delete the call or create the table. Listed in `KNOWN_FAILURES`.
+- **Fixed: `trackAuditEvent` inserted into `audit_events`, a table that does not exist.** It was a leftover from the
+  Manifold code, reached by `ban-user` through `trackPublicEvent`, and `tryOrLogError` swallowed the failure. The
+  call is gone, and bans now go to PostHog only.
 - **Fixed: deleting an account left the member's ID in other members' rows,** in `profile_likes.target_id`,
   `profile_ships.target1_id` and `target2_id`, and `search_alert_sends.matched_user_ids`. Migration
   `20261106_remove_deleted_members_from_likes_ships_alerts.sql` and `delete-me` now clear them.

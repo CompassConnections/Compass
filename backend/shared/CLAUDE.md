@@ -32,7 +32,7 @@ backend/shared/src/
 ├── safe-fetch.ts           safeFetch / readBodyWithLimit — the only way to fetch a user-supplied URL
 ├── init-admin.ts           Firebase Admin init
 ├── encryption.ts           Message encryption helpers
-├── analytics.ts, audit-events.ts
+├── analytics.ts
 └── profiles/, compatibility/, helpers/
 ```
 

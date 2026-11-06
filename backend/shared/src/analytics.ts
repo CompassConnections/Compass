@@ -1,7 +1,6 @@
 import {ENV_CONFIG} from 'common/envs/constants'
 import {Request} from 'express'
 import {PostHog} from 'posthog-node'
-import {trackAuditEvent} from 'shared/audit-events'
 import {log} from 'shared/utils'
 
 const key = ENV_CONFIG.posthogKey
@@ -25,15 +24,12 @@ export const track = async (userId: string, eventName: string, properties?: any)
 }
 
 export const trackPublicEvent = async (userId: string, eventName: string, properties?: any) => {
-  const allProperties = Object.assign(properties ?? {}, {})
-  const {commentId, ...data} = allProperties
   try {
     client.capture({
       distinctId: userId,
       event: eventName,
       properties,
     })
-    await trackAuditEvent(userId, eventName, commentId, data)
   } catch (e) {
     log.error(e)
   }

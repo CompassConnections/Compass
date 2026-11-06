@@ -239,7 +239,7 @@ export type Database = {
           created_time?: string
           creator_id: string
           explanation?: string | null
-          id?: number
+          id?: never
           importance: number
           multiple_choice: number
           pref_choices: number[]
@@ -249,7 +249,7 @@ export type Database = {
           created_time?: string
           creator_id?: string
           explanation?: string | null
-          id?: number
+          id?: never
           importance?: number
           multiple_choice?: number
           pref_choices?: number[]
@@ -292,7 +292,7 @@ export type Database = {
           community_importance_score?: number | null
           created_time?: string
           creator_id?: string | null
-          id?: number
+          id?: never
           importance_score?: number
           multiple_choice_options?: Json | null
           question: string
@@ -304,7 +304,7 @@ export type Database = {
           community_importance_score?: number | null
           created_time?: string
           creator_id?: string | null
-          id?: number
+          id?: never
           importance_score?: number
           multiple_choice_options?: Json | null
           question?: string
@@ -1014,13 +1014,13 @@ export type Database = {
         }
         Insert: {
           created_time?: string
-          id?: number
+          id?: never
           last_updated_time?: string
           title?: string | null
         }
         Update: {
           created_time?: string
-          id?: number
+          id?: never
           last_updated_time?: string
           title?: string | null
         }
@@ -1030,6 +1030,7 @@ export type Database = {
         Row: {
           channel_id: number
           ciphertext: string | null
+          content: Json | null
           created_time: string
           deleted: boolean | null
           edited_at: string | null
@@ -1044,6 +1045,7 @@ export type Database = {
         Insert: {
           channel_id: number
           ciphertext?: string | null
+          content?: Json | null
           created_time?: string
           deleted?: boolean | null
           edited_at?: string | null
@@ -1058,6 +1060,7 @@ export type Database = {
         Update: {
           channel_id?: number
           ciphertext?: string | null
+          content?: Json | null
           created_time?: string
           deleted?: boolean | null
           edited_at?: string | null
@@ -1195,7 +1198,7 @@ export type Database = {
           content: Json
           created_time?: string
           hidden?: boolean
-          id?: number
+          id?: never
           on_user_id: string
           reply_to_comment_id?: number | null
           user_avatar_url?: string | null
@@ -1207,7 +1210,7 @@ export type Database = {
           content?: Json
           created_time?: string
           hidden?: boolean
-          id?: number
+          id?: never
           on_user_id?: string
           reply_to_comment_id?: number | null
           user_avatar_url?: string | null
@@ -1501,8 +1504,8 @@ export type Database = {
         Row: {
           accessibility_notes: string | null
           age: number | null
-          allow_direct_messaging: boolean | null
-          allow_interest_indicating: boolean | null
+          allow_direct_messaging: boolean
+          allow_interest_indicating: boolean
           big5_agreeableness: number | null
           big5_conscientiousness: number | null
           big5_extraversion: number | null
@@ -1547,7 +1550,6 @@ export type Database = {
           links: Json
           looking_for_matches: boolean
           mbti: string | null
-          messaging_status: string
           neurotype: string[] | null
           neurotype_details: string | null
           occupation: string | null
@@ -1588,14 +1590,14 @@ export type Database = {
           spotlight_consent: boolean
           university: string | null
           user_id: string
-          visibility: Database['public']['Enums']['lover_visibility']
+          visibility: Database['public']['Enums']['profile_visibility']
           wants_kids_strength: number | null
         }
         Insert: {
           accessibility_notes?: string | null
           age?: number | null
-          allow_direct_messaging?: boolean | null
-          allow_interest_indicating?: boolean | null
+          allow_direct_messaging?: boolean
+          allow_interest_indicating?: boolean
           big5_agreeableness?: number | null
           big5_conscientiousness?: number | null
           big5_extraversion?: number | null
@@ -1631,7 +1633,7 @@ export type Database = {
           has_kids?: number | null
           headline?: string | null
           height_in_inches?: number | null
-          id?: number
+          id?: never
           image_descriptions?: Json | null
           is_smoker?: boolean | null
           keywords?: string[] | null
@@ -1640,7 +1642,6 @@ export type Database = {
           links?: Json
           looking_for_matches?: boolean
           mbti?: string | null
-          messaging_status?: string
           neurotype?: string[] | null
           neurotype_details?: string | null
           occupation?: string | null
@@ -1681,14 +1682,14 @@ export type Database = {
           spotlight_consent?: boolean
           university?: string | null
           user_id: string
-          visibility?: Database['public']['Enums']['lover_visibility']
+          visibility?: Database['public']['Enums']['profile_visibility']
           wants_kids_strength?: number | null
         }
         Update: {
           accessibility_notes?: string | null
           age?: number | null
-          allow_direct_messaging?: boolean | null
-          allow_interest_indicating?: boolean | null
+          allow_direct_messaging?: boolean
+          allow_interest_indicating?: boolean
           big5_agreeableness?: number | null
           big5_conscientiousness?: number | null
           big5_extraversion?: number | null
@@ -1724,7 +1725,7 @@ export type Database = {
           has_kids?: number | null
           headline?: string | null
           height_in_inches?: number | null
-          id?: number
+          id?: never
           image_descriptions?: Json | null
           is_smoker?: boolean | null
           keywords?: string[] | null
@@ -1733,7 +1734,6 @@ export type Database = {
           links?: Json
           looking_for_matches?: boolean
           mbti?: string | null
-          messaging_status?: string
           neurotype?: string[] | null
           neurotype_details?: string | null
           occupation?: string | null
@@ -1774,7 +1774,7 @@ export type Database = {
           spotlight_consent?: boolean
           university?: string | null
           user_id?: string
-          visibility?: Database['public']['Enums']['lover_visibility']
+          visibility?: Database['public']['Enums']['profile_visibility']
           wants_kids_strength?: number | null
         }
         Relationships: [
@@ -2226,7 +2226,7 @@ export type Database = {
           created_time: string
           data: Json
           id: string
-          is_banned_from_posting: boolean | null
+          is_banned_from_posting: boolean
           name: string
           name_username_vector: unknown
           username: string
@@ -2237,7 +2237,7 @@ export type Database = {
           created_time?: string
           data: Json
           id?: string
-          is_banned_from_posting?: boolean | null
+          is_banned_from_posting?: boolean
           name: string
           name_username_vector?: unknown
           username: string
@@ -2248,7 +2248,7 @@ export type Database = {
           created_time?: string
           data?: Json
           id?: string
-          is_banned_from_posting?: boolean | null
+          is_banned_from_posting?: boolean
           name?: string
           name_username_vector?: unknown
           username?: string
@@ -2471,7 +2471,7 @@ export type Database = {
           description: Json | null
           edited_time: string | null
           id: number
-          is_anonymous: boolean | null
+          is_anonymous: boolean
           status: string | null
           title: string
         }
@@ -2481,7 +2481,7 @@ export type Database = {
           description?: Json | null
           edited_time?: string | null
           id?: never
-          is_anonymous?: boolean | null
+          is_anonymous: boolean
           status?: string | null
           title: string
         }
@@ -2491,7 +2491,7 @@ export type Database = {
           description?: Json | null
           edited_time?: string | null
           id?: never
-          is_anonymous?: boolean | null
+          is_anonymous?: boolean
           status?: string | null
           title?: string
         }
@@ -2601,7 +2601,7 @@ export type Database = {
       }
       firebase_uid: {Args: never; Returns: string}
       get_average_rating: {Args: {user_id: string}; Returns: number}
-      get_compatibility_questions_with_answer_count: {
+      get_compatibility_prompts_with_answer_count: {
         Args: never
         Returns: Record<string, unknown>[]
       }
@@ -2616,21 +2616,13 @@ export type Database = {
           username: string
         }[]
       }
-      get_love_question_answers_and_lovers: {
-        Args: {p_question_id: number}
-        Returns: Record<string, unknown>[]
-      }
-      get_love_question_answers_and_profiles: {
-        Args: {p_question_id: number}
-        Returns: Record<string, unknown>[]
-      }
       get_profile_by_user_id: {
         Args: {uid: string}
         Returns: {
           accessibility_notes: string | null
           age: number | null
-          allow_direct_messaging: boolean | null
-          allow_interest_indicating: boolean | null
+          allow_direct_messaging: boolean
+          allow_interest_indicating: boolean
           big5_agreeableness: number | null
           big5_conscientiousness: number | null
           big5_extraversion: number | null
@@ -2675,7 +2667,6 @@ export type Database = {
           links: Json
           looking_for_matches: boolean
           mbti: string | null
-          messaging_status: string
           neurotype: string[] | null
           neurotype_details: string | null
           occupation: string | null
@@ -2716,27 +2707,12 @@ export type Database = {
           spotlight_consent: boolean
           university: string | null
           user_id: string
-          visibility: Database['public']['Enums']['lover_visibility']
+          visibility: Database['public']['Enums']['profile_visibility']
           wants_kids_strength: number | null
         }[]
         SetofOptions: {
           from: '*'
           to: 'profiles'
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
-      get_profile_stars: {
-        Args: {creator: string}
-        Returns: {
-          created_time: string
-          creator_id: string
-          star_id: string
-          target_id: string
-        }[]
-        SetofOptions: {
-          from: '*'
-          to: 'profile_stars'
           isOneToOne: false
           isSetofReturn: true
         }
@@ -2753,6 +2729,13 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      get_vote_commenter_choices: {
+        Args: {vid: number}
+        Returns: {
+          choice: number
+          user_id: string
+        }[]
       }
       get_votes_with_results: {
         Args: {only_vote_id?: number; order_by?: string}
@@ -2801,8 +2784,8 @@ export type Database = {
       }
     }
     Enums: {
-      lover_visibility: 'public' | 'member'
       profile_feed_visibility: 'none' | 'basic' | 'full'
+      profile_visibility: 'public' | 'member'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2928,8 +2911,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      lover_visibility: ['public', 'member'],
       profile_feed_visibility: ['none', 'basic', 'full'],
+      profile_visibility: ['public', 'member'],
     },
   },
 } as const

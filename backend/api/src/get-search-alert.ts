@@ -16,9 +16,10 @@ export const getSearchAlert: APIHandler<'get-search-alert'> = async (props, auth
     // bigint[] comes back from pg as strings, not numbers.
     search_ids: string[]
     matched_user_ids: string[]
+    deleted_match_count: number
     created_time: string
   }>(
-    `select search_ids, matched_user_ids, created_time
+    `select search_ids, matched_user_ids, deleted_match_count, created_time
      from search_alert_sends
      where id = $(id) and creator_id = $(uid)`,
     {id: props.id, uid: auth.uid},
@@ -61,6 +62,7 @@ export const getSearchAlert: APIHandler<'get-search-alert'> = async (props, auth
     createdTime: new Date(send.created_time).valueOf(),
     // Named rather than silently shortened: a list that came up two people short with no explanation
     // reads as the alert having lied.
-    goneCount: send.matched_user_ids.length - profiles.length,
+    // Deleted accounts are counted rather than listed: `delete-me` removes their ids.
+    goneCount: send.deleted_match_count + send.matched_user_ids.length - profiles.length,
   }
 }

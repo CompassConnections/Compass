@@ -12,6 +12,12 @@ ALTER TABLE profile_likes
             REFERENCES users(id)
             ON DELETE CASCADE;
 
+ALTER TABLE profile_likes
+    ADD CONSTRAINT profile_likes_target_id_fkey
+        FOREIGN KEY (target_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
 -- Row Level Security
 ALTER TABLE profile_likes ENABLE ROW LEVEL SECURITY;
 

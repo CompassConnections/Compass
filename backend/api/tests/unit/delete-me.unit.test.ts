@@ -19,6 +19,7 @@ describe('deleteMe', () => {
     jest.resetAllMocks()
     mockPg = {
       none: jest.fn(),
+      tx: jest.fn((callback) => callback(mockPg)),
     }
     ;(supabaseInit.createSupabaseDirectClient as jest.Mock).mockReturnValue(mockPg)
   })
@@ -51,13 +52,16 @@ describe('deleteMe', () => {
 
       expect(sharedUtils.getUser).toBeCalledTimes(1)
       expect(sharedUtils.getUser).toBeCalledWith(mockAuth.uid)
-      expect(mockPg.none).toBeCalledTimes(2)
+      expect(mockPg.none).toBeCalledTimes(3)
       expect(mockPg.none).toHaveBeenNthCalledWith(
         1,
         sqlMatch('INSERT INTO deleted_users (username, reason_category, reason_details)'),
         [mockUser.username, mockRef.reasonCategory, mockRef.reasonDetails],
       )
-      expect(mockPg.none).toHaveBeenNthCalledWith(2, sqlMatch('DELETE FROM users WHERE id = $1'), [
+      expect(mockPg.none).toHaveBeenNthCalledWith(2, sqlMatch('update search_alert_sends'), [
+        mockUser.id,
+      ])
+      expect(mockPg.none).toHaveBeenNthCalledWith(3, sqlMatch('DELETE FROM users WHERE id = $1'), [
         mockUser.id,
       ])
       expect(firebaseUtils.deleteUserFiles).toBeCalledTimes(1)

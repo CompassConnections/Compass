@@ -1292,6 +1292,13 @@ export type Database = {
             referencedRelation: 'users'
             referencedColumns: ['id']
           },
+          {
+            foreignKeyName: 'profile_likes_target_id_fkey'
+            columns: ['target_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
         ]
       }
       profile_ships: {
@@ -1320,6 +1327,20 @@ export type Database = {
           {
             foreignKeyName: 'profile_ships_creator_id_fkey'
             columns: ['creator_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'profile_ships_target1_id_fkey'
+            columns: ['target1_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'profile_ships_target2_id_fkey'
+            columns: ['target2_id']
             isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
@@ -1927,6 +1948,7 @@ export type Database = {
         Row: {
           created_time: string
           creator_id: string
+          deleted_match_count: number
           id: number
           matched_user_ids: string[]
           search_ids: number[]
@@ -1934,6 +1956,7 @@ export type Database = {
         Insert: {
           created_time?: string
           creator_id: string
+          deleted_match_count?: number
           id?: never
           matched_user_ids: string[]
           search_ids: number[]
@@ -1941,6 +1964,7 @@ export type Database = {
         Update: {
           created_time?: string
           creator_id?: string
+          deleted_match_count?: number
           id?: never
           matched_user_ids?: string[]
           search_ids?: number[]

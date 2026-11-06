@@ -46,6 +46,7 @@
     "test:e2e:dev": "./scripts/e2e-dev.sh",
     "test:e2e:dev:ui": "yarn test:e2e:dev --ui",
     "test:e2e:ui": "./scripts/e2e.sh --ui",
+    "test:integration": "./scripts/test_integration.sh",
     "test:update": "yarn workspaces run test --updateSnapshot",
     "test:watch": "yarn workspaces run test --watch",
     "typecheck": "yarn --cwd=web typecheck && yarn --cwd=backend/api typecheck && yarn --cwd=common typecheck && yarn --cwd=backend/shared typecheck && yarn --cwd=backend/email typecheck"

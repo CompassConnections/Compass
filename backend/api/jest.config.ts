@@ -4,6 +4,8 @@ module.exports = {
 
   rootDir: '.',
   testMatch: ['<rootDir>/tests/**/*.test.ts', '<rootDir>/tests/**/*.spec.ts'],
+  // Need a real database: see jest.integration.config.ts.
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/tests/integration/'],
 
   moduleNameMapper: {
     '^api/(.*)$': '<rootDir>/src/$1',

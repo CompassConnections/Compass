@@ -13,6 +13,18 @@ ALTER TABLE profile_ships
             REFERENCES users(id)
             ON DELETE CASCADE;
 
+ALTER TABLE profile_ships
+    ADD CONSTRAINT profile_ships_target1_id_fkey
+        FOREIGN KEY (target1_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
+ALTER TABLE profile_ships
+    ADD CONSTRAINT profile_ships_target2_id_fkey
+        FOREIGN KEY (target2_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE;
+
 -- Row Level Security
 ALTER TABLE profile_ships ENABLE ROW LEVEL SECURITY;
 

@@ -21,6 +21,7 @@
     "regen-types-dev": "cd ../supabase && make ENV=dev regen-types-dev",
     "test": "jest --config jest.config.ts",
     "test:coverage": "jest --config jest.config.ts --coverage",
+    "test:integration": "jest --config jest.integration.config.ts",
     "typecheck": "yarn build && npx tsc --noEmit",
     "watch:compile": "npx concurrently \"tsc -b --watch --preserveWatchOutput\" \"(cd ../../common && tsc-alias --watch)\" \"(cd ../shared && tsc-alias --watch)\" \"(cd ../email && tsc-alias --watch)\" \"tsc-alias --watch\"",
     "watch:serve": "tsx watch src/serve.ts"

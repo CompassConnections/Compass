@@ -63,8 +63,19 @@ export const deleteMe: APIHandler<'me/delete'> = async (
   }
 
   // Remove user data from Supabase
-  await pg.none('DELETE FROM users WHERE id = $1', [userId])
-  // Should cascade delete in other tables
+  await pg.tx(async (tx) => {
+    // An array, so no foreign key can clear it. Counted so the alert can still say that someone it
+    // named is gone. In the same transaction so the account cannot go while its id stays behind.
+    await tx.none(
+      `update search_alert_sends
+       set matched_user_ids    = array_remove(matched_user_ids, $1),
+           deleted_match_count = deleted_match_count + 1
+       where $1 = any (matched_user_ids)`,
+      [userId],
+    )
+    await tx.none('DELETE FROM users WHERE id = $1', [userId])
+    // Should cascade delete in other tables
+  })
 
   // Delete user files from Firebase Storage
   await deleteUserFiles(user.username, userId)

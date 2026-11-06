@@ -43,6 +43,7 @@ yarn lint-fix
 yarn typecheck        # tsc --noEmit across all packages
 yarn prettier
 yarn test:coverage
+yarn test:integration # API tests against real Postgres (needs the local Supabase stack)
 yarn test:e2e         # Playwright E2E (spins up services)
 yarn test:e2e:dev     # Playwright against an already-running dev server
 ```

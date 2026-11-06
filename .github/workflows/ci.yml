@@ -22,6 +22,24 @@ jobs:
       - name: Typecheck
         run: yarn typecheck
 
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Start Supabase
+        env:
+          # See the same step in ci-e2e.yml
+          SUPABASE_INTERNAL_IMAGE_REGISTRY: docker.io
+        run: ./scripts/supabase_start.sh
+
+      - name: Run integration tests
+        run: yarn test:integration
+
   test:
     name: Jest Tests
     runs-on: ubuntu-latest

@@ -132,6 +132,23 @@ web/
   - Integration: `*.integration.test.ts`
   - E2E (Playwright): `*.e2e.spec.ts`
 
+### Integration tests (real Postgres)
+
+`backend/api/tests/integration/*.integration.test.ts` call real handlers against real Postgres, and mock only
+external services such as Firebase. Use them when correctness depends on the database: queries, constraints,
+foreign key behaviour, redaction.
+
+```bash
+./scripts/supabase_start.sh                  # once, if the local stack is not running
+yarn test:integration                        # rebuilds the database, then runs every test
+yarn test:integration delete-me              # one file
+```
+
+They run in a throwaway `compass_integration` database inside the local Supabase cluster, rebuilt from
+`backend/supabase/migration.sql` on every run, so local dev data is untouched. `resetDb()` truncates every
+table, so seed what the test needs in `beforeEach`. `yarn --cwd=backend/api test` does not run them. The wider
+plan is in [test-coverage-plan.md](test-coverage-plan.md).
+
 ### Best Practices
 
 - Test Behavior, Not Implementation. Don’t test internal state or function calls unless you’re testing utilities or very

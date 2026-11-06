@@ -363,6 +363,10 @@ CREATE TABLE profile_ships (
 );
 ```
 
+Deleting an account removes likes and ships that name that member, in either direction. Their ID also leaves
+`search_alert_sends.matched_user_ids`, which `delete-me` clears itself because an array cannot have a foreign key.
+It adds to `deleted_match_count` so the alert can still say how many people are gone.
+
 ### Profile Stars Table
 
 Allows users to "star" favorite profiles.

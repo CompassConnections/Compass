@@ -102,4 +102,5 @@ BEGIN;
 \i backend/supabase/migrations/20261105_lock_deleted_users_insert.sql
 \i backend/supabase/migrations/20261106_vote_tables_allow_account_deletion.sql
 \i backend/supabase/migrations/20261106_compatibility_answers_importance_range.sql
+\i backend/supabase/migrations/20261106_remove_deleted_members_from_likes_ships_alerts.sql
 COMMIT;

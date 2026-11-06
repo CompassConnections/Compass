@@ -59,7 +59,9 @@ backend/api/
 - **Transactions over multi-step state**: don't `sleep()` waiting for eventual consistency. Build atomic
   inserts (see `create-user-and-profile.ts` for the pattern).
 - **Test files**: `*.unit.test.ts` next to or under `tests/unit/`. Mock pg-promise with a fake `oneOrNone` /
-  `manyOrNone` rather than spinning up a DB. See [`../../docs/testing.md`](../../docs/testing.md).
+  `manyOrNone` rather than spinning up a DB. When correctness depends on the database, add a
+  `tests/integration/*.integration.test.ts` instead (`yarn test:integration` from the root). See
+  [`../../docs/testing.md`](../../docs/testing.md).
 
 ## Build / run / test
 

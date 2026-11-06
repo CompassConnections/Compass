@@ -20,7 +20,7 @@ supabase/
 
 1. Create a file `YYYYMMDD_<short-name>.sql` in `backend/supabase/migrations/` (NOT in
    `supabase/migrations/`). The date prefix determines apply order.
-2. Apply to the dev DB:
+2. Apply to dev, then prod (stops before prod if dev fails; add `dev` or `prod` to run just one):
    ```bash
    ./scripts/migrate.sh backend/supabase/migrations/<file>.sql
    ```

@@ -1,5 +1,6 @@
 import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
+import {APIError} from 'common/api/utils'
 import {formLink} from 'common/constants'
 import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
 import {debug} from 'common/logger'
@@ -244,12 +245,15 @@ export function VoteComponent() {
                       isAnonymous: isAnonymous,
                     }
                     const newVote = await api('create-vote', data)
-                      .catch(() => {
+                      .catch((e) => {
+                        // A 403 is a ban or hold: "try again" would be wrong, so say why instead.
                         toast.error(
-                          t(
-                            'vote.toast.create_failed',
-                            'Failed to create vote — try again or contact us...',
-                          ),
+                          e instanceof APIError && e.code === 403
+                            ? e.message
+                            : t(
+                                'vote.toast.create_failed',
+                                'Failed to create vote — try again or contact us...',
+                              ),
                         )
                       })
                       .finally(() => setIsSubmitting(false))

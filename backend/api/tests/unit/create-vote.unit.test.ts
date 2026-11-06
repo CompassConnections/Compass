@@ -23,6 +23,27 @@ describe('createVote', () => {
     jest.restoreAllMocks()
   })
 
+  describe('when the creator is banned from posting', () => {
+    it('should refuse without inserting or announcing', async () => {
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue({
+        id: '123',
+        isBannedFromPosting: true,
+        banReason: 'under_review',
+      })
+
+      await expect(
+        createVote(
+          {title: 'mockTitle', description: {}, isAnonymous: false},
+          {uid: '123'} as AuthedUser,
+          {} as any,
+        ),
+      ).rejects.toMatchObject({code: 403})
+
+      expect(supabaseUtils.insert).not.toBeCalled()
+      expect(sendDiscordMessage).not.toBeCalled()
+    })
+  })
+
   describe('when given valid input', () => {
     it('should successfully creates a vote', async () => {
       const mockProps = {

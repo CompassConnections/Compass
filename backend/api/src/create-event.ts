@@ -1,11 +1,16 @@
-import {APIErrors, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler, assertCanWrite} from 'api/helpers/endpoint'
 import {sendDiscordMessage} from 'common/discord/core'
 import {DEPLOYED_WEB_URL} from 'common/envs/constants'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {insert} from 'shared/supabase/utils'
+import {getUser} from 'shared/utils'
 
 export const createEvent: APIHandler<'create-event'> = async (body, auth) => {
+  const creator = await getUser(auth.uid)
+  if (!creator) throw APIErrors.unauthorized('Your account was not found')
+  assertCanWrite(creator)
+
   const pg = createSupabaseDirectClient()
 
   // Validate location
@@ -49,8 +54,7 @@ export const createEvent: APIHandler<'create-event'> = async (body, auth) => {
 
   const continuation = async () => {
     try {
-      const user = await pg.oneOrNone(`select name from users where id = $1 `, [auth.uid])
-      const message: string = `${user.name} created a new [event](${DEPLOYED_WEB_URL}/events)!\n**${body.title}**\n${body.description}\nStart: ${body.eventStartTime.replace('T', ' @ ').replace('.000Z', ' UTC')}`
+      const message: string = `${creator.name} created a new [event](${DEPLOYED_WEB_URL}/events)!\n**${body.title}**\n${body.description}\nStart: ${body.eventStartTime.replace('T', ' @ ').replace('.000Z', ' UTC')}`
       await sendDiscordMessage(message, 'general')
     } catch (e) {
       console.error('Failed to send discord event', e)

@@ -1,9 +1,14 @@
-import {APIErrors, APIHandler} from 'api/helpers/endpoint'
+import {APIErrors, APIHandler, assertCanWrite} from 'api/helpers/endpoint'
 import {tryCatch} from 'common/util/try-catch'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {update} from 'shared/supabase/utils'
+import {getUser} from 'shared/utils'
 
 export const updateEvent: APIHandler<'update-event'> = async (body, auth) => {
+  const user = await getUser(auth.uid)
+  if (!user) throw APIErrors.unauthorized('Your account was not found')
+  assertCanWrite(user)
+
   const pg = createSupabaseDirectClient()
 
   // Check if event exists and user is the creator

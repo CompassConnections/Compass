@@ -20,6 +20,26 @@ describe('createCompatibilityQuestion', () => {
     jest.restoreAllMocks()
   })
 
+  describe('when the creator is banned from posting', () => {
+    it('should refuse without inserting', async () => {
+      ;(shareUtils.getUser as jest.Mock).mockResolvedValue({
+        id: '123',
+        isBannedFromPosting: true,
+        banReason: 'under_review',
+      })
+
+      await expect(
+        createCompatibilityQuestion(
+          {question: 'mockQuestion', options: {}} as any,
+          {uid: '123'} as AuthedUser,
+          {} as any,
+        ),
+      ).rejects.toMatchObject({code: 403})
+
+      expect(supabaseUtils.insert).not.toBeCalled()
+    })
+  })
+
   describe('when given valid input', () => {
     it('should successfully create compatibility questions', async () => {
       const mockQuestion = {} as any

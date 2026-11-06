@@ -194,7 +194,7 @@ export const getReferrer = async (
 ): Promise<{id: string; name: string; username: string} | null> => {
   pg = pg ?? createSupabaseDirectClient()
   return await pg.oneOrNone<{id: string; name: string; username: string}>(
-    `select id, name, username from users where username ilike $1`,
+    `select id, name, username from users where lower(username) = lower($1)`,
     [username],
   )
 }

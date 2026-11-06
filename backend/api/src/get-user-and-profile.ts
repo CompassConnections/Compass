@@ -24,8 +24,10 @@ import {type APIHandler} from './helpers/endpoint'
 export async function getUserAndProfile(username: string, viewerId?: string) {
   const pg = createSupabaseDirectClient()
 
-  const user = await pg.oneOrNone('SELECT * FROM users WHERE username ILIKE $1', [username], (r) =>
-    r ? convertUser(r) : null,
+  const user = await pg.oneOrNone(
+    'select * from users where lower(username) = lower($1)',
+    [username],
+    (r) => (r ? convertUser(r) : null),
   )
   if (!user) return null
 

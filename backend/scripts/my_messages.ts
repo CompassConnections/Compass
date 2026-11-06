@@ -44,7 +44,7 @@ const stamp = (ms: number) => {
 
 runScript(async ({pg}) => {
   const me = await pg.oneOrNone<{id: string; name: string}>(
-    `select id, name from users where username ilike $1`,
+    `select id, name from users where lower(username) = lower($1)`,
     [USERNAME],
   )
   if (!me) throw new Error(`No user with username "${USERNAME}"`)

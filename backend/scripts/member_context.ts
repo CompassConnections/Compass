@@ -71,7 +71,7 @@ runScript(async ({pg}) => {
   if (!USERNAME) throw new Error('Usage: npx tsx backend/scripts/member_context.ts <username>')
 
   const me = await pg.oneOrNone<{id: string; name: string}>(
-    `select id, name from users where username ilike $1`,
+    `select id, name from users where lower(username) = lower($1)`,
     [ME],
   )
   if (!me) throw new Error(`No user with username "${ME}"`)
@@ -87,7 +87,7 @@ runScript(async ({pg}) => {
      from users u
               left join user_activity ua on ua.user_id = u.id
               left join private_users pu on pu.id = u.id
-     where u.username ilike $1`,
+     where lower(u.username) = lower($1)`,
     [USERNAME],
   )
   if (!user) throw new Error(`No user with username "${USERNAME}"`)

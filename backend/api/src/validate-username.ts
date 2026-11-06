@@ -35,7 +35,7 @@ export async function validateUsername(username: string): Promise<ValidationResu
   }
 
   const dupes = await pg.one<number>(
-    `select count(*) from users where username ilike $1`,
+    `select count(*) from users where lower(username) = lower($1)`,
     [cleanUsernameStr],
     (r) => r.count,
   )

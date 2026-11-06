@@ -158,7 +158,10 @@ runScript(async ({pg}) => {
     )
   }
 
-  const me = await pg.oneOrNone<{id: string}>(`select id from users where username ilike $1`, [ME])
+  const me = await pg.oneOrNone<{id: string}>(
+    `select id from users where lower(username) = lower($1)`,
+    [ME],
+  )
 
   const target = TARGET_FILE
     ? loadOffPlatformTarget(TARGET_FILE)
@@ -167,7 +170,7 @@ runScript(async ({pg}) => {
      from users u
               join profiles p on p.user_id = u.id
               left join user_activity ua on ua.user_id = u.id
-     where u.username ilike $1`,
+     where lower(u.username) = lower($1)`,
         [USERNAME],
       )
   if (!target) throw new Error(`No member with username "${USERNAME}"`)

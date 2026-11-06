@@ -19,6 +19,17 @@ describe('getUserAndProfile', () => {
   })
 
   describe('getUserAndProfile', () => {
+    it('should match the username exactly, so _ is not a wildcard', async () => {
+      mockPg.oneOrNone.mockResolvedValueOnce(null)
+
+      await getUserAndProfile('john_doe')
+
+      const [sql, params] = mockPg.oneOrNone.mock.calls[0]
+      expect(sql).toContain('lower(username) = lower($1)')
+      expect(sql).not.toMatch(/ilike/i)
+      expect(params).toEqual(['john_doe'])
+    })
+
     it('should return user and profile when both exist', async () => {
       const mockUser = {
         id: 'mock-user-id',

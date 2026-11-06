@@ -65,6 +65,15 @@ type Credentials = JwtCredentials | KeyCredentials
 //   return await admin.auth().verifyIdToken(payload);
 // }
 
+/** For logging only. The token was rejected, so whatever the client sent need not be JSON at all. */
+const parseJwtHeader = (token: string) => {
+  try {
+    return JSON.parse(Buffer.from(token.split('.')[0], 'base64').toString())
+  } catch {
+    return undefined
+  }
+}
+
 export const parseCredentials = async (req: Request): Promise<Credentials> => {
   const auth = admin.auth()
   const authHeader = req.get('Authorization')
@@ -85,8 +94,12 @@ export const parseCredentials = async (req: Request): Promise<Credentials> => {
       try {
         return {kind: 'jwt', data: await auth.verifyIdToken(payload)}
       } catch (err) {
-        const raw = payload.split('.')[0]
-        const _header = JSON.parse(Buffer.from(raw, 'base64').toString())
+        const code = (err as {code?: string}).code
+        // Tokens run out every hour, so this one is routine rather than suspicious.
+        if (code === 'auth/id-token-expired') {
+          throw APIErrors.unauthorized('Firebase JWT expired.')
+        }
+        const _header = parseJwtHeader(payload)
         // This is somewhat suspicious, so get it into the firebase console
         console.error('Error verifying Firebase JWT: ', err, scheme, {
           jwtHeader: _header,
@@ -94,6 +107,10 @@ export const parseCredentials = async (req: Request): Promise<Credentials> => {
         Sentry.captureException(err, {
           extra: {jwtHeader: _header},
         })
+        // Firebase turned the token down, as opposed to failing to check it.
+        if (code?.startsWith('auth/') && code !== 'auth/internal-error') {
+          throw APIErrors.unauthorized('Invalid Firebase JWT.')
+        }
         throw APIErrors.internalServerError('Error validating token.')
       }
     case 'Key':

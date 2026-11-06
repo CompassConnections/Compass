@@ -1,4 +1,5 @@
-import {createSupabaseDirectClient} from 'shared/supabase/init'
+import {createSupabaseDirectClient, SupabaseTransaction} from 'shared/supabase/init'
+import {insert} from 'shared/supabase/utils'
 
 const INTEGRATION_DB = 'compass_integration'
 
@@ -25,13 +26,32 @@ export async function resetDb() {
   await pg.none('truncate table $1:name restart identity cascade', [tables])
 }
 
-export async function seedUser(id: string) {
-  const pg = getTestDb()
-  await pg.none(`insert into users (id, name, username, data) values ($1, $2, $3, '{}')`, [
-    id,
-    `Name ${id}`,
-    `username_${id}`,
-  ])
-  await pg.none(`insert into private_users (id, data) values ($1, '{}')`, [id])
-  await pg.none(`insert into profiles (user_id) values ($1)`, [id])
+type SeedUserOptions = {
+  /** Columns on `users`, such as `is_banned_from_posting`. */
+  user?: Record<string, unknown>
+  /** Columns on `profiles`, such as `visibility`. */
+  profile?: Record<string, unknown>
 }
+
+export async function seedUser(id: string, {user, profile}: SeedUserOptions = {}) {
+  const pg = getTestDb()
+  await insert(pg, 'users', {
+    id,
+    name: `Name ${id}`,
+    username: `username_${id}`,
+    data: {},
+    ...user,
+  } as any)
+  await insert(pg, 'private_users', {
+    id,
+    data: {id, blockedUserIds: [], blockedByUserIds: []},
+  } as any)
+  await insert(pg, 'profiles', {user_id: id, ...profile} as any)
+}
+
+/** Runs `fn` as the role the browser's anon key connects with, so RLS and grants apply. */
+export const asAnon = <T>(fn: (tx: SupabaseTransaction) => Promise<T>) =>
+  getTestDb().tx(async (tx) => {
+    await tx.none('set local role anon')
+    return fn(tx)
+  })

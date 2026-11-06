@@ -48,7 +48,8 @@ export const getUserDataExport: APIHandler<'me/data'> = async (_, auth) => {
     [userId],
   )
 
-  if (profile.bio) {
+  // Null for an account that never finished signing up, which is still entitled to its export.
+  if (profile?.bio) {
     profile.bio_clean = parseJsonContentToText(profile.bio).replace(/\n/g, ' ').trim()
   }
 

@@ -43,13 +43,23 @@ with `${...}` or a variable, and 14 that splice in identifiers or lists through 
 Resolving constants such as `${TESTIMONIAL_COLUMNS}` would bring some of the first group in. The `renderSql`
 builder, which `get-profiles` uses, remains out of reach, so those need the behavioural tests in step 3.
 
-## Step 3: integration tests, ordered by risk
+## Step 3: integration tests, ordered by risk (done)
 
-1. **Privacy and access:** members-only redaction in the API and the RPC, blocks, banned and held members.
-2. **Data lifecycle:** the rest of account deletion, and `get-user-data-export`.
-3. **Complex queries:** `get-outreach-queue`, `get-member-value-ranking`, `stats`, profile search and
-   compatibility.
-4. **Auth wiring:** the auth and middleware behaviour in `app.ts`, through real requests.
+Each of these is in `backend/api/tests/integration/`.
+
+- **Privacy and access** (`profile-access`, `anon-access`): members-only, disabled and blocked redaction,
+  blocks in both directions across every interaction, what banned members cannot publish, the public feed, the
+  `get_profile_by_user_id` RPC as the real `anon` role, and the list of tables the anon key can read.
+- **Data lifecycle** (`delete-me`, `data-export`).
+- **Complex queries** (`complex-queries`): profile search with each ordering and every filter, plus the admin
+  outreach and ranking endpoints. Most of these only prove that the query runs, not that its results are right.
+- **Auth wiring** (`http-auth`): over real HTTP, every `authed` endpoint refuses a request with no credentials.
+
+Turning off block checks, ban checks, the members-only gate and the search block filter in the source each made
+these tests fail.
+
+Still not covered: rate limiting, websocket subscriptions, the `/internal` job endpoints, and the results of the
+outreach and ranking queries.
 
 ## Step 4: web, by user journey
 
@@ -69,6 +79,20 @@ target on new code. Replace the README's 90% goal with this ratchet.
 
 ## Findings so far
 
+Open items are recorded with `it.failing`, which starts failing once the behaviour is fixed, as the prompt to
+change it to a plain `it`.
+
+- **Fixed: a banned member's full profile was sent to everyone,** with only the browser hiding it. `getUserAndProfile`
+  and `get_profile_by_user_id` now redact it, except for the owner and staff through `get-profile`.
+- **Open: `ban_reason` is readable by anyone,** through `get_display_users` and `get-user-and-profile`. It says
+  whether a moderator confirmed abuse or a hold is provisional.
+- **Fixed: the data export crashed for an account with no profile, and left out likes and ships** of anyone without
+  a photo, banned, or not looking.
+- **Open: `get_user_activity` gives anyone the last-online time of any member** whose ID they know, including
+  members-only profiles.
+- **Fixed: a rejected Firebase token got a 500,** expired ones included, and a malformed one threw inside the `catch`
+  in `parseCredentials`. They now get a 401.
+- **Open, not tested: `user_events` accepts inserts from the anon key for any `user_id`,** so events can be forged.
 - **Fixed: `trackAuditEvent` inserted into `audit_events`, a table that does not exist.** It was a leftover from the
   Manifold code, reached by `ban-user` through `trackPublicEvent`, and `tryOrLogError` swallowed the failure. The
   call is gone, and bans now go to PostHog only.

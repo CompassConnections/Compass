@@ -146,7 +146,8 @@ yarn test:integration delete-me              # one file
 
 They run in a throwaway `compass_integration` database inside the local Supabase cluster, rebuilt from
 `backend/supabase/migration.sql` on every run, so local dev data is untouched. `resetDb()` truncates every
-table, so seed what the test needs in `beforeEach`. `yarn --cwd=backend/api test` does not run them. The wider
+table, so seed what the test needs in `beforeEach`. `asAnon()` runs SQL as the browser's anon role, so RLS and
+grants apply. `yarn --cwd=backend/api test` does not run them. The wider
 plan is in [test-coverage-plan.md](test-coverage-plan.md).
 
 ### Best Practices

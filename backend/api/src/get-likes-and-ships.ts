@@ -7,6 +7,9 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
  * any `userId` from any signed-in member, which handed out who likes whom for the whole site; the
  * web stopped calling it long before. The query lives on for `get-user-data-export`, where the
  * member asking is the member it is about.
+ *
+ * So nothing is filtered: the other person being banned, without a photo or not looking changes what a
+ * page would show, not what the member's own data is.
  */
 export const getLikesAndShipsMain = async (userId: string) => {
   const pg = createSupabaseDirectClient()
@@ -16,14 +19,9 @@ export const getLikesAndShipsMain = async (userId: string) => {
     created_time: number
   }>(
     `
-      select target_id, profile_likes.created_time
+      select target_id, created_time
       from profile_likes
-      join profiles on profiles.user_id = profile_likes.target_id
-      join users on users.id = profile_likes.target_id
       where creator_id = $1
-        and looking_for_matches
-        and profiles.pinned_url is not null
-        and not is_banned_from_posting 
       order by created_time desc
     `,
     [userId],
@@ -38,14 +36,9 @@ export const getLikesAndShipsMain = async (userId: string) => {
     created_time: number
   }>(
     `
-      select creator_id, profile_likes.created_time
+      select creator_id, created_time
       from profile_likes
-      join profiles on profiles.user_id = profile_likes.creator_id
-      join users on users.id = profile_likes.creator_id
       where target_id = $1
-        and looking_for_matches
-        and profiles.pinned_url is not null
-        and not is_banned_from_posting
       order by created_time desc
     `,
     [userId],
@@ -64,28 +57,18 @@ export const getLikesAndShipsMain = async (userId: string) => {
   }>(
     `
     select 
-      target1_id, target2_id, creator_id, profile_ships.created_time,
+      target1_id, target2_id, creator_id, created_time,
       target1_id as target_id
     from profile_ships
-    join profiles on profiles.user_id = profile_ships.target1_id
-    join users on users.id = profile_ships.target1_id
     where target2_id = $1
-      and profiles.looking_for_matches
-      and profiles.pinned_url is not null
-      and not is_banned_from_posting
 
     union all
 
     select
-      target1_id, target2_id, creator_id, profile_ships.created_time,
+      target1_id, target2_id, creator_id, created_time,
       target2_id as target_id
     from profile_ships
-    join profiles on profiles.user_id = profile_ships.target2_id
-    join users on users.id = profile_ships.target2_id
     where target1_id = $1
-      and profiles.looking_for_matches
-      and profiles.pinned_url is not null
-      and not is_banned_from_posting
     `,
     [userId],
     (r) => ({

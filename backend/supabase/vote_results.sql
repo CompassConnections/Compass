@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS vote_results (
 
 -- Foreign Keys
 alter table vote_results
-add constraint vote_results_user_id_fkey foreign key (user_id) references users (id);
+add constraint vote_results_user_id_fkey foreign key (user_id) references users (id) on delete cascade;
 
 alter table vote_results
 add constraint vote_results_vote_id_fkey foreign key (vote_id) references votes (id);

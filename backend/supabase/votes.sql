@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS votes (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     created_time TIMESTAMPTZ DEFAULT now() NOT NULL,
-    creator_id TEXT NOT NULL,
+    -- Null once the author has deleted their account: the proposal outlives them.
+    creator_id TEXT,
     title TEXT NOT NULL,
     is_anonymous BOOLEAN NOT NULL,
     description JSONB,
@@ -12,7 +13,7 @@ CREATE TABLE IF NOT EXISTS votes (
 
 -- Foreign Keys
 alter table votes
-add constraint votes_creator_id_fkey foreign key (creator_id) references users (id);
+add constraint votes_creator_id_fkey foreign key (creator_id) references users (id) on delete set null;
 
 -- Row Level Security
 ALTER TABLE votes ENABLE ROW LEVEL SECURITY;

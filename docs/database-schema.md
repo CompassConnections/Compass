@@ -434,6 +434,10 @@ what people voted on, so the earlier versions have to be checkable by anyone —
 on the card and the page opens them. `vote_edits` carries no author column, so it does not leak the
 author of an anonymous proposal.
 
+Deleting an account removes that member's ballots from `vote_results`, so tallies drop with them. Their
+proposals stay, with `votes.creator_id` set to null, because other members' ballots and comments hang
+off them.
+
 ### Vote Comments Table
 
 Discussion on a proposal. Mirrors `profile_comments` (same denormalized author columns) with two

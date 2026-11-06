@@ -2443,7 +2443,7 @@ export type Database = {
       votes: {
         Row: {
           created_time: string
-          creator_id: string
+          creator_id: string | null
           description: Json | null
           edited_time: string | null
           id: number
@@ -2453,7 +2453,7 @@ export type Database = {
         }
         Insert: {
           created_time?: string
-          creator_id: string
+          creator_id?: string | null
           description?: Json | null
           edited_time?: string | null
           id?: never
@@ -2463,7 +2463,7 @@ export type Database = {
         }
         Update: {
           created_time?: string
-          creator_id?: string
+          creator_id?: string | null
           description?: Json | null
           edited_time?: string | null
           id?: never

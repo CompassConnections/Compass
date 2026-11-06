@@ -5,7 +5,7 @@ import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {parseJsonContentToText} from 'common/util/parse'
 import {ORDER_BY, ORDER_BY_CHOICES, OrderBy, STATUS_CHOICES} from 'common/votes/constants'
-import {keyBy, uniq} from 'lodash'
+import {compact, keyBy, uniq} from 'lodash'
 import Link from 'next/link'
 import {useEffect, useMemo, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -62,7 +62,8 @@ export function VoteComponent() {
   // still cost a row.
   const creatorIds: string[] = useMemo(() => {
     const ids = ((votes ?? []) as Vote[]).filter((v) => !v.is_anonymous).map((v) => v.creator_id)
-    return uniq(ids).sort()
+    // creator_id is also null once the author has deleted their account.
+    return uniq(compact(ids)).sort()
   }, [votes])
   const creators = useUsersInStore(creatorIds, 'vote-creators')
   const creatorsById = useMemo(() => keyBy(creators ?? [], 'id'), [creators])
@@ -345,7 +346,7 @@ export function VoteComponent() {
               <VoteItem
                 key={vote.id}
                 vote={vote}
-                creator={creatorsById[vote.creator_id]}
+                creator={vote.creator_id ? creatorsById[vote.creator_id] : undefined}
                 userChoice={choiceFromNumber(myChoices?.[vote.id])}
                 isMine={myProposalIds?.includes(vote.id)}
                 onVoted={onVoted}

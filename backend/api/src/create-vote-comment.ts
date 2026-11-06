@@ -116,7 +116,7 @@ const notifyProposalParticipants = async (
      union
      select user_id from vote_comments where vote_id = $1 and not hidden
      union
-     select creator_id as user_id from votes where id = $1`,
+     select creator_id as user_id from votes where id = $1 and creator_id is not null`,
     [voteId],
   )
 

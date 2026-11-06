@@ -100,4 +100,5 @@ BEGIN;
 \i backend/supabase/migrations/20261102_add_vote_edits.sql
 \i backend/supabase/migrations/20261105_lock_user_notifications.sql
 \i backend/supabase/migrations/20261105_lock_deleted_users_insert.sql
+\i backend/supabase/migrations/20261106_vote_tables_allow_account_deletion.sql
 COMMIT;

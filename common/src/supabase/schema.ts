@@ -1030,7 +1030,6 @@ export type Database = {
         Row: {
           channel_id: number
           ciphertext: string | null
-          content: Json | null
           created_time: string
           deleted: boolean | null
           edited_at: string | null
@@ -1045,7 +1044,6 @@ export type Database = {
         Insert: {
           channel_id: number
           ciphertext?: string | null
-          content?: Json | null
           created_time?: string
           deleted?: boolean | null
           edited_at?: string | null
@@ -1060,7 +1058,6 @@ export type Database = {
         Update: {
           channel_id?: number
           ciphertext?: string | null
-          content?: Json | null
           created_time?: string
           deleted?: boolean | null
           edited_at?: string | null

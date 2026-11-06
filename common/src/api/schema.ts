@@ -686,7 +686,9 @@ export const API = (_apiTypeCheck = {
         questionId: z.number(),
         multipleChoice: z.number(),
         prefChoices: z.array(z.number()),
-        importance: z.number(),
+        // 0-3 are the levels of the importance scale; -1 is a skipped prompt. The bound is what keeps
+        // community_importance_percent meaningful: it sums these values across members.
+        importance: z.number().int().min(-1).max(3),
         explanation: z.string().nullable().optional(),
       })
       .strict(),

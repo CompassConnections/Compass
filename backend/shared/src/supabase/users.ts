@@ -10,7 +10,7 @@ import {DataUpdate, update, updateData} from './utils'
 
 export const updateProfile = async (
   user_id: string,
-  updated: Partial<ProfileRow>,
+  updated: Omit<Partial<ProfileRow>, 'id'>,
   client?: SupabaseDirectClient,
 ) => {
   updated = removeUndefinedProps(updated)

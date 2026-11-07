@@ -66,7 +66,7 @@ yarn test:db:reset                                    # rebuild the local databa
 yarn --cwd=backend/api regen-types-dev                # rebuild common/src/supabase/schema.ts
 ```
 
-Merging to `main` applies migrations to dev, then prod after a manual approval, then deploys the API
+Merging to `main` applies migrations to dev, then prod (no approval step), then deploys the API
 (`.github/workflows/cd-backend.yml`). Never push them from a laptop. Details in
 [`docs/database-migrations.md`](docs/database-migrations.md).
 

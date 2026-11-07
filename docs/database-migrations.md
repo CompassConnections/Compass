@@ -13,13 +13,14 @@ yarn test:db:reset                        # rebuilds the local database from all
 yarn --cwd=backend/api regen-types-dev    # once dev has it
 ```
 
-Merging to `main` applies it: `.github/workflows/cd-backend.yml` pushes to dev, waits for a click on the
-`prod` environment, pushes to prod, and only then deploys the API if its version changed.
+Merging to `main` applies it: `.github/workflows/cd-backend.yml` pushes to dev, then to prod, and only then
+deploys the API if its version changed. There is no approval step: merging is the decision to ship.
 
 That workflow runs on every push to `main`, whether or not tests pass or the API version changed. Dev gets
 `db push` every time, which does nothing when it is up to date. Prod runs only when the push changes
-`supabase/migrations/`, so a migration whose prod run failed or was rejected needs a re-run of that workflow.
-Nothing checks a migration before it reaches dev, so the prod click is the only review.
+`supabase/migrations/`, so a migration whose prod run failed needs a re-run of that workflow. Prod is skipped
+when dev fails. Nothing else checks a migration before it reaches prod, so review it before merging, and hold
+back a slow or destructive one (a big index, a long lock, a data rewrite) until a quiet time.
 
 - **Never run `db push`, `db reset --linked` or `migration repair` from a laptop against prod.** Those commands
   act on whatever the checkout is linked to, so keep checkouts linked to dev.
@@ -88,11 +89,10 @@ migrations until this is finished. Check that dev and prod both run Postgres
    ```
 
 6. **Set up GitHub.** Create the `dev` and `prod` environments, each with a `SUPABASE_DB_PASSWORD` secret
-   holding that database's password, and add required reviewers to `prod`.
+   holding that database's password, and limit both to deployments from `main`.
 
 7. **Merge.** Do not merge before steps 5 and 6: this merge adds a migration file, so it triggers the workflow.
-   Without the reviewers prod gets no approval step, and without the history row `db push` would run the baseline
-   against prod. The first run should find nothing to apply.
+   Without the history row `db push` would run the baseline against prod. The first run should find nothing to apply.
 
 CI connects with a connection string to the session pooler, `aws-1-us-west-1.pooler.supabase.com:5432`, so it needs
 no Supabase access token, and the password must not contain characters that need percent-encoding. If a

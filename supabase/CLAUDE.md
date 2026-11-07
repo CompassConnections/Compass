@@ -19,12 +19,12 @@ supabase/
 
 1. `npx supabase migration new <short_name>` creates the file.
 2. `yarn test:db:reset` rebuilds the local database from all migrations plus the seed (it wipes local data).
-3. Merge to `main`. CI applies it to dev, then to prod after a manual approval, then deploys the API.
+3. Merge to `main`. CI applies it to dev, then to prod with no approval step, then deploys the API.
 4. Regenerate types so `common/src/supabase/schema.ts` reflects the new shape:
    ```bash
    yarn --cwd=backend/api regen-types-dev
    ```
-5. Prod migrations are approved by the human, not by Claude. Never run `db push`, `db reset --linked` or
+5. Merging a migration to `main` ships it to prod, so only the human merges or pushes one. Never run `db push`, `db reset --linked` or
    `migration repair` against prod, and never run `config push` at all: `config.toml` is local-only.
 
 ## Conventions

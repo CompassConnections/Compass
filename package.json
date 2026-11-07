@@ -126,7 +126,7 @@
     "prettier-plugin-packagejson": "3.0.0",
     "prettier-plugin-sql": "0.19.2",
     "prettier-plugin-tailwindcss": "0.2.8",
-    "supabase": "2.105.0",
+    "supabase": "3.0.0",
     "ts-jest": "29.4.6",
     "ts-node": "10.9.1",
     "tsc-alias": "1.8.2",

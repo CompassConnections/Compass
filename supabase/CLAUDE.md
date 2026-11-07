@@ -19,6 +19,7 @@ supabase/
 
 1. `npx supabase migration new <short_name>` creates the file.
 2. `yarn test:db:reset` rebuilds the local database from all migrations plus the seed (it wipes local data).
+   To try it on the shared dev database, `yarn db:push:dev` (Claude may run this one without asking).
 3. Merge to `main`. CI applies it to dev, then to prod with no approval step, then deploys the API.
 4. Regenerate types so `common/src/supabase/schema.ts` reflects the new shape:
    ```bash

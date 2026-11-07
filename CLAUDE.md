@@ -63,6 +63,7 @@ Database:
 ```bash
 npx supabase migration new <name>                     # create supabase/migrations/<timestamp>_<name>.sql
 yarn test:db:reset                                    # rebuild the local database from all migrations + seed
+yarn db:push:dev                                      # apply pending migrations to the shared dev database
 yarn --cwd=backend/api regen-types-dev                # rebuild common/src/supabase/schema.ts
 ```
 
@@ -116,7 +117,8 @@ Frontend then calls it via `useAPIGetter('endpoint-name', props)` (client) or `a
 - **Lodash** (`keyBy`, `uniq`, `uniqBy`, ...) over hand-rolled loops/Sets.
 - **i18n**: `useT()` from `web/lib/locale`, then `t('key', 'English fallback')`. Translation JSON in
   `common/messages/`. Details in [`docs/internationalization.md`](docs/internationalization.md).
-- **Scripts that mutate backend state or schema are run by the human, not Claude.**
+- **Scripts that mutate backend state or schema are run by the human, not Claude.** One exception: Claude may
+  run `yarn db:push:dev` while developing, to try a migration on the dev database. Never anything against prod.
 - When editing files, do NOT remove comments or commented-out code.
 
 ## Docs

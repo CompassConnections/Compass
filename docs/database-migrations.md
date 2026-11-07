@@ -10,6 +10,7 @@ only what is missing. The SQL from before the switch is gone from the tree. Olde
 ```bash
 npx supabase migration new add_my_field   # creates supabase/migrations/<timestamp>_add_my_field.sql
 yarn test:db:reset                        # rebuilds the local database from all migrations, plus the seed
+yarn db:push:dev                          # optional: apply it to the shared dev database before merging
 yarn --cwd=backend/api regen-types-dev    # once dev has it
 ```
 
@@ -26,7 +27,9 @@ back a slow or destructive one (a big index, a long lock, a data rewrite) until 
   act on whatever the checkout is linked to, so keep checkouts linked to dev.
 - **Never run `supabase config push`, against dev or prod.** `supabase/config.toml` configures the local stack
   only, and that command would copy its local values, such as the `127.0.0.1` site URL, onto the linked project.
-- **Don't edit a migration once merged.** Write a new one.
+- **Don't edit a migration once merged.** Write a new one. The same goes for one already pushed to dev with
+  `yarn db:push:dev`: dev records it as applied and will not run it again, so either write a follow-up migration
+  or undo the change on dev by hand.
 - **Rebase before merging** if `main` gained a newer migration: `db push` refuses a file older than the last
   one applied, and the timestamp comes from when the file was created. Rename it with a fresh timestamp.
 - **Reference rows are not in the baseline.** `db pull` copies the schema, not data, so a fresh database has no

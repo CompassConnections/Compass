@@ -617,6 +617,10 @@ of two ways:
   banned profiles, blocks in either direction, and for comments the `hidden` flag and blocked
   authors); `get-bookmarked-searches` returns the caller's own rows only.
 
+`user_events` is the one table the client writes directly: analytics go in through the anon key, so `anon` holds
+INSERT and nothing else, and the `anyone can insert` policy is its only policy
+(`supabase/migrations/20261107133247_user_events_insert_only.sql`). Only the backend's service role reads it.
+
 When adding a table, do not write a `public read` policy unless the data really is public. Reach for
 an endpoint first, and an RPC only for a read that is identical for everyone.
 

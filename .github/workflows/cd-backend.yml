@@ -79,7 +79,7 @@ jobs:
       # session pooler (port 5432) because the direct host is IPv6-only and the runners have no IPv6.
       # The password goes into the URL as is, so it must not need percent-encoding.
       - run: >-
-          supabase db push --yes --db-url
+          supabase db push --include-all --yes --db-url
           "postgresql://postgres.zbspxezubpzxmuxciurg:${SUPABASE_DB_PASSWORD}@aws-1-us-west-1.pooler.supabase.com:5432/postgres"
 
   migrate-prod:

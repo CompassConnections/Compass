@@ -17,6 +17,7 @@
     "bump": "./scripts/bump-version.sh",
     "bump:build": "./scripts/bump-version.sh --build",
     "clean-install": "./scripts/install.sh",
+    "db:push:dev": "./scripts/db_push_dev.sh",
     "dev": "./scripts/run_local.sh dev",
     "dev:db:reset": "./scripts/dev_db_reset.sh",
     "dev:isolated": "./scripts/run_local_isolated.sh",

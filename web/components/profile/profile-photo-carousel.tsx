@@ -83,7 +83,7 @@ export default function ProfilePhotoCarousel(props: {
           strip. `overflow-y-hidden`: a non-visible `overflow-x` makes the browser compute
           `overflow-y` as auto too, so a stray pixel of vertical overflow would make this a vertical
           scroller. `!overscroll-y-auto`: `.scrollbar-visible` sets `overscroll-behavior: contain`,
-          which is right for ScrollPanel and wrong here — it stops the wheel chaining to the page.
+          which is right for a panel scrolling within itself and wrong here — it stops the wheel chaining to the page.
           Contain is kept on the x axis, where it prevents a sideways swipe going back a page. */}
       <div
         ref={scrollRef}

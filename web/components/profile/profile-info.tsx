@@ -4,7 +4,7 @@ import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
 import {UserActivity} from 'common/user'
 import Link from 'next/link'
-import React, {ReactNode, useRef} from 'react'
+import React, {ReactNode, useEffect, useRef, useState} from 'react'
 import {ProfileAnswers} from 'web/components/answers/profile-answers'
 import {ProfileBio} from 'web/components/bio/profile-bio'
 import {Col} from 'web/components/layout/col'
@@ -32,7 +32,6 @@ import ProfileAbout, {
   ProfilePersonality,
 } from 'web/components/profile-about'
 import {ProfileCommentSection} from 'web/components/profile-comment-section'
-import {ScrollPanel} from 'web/components/widgets/scroll-panel'
 import {linkClass} from 'web/components/widgets/site-link'
 import {shortenName} from 'web/components/widgets/user-link'
 import {useElementSize} from 'web/hooks/use-element-size'
@@ -41,6 +40,7 @@ import {useHiddenProfiles} from 'web/hooks/use-hidden-profiles'
 import {useMinWidth} from 'web/hooks/use-min-width'
 import {useCompatibilityQuestionGroups} from 'web/hooks/use-questions'
 import {useScrolledPast} from 'web/hooks/use-scrolled-past'
+import {useStickyRail} from 'web/hooks/use-sticky-rail'
 import {useUser} from 'web/hooks/use-user'
 import {useUserActivity} from 'web/hooks/use-user-activity'
 import {User} from 'web/lib/firebase/users'
@@ -113,6 +113,9 @@ export function ProfileInfo(props: {
   const {data: userActivity} = useUserActivity(isProfileVisible ? user?.id : undefined)
 
   const {ref: heroRef, scrolledPast: scrolledPastHero} = useScrolledPast<HTMLDivElement>()
+  // In the two-column layout the top bar scrolls away with the page instead of sticking: the Details
+  // rail pins at the top of the viewport there, and a bar stuck over it would hide its heading.
+  const [twoColumns, setTwoColumns] = useState(false)
 
   // const isCurrentUser = currentUser?.id === user.id
 
@@ -128,9 +131,13 @@ export function ProfileInfo(props: {
           strip above the buttons. Pulled up by the inset, the bar starts at the viewport top in flow
           exactly as it does once stuck, and the browser (inset 0) is unchanged.
           `hides-on-scroll` slides it away on the same cue as the mobile bottom nav — down while
-          reading, back on the first scroll up — so it never sits on a line someone is reading. */}
+          reading, back on the first scroll up — so it never sits on a line someone is reading.
+          In the two-column layout it is neither sticky nor sliding: see `twoColumns`. */}
       <div
-        className="hides-on-scroll bg-canvas-50/95 border-canvas-300 sticky top-0 z-20 mb-6 mt-[calc(-1*var(--tnh))] flex items-center border-b px-4 sm:px-9 py-4 pt-[calc(1rem+var(--tnh))] backdrop-blur"
+        className={clsx(
+          'bg-canvas-50/95 border-canvas-300 mb-6 mt-[calc(-1*var(--tnh))] flex items-center border-b px-4 sm:px-9 py-2 pt-[calc(0.5rem+var(--tnh))] backdrop-blur',
+          !twoColumns && 'hides-on-scroll sticky top-0 z-20',
+        )}
         style={{
           borderBottomWidth: '1px',
           gap: '10px',
@@ -249,6 +256,7 @@ export function ProfileInfo(props: {
             fromProfilePage={fromProfilePage}
             fromSignup={fromSignup}
             embedded={embedded}
+            onTwoColumnsChange={setTwoColumns}
             // likesGiven={likesGiven ?? []}
             // likesReceived={likesReceived ?? []}
             // ships={ships ?? []}
@@ -570,21 +578,18 @@ const CONTENT_LAYOUT_TWO_COLUMNS = {
   grid: 'grid grid-cols-[minmax(0,650px)_minmax(300px,1fr)] items-start gap-x-12 gap-y-14',
   bio: 'col-start-1 row-start-1',
   rail: 'sticky top-6 col-start-2 row-span-2 row-start-1',
-  railScroll: 'overflow-y-auto max-h-[calc(100vh-3rem)] pr-5',
   rest: 'col-start-1 row-start-2',
 }
 const CONTENT_LAYOUT_BY_WINDOW = {
   grid: 'flex flex-col gap-14 lg:grid lg:grid-cols-[minmax(0,650px)_minmax(300px,1fr)] lg:items-start lg:gap-x-12 lg:gap-y-14',
   bio: 'lg:col-start-1 lg:row-start-1',
   rail: 'lg:sticky lg:top-6 lg:col-start-2 lg:row-span-2 lg:row-start-1',
-  railScroll: 'lg:overflow-y-auto lg:max-h-[calc(100vh-3rem)] lg:pr-5',
   rest: 'lg:col-start-1 lg:row-start-2',
 }
 const CONTENT_LAYOUT_STACKED = {
   grid: 'flex flex-col gap-14',
   bio: '',
   rail: '',
-  railScroll: '',
   rest: '',
 }
 
@@ -597,6 +602,8 @@ function ProfileContent(props: {
   fromSignup?: boolean
   // See ProfileInfo's prop of the same name.
   embedded?: boolean
+  // Told whether the rail currently sits beside the prose; see ProfileInfo's `twoColumns`.
+  onTwoColumnsChange?: (twoColumns: boolean) => void
   // likesGiven: LikeData[]
   // likesReceived: LikeData[]
   // ships: ShipData[]
@@ -610,6 +617,7 @@ function ProfileContent(props: {
     fromProfilePage,
     fromSignup,
     embedded,
+    onTwoColumnsChange,
     // likesGiven,
     // likesReceived,
     // ships,
@@ -632,6 +640,14 @@ function ProfileContent(props: {
     : contentSize.width >= DETAILS_BESIDE_BIO_MIN_PX
       ? CONTENT_LAYOUT_TWO_COLUMNS
       : CONTENT_LAYOUT_STACKED
+  // The rail scrolls with the page until an edge reaches the viewport's, then holds — see
+  // useStickyRail. 24px either side matches `top-6`.
+  const railRef = useRef<HTMLDivElement>(null)
+  useStickyRail(railRef, {enabled: layout !== CONTENT_LAYOUT_STACKED, top: 24, bottom: 24})
+  const twoColumns = layout === CONTENT_LAYOUT_TWO_COLUMNS
+  useEffect(() => {
+    onTwoColumnsChange?.(twoColumns)
+  }, [twoColumns, onTwoColumnsChange])
   // On the profile page (not the panel beside a chat) the bio column also grows until sidebar plus
   // bio cover half the window, so on a wide screen the profile's main column isn't the narrow one.
   // The rail keeps at least its 300px. Re-read whenever this block resizes, which a window resize or
@@ -701,23 +717,19 @@ function ProfileContent(props: {
           {photos.lightbox}
         </Col>
 
-        {/* Pinned beside the prose, and scrollable within itself — see ScrollPanel for the cues that
-            make the second half of that obvious. Once wide enough for two readable columns it splits,
-            which roughly halves its height and leaves far less to scroll.
+        {/* Pinned beside the prose. Taller than the viewport, it travels with the page until its
+            bottom (scrolling down) or its top (scrolling up) is in view, then holds — one scroll for
+            the whole page rather than a second scroll area inside the rail. Once wide enough for two
+            readable columns it splits, which roughly halves its height.
             `row-span-2` gives the sticky element a containing block taller than itself, which is what
             it needs to have anywhere to travel. */}
-        <ScrollPanel
-          className={layout.rail}
-          // `lg:pr-5` is the gutter the card's padding used to provide: without it the values, the
-          // Big Five numbers in particular, sit hard against the scrollbar and get clipped by it.
-          // The offset is small because nothing is pinned over the top of this page on desktop — the
-          // nav is the left column, not a bar — so anything larger is just unused viewport: the rail
-          // is the tallest thing here and every pixel of the cap is a pixel less to scroll.
-          scrollClassName={layout.railScroll}
-          fadeColorClass="from-canvas-100 to-transparent"
-        >
+        {/* Earlier the rail was capped at the viewport's height and scrolled within itself
+            (ScrollPanel, with a fade and a scroll-down chevron to announce the hidden part). Two
+            scroll areas side by side made the wheel's target depend on the pointer, and the end of
+            the rail was easy to miss. */}
+        <div ref={railRef} className={layout.rail}>
           <RailBlocks profile={profile} userActivity={userActivity} isCurrentUser={isCurrentUser} />
-        </ScrollPanel>
+        </div>
 
         <Col className={clsx('min-w-0 gap-14', layout.rest)}>
           {showCompatibilityPrompts && (

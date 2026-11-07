@@ -74,13 +74,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with:
-          version: 2.105.0 # Keep in step with `supabase` in the root package.json
-      # A connection string rather than `supabase link`, which needs an account-wide access token. The
+          version: 3.0.0 # Keep in step with `supabase` in the root package.json
+      # A connection string (--remote=<url>) rather than `supabase link`, which needs an account-wide access token. The
       # session pooler (port 5432) because the direct host is IPv6-only and the runners have no IPv6.
       # The password goes into the URL as is, so it must not need percent-encoding.
       - run: >-
-          supabase db push --include-all --yes --db-url
-          "postgresql://postgres.zbspxezubpzxmuxciurg:${SUPABASE_DB_PASSWORD}@aws-1-us-west-1.pooler.supabase.com:5432/postgres"
+          supabase db push --include-all --skip-vault --yes --remote="postgresql://postgres.zbspxezubpzxmuxciurg:${SUPABASE_DB_PASSWORD}@aws-1-us-west-1.pooler.supabase.com:5432/postgres"
 
   migrate-prod:
     name: Migrate prod
@@ -95,13 +94,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with:
-          version: 2.105.0 # Keep in step with `supabase` in the root package.json
-      # A connection string rather than `supabase link`, which needs an account-wide access token. The
+          version: 3.0.0 # Keep in step with `supabase` in the root package.json
+      # A connection string (--remote=<url>) rather than `supabase link`, which needs an account-wide access token. The
       # session pooler (port 5432) because the direct host is IPv6-only and the runners have no IPv6.
       # The password goes into the URL as is, so it must not need percent-encoding.
       - run: >-
-          supabase db push --yes --db-url
-          "postgresql://postgres.ltzepxnhhnrnvovqblfr:${SUPABASE_DB_PASSWORD}@aws-1-us-west-1.pooler.supabase.com:5432/postgres"
+          supabase db push --skip-vault --yes --remote="postgresql://postgres.ltzepxnhhnrnvovqblfr:${SUPABASE_DB_PASSWORD}@aws-1-us-west-1.pooler.supabase.com:5432/postgres"
 
   deploy:
     name: Deploy

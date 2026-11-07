@@ -26,4 +26,5 @@ DEV_INSTANCE_ID=zbspxezubpzxmuxciurg
 # Session pooler, as in CI: the direct host is IPv6-only.
 DB_URL="postgresql://postgres.${DEV_INSTANCE_ID}:${DEV_DB_PASSWORD}@aws-1-us-west-1.pooler.supabase.com:5432/postgres"
 
-npx supabase db push --include-all --yes --db-url "$DB_URL" "$@"
+# --skip-vault: CLI v3 otherwise pushes vault secrets from config.toml first; config.toml is local-only.
+npx supabase db push --include-all --skip-vault --yes --remote="$DB_URL" "$@"

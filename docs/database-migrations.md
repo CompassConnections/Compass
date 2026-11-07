@@ -23,7 +23,7 @@ That workflow runs on every push to `main`, whether or not tests pass or the API
 when dev fails. Nothing else checks a migration before it reaches prod, so review it before merging, and hold
 back a slow or destructive one (a big index, a long lock, a data rewrite) until a quiet time.
 
-- **Never run `db push`, `db reset --linked` or `migration repair` from a laptop against prod.** Those commands
+- **Never run `db push`, `db reset --remote` or `migration repair` from a laptop against prod.** Those commands
   act on whatever the checkout is linked to, so keep checkouts linked to dev.
 - **Never run `supabase config push`, against dev or prod.** `supabase/config.toml` configures the local stack
   only, and that command would copy its local values, such as the `127.0.0.1` site URL, onto the linked project.
@@ -53,7 +53,7 @@ migrations until this is finished. Check that dev and prod both run Postgres
    ```bash
    rm -f supabase/migrations/*.sql
    npx supabase link --project-ref zbspxezubpzxmuxciurg
-   SUPABASE_DB_PASSWORD=ZTNlifGKofSKhu8c npx supabase db pull --linked baseline    # answer n to "Update remote migration history table?"
+   SUPABASE_DB_PASSWORD=ZTNlifGKofSKhu8c npx supabase db pull --remote baseline    # answer n to "Update remote migration history table?"
    rm supabase/migrations/*_baseline.sql
    ```
 
@@ -61,7 +61,7 @@ migrations until this is finished. Check that dev and prod both run Postgres
 
    ```bash
    npx supabase link --project-ref ltzepxnhhnrnvovqblfr
-   npx supabase db pull --linked baseline    # answer n
+   npx supabase db pull --remote baseline    # answer n
    ```
 
    Delete the `CREATE TRIGGER … ON realtime.…` and `… ON storage.…` statements at the end: they are Supabase's
@@ -76,18 +76,18 @@ migrations until this is finished. Check that dev and prod both run Postgres
 
    ```bash
    npx supabase link --project-ref zbspxezubpzxmuxciurg
-   SUPABASE_DB_PASSWORD=ZTNlifGKofSKhu8c npx supabase db diff --linked
+   SUPABASE_DB_PASSWORD=ZTNlifGKofSKhu8c npx supabase db diff --remote
    ```
 
-   If it is empty, run `npx supabase migration repair --status applied <version> --linked`. If not, rebuild dev
+   If it is empty, run `npx supabase migration repair --status applied <version> --remote`. If not, rebuild dev
    with `./scripts/dev_db_reset.sh`, which wipes dev.
 
 5. **Mark the baseline applied (prod).** This writes one row to the history table and changes no schema.
 
    ```bash
    npx supabase link --project-ref ltzepxnhhnrnvovqblfr
-   npx supabase migration repair --status applied <version> --linked
-   npx supabase migration list --linked      # the baseline must show on both sides
+   npx supabase migration repair --status applied <version> --remote
+   npx supabase migration list --remote      # the baseline must show on both sides
    npx supabase link --project-ref zbspxezubpzxmuxciurg
    ```
 

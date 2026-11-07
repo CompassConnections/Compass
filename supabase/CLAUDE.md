@@ -25,7 +25,7 @@ supabase/
    ```bash
    yarn --cwd=backend/api regen-types-dev
    ```
-5. Merging a migration to `main` ships it to prod, so only the human merges or pushes one. Never run `db push`, `db reset --linked` or
+5. Merging a migration to `main` ships it to prod, so only the human merges or pushes one. Never run `db push`, `db reset --remote` or
    `migration repair` against prod, and never run `config push` at all: `config.toml` is local-only.
 
 ## Conventions

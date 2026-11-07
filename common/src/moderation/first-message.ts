@@ -199,7 +199,6 @@ export function profileGateIssues(profile: {
   bioChars: number
   answers: number
 }): ProfileGateIssues | null {
-  console.log(profile)
   const issues = {
     bio: profile.bioChars < MIN_BIO_CHARS_TO_MESSAGE,
     answers: profile.answers < MIN_ANSWERS_TO_MESSAGE,

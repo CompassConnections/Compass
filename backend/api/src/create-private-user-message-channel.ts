@@ -1,9 +1,9 @@
 import {getConnectionInterests} from 'api/get-connection-interests'
 import {APIErrors, APIHandler, assertCanWrite} from 'api/helpers/endpoint'
 import {addUsersToPrivateMessageChannel} from 'api/helpers/private-messages'
-import {ownProfileGateIssues} from 'api/helpers/profile-gate'
+import {isStaff, ownProfileGateIssues} from 'api/helpers/profile-gate'
 import {sendDiscordMessage} from 'common/discord/core'
-import {DOMAIN, isAdminId, isModId} from 'common/envs/constants'
+import {DOMAIN, isAdminId} from 'common/envs/constants'
 import {
   AUTO_BAN_REVIEW_HOURS,
   AUTO_BAN_UNDER_REVIEW_CODE,
@@ -97,14 +97,14 @@ export const createPrivateUserMessageChannel: APIHandler<
 
   // Admins and mods are exempt: they legitimately reach out to many members (support, moderation,
   // onboarding), and auto-banning the people who handle the review queue would be self-defeating.
-  const isStaff = isAdmin || isModId(creator.id)
+  const creatorIsStaff = isStaff(creator)
 
   // Nobody starts a conversation before giving the other side something to go on: a bio of their
   // own and a few compatibility answers. Checked after the existing-channel return above, so a
   // conversation that already exists is never cut off by this; replies are not first messages.
   // The composer runs the same check (`get-profile-gate`) when it opens, so a member normally hears
   // this before writing anything; this is the floor that is actually enforced.
-  if (!isStaff) {
+  if (!creatorIsStaff) {
     const issues = await ownProfileGateIssues(pg, creatorId)
     if (issues) {
       // Only the parts that are actually missing: the answers rule can be tuned down to zero, and
@@ -124,7 +124,7 @@ export const createPrivateUserMessageChannel: APIHandler<
   // BURST_WINDOW_MINUTES and the last 24h. If they've already created MAX_NEW_CHANNELS_PER_BURST in
   // the burst window or MAX_NEW_CHANNELS_PER_DAY in the day, this new one is over the limit — ban them right away and
   // flag it to the admins for review.
-  const recent = isStaff
+  const recent = creatorIsStaff
     ? {burst_count: 0, day_count: 0}
     : await pg.one(
         `select count(*) filter (where c.created_time > now() - $2 * interval '1 minute') as burst_count,
@@ -153,7 +153,7 @@ export const createPrivateUserMessageChannel: APIHandler<
         ? {count: dayCount, window: '24 hours', windowLabel: '24h', limit: MAX_NEW_CHANNELS_PER_DAY}
         : null
 
-  if (!isStaff && exceeded) {
+  if (!creatorIsStaff && exceeded) {
     await updateUser(creatorId, {isBannedFromPosting: true, banReason: 'auto_rate_limit'})
     try {
       const message = `

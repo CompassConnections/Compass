@@ -8,8 +8,7 @@ import {SupabaseDirectClient} from 'shared/supabase/init'
  * onboarding all legitimately open many conversations with members who have given them nothing to
  * go on.
  */
-export const isStaff = (user: Pick<User, 'id' | 'username'>) =>
-  isAdminId(user.id) || isModId(user.id)
+export const isStaff = (user: Pick<User, 'id'>) => isAdminId(user.id) || isModId(user.id)
 
 /**
  * What is still missing from this member's own profile before they may start a conversation, or

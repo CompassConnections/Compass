@@ -1,4 +1,4 @@
-import {isAdminId, isModId} from 'common/envs/constants'
+import {isAdminId} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {ProfileRow} from 'common/profiles/profile'
 import {
@@ -11,6 +11,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 
 import {isBlockedBetween} from './helpers/blocks'
 import {type APIHandler} from './helpers/endpoint'
+import {isStaff} from './helpers/profile-gate'
 
 /**
  * A profile by username, projected down to what `viewerId` is allowed to read.
@@ -46,7 +47,7 @@ export async function getUserAndProfile(username: string, viewerId?: string) {
   // pretending the account does not exist. Disabled used to be a browser-side decision, which shipped
   // the whole profile to anyone who asked the API directly.
   const isOwner = viewerId === user.id
-  const isStaffViewer = !!viewerId && (isAdminId(viewerId) || isModId(viewerId))
+  const isStaffViewer = !!viewerId && isStaff({id: viewerId})
   const hiddenFromViewer =
     !isProfileVisibleTo(profileRes, viewerId) ||
     (!isOwner && profileRes.disabled && !(viewerId && isAdminId(viewerId))) ||

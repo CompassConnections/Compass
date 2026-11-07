@@ -18,7 +18,7 @@ packages. Backed by Supabase (Postgres), Firebase (auth + media), Vercel (web), 
 | `backend/shared/`   | Backend-only utils (DB, websockets, monitoring) | [`backend/shared/CLAUDE.md`](backend/shared/CLAUDE.md)     |
 | `backend/email/`    | React-email templates + send helpers            | [`backend/email/CLAUDE.md`](backend/email/CLAUDE.md)       |
 | `backend/scripts/`  | One-off scripts (migrations, maintenance)       | [`backend/scripts/CLAUDE.md`](backend/scripts/CLAUDE.md)   |
-| `backend/supabase/` | Per-table SQL reference + type-regen makefile   | [`backend/supabase/CLAUDE.md`](backend/supabase/CLAUDE.md) |
+| `backend/supabase/` | Type-regen makefile                             | [`backend/supabase/CLAUDE.md`](backend/supabase/CLAUDE.md) |
 | `common/`           | Types + pure utils shared by web and backend    | [`common/CLAUDE.md`](common/CLAUDE.md)                     |
 | `supabase/`         | Active migrations + local-stack config          | [`supabase/CLAUDE.md`](supabase/CLAUDE.md)                 |
 | `android/`          | Capacitor WebView wrapper around the web build  | [`android/CLAUDE.md`](android/CLAUDE.md)                   |
@@ -61,13 +61,14 @@ yarn --cwd=web test -t "renders profile card"
 Database:
 
 ```bash
-./scripts/migrate.sh backend/supabase/migrations/<file>.sql   # apply a migration to dev, then prod
+npx supabase migration new <name>                     # create supabase/migrations/<timestamp>_<name>.sql
+yarn test:db:reset                                    # rebuild the local database from all migrations + seed
 yarn --cwd=backend/api regen-types-dev                # rebuild common/src/supabase/schema.ts
 ```
 
-Every new migration must also be appended to `backend/supabase/migration.sql` (`\i
-backend/supabase/migrations/<file>.sql`, before the closing `COMMIT;`) — that ordered list is what rebuilds
-the schema from scratch.
+Merging to `main` applies migrations to dev, then prod after a manual approval, then deploys the API
+(`.github/workflows/cd-backend.yml`). Never push them from a laptop. Details in
+[`docs/database-migrations.md`](docs/database-migrations.md).
 
 Releases:
 
@@ -125,6 +126,7 @@ Architecture and patterns: [`docs/knowledge.md`](docs/knowledge.md),
 Frontend: [`docs/ui-guidelines.md`](docs/ui-guidelines.md) (design tokens, palette, anti-patterns),
 [`docs/next-js.md`](docs/next-js.md), [`docs/react.md`](docs/react.md), [`docs/filters.md`](docs/filters.md).
 Database: [`docs/database-schema.md`](docs/database-schema.md),
+[`docs/database-migrations.md`](docs/database-migrations.md),
 [`docs/database-connection-pooling.md`](docs/database-connection-pooling.md),
 [`docs/performance-optimization.md`](docs/performance-optimization.md).
 Releases: [`docs/releases.md`](docs/releases.md) — web, Android and iOS share one version number

@@ -2,7 +2,7 @@
  * The testimonials wall — what members say about Compass, on a public page at `/testimonials`.
  *
  * Every submission is moderated before it is visible. The constants here are mirrored by CHECK
- * constraints in `backend/supabase/migrations/20260803_add_testimonials.sql`; changing one without the
+ * constraints on `testimonials` (see `supabase/migrations/`); changing one without the
  * other turns a friendly client-side validation message into a 500.
  */
 

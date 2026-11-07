@@ -28,7 +28,7 @@ port = 54322
 shadow_port = 54320
 # The database major version to use. This has to be the same as your remote database's. Run `SHOW server_version;` on
 # the remote database to check.
-major_version = 15
+major_version = 17
 
 [db.pooler]
 enabled = false
@@ -102,6 +102,8 @@ file_size_limit = "50MiB"
 # objects_path = "./images"
 
 [auth]
+# Sign-in is Firebase, but keep this on: with it off, `supabase status` stops reporting ANON_KEY, which
+# scripts/e2e.sh, seed.sh, run_local_isolated.sh and playwright.config.ts pass to the web app as its key.
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.

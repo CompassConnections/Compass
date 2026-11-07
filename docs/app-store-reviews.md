@@ -197,8 +197,7 @@ iOS. Nothing tells us when they have; it is one more reason the call's silence i
 
 Six pieces, following the house conventions.
 
-**Migration** — `backend/supabase/migrations/20260824_add_review_prompts.sql`, appended to
-`backend/supabase/migration.sql` before the closing `COMMIT;`. One row per attempt:
+**Migration** — `backend/supabase/migrations/20260824_add_review_prompts.sql`. One row per attempt:
 
 ```
 review_prompts (user_id, prompted_at, prompt_trigger, platform, attempt_no)
@@ -261,7 +260,7 @@ are spent has no other route, and the row costs nothing.
 
 ## 8. What is left to do
 
-- [ ] Apply the migration: `./scripts/migrate.sh backend/supabase/migrations/20260824_add_review_prompts.sql`
+- [ ] Apply the migration (see [database-migrations.md](database-migrations.md)).
 - [ ] `yarn --cwd=backend/api regen-types-dev` so `review_prompts` appears in
       `common/src/supabase/schema.ts`.
 - [ ] Set `REVIEW_BACKFILL_CUTOFF` in `common/src/reviews/prompt.ts` to the date the release actually

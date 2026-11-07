@@ -12,9 +12,8 @@
  * one-shot broadcast to every member. Those are the two irreversible parts, so they are the two the
  * validation below is actually about.
  *
- * The constants here are mirrored by CHECK constraints in
- * `backend/supabase/migrations/20260822_add_blog_posts.sql`; changing one without the other turns a
- * friendly validation message into a 500.
+ * The constants here are mirrored by the CHECK constraints on `blog_posts` (see `supabase/migrations/`);
+ * changing one without the other turns a friendly validation message into a 500.
  */
 
 import {type JSONContent} from '@tiptap/core'

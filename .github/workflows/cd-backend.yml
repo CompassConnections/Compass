@@ -1,0 +1,137 @@
+name: Backend Deploy
+on:
+  push:
+    branches: [main, master]
+
+# One run at a time, so a later push cannot deploy past a migration still waiting for its prod approval.
+concurrency: cd-backend
+
+jobs:
+  check-version:
+    name: Check Version
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+      migrations: ${{ steps.migrations.outputs.changed }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # The whole history, because a push can hold many commits and `before` can be far behind HEAD.
+          fetch-depth: 0
+
+      - name: Read current version
+        id: current
+        run: |
+          current=$(jq -r '.version' backend/api/package.json)
+          echo "version=$current" >> $GITHUB_OUTPUT
+
+      - name: Read previous version
+        id: previous
+        run: |
+          if git show HEAD^:backend/api/package.json >/dev/null 2>&1; then
+            previous=$(git show HEAD^:backend/api/package.json | jq -r '.version')
+          else
+            previous="none"
+          fi
+          echo "version=$previous" >> $GITHUB_OUTPUT
+
+      - name: Compare versions
+        id: check
+        run: |
+          echo "current=${{ steps.current.outputs.version }}"
+          echo "previous=${{ steps.previous.outputs.version }}"
+          if [ "${{ steps.current.outputs.version }}" = "${{ steps.previous.outputs.version }}" ]; then
+            echo "Version unchanged. Skipping deploy."
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      # Decided here rather than left to `db push`, whose no-op would still stop every API deploy at the
+      # production environment's approval. A `before` that cannot be diffed counts as changed.
+      - name: Check for new migrations
+        id: migrations
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if git diff --quiet "$BEFORE" HEAD -- supabase/migrations 2>/dev/null; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+  migrate-dev:
+    name: Migrate dev
+    runs-on: ubuntu-latest
+    needs: check-version
+    environment: dev
+    env:
+      SUPABASE_DB_PASSWORD: ZTNlifGKofSKhu8c
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.105.0 # Keep in step with `supabase` in the root package.json
+      # A connection string rather than `supabase link`, which needs an account-wide access token. The
+      # session pooler (port 5432) because the direct host is IPv6-only and the runners have no IPv6.
+      # The password goes into the URL as is, so it must not need percent-encoding.
+      - run: >-
+          supabase db push --yes --db-url
+          "postgresql://postgres.zbspxezubpzxmuxciurg:${SUPABASE_DB_PASSWORD}@aws-1-us-west-1.pooler.supabase.com:5432/postgres"
+
+  migrate-prod:
+    name: Migrate prod
+    runs-on: ubuntu-latest
+    needs: [check-version, migrate-dev]
+    if: needs.check-version.outputs.migrations == 'true'
+    environment: prod # Required reviewers on this environment make prod wait for a click. Not `production`: GitHub matches names case-insensitively, and Vercel owns `Production`.
+    env:
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.105.0 # Keep in step with `supabase` in the root package.json
+      # A connection string rather than `supabase link`, which needs an account-wide access token. The
+      # session pooler (port 5432) because the direct host is IPv6-only and the runners have no IPv6.
+      # The password goes into the URL as is, so it must not need percent-encoding.
+      - run: >-
+          supabase db push --yes --db-url
+          "postgresql://postgres.ltzepxnhhnrnvovqblfr:${SUPABASE_DB_PASSWORD}@aws-1-us-west-1.pooler.supabase.com:5432/postgres"
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [check-version, migrate-dev, migrate-prod]
+    # `always()` because a push without migrations skips prod, and a skipped need would skip this job too.
+    # Dev is only a gate when the push has migrations, so a paused dev project cannot block an API release.
+    if: >-
+      always() &&
+      needs.check-version.outputs.changed == 'true' &&
+      (needs.check-version.outputs.migrations == 'false' || needs.migrate-prod.result == 'success')
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Install gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: compass-130ba
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
+
+      - name: Run deploy script
+        run: |
+          chmod +x backend/api/deploy-api.sh
+          backend/api/deploy-api.sh

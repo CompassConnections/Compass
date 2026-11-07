@@ -6,8 +6,10 @@ cd "$(dirname "$0")/.."
 
 ./scripts/dev_db_clear_firebase.sh
 
-./scripts/combine-migrations.sh
+# Link dev here rather than trusting the checkout's link: `db reset --linked` wipes whatever is linked,
+# and a checkout can be left linked to prod. `set -e` stops the reset if the link fails.
+npx supabase link --project-ref zbspxezubpzxmuxciurg
 
-./scripts/dev_db_write_schema.sh
+SUPABASE_DB_PASSWORD=ZTNlifGKofSKhu8c npx supabase db reset --linked
 
 ./scripts/dev_db_seed.sh

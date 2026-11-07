@@ -20,8 +20,8 @@ Integration tests call real handlers against real Postgres. Only external servic
 mocked.
 
 - **Database:** a throwaway `compass_integration` database inside the local Supabase cluster, rebuilt from
-  `backend/supabase/migration.sql` on every run. It is separate from the `postgres` database, so local dev data
-  is untouched, and building from the migration list also proves that list still rebuilds the schema.
+  `supabase/migrations/` on every run. It is separate from the `postgres` database, so local dev data is
+  untouched, and building from the migrations also proves they still rebuild the schema.
 - **Isolation:** tables are truncated before each test, and tests run serially. Rolling back a transaction per
   test does not fit, because handlers get their connection from `createSupabaseDirectClient()` rather than
   taking it as an argument.

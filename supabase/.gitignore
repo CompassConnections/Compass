@@ -6,4 +6,3 @@
 .env.keys
 .env.local
 .env.*.local
-/migrations/

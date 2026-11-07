@@ -155,7 +155,7 @@ contributors.
 
 ![Vercel](https://deploy-badge.vercel.app/vercel/compass)
 [![CD](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd.yml)
-[![CD API](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-api.yml)
+[![CD Backend](https://github.com/CompassConnections/Compass/actions/workflows/cd-backend.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-backend.yml)
 [![CD Android](https://github.com/CompassConnections/Compass/actions/workflows/cd-android.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-android.yml)
 [![CD iOS](https://github.com/CompassConnections/Compass/actions/workflows/cd-ios.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/cd-ios.yml)
 [![CI](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml/badge.svg)](https://github.com/CompassConnections/Compass/actions/workflows/ci.yml)

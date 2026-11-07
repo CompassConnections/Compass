@@ -6,7 +6,14 @@ import {lookupVpnNetwork} from './vpn-check'
 
 /**
  * Networks and devices that confirmed abusers signed up from, checked when someone new signs up.
- * Table and the reasoning behind its shape: backend/supabase/migrations/20261024_add_banned_networks.sql.
+ *
+ * Rows come from two places: `ban-user` with reason `confirmed_abuse` adds the banned account's signup
+ * IP and device token, with `source_user_id` set, and removes them when that ban is lifted or
+ * downgraded; hand-added entries have a null `source_user_id` and a `note` saying why.
+ *
+ * IPv4 is stored as the exact /32, IPv6 as the /64 around the address: mobile carriers hand each device
+ * a /64 and rotate the rest, so the exact address is never seen twice. Addresses get reassigned, so rows
+ * copied from a ban expire (see BANNED_IP_TTL_DAYS); device tokens do not.
  *
  * Only `confirmed_abuse` bans feed it. A provisional hold is not a verdict — most turn out to be
  * genuine — and copying a false positive's IP onto everyone else behind that address would spread

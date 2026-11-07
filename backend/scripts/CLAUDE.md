@@ -14,7 +14,6 @@ backend/scripts/
 ├── 2026-03-10-delete-users-without-profile.ts
 ├── 2026-03-09-migrate-unencrypted-messages.ts
 ├── 2025-04-23-migrate-social-links.ts
-├── regen-schema.ts                    Regenerate common/src/supabase/schema.ts
 ├── *.sql                              Raw SQL one-offs
 └── import-tables.sh                   Bulk import from prod
 ```

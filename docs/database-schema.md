@@ -669,10 +669,8 @@ User authentication is managed through Firebase Auth, with user IDs synchronized
 
 ## Migration Strategy
 
-Database schema changes are managed through migration files in `/backend/supabase/migrations/` with the following naming convention:
-
-- `YYYYMMDD_description.sql` for major changes
-- Sequential numbering ensures proper application order
+Database schema changes are managed by the Supabase CLI through files in `/supabase/migrations/`. See
+[database-migrations.md](database-migrations.md).
 
 ## Backup and Recovery
 

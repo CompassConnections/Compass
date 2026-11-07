@@ -63,7 +63,7 @@ my_field ? : string | null
 
 ### 3. Database migration
 
-Create `backend/supabase/migrations/YYYYMMDD_add_<field>.sql`:
+Run `npx supabase migration new add_<field>` and fill in the new file in `supabase/migrations/`:
 
 ```sql
 ALTER TABLE profiles

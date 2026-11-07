@@ -14,11 +14,10 @@
  *
  * The snapshot rule is the load-bearing part. A spotlight never reads the live profile. If it did,
  * anyone who had ever been spotlighted could rewrite the front page of Compass at will. Everything the
- * card renders is frozen at capture time and only changes when an admin re-captures it. See
- * `backend/supabase/migrations/20260812_add_profile_spotlights.sql`.
+ * card renders is frozen at capture time and only changes when an admin re-captures it.
  *
- * The constants here are mirrored by CHECK constraints in that migration; changing one without the
- * other turns a friendly validation message into a 500.
+ * The constants here are mirrored by the CHECK constraints on `profile_spotlights` (see
+ * `supabase/migrations/`); changing one without the other turns a friendly validation message into a 500.
  */
 
 import {type JSONContent} from '@tiptap/core'

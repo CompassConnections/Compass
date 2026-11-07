@@ -183,8 +183,7 @@ alone — pushing them down would turn "unknown" into "bad", which the blank rul
 
 ### Database
 
-- **Migration `backend/supabase/migrations/20261031_compatibility_scores_factors.sql`** (append to
-  `backend/supabase/migration.sql` before `COMMIT;`, and update `backend/supabase/compatibility_scores.sql`):
+- **Migration `backend/supabase/migrations/20261031_compatibility_scores_factors.sql`**:
 
   ```sql
   alter table compatibility_scores
@@ -310,7 +309,7 @@ confidence, prompt: {score, low, high} | undefined}`. Also fixes today's missing
 1. `yarn --cwd=common test compatibility-factors compatibility-score`, `yarn --cwd=backend/shared test
 compute-score`, `yarn --cwd=backend/api test compatible-profiles update-profile update-options`.
 2. `yarn typecheck && yarn lint`.
-3. Human applies the migration (`./scripts/migrate.sh …`) and runs `regen-types-dev`; I rebuild via the
+3. Human approves the migration (see [database-migrations.md](database-migrations.md)) and runs `regen-types-dev`; I rebuild via the
    admin button on the dev stack (`yarn dev`, `/admin/compatibility-questions`) and check the
    `RecomputeAllResult` pair count rises (pairs without answers now included).
 4. In the browser: open another member's profile → rail shows the overall block; "See breakdown" opens

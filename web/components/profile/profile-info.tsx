@@ -132,11 +132,14 @@ export function ProfileInfo(props: {
           exactly as it does once stuck, and the browser (inset 0) is unchanged.
           `hides-on-scroll` slides it away on the same cue as the mobile bottom nav — down while
           reading, back on the first scroll up — so it never sits on a line someone is reading.
-          In the two-column layout it is neither sticky nor sliding: see `twoColumns`. */}
+          In the two-column layout it is neither sticky nor sliding: see `twoColumns`.
+          `z-20` applies either way: `backdrop-blur` makes the bar a stacking context, so the z-index of
+          the actions dropdown only counts inside it, and without one on the bar the positioned photos
+          further down paint over the open menu and take its clicks. */}
       <div
         className={clsx(
-          'bg-canvas-50/95 border-canvas-300 mb-6 mt-[calc(-1*var(--tnh))] flex items-center border-b px-4 sm:px-9 py-2 pt-[calc(0.5rem+var(--tnh))] backdrop-blur',
-          !twoColumns && 'hides-on-scroll sticky top-0 z-20',
+          'bg-canvas-50/95 border-canvas-300 z-20 mb-6 mt-[calc(-1*var(--tnh))] flex items-center border-b px-4 sm:px-9 py-2 pt-[calc(0.5rem+var(--tnh))] backdrop-blur',
+          twoColumns ? 'relative' : 'hides-on-scroll sticky top-0',
         )}
         style={{
           borderBottomWidth: '1px',

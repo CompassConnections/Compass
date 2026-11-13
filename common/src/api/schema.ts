@@ -22,6 +22,14 @@ import {
   MIN_BLOG_SLUG_LENGTH,
   MIN_BLOG_TITLE_LENGTH,
 } from 'common/blog/blog'
+import {
+  JobApplication,
+  MAX_APPLICATION_ABOUT_LENGTH,
+  MAX_APPLICATION_AVAILABILITY_LENGTH,
+  MAX_APPLICATION_PLAN_LENGTH,
+  MAX_APPLICATION_RATE_LENGTH,
+  OPEN_POSITIONS,
+} from 'common/careers'
 import {ChatMessage} from 'common/chat-message'
 import {COMMENT_TYPES, type ProfileComment} from 'common/comment'
 import {
@@ -1605,6 +1613,33 @@ export const API = (_apiTypeCheck = {
       // a message be signed as any member.
     }),
     summary: 'Send a contact/support message',
+    tag: 'Contact',
+  },
+  'apply-to-position': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        position: z.enum(OPEN_POSITIONS),
+        about: z.string().trim().min(1).max(MAX_APPLICATION_ABOUT_LENGTH),
+        plan: z.string().trim().min(1).max(MAX_APPLICATION_PLAN_LENGTH),
+        rate: z.string().trim().min(1).max(MAX_APPLICATION_RATE_LENGTH),
+        availability: z.string().trim().min(1).max(MAX_APPLICATION_AVAILABILITY_LENGTH),
+        // No `userId` prop, for the same reason as `contact`: the applicant is whoever the token says.
+      })
+      .strict(),
+    returns: {} as {application: JobApplication},
+    summary: 'Apply to an open position, or replace an application already sent',
+    tag: 'Contact',
+  },
+  'get-my-job-applications': {
+    method: 'GET',
+    authed: true,
+    rateLimited: true,
+    props: z.object({}).strict(),
+    returns: {} as {applications: JobApplication[]},
+    summary: "The caller's own applications to the positions on /careers",
     tag: 'Contact',
   },
   'get-messages-count': {

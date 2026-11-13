@@ -79,6 +79,7 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
     links: [
       {key: 'nav.organization', name: 'Organization', href: '/organization'},
       {key: 'footer.financials', name: 'Financials', href: '/financials'},
+      {key: 'footer.careers', name: 'Careers', href: '/careers'},
       {key: 'footer.values', name: 'Our values', href: '/values'},
       {
         key: 'footer.compatibility_score',

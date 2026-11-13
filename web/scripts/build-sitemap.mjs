@@ -53,6 +53,7 @@ const ROUTES = [
   '/financials',
   '/constitution',
   '/organization',
+  '/careers',
   '/donate',
   '/social',
   '/faq',

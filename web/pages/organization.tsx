@@ -105,6 +105,7 @@ export default function Organization() {
       links: [
         {url: '/about', label: t('about.seo.description', 'About Compass'), primary: true},
         {url: '/constitution', label: t('organization.constitution', 'Our constitution')},
+        {url: '/careers', label: t('footer.careers', 'Careers')},
       ],
     },
     {

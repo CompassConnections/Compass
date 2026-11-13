@@ -2,6 +2,7 @@ import {timingSafeEqual} from 'node:crypto'
 import path from 'node:path'
 import {hrtime} from 'node:process'
 
+import {applyToPosition} from 'api/apply-to-position'
 import {checkOptionName} from 'api/check-option-name'
 import {contact} from 'api/contact'
 import {createVote} from 'api/create-vote'
@@ -104,6 +105,7 @@ import {getDonorBadge} from './get-donor-badge'
 import {getEvents} from './get-events'
 import {getMe} from './get-me'
 import {getMemberValueRanking} from './get-member-value-ranking'
+import {getMyJobApplications} from './get-my-job-applications'
 import {getMyProposalIds} from './get-my-proposal-ids'
 import {getMyReferralCount} from './get-my-referral-count'
 import {getMyReferrals} from './get-my-referrals'
@@ -685,6 +687,8 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'get-private-user-admin': getPrivateUserAdmin,
   'compatible-profiles': getCompatibleProfilesHandler,
   contact: contact,
+  'apply-to-position': applyToPosition,
+  'get-my-job-applications': getMyJobApplications,
   'create-bookmarked-search': createBookmarkedSearch,
   'create-comment': createComment,
   'create-compatibility-question': createCompatibilityQuestion,

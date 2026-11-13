@@ -1,8 +1,6 @@
 import {JSONContent} from '@tiptap/core'
 import {useEditorState} from '@tiptap/react'
-import {formLink} from 'common/constants'
 import {MAX_DESCRIPTION_LENGTH} from 'common/envs/constants'
-import Link from 'next/link'
 import toast from 'react-hot-toast'
 import {Button} from 'web/components/buttons/button'
 import {linkifyUrls} from 'web/components/editor/autolink'
@@ -34,10 +32,10 @@ export function ContactComponent() {
     <Col className="max-w-3xl mx-auto">
       <Title className="!mb-2 text-3xl">{t('contact.title', 'Contact')}</Title>
       <p className={'custom-link mb-4'}>
-        {t('contact.intro_prefix', 'You can also contact us through this ')}
-        <Link href={formLink}>{t('contact.form_link', 'feedback form')}</Link>
-        {t('contact.intro_middle', ' or any of our ')}
-        <Link href={'/social'}>{t('contact.socials', 'socials')}</Link>.
+        {/*{t('contact.intro_prefix', 'You can also contact us through this ')}*/}
+        {/*<Link href={formLink}>{t('contact.form_link', 'feedback form')}</Link>*/}
+        {/*{t('contact.intro_middle', ' or any of our ')}*/}
+        {/*<Link href={'/social'}>{t('contact.socials', 'socials')}</Link>.*/}
         {user === null &&
           ' ' +
             t(

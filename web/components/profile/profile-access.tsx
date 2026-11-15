@@ -11,7 +11,7 @@ import {
   type ProfileFieldKey,
 } from 'common/profiles/visibility'
 import {type User} from 'common/user'
-import {type LucideIcon, UserCheck, X} from 'lucide-react'
+import {Eye, type LucideIcon, UserCheck, X} from 'lucide-react'
 import Link from 'next/link'
 import {createContext, useContext, useEffect, useMemo, useState} from 'react'
 import toast from 'react-hot-toast'
@@ -181,48 +181,67 @@ export function ViewAsBar(props: {
   const options: {key: ViewAsAudience; label: string; icon: LucideIcon}[] = VIEW_AS_AUDIENCES.map(
     (key) => ({key, label: viewerNames[key], icon: AUDIENCE_ICONS[key]}),
   )
+  // One framed panel, tinted and dashed, so the preview's own controls cannot be mistaken for part of
+  // the profile drawn under them: before, the pills and the one-line banner sat on the page
+  // background in the same weight as the profile's own notices.
   return (
-    <Row
-      className={clsx('flex-wrap items-center gap-x-3 gap-y-2 text-sm', className)}
-      role="group"
-      aria-label={t('profile.view_as.label', 'View profile as')}
-    >
-      <span className="text-ink-800">{t('profile.view_as.label', 'View profile as')}</span>
-      <Row className="flex-wrap gap-1.5">
-        {options.map(({key, label, icon: Icon}) => {
-          const selected = value === key
-          return (
-            <button
-              key={key}
-              type="button"
-              aria-pressed={selected}
-              onClick={() => onChange(key)}
-              className={clsx(
-                'inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3 py-1',
-                'focus-visible:ring-primary-500 focus:outline-none focus-visible:ring-2',
-                selected
-                  ? 'bg-primary-50 text-primary-800 border-primary-200'
-                  : 'border-canvas-300 text-ink-800 hover:border-primary-400',
-              )}
-            >
-              <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden strokeWidth={2} />
-              {label}
-            </button>
-          )
-        })}
-      </Row>
-      <button
-        type="button"
-        onClick={() => onChange(undefined)}
-        className={clsx(
-          'bg-cta hover:bg-cta-hover ml-auto inline-flex min-h-[36px] items-center gap-1.5 rounded-full px-3 py-1 font-medium text-white',
-          'focus-visible:ring-primary-500 focus:outline-none focus-visible:ring-2',
-        )}
+    <div className={className}>
+      <div
+        className="border-primary-500 bg-primary-50 rounded-xl border-2 border-dashed px-4 py-3 sm:px-5 sm:py-4"
+        data-testid="view-as-bar"
       >
-        <X className="h-3.5 w-3.5 shrink-0" aria-hidden strokeWidth={2.5} />
-        {t('profile.view_as.exit', 'Exit preview')}
-      </button>
-    </Row>
+        <Row className="items-start justify-between gap-3">
+          <Col className="min-w-0 gap-1">
+            <Row className="text-primary-800 items-center gap-2 text-base font-semibold">
+              <Eye className="h-5 w-5 shrink-0" aria-hidden strokeWidth={2} />
+              {t('profile.view_as.title', 'Preview mode')}
+            </Row>
+          </Col>
+          <button
+            type="button"
+            onClick={() => onChange(undefined)}
+            className={clsx(
+              'bg-cta hover:bg-cta-hover inline-flex min-h-[36px] shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium text-white',
+              'focus-visible:ring-primary-500 focus:outline-none focus-visible:ring-2',
+            )}
+          >
+            <X className="h-3.5 w-3.5 shrink-0" aria-hidden strokeWidth={2.5} />
+            {t('profile.view_as.exit', 'Exit preview')}
+          </button>
+        </Row>
+
+        <Row
+          className="mt-3 flex-wrap items-center gap-x-3 gap-y-2 text-sm"
+          role="group"
+          aria-label={t('profile.view_as.label', 'View profile as')}
+        >
+          <span className="text-ink-900">{t('profile.view_as.label', 'View profile as')}</span>
+          <Row className="flex-wrap gap-1.5">
+            {options.map(({key, label, icon: Icon}) => {
+              const selected = value === key
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => onChange(key)}
+                  className={clsx(
+                    'inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3 py-1',
+                    'focus-visible:ring-primary-500 focus:outline-none focus-visible:ring-2',
+                    selected
+                      ? 'border-primary-700 bg-primary-200 text-primary-900 font-medium'
+                      : 'border-primary-300 text-ink-900 hover:border-primary-500',
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden strokeWidth={2} />
+                  {label}
+                </button>
+              )
+            })}
+          </Row>
+        </Row>
+      </div>
+    </div>
   )
 }
 
@@ -248,9 +267,10 @@ export function ProfilePreview(props: {
   ownProfile: VisibilitySource
   viewAs: ViewAsAudience
   children: (preview: {user: User; profile: Profile}) => React.ReactNode
+  /** Shown while the preview loads — the controls, so there is always a way out. */
+  fallback?: React.ReactNode
 }) {
-  const {username, ownProfile, viewAs, children} = props
-  const t = useT()
+  const {username, ownProfile, viewAs, children, fallback} = props
   const {data} = useAPIGetter('get-profile', {username, viewAs})
 
   const viewer =
@@ -269,27 +289,14 @@ export function ProfilePreview(props: {
     [viewAs, ownProfile.visibility, JSON.stringify(ownProfile.field_visibility ?? {})],
   )
 
-  const audience = useViewAsNames()[viewAs]
-
-  return (
-    <Col className="gap-3">
-      <p
-        // Lined up with the bar above and the profile below (`px-4` / `sm:px-8` on both).
-        className="bg-canvas-200 text-primary-800 mx-4 w-fit rounded-lg px-4 py-2 text-sm sm:mx-8"
-        role="status"
-      >
-        {t('profile.view_as.banner', 'Preview. You are viewing your profile as: {audience}.', {
-          audience,
-        })}
-      </p>
-      {data?.user && data.profile ? (
-        <ViewAsContext.Provider value={state}>
-          <div inert>
-            {children({user: data.user, profile: {...data.profile, user: data.user}})}
-          </div>
-        </ViewAsContext.Provider>
-      ) : null}
-    </Col>
+  // No wrapper and no `inert` here: `ProfileInfo` makes its own parts inert while previewing and
+  // leaves the preview's controls, which it places under its top bar, usable.
+  return data?.user && data.profile ? (
+    <ViewAsContext.Provider value={state}>
+      {children({user: data.user, profile: {...data.profile, user: data.user}})}
+    </ViewAsContext.Provider>
+  ) : (
+    <>{fallback}</>
   )
 }
 

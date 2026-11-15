@@ -298,6 +298,7 @@ function UserPageInner(props: ActiveUserPageProps) {
   const {profile: clientProfile, refreshProfile} = useProfileByUser(user)
   const [viewAs, setViewAs] = useState<ViewAsAudience | undefined>()
   const viewAsControl = useMemo(() => ({setViewAs}), [])
+  const viewAsBar = <ViewAsBar value={viewAs} onChange={setViewAs} className="px-4 pb-6 sm:px-8" />
 
   // Show the previous profile while loading another one
   const profile = clientProfile ?? staticProfile
@@ -345,20 +346,24 @@ function UserPageInner(props: ActiveUserPageProps) {
       {currentUser !== undefined ? (
         <Col className={'gap-4'}>
           {isMod && user.isBannedFromPosting && <BannedUserModBar user={user} className="mx-2" />}
-          {/* "View as", on your own profile: the same page as a visitor, a member or someone you
-              approved receives it (docs/profile-visibility.md). Started from the "..." menu in the
-              top bar; while one is running, the bar above it switches audience or leaves. */}
-          {isCurrentUser && profile && viewAs && (
-            <ViewAsBar value={viewAs} onChange={setViewAs} className="px-4 pt-3 sm:px-8" />
-          )}
+          {/* "View as", on your own profile: the same page as a visitor, a member or someone in your
+              circle receives it (docs/profile-visibility.md). Started from the "..." menu in the top
+              bar; while one is running, its controls sit just under that bar — under, not above,
+              because the bar has to stay first on the page to clear the native status bar. */}
           {isCurrentUser && profile && viewAs ? (
-            <ProfilePreview username={user.username} ownProfile={profile} viewAs={viewAs}>
+            <ProfilePreview
+              username={user.username}
+              ownProfile={profile}
+              viewAs={viewAs}
+              fallback={viewAsBar}
+            >
               {(preview) => (
                 <ProfileInfo
                   key={`${preview.profile.user_id}-${viewAs}`}
                   profile={preview.profile}
                   user={preview.user}
                   refreshProfile={() => {}}
+                  previewBar={viewAsBar}
                 />
               )}
             </ProfilePreview>

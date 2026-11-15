@@ -148,7 +148,7 @@ describe('profile access', () => {
   describe('setProfileAccess', () => {
     const owner = {uid: 'owner'} as AuthedUser
 
-    it('approves, with or without a request, and tells the other person', async () => {
+    it('approves without a request and tells the other person, but not by email', async () => {
       ;(access.getProfileAccessRow as jest.Mock).mockResolvedValue(null)
 
       const result = await setProfileAccess({userId: 'viewer', action: 'approve'}, owner, req)
@@ -158,7 +158,9 @@ describe('profile access', () => {
         'owner',
         'viewer',
       ])
-      expect(access.notifyProfileAccess).toHaveBeenCalledWith('approved', 'owner', 'viewer')
+      expect(access.notifyProfileAccess).toHaveBeenCalledWith('approved', 'owner', 'viewer', {
+        email: false,
+      })
     })
 
     it('refuses to add a stranger: no request, no earlier membership, no conversation', async () => {
@@ -172,7 +174,7 @@ describe('profile access', () => {
       expect(access.notifyProfileAccess).not.toHaveBeenCalled()
     })
 
-    it('adds someone who asked, without needing a conversation', async () => {
+    it('adds someone who asked, without needing a conversation, and emails them', async () => {
       ;(access.getProfileAccessRow as jest.Mock).mockResolvedValue({
         status: 'requested',
         decided_time: null,
@@ -182,7 +184,9 @@ describe('profile access', () => {
       expect(await setProfileAccess({userId: 'viewer', action: 'approve'}, owner, req)).toEqual({
         status: 'approved',
       })
-      expect(access.notifyProfileAccess).toHaveBeenCalledWith('approved', 'owner', 'viewer')
+      expect(access.notifyProfileAccess).toHaveBeenCalledWith('approved', 'owner', 'viewer', {
+        email: true,
+      })
     })
 
     it('answers 404 for a member who does not exist', async () => {
@@ -214,7 +218,9 @@ describe('profile access', () => {
       })
 
       await setProfileAccess({userId: 'viewer', action: 'approve'}, owner, req)
-      expect(access.notifyProfileAccess).toHaveBeenCalledWith('approved', 'owner', 'viewer')
+      expect(access.notifyProfileAccess).toHaveBeenCalledWith('approved', 'owner', 'viewer', {
+        email: false,
+      })
     })
 
     it('removes by marking the row, keeping it, silently', async () => {

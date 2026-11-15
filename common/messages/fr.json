@@ -2773,5 +2773,6 @@
   "email.circle.added.message": "{fromUserName} vous a ajouté à son cercle : vous pouvez maintenant voir les parties de son profil qui lui sont réservées.",
   "email.circle.requested.button": "Ouvrir son profil pour décider",
   "email.circle.added.button": "Voir son profil",
-  "profile.access.no_fields": "Vous n’avez encore réglé aucun champ sur « Mon cercle » : en faire partie ne montre donc rien de plus. Chaque champ a son propre contrôle dans l’éditeur de profil."
+  "profile.access.no_fields": "Vous n’avez encore réglé aucun champ sur « Mon cercle » : en faire partie ne montre donc rien de plus. Chaque champ a son propre contrôle dans l’éditeur de profil.",
+  "profile.view_as.title": "Mode aperçu"
 }

@@ -63,8 +63,10 @@ export function ProfileInfo(props: {
   // as its own page: no Back button, which would leave the chat, and no "Message" button, since
   // that is where you already are.
   embedded?: boolean
+  /** "View as" controls, rendered between the top bar and the profile. Preview only. */
+  previewBar?: ReactNode
 }) {
-  const {profile, refreshProfile, fromProfilePage, fromSignup, embedded} = props
+  const {profile, refreshProfile, fromProfilePage, fromSignup, embedded, previewBar} = props
   const t = useT()
 
   const currentUser = useUser()
@@ -115,6 +117,7 @@ export function ProfileInfo(props: {
   // a request in the network tab is a request whether or not anything renders from it.
   const {data: userActivity} = useUserActivity(isProfileVisible ? user?.id : undefined)
 
+  const previewing = !!useViewAs()
   const {ref: heroRef, scrolledPast: scrolledPastHero} = useScrolledPast<HTMLDivElement>()
   // In the two-column layout the top bar scrolls away with the page instead of sticking: the Details
   // rail pins at the top of the viewport there, and a bar stuck over it would hide its heading.
@@ -144,6 +147,11 @@ export function ProfileInfo(props: {
           'bg-canvas-50/95 border-canvas-300 z-20 mb-6 mt-[calc(-1*var(--tnh))] flex items-center border-b px-4 sm:px-9 py-2 pt-[calc(0.5rem+var(--tnh))] backdrop-blur',
           twoColumns ? 'relative' : 'hides-on-scroll sticky top-0',
         )}
+        // In a "view as" preview the bar is drawn as the previewed reader gets it, and its buttons
+        // would act as the owner, so it is inert. It stays the first thing on the page — the
+        // preview's own controls go *under* it (`previewBar`), not above: the bar is built to sit
+        // flush under the native status bar, and anything placed before it was covered by it there.
+        inert={previewing}
         style={{
           borderBottomWidth: '1px',
           gap: '10px',
@@ -206,7 +214,11 @@ export function ProfileInfo(props: {
         </div>
       </div>
 
-      <div className="mx-auto w-full px-4 sm:px-8 pb-6 pt-0">
+      {/* The preview's controls: which reader, and the way out. The only interactive thing on the
+          page while previewing. */}
+      {previewBar}
+
+      <div className="mx-auto w-full px-4 sm:px-8 pb-6 pt-0" inert={previewing}>
         <div className="relative" ref={heroRef}>
           {/* Gradient overlay */}
           {/*<div*/}

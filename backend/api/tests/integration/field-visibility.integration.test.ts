@@ -696,9 +696,18 @@ describe('approvals', () => {
     await seedUser('penpal')
     await seedMessage('penpal', [OWNER, 'penpal'])
     expect((await call(getProfileAccess, {userId: 'penpal'}, OWNER)).pair.canAdd).toBe(true)
+    ;(emails.sendCircleEmail as jest.Mock).mockClear()
+    ;(mobile.sendWebNotifications as jest.Mock).mockClear()
     expect(await call(setProfileAccess, {userId: 'penpal', action: 'approve'}, OWNER)).toEqual({
       status: 'approved',
     })
+    // They did not ask, so they are pushed the news but not emailed it.
+    expect(mobile.sendWebNotifications).toHaveBeenCalledWith(
+      expect.anything(),
+      'penpal',
+      expect.stringContaining(`/username_${OWNER}`),
+    )
+    expect(emails.sendCircleEmail).not.toHaveBeenCalled()
   })
 
   it('are deleted by a block in either direction, and not restored by unblocking', async () => {

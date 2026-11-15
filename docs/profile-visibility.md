@@ -417,8 +417,10 @@ Differences from the plan:
   `redactProfileFor` hides nothing from one: fields set to `only_me`, answers, endorsements, and the same
   for a paused or banned member. Moderators who are not admins get a member's view. The privacy policy says this in so many
   words; the "Only me" option itself is described as "Nobody else."
-- **Notifications are in-app plus push** (web push and mobile), for a request and for an approval.
-  They follow the recipient's global opt-outs; there is no separate preference for them, and no email.
+- **Notifications are in-app plus push** (web push and mobile), for a request and for an approval,
+  plus an email for a request and for an approval that answers one. Being added without having asked
+  sends no email. They follow the recipient's global opt-outs; there is no separate preference for
+  them.
 
 Not covered:
 

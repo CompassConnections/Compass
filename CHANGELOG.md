@@ -70,6 +70,165 @@ Enter or paste your release notes for fr-FR here
 
 ---
 
+## 1.48.0 — 2026-11-15
+
+### New features
+
+- **You choose who sees each part of your profile.** Every field and section in the profile form has
+  its own audience: everyone, members, your circle, or only you. The profile-wide setting, now at the
+  top of the form, is the default for anything you haven't set individually. A hidden field is removed
+  on the server, so it is also left out of search filters and keyword search rather than merely not
+  drawn. Details in [docs/profile-visibility.md](docs/profile-visibility.md)
+- **Circles.** Add members one by one to the circle that can see what you keep for people you trust.
+  Someone you have already talked with can ask to be added; requests and additions arrive in-app, by
+  push and by email
+- **"View as"** in your own profile's menu previews what a visitor, a member or someone in your circle
+  sees, and a notice on your profile says who it is currently visible to
+- **Pause your profile** instead of deleting it. What used to be "disable" now lives in Settings, and
+  the delete-account dialog offers it as the gentler option
+- [/careers](https://www.compassmeet.com/careers): open positions, with an application form and a
+  list of what you have applied to
+
+### Improvements
+
+- The photo and video viewer swipes as a sliding strip: the next item follows your finger instead of
+  swapping in after the gesture
+- In the apps, a long press on an internal link no longer pops up its URL
+- On wide screens the profile details column scrolls with the page instead of inside its own box, and
+  the actions menu stays above the photos
+- Live updates come back by themselves after a long session: a tab in use reconnects and fetches what
+  it missed, and your own profile comment shows up as soon as you post it
+- The Help Center and the delete-account page are rewritten and reorganised, in English, French and
+  German
+- Online communities on a profile carry a caption, so the text reads as an answer rather than a stray
+  block of links
+- The block dialog closes once the block or unblock went through, and stays open to retry if it failed
+- Narrow pages are centred in the layout, and profile cards have a quieter hover
+- Members who voted on or wrote a proposal can now delete their account. Their ballots go with it;
+  the proposal stays, without an author
+- Saving your profile recomputes compatibility once rather than once per changed field
+- The feed carries whichever fields you made public; its separate visibility level is retired
+- The privacy policy and terms describe the new visibility model
+
+### Fixes
+
+- Removing or toggling a message reaction only affects your own, not everyone's on that emoji
+- A slow signed-out request could replace your own profile with the redacted version until reload
+- Direct links to members-only profiles said endorsements were off
+- The data export no longer fails for an account without a profile, and includes every like and ship
+- A deleted member no longer lingers in other members' likes, ships and search alerts
+- Usernames containing `_` or `%` are matched exactly
+
+### Trust & safety
+
+- Banned profiles are redacted by the server, not only by the browser
+- Banned and held accounts can no longer publish events, proposals or compatibility prompts
+- Only admins can un-hide a comment, so an author cannot reverse a removal by a moderator or by the
+  profile's owner
+- The referrer on an account is fixed after signup, so referral counts cannot be inflated
+- Event location links must be http(s), and sign-in redirects are validated before use
+- Error pages no longer leak database details, and the anonymous rate limit keys on the real client
+  address
+
+<!--tech-->
+
+### Backend & API
+
+- Per-field visibility: a `profiles.field_visibility` jsonb of per-field exceptions and a
+  `profile_access` table for circles (`requested`, `approved`, `removed`; service-role only); new `get-profile-access`, `set-profile-access` and `request-profile-access`
+  endpoints. `helpers/profile-access.ts` and `helpers/profile-visibility.ts` redact in
+  `get-user-and-profile`, `get-profiles` (hidden fields dropped from filters and keyword search),
+  `get-profile-feed`, answers and comments; admins read in full. Blocking removes circle membership.
+  New `circle` email
+- Careers: `apply-to-position` and `get-my-job-applications`, a `job_applications` table with RLS,
+  Discord notification on submit
+- Websockets: connections are authenticated and private topics restricted to their owner behind
+  `WS_ENFORCE_TOPIC_AUTH`; profile-comment broadcasts are viewer-neutral so subscribers refetch with
+  access rules applied; the client reconnects after the session limit for tabs in use and refetches,
+  while idle tabs disconnect so the API can scale to zero
+- Compatibility: scoring consolidated into fewer SQL statements, score inserts batched with chunked
+  `unnest`, and `update-profile` batches option writes and runs one recompute. Answer importance is
+  bounded to the supported range
+- Security pass: generic message for every 500, failed JWTs and API keys no longer logged, Cloud Run
+  detected from `K_SERVICE` too, Discord webhooks sent with mentions disabled, anon inserts on
+  `deleted_users` and anon reads of `user_notifications` revoked, `user_events` insert-only for anon,
+  `X-Frame-Options` and `Permissions-Policy` on the web app, rejected Firebase tokens return 401
+  rather than 500, `updateProfile` no longer accepts an `id`, express 5.2.1
+- Deleted members: likes and ships cascade, `delete-me` clears search alerts, ballots cascade and
+  proposals keep a null author. Ban events are no longer written to the non-existent `audit_events`
+- Staff checks for message and profile gates go through the shared `isStaff`; `messaging_status` is
+  dropped from the first-message fields; the unused prompt answer-count RPC is removed
+- Reply-to on emails is hello@compassmeet.com; Gemini model list updated
+- API version 1.92.0 → 1.98.0
+
+### Database & deploys
+
+- Migrations move to the Supabase CLI: `supabase/migrations/`, starting from a baseline pulled from
+  prod, tracked per database in `supabase_migrations.schema_migrations`. Merging to `main` applies
+  them to dev, then prod, then deploys the API (`cd-api.yml` becomes `cd-backend.yml`). The pre-CLI
+  SQL under `backend/supabase` is removed (tag `pre-cli-migrations`); the local stack is Postgres 17.
+  See `docs/database-migrations.md`
+- Drift cleanup: legacy `love_*` objects renamed, missing indexes added, duplicate unique indexes
+  dropped (keeping whichever `private_user_message_channels` key the foreign keys reference)
+- Supabase CLI 3.1.0; generated schema aligned with PostgREST 14.18
+
+### Web
+
+- `audience-chip.tsx`, `field-visibility.tsx` and `profile-access.tsx` for the per-field audience and
+  circle UI; `use-pause-profile` with `pause-profile-setting` and `pause-instead-of-delete`
+- `media-modal.tsx` renders a three-panel strip that tracks the drag
+- `use-suppress-link-long-press` for internal links in the native shells
+- `use-sticky-rail` replaces `ScrollPanel` on the two-column profile; the top bar gets a z-index
+- `use-profile` ignores a late signed-out response once the signed-in one has landed
+- `/careers` with `application-form.tsx`, linked from the footer, the organization page and the sitemap
+- The contact page drops its feedback-form and social links
+
+### Mobile
+
+- Android `versionCode` 193 → 195, iOS build 27 → 28, both on 1.48.0
+
+### Tooling, scripts & docs
+
+- `yarn test:integration`: API handlers against real Postgres built from the migrations, covering
+  privacy, access, auth, the data export and account deletion, with Supabase's default grants applied
+- A scan that runs `prepare` on every query string in the API and shared code against the real schema
+- E2E covers the main web journeys (people, messaging, profile edit and access, block, compatibility,
+  endorsements, settings), split into two shards; web unit tests can render through
+  `jest-environment-jsdom`
+- A coverage ratchet per workspace and a patch coverage target, replacing the 90% goal
+- New docs: `profile-visibility.md`, `database-migrations.md`, `websocket-auth.md`,
+  `altruists-only.md`, `test-coverage-plan.md`; `feed.md`, `profile-fields.md` and the bounty rules
+  updated
+
+**Full Changelog**: https://github.com/CompassConnections/Compass/compare/1.47.0...1.48.0
+
+<!-- Store release notes. Play: paste the tagged block whole (500 chars/language).
+     App Store Connect: paste each language into "What's New in This Version" without the tags.
+
+<en-US>
+• Choose who sees each part of your profile: everyone, members, your circle, or only you
+• Circles: add the people you trust, one by one
+• "View as" previews your profile as others see it
+• Pause your profile instead of deleting it
+• Photos and videos swipe smoothly
+• Live updates recover after long sessions
+• A clearer Help Center
+• Message reaction fix and many other fixes
+</en-US>
+<fr-FR>
+• Choisissez qui voit chaque partie de votre profil : tout le monde, les membres, votre cercle ou vous seul
+• Cercles : ajoutez une à une les personnes de confiance
+• « Voir en tant que » : votre profil vu par les autres
+• Mettez votre profil en pause plutôt que de le supprimer
+• Photos et vidéos défilent en douceur
+• Mises à jour en direct plus fiables
+• Un centre d'aide plus clair
+• Réactions aux messages corrigées, et autres correctifs
+</fr-FR>
+-->
+
+---
+
 ## 1.47.0 — 2026-11-02
 
 ### New features

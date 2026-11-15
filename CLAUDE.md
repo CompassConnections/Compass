@@ -138,7 +138,8 @@ compatibility prompts), [`docs/compatibility-score.md`](docs/compatibility-score
 weights and aggregation of the overall score), [`docs/first-messages.md`](docs/first-messages.md) (what a first message
 must meet, and how it is enforced), [`docs/feed.md`](docs/feed.md),
 [`docs/internationalization.md`](docs/internationalization.md),
-[`docs/profile-fields.md`](docs/profile-fields.md), [`docs/testing.md`](docs/testing.md),
+[`docs/profile-fields.md`](docs/profile-fields.md),
+[`docs/profile-visibility.md`](docs/profile-visibility.md) (who sees which profile field, and how it is enforced), [`docs/testing.md`](docs/testing.md),
 [`docs/load-testing.md`](docs/load-testing.md) (JMeter load tests),
 [`docs/logging-monitoring.md`](docs/logging-monitoring.md),
 [`docs/websocket-auth.md`](docs/websocket-auth.md) (who may subscribe to what, and turning enforcement on),

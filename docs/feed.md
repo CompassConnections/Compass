@@ -15,52 +15,56 @@ worldwide firehose reads as activity while every individual city stays as empty 
 
 ## What goes in it
 
-Two separate settings gate an entry, and the distinction is load-bearing:
+One rule: **the feed carries the fields a member shows to everyone, and never photos.** There is no
+feed setting of its own.
 
-| Column                     | Question it answers                        |
-| -------------------------- | ------------------------------------------ |
-| `profiles.visibility`      | Who may read the profile page              |
-| `profiles.feed_visibility` | How much of it may be republished off-site |
+Each field of a profile has an audience ([`profile-visibility.md`](profile-visibility.md)): its own
+choice when it has one, the profile-wide `visibility` otherwise. A feed item can carry five fields, and
+carries each one only when it is public (`FEED_FIELDS` in `common/src/feed/feed.ts`):
 
-Only `visibility = 'public'` profiles are ever syndicated — `feed_visibility` can only narrow further. The
-levels (`common/src/feed/feed.ts`):
+| Field    | In the item as                     |
+| -------- | ---------------------------------- |
+| headline | the headline                       |
+| location | city + country                     |
+| keywords | the keyword list                   |
+| gender   | the gender                         |
+| bio      | a 400-character plain-text excerpt |
 
-| Level             | Carries                                           |
-| ----------------- | ------------------------------------------------- |
-| `none`            | nothing — the profile never appears               |
-| `basic` (default) | name, city + country, headline, keywords, link    |
-| `full`            | the above, plus gender and a 400-char bio excerpt |
+The display name and the link to the profile are always there. A profile appears in the feed when at
+least one of those five fields is public. So a public profile is in it; a members-only profile is not;
+and a members-only profile whose owner made the headline public appears with its headline alone.
+`?country=` only matches profiles whose location is public.
 
-Keywords sit in `basic` because they are self-chosen labels rather than anything the profile discloses
-about a person, and they are what makes an entry findable in a timeline — the fediverse reads them roughly
-as hashtags.
+Keywords are self-chosen labels rather than anything the profile discloses about a person, and they are
+what makes an entry findable in a timeline — the fediverse reads them roughly as hashtags.
 
-No level carries photos. Switching a profile to members-only also switches `feed_visibility` to `none` for
-anyone still on the default (`feedVisibilityForMembersOnly`) — going members-only is a request to leave the
-open web, and syndication is the most open-web thing a profile does. It is deliberately one-way: switching
-back to public does not re-enable syndication. The migration backfills existing members-only profiles by
-the same rule, so the column default never opts them in behind their backs.
+### The retired feed level
 
-Why `basic` rather than `none` by default: those fields are exactly what a public profile already shows to
-any crawler (`robots.txt` is `Allow: /`, and `noindex` is set only for members-only, banned or deleted
-profiles), so the default changes distribution, not exposure. What is _not_ already true of a crawled page
-is that syndication cannot be recalled — a post that has federated stays federated after the profile
-changes — which is why the level is a member's choice and not a site-wide policy.
+Until per-field visibility, a second column, `profiles.feed_visibility` (`none` / `basic` / `full`), said
+how much of a public profile could be republished, on the reasoning that a federated post cannot be
+recalled the way a page can be taken down. It was removed as a setting: a member who does not want
+something broadcast sets that field to members, which also takes it off the open web. The column and
+its enum are still in the table (older app builds send the value, and the API accepts it), but nothing
+reads them.
+
+This changed what is syndicated for existing members, with no action on their part: a public profile
+that had chosen `none` is now in the feed, and one on the old default (`basic`) now also carries its
+gender and bio excerpt.
 
 ## How it is wired
 
-| Piece                                  | Where                                                              |
-| -------------------------------------- | ------------------------------------------------------------------ |
-| Level enum + `FeedItem` + truncation   | `common/src/feed/feed.ts`                                          |
-| RSS rendering (pure string work)       | `common/src/feed/rss.ts`                                           |
-| Query + **projection by level**        | `backend/api/src/get-profile-feed.ts` (`get-profile-feed`, public) |
-| XML response                           | `web/pages/api/feed.xml.ts`                                        |
-| `/feed.xml` → `/api/feed.xml`          | `rewrites()` in `web/next.config.ts`                               |
-| Member-facing control                  | `web/components/optional-profile-form.tsx` ("Who can see this")    |
-| `<link rel="alternate">` autodiscovery | `web/pages/_app.tsx`                                               |
+| Piece                                   | Where                                                              |
+| --------------------------------------- | ------------------------------------------------------------------ |
+| Level enum + `FeedItem` + truncation    | `common/src/feed/feed.ts`                                          |
+| RSS rendering (pure string work)        | `common/src/feed/rss.ts`                                           |
+| Query + **projection to public fields** | `backend/api/src/get-profile-feed.ts` (`get-profile-feed`, public) |
+| XML response                            | `web/pages/api/feed.xml.ts`                                        |
+| `/feed.xml` → `/api/feed.xml`           | `rewrites()` in `web/next.config.ts`                               |
+| Member-facing control                   | `web/components/optional-profile-form.tsx` ("Who can see this")    |
+| `<link rel="alternate">` autodiscovery  | `web/pages/_app.tsx`                                               |
 
-The projection happens in the API, not in the renderer: the response for a `basic` member simply does not
-contain their bio or gender, so no consumer can leak a field by forgetting to check the level.
+The projection happens in the API, not in the renderer: the response simply does not contain a field its
+owner shows to fewer people, so no consumer can leak one by forgetting to check.
 
 `<guid>` is the profile URL, marked `isPermaLink`. Bridges dedupe on it, so it must not be derived from
 anything that changes — otherwise every profile edit reposts the member to every follower.
@@ -97,12 +101,12 @@ What it would reuse rather than reinvent:
 
 | Piece                      | Existing pattern to follow                                                                            |
 | -------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Content and privacy levels | `get-profile-feed` — one projection, two transports                                                   |
+| Content and what is public | `get-profile-feed` — one projection, two transports                                                   |
 | Posting                    | `sendDiscordMessage` in `common/src/discord/core.ts`, but `POST /api/v1/statuses` with a Bearer token |
 | Scheduling                 | `internalOutreachJob` in `backend/api/src/app.ts` (Cloud Scheduler + `x-api-key`)                     |
 | Not posting twice          | the send-ledger pattern from `outreach_sends` / `search_alert_sends`                                  |
 
-Hashtags come from `keywords`, which is why they sit at the `basic` level. Cap them (~3): excessive
+Hashtags come from `keywords`, when the member shows them publicly. Cap them (~3): excessive
 hashtags read as spam on most instances. Mark the account as a bot.
 
 Accepted trade-off: posting from the main `@compassmeet` account rather than a separate bot account means a

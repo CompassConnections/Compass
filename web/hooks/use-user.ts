@@ -1,15 +1,31 @@
 'use client'
 import {debug} from 'common/logger'
 import {PrivateUser, User} from 'common/user'
-import {useContext, useEffect, useState} from 'react'
+import {createContext, useContext, useEffect, useState} from 'react'
 import {AuthContext} from 'web/components/auth-context'
 import {getFullUserById, getPrivateUserSafe} from 'web/lib/supabase/users'
 
 import {useApiSubscription} from './use-api-subscription'
 import {useIsPageVisible} from './use-page-visible'
 
+/**
+ * "View as" (docs/profile-visibility.md): inside this provider, `useUser()` answers as the audience
+ * being previewed — `null` for a signed-out visitor, a stand-in member otherwise — so the profile
+ * components draw exactly what they draw for that reader, with no preview branches of their own.
+ *
+ * It changes what is *drawn*, never what is fetched as whom: requests still carry the owner's own
+ * session. The profile itself is therefore fetched already redacted for the audience (`get-profile`
+ * with `viewAs`), and `hidden` names the content that lives outside the profile row — answers and
+ * endorsements — which the owner's session would otherwise be shown in full.
+ */
+export type ViewAsState = {user: User | null; hidden: ReadonlySet<string>}
+export const ViewAsContext = createContext<ViewAsState | undefined>(undefined)
+export const useViewAs = () => useContext(ViewAsContext)
+
 export const useUser = () => {
+  const viewAs = useContext(ViewAsContext)
   const authUser = useContext(AuthContext)
+  if (viewAs) return viewAs.user
   return authUser ? authUser.user : authUser
 }
 

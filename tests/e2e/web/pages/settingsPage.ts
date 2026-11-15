@@ -159,6 +159,14 @@ export class SettingsPage {
     await this.sendPasswordResetButton.click()
   }
 
+  /** Pausing moved here from the profile's "..." menu: the last row of the Account card. */
+  async pauseProfile() {
+    const toggle = this.page.getByTestId('settings-pause-profile-toggle')
+    await expect(toggle).toBeVisible()
+    await expect(toggle).toBeEnabled()
+    await toggle.click()
+  }
+
   async clickDeleteAccountButton() {
     await expect(this.deleteAccountButton).toBeVisible()
     await this.deleteAccountButton.click()

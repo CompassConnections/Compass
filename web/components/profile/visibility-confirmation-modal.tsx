@@ -35,11 +35,11 @@ export function VisibilityConfirmationModal(props: {
           {isMakingPublic
             ? t(
                 'profile.visibility.desc.public',
-                'Your profile will be visible to any visitor without logging in.',
+                'Your profile will be visible to any visitor without logging in. Every field becomes public, except the ones you gave their own audience.',
               )
             : t(
                 'profile.visibility.desc.member',
-                'Your profile will only be visible to members. Visitors will have to log in to view your profile.',
+                'Your profile will only be visible to members. Visitors will have to log in to view it, except for any field you set to Everyone yourself.',
               )}
         </div>
 

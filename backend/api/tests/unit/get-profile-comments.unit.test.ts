@@ -42,7 +42,11 @@ describe('getProfileComments', () => {
 
     const result: any = await getProfileComments(mockProps, undefined, mockReq)
 
-    expect(profileVisibility.canReadProfileContent).toBeCalledWith(undefined, 'profileOwner')
+    expect(profileVisibility.canReadProfileContent).toBeCalledWith(
+      undefined,
+      'profileOwner',
+      'endorsements',
+    )
     expect(mockPg.manyOrNone).toBeCalledWith(sqlMatch('and not hidden'), ['profileOwner'])
     expect(sharedUtils.getPrivateUser).not.toBeCalled()
     expect(result.comments.map((c: ProfileComment) => c.id)).toEqual(['1', '2'])

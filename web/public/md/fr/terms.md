@@ -29,10 +29,12 @@ supprimez le contenu ou votre compte.
 
 Deux conséquences découlent du fonctionnement de Compass, et autant les dire franchement :
 
-- **L'essentiel de votre profil est public.** Un annuaire ouvert est la raison d'être du produit — n'importe
-  qui, y compris les personnes non connectées et les moteurs de recherche, peut lire ce que votre profil
-  affiche. Ce qui est visible reste sous votre contrôle dans les [paramètres](/settings), et vous devriez
-  considérer comme public tout ce que vous mettez sur un profil public.
+- **Votre profil est aussi public que vous le décidez.** Chaque champ a sa propre audience — tout le monde,
+  les membres, votre cercle, ou vous uniquement — choisie dans l'[éditeur de profil](/profile). Tout ce que
+  vous montrez à tout le monde peut être lu par des personnes non connectées et par les moteurs de recherche,
+  et republié via notre flux public : considérez-le comme public. Les administrateurs de Compass peuvent lire
+  votre profil complet, y compris les champs réglés sur « Moi uniquement », afin de modérer. La
+  [politique de confidentialité](/privacy#qui-voit-votre-profil) détaille précisément qui voit quoi.
 - **Un message que vous envoyez peut être lu, conservé, capturé en image ou signalé par son destinataire.**
   Compass chiffre les messages au repos et ne les vend pas, mais aucune plateforme ne peut contrôler ce qu'une
   personne fait de ce qu'elle reçoit.

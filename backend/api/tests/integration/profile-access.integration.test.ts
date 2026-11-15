@@ -291,7 +291,7 @@ describe('a banned member', () => {
 
 describe('the public feed', () => {
   const feed = async () => (await call(getProfileFeed, {})).items.map((i: any) => i.username)
-  const open = {visibility: 'public', feed_visibility: 'full', looking_for_matches: true}
+  const open = {visibility: 'public', looking_for_matches: true}
 
   it('lists public profiles only', async () => {
     await seedUser('open', {profile: open})
@@ -300,7 +300,23 @@ describe('the public feed', () => {
 
   it.each([
     ['disabled', {profile: {...open, disabled: true}}],
-    ['opted out', {profile: {...open, feed_visibility: 'none'}}],
+    // The feed has no setting of its own any more: staying out of it means showing nothing publicly.
+    [
+      'nothing-public',
+      {
+        profile: {
+          ...open,
+          field_visibility: {
+            headline: 'member',
+            location: 'member',
+            keywords: 'member',
+            gender: 'member',
+            bio: 'member',
+          },
+        },
+      },
+    ],
+    ['members-only', {profile: {...open, visibility: 'member'}}],
     ['not looking', {profile: {...open, looking_for_matches: false}}],
     ['banned', {profile: open, user: {is_banned_from_posting: true}}],
   ])('leaves out a %s profile', async (_name, options) => {

@@ -115,6 +115,7 @@ import {getNotifications} from './get-notifications'
 import {getOutreachQueue} from './get-outreach-queue'
 import {getOutreachStats} from './get-outreach-stats'
 import {getPrivateUserAdmin} from './get-private-user-admin'
+import {getProfileAccess} from './get-profile-access'
 import {getProfileAnswers} from './get-profile-answers'
 import {getProfileComments} from './get-profile-comments'
 import {getProfileFeed} from './get-profile-feed'
@@ -142,6 +143,7 @@ import {markAllNotifsRead} from './mark-all-notifications-read'
 import {removePinnedPhoto} from './remove-pinned-photo'
 import {repoStats} from './repo-stats'
 import {report} from './report'
+import {requestProfileAccess} from './request-profile-access'
 import {requestReviewPrompt} from './request-review-prompt'
 import {requestSharePrompt} from './request-share-prompt'
 import {rsvpEvent} from './rsvp-event'
@@ -150,6 +152,7 @@ import {searchNearCity} from './search-near-city'
 import {searchUsers} from './search-users'
 import {setCompatibilityAnswer} from './set-compatibility-answer'
 import {setLastOnlineTime} from './set-last-online-time'
+import {setProfileAccess} from './set-profile-access'
 import {shipProfiles} from './ship-profiles'
 import {starProfile} from './star-profile'
 import {stats} from './stats'
@@ -800,6 +803,9 @@ const handlers: {[k in APIPath]: APIHandler<k>} = {
   'update-compatibility-question-pin': updateCompatibilityQuestionPin,
   'get-pinned-compatibility-questions': getPinnedCompatibilityQuestions,
   'get-connection-interests': getConnectionInterestsEndpoint,
+  'get-profile-access': getProfileAccess,
+  'request-profile-access': requestProfileAccess,
+  'set-profile-access': setProfileAccess,
   'update-connection-interest': updateConnectionInterests,
   'user/by-id/:id': getUser,
   'user/by-id/:id/block': blockUser,

@@ -18,9 +18,62 @@ Wenn hier etwas steht, das nicht dem entspricht, was die App tut, ist das ein Fe
 - **Technische Daten** — die IP-Adresse und der Browser, mit denen Ihre Anfragen eintreffen und die jeder
   Webserver zwangsläufig sieht, sowie Fehlerberichte, wenn etwas kaputtgeht.
 
-Der größte Teil Ihres Profils ist **bewusst öffentlich**: Der ganze Sinn eines offenen Verzeichnisses ist,
-dass Menschen einander finden können, ohne dass ein Algorithmus für sie entscheidet. Was sichtbar ist,
-bestimmen Sie in den [Einstellungen](/settings), und was Sie nicht ausgefüllt haben, wird auch nicht gezeigt.
+Ihr Profil gehört Ihnen: **Sie entscheiden Feld für Feld, was Sie zeigen und was nicht**. Ein offenes
+Verzeichnis bleibt der Sinn der Sache — Menschen finden einander, ohne dass ein Algorithmus für sie
+entscheidet —, aber wie viel von Ihnen darin steht, bestimmen Sie, und was Sie nicht ausgefüllt haben, wird
+auch nicht gezeigt. Der nächste Abschnitt sagt genau, wer was sieht.
+
+## Wer Ihr Profil sieht
+
+Jeder Teil Ihres Profils hat ein eigenes Publikum, das Sie im [Profileditor](/profile) festlegen: Ihre Fotos,
+Ihr Alter, Ihr Ort, Ihre Bio, wonach Sie suchen, Ihre Überzeugungen, Ihre Angaben zu Gesundheit und
+Lebensstil, Ihre Links, Ihre Kompatibilitätsantworten und die Empfehlungen, die andere auf Ihrer Seite
+hinterlassen.
+
+- **Alle**: alle im Web, angemeldet oder nicht, einschließlich Suchmaschinen.
+- **Mitglieder**: bei Compass angemeldete Personen.
+- **Mein Kreis**: nur die Mitglieder, die Sie einzeln in Ihren Kreis aufgenommen haben.
+- **Nur ich**: kein anderes Mitglied.
+
+Eine profilweite Einstellung, Alle oder Mitglieder, ist die Voreinstellung für jedes Feld, das Sie nicht
+selbst eingestellt haben. Ein einzelnes Feld kann offener oder enger sein als diese Voreinstellung. Neue
+Profile beginnen mit Alle, und diese Wahl steht ganz oben im Profilformular, sodass Sie sie ändern können,
+bevor Sie etwas schreiben.
+
+Was das bewirkt und was nicht:
+
+- **Verborgen heißt nicht gesendet.** Die Einstellung wird auf unseren Servern durchgesetzt. Ein Feld, das
+  jemand nicht sehen darf, wird gar nicht an dessen Browser übertragen: Es steht weder auf der Seite noch in
+  ihrem Quelltext noch in der Linkvorschau.
+- **Verborgene Felder sind nicht durchsuchbar.** Ein Feld, das Sie vor Mitgliedern verbergen, wird weder von
+  Suchfiltern noch von der Stichwortsuche gefunden. Ein eigenes Feld zu verbergen schränkt Ihre eigene Suche nicht ein: Sie
+  können andere weiterhin nach einem Feld filtern, das diese zeigen.
+- **Ihr Kompatibilitätswert nutzt weiterhin Ihr gesamtes Profil.** Der Wert und die Prüfung, ob Sie zu dem
+  passen, was jemand sucht, werden aus allem berechnet, was Sie ausgefüllt haben, verborgen oder nicht.
+  Angezeigt wird nur die Zahl; die Aufschlüsselung zeigt nie eine Zeile für ein Feld, das die lesende Person
+  nicht sehen kann.
+- **Ihr Anzeigename ist immer sichtbar, und Ihr Profilbild begleitet Sie.** Der Name ist das, was einen Link
+  zu Ihrer Seite verständlich macht. Ihr Hauptfoto ist außerdem das kleine Bild neben Ihren Nachrichten,
+  Kommentaren und Benachrichtigungen. Personen, mit denen Sie zu tun haben, sehen es dort also auch dann,
+  wenn Sie Ihre Fotos im Profil verbergen.
+- **Ihr Kreis gilt nur in eine Richtung.** Wenn Sie jemanden aufnehmen, sieht die Person die Felder, die Sie
+  auf „Mein Kreis“ gesetzt haben, und Sie sehen nichts weiter von deren Profil. Sie können jede Person
+  jederzeit entfernen, ohne dass sie benachrichtigt wird. Jemand kann erst dann um Aufnahme bitten, wenn Sie
+  dieser Person geschrieben haben, und das Ignorieren einer Anfrage wird ihr nicht mitgeteilt.
+- **Was Sie Allen zeigen, ist im vollen Sinn öffentlich.** Es kann ohne Konto gelesen, von Suchmaschinen
+  indexiert und in unseren öffentlichen [Feed neuer Profile](/feed.xml) aufgenommen werden, den andere Seiten
+  und Feedreader weiterverbreiten können. Der Feed enthält Ihren Namen und von Überschrift, Ort,
+  Stichwörtern, Geschlecht und einem kurzen Bio-Auszug diejenigen, die öffentlich sind; niemals Ihre Fotos.
+  Wenn Sie ein Feld später einschränken, verschwindet es sofort aus Compass, aber bereits indexierte,
+  weiterverbreitete oder von jemandem gespeicherte Kopien können wir nicht zurückholen.
+- **Die Administratoren von Compass können Ihr gesamtes Profil lesen, einschließlich der Felder mit „Nur
+  ich“.** Sie tun das zur Moderation: um eine Meldung zu bearbeiten, Missbrauch oder ein mutmaßlich falsches
+  Konto zu untersuchen oder Ihnen auf Ihre Bitte hin zu helfen. „Nur ich“ bedeutet also kein anderes
+  Mitglied, nicht niemand bei Compass. Moderatorinnen und Moderatoren, die keine Administratoren sind, sehen
+  nur, was jedes Mitglied sieht.
+- **Pausieren verbirgt alles.** Ein pausiertes Profil ist nicht mehr in der Suche und kann von anderen
+  Mitgliedern nicht geöffnet werden. Ihre Unterhaltungen und alles, was Sie geschrieben haben, bleiben
+  erhalten, und Sie können es jederzeit in den [Einstellungen](/settings) fortsetzen.
 
 ## Wie wir sie verwenden
 
@@ -41,7 +94,9 @@ und herauszufinden, was als Nächstes verbessert werden sollte.
 
 Jede E-Mail von Compass gehört zu einer von zwei Arten. Die meisten betreffen Dinge, über die Sie informiert
 werden wollten — eine neue Nachricht, ein Match, eine gespeicherte Suche, die jemanden gefunden hat — und jede
-Art lässt sich in den [Einstellungen](/settings#1) einzeln abschalten. Einige wenige betreffen das Konto
+Art lässt sich in den [Einstellungen](/settings#1) einzeln abschalten. E-Mails zu Ihrem Kreis (jemand
+möchte aufgenommen werden oder nimmt Sie in den eigenen auf) haben noch keinen eigenen Schalter; sie enden,
+wenn Sie alle E-Mails abschalten. Einige wenige betreffen das Konto
 selbst: die Bestätigung Ihrer Adresse und den unten beschriebenen Hinweis. Das ist keine Werbung, und diese
 E-Mails gehen unabhängig von den Benachrichtigungseinstellungen hinaus, denn sie sind der Weg, Ihnen zu sagen,
 was wir über Sie gespeichert haben.

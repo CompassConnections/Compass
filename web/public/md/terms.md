@@ -27,9 +27,11 @@ That permission exists so the site can function, and it ends when you delete the
 
 Two things follow from how Compass works, and are worth being blunt about:
 
-- **Most of your profile is public.** An open directory is the point of the product — anyone, including people
-  who are not signed in and search engines, can read what your profile shows. What is visible is under your
-  control in [settings](/settings), and you should treat anything you put on a public profile as public.
+- **Your profile is as public as you make it.** Every field has its own audience — everyone, members, your
+  circle, or only you — chosen in the [profile editor](/profile). Anything you show to everyone can be read
+  by people who are not signed in and by search engines, and can be republished through our public feed, so
+  treat it as public. Compass administrators can read your whole profile, including fields set to "Only me",
+  in order to moderate. The [privacy policy](/privacy#who-sees-your-profile) spells out exactly who sees what.
 - **A message you send can be read, kept, screenshotted or reported by the person you sent it to.** Compass
   encrypts messages at rest and does not sell them, but no platform can control what a recipient does.
 

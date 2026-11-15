@@ -16,7 +16,7 @@ import {getPrivateUser} from 'shared/utils'
  * by, since a block is meant to make the other person disappear and not only their messages.
  */
 export const getProfileComments: APIHandler<'get-profile-comments'> = async ({userId}, auth) => {
-  if (!(await canReadProfileContent(auth?.uid, userId))) return {comments: []}
+  if (!(await canReadProfileContent(auth?.uid, userId, 'endorsements'))) return {comments: []}
 
   const pg = createSupabaseDirectClient()
   const [rows, viewer] = await Promise.all([

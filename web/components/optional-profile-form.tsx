@@ -12,7 +12,6 @@ import {
   EDUCATION_CHOICES,
   EXERCISE_CHOICES,
   EXTRA_NEUROTYPES,
-  FEED_VISIBILITY_CHOICES,
   GENDERS,
   GENDERS_PLURAL,
   LANGUAGE_CHOICES,
@@ -28,9 +27,7 @@ import {
   ROMANTIC_CHOICES,
   SUBSTANCE_INTENTION_CHOICES,
   SUBSTANCE_PREFERENCE_CHOICES,
-  VISIBILITY_CHOICES,
 } from 'common/choices'
-import {DEFAULT_FEED_VISIBILITY, feedVisibilityForMembersOnly} from 'common/feed/feed'
 import {DEFAULT_GENDERS, EXTRA_GENDERS} from 'common/gender'
 import {debug} from 'common/logger'
 import {NO_MAX_DISTANCE, PREF_MAX_DISTANCE_CHOICES} from 'common/max-distance'
@@ -38,6 +35,7 @@ import {formatDistance} from 'common/measurement-utils'
 import {isUrl} from 'common/parsing'
 import {ageFromBirthDate, MAX_PROFILE_AGE, MIN_PROFILE_AGE} from 'common/profiles/birth-date'
 import {Profile, ProfileWithoutUser} from 'common/profiles/profile'
+import {type ProfileSection} from 'common/profiles/visibility'
 import {BaseUser} from 'common/user'
 import {removeNullOrUndefinedProps} from 'common/util/object'
 import {concatJSONContent, parseJsonContentToText} from 'common/util/parse'
@@ -45,7 +43,7 @@ import {urlize} from 'common/util/string'
 import {MINUTE_MS, sleep} from 'common/util/time'
 import {WANTS_KIDS_STRENGTH_NAMES} from 'common/wants-kids'
 import {invert, range} from 'lodash'
-import {useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import Textarea from 'react-expanding-textarea'
 import toast from 'react-hot-toast'
 import {AddOptionEntry} from 'web/components/add-option-entry'
@@ -75,6 +73,14 @@ import {blobToBase64} from 'web/lib/util/blob'
 import {scrollIntoViewCentered} from 'web/lib/util/scroll'
 import {colClassName, labelClassName} from 'web/pages/signup'
 
+import {AudienceOptions} from './profile/audience-chip'
+import {
+  FieldLabel,
+  FieldVisibilityProvider,
+  SectionAudienceChip,
+  useSectionNarrowed,
+} from './profile/field-visibility'
+import {ProfileAccessManager} from './profile/profile-access'
 import {AddPhotosWidget} from './widgets/add-photos'
 
 const DEFAULT_PREF_GENDER_VALUES = ['female', 'male']
@@ -155,9 +161,9 @@ function PrefMaxDistanceField(props: {
 
   return (
     <Col className={clsx(colClassName)}>
-      <label className={clsx(labelClassName)}>
+      <FieldLabel field="pref_max_distance">
         {t('profile.optional.max_distance', 'Who live at most this far from me')}
-      </label>
+      </FieldLabel>
       <label className={clsx('guidance')}>
         {hasCity
           ? t(
@@ -214,6 +220,16 @@ export const OptionalProfileUserForm = (props: {
   const choices = useChoicesContext()
 
   const [keywordsString, setKeywordsString] = useState<string>(profile.keywords?.join(', ') || '')
+
+  // `/profile#profile-headline`: go straight to the headline and put the cursor in it. The browser
+  // cannot do this on its own — the form is not in the page yet when the hash is first looked up.
+  useEffect(() => {
+    if (window.location.hash !== '#profile-headline') return
+    const field = document.getElementById('profile-headline')
+    if (!field) return
+    field.scrollIntoView({block: 'center'})
+    field.focus({preventScroll: true})
+  }, [])
 
   const lookingRelationship = (profile.pref_relation_styles || []).includes('relationship')
 
@@ -509,7 +525,10 @@ export const OptionalProfileUserForm = (props: {
   }
 
   return (
-    <>
+    <FieldVisibilityProvider
+      profile={profile}
+      setFieldVisibility={(next) => setProfile('field_visibility', next)}
+    >
       {/* `pb-32`: the bio editor is the last element on the page, so when it is focused there is
           nothing below it to scroll into — the document simply ends, and no amount of
           `scrollIntoView` can lift its toolbar off the bottom edge. This reserves scrollable room
@@ -530,6 +549,52 @@ export const OptionalProfileUserForm = (props: {
             )}
           </p>
         </div>
+        {/* First section on purpose (docs/profile-visibility.md): it sets the default that every
+            field's own chip below starts from, so a new member can change it before typing anything.
+            It used to be the last section — "and who gets to see all that" — and before that the only
+            way to change this was a dropdown item on your own profile page, which meant a new member
+            who did not want to be listed publicly had to notice it and untick it after signup —
+            after the profile was already public. */}
+        <Category
+          title={t('profile.optional.category.visibility', 'Who can see this')}
+          className={'mt-0'}
+        />
+
+        <Col className={clsx(colClassName)}>
+          {/* The same rows as in a field's own menu — icon, name, what it means — so the default and
+              its exceptions are chosen from one vocabulary. Each option explains itself, which is
+              why the sentence that used to define "public" and "members-only" above is gone. It was
+              a pair of pills ("Anyone on the web" / "Compass members only") before that. */}
+          <AudienceOptions
+            layout="cards"
+            audiences={['public', 'member']}
+            value={profile.visibility === 'member' ? 'member' : 'public'}
+            onPick={(audience) =>
+              setProfile('visibility', audience as ProfileWithoutUser['visibility'])
+            }
+          />
+          <label className={clsx('guidance')}>
+            {t(
+              'profile.optional.field_visibility_hint',
+              'This is the default for everything below. Each field has its own control, so you can show specific ones to more or fewer people. You can change this at any time.',
+            )}
+          </label>
+          {/* The two things a visitor reads on a profile that are not written in this form — the
+              compatibility answers and the endorsements others leave — so their controls live here,
+              with the setting they are exceptions to. */}
+          <FieldLabel field="answers">
+            {t('profile.field.answers', 'Compatibility answers')}
+          </FieldLabel>
+          <FieldLabel field="endorsements">
+            {t('profile.field.endorsements', 'Endorsements')}
+          </FieldLabel>
+          {/* Only once the profile exists: during signup there is nobody to have approved yet, and
+              no account for the request to be made as. */}
+          {profile.id != null && (
+            <ProfileAccessManager className="text-primary-700 text-sm" profile={profile} />
+          )}
+        </Col>
+
         <Category title={t('profile.llm.extract.title', 'Auto-fill')} className={'mt-0'} />
         {/* Two ways in, one at a time: showing both a recorder and a text editor at once reads as
             two things to do rather than a choice between them. */}
@@ -622,7 +687,11 @@ export const OptionalProfileUserForm = (props: {
         )}
         {/* The rule that used to sit here (`border border-b`, which draws two) is now owned by
             `Category` itself, so every section boundary is drawn the same way. */}
-        <Category title={t('profile.optional.category.basics', 'Basics')} className={'mt-0'} />
+        <Category
+          section="basics"
+          title={t('profile.optional.category.basics', 'Basics')}
+          className={'mt-0'}
+        />
 
         <Col className={clsx(colClassName)}>
           <BirthDateInput
@@ -638,9 +707,10 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Row className={'items-center gap-2'}>
-          <Col className={'gap-1'}>
-            <label className={clsx(labelClassName)}>{t('profile.optional.gender', 'Gender')}</label>
+        {/* Full width so the audience chip on the label lines up with the others at the column's edge. */}
+        <Row className={'w-full items-center gap-2'}>
+          <Col className={'w-full gap-1'}>
+            <FieldLabel field="gender">{t('profile.optional.gender', 'Gender')}</FieldLabel>
             <ChoicesToggleGroup
               currentChoice={profile['gender']}
               choicesMap={
@@ -687,9 +757,7 @@ export const OptionalProfileUserForm = (props: {
         </Row>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.location', 'Location')}
-          </label>
+          <FieldLabel field="location">{t('profile.optional.location', 'Location')}</FieldLabel>
           {profile.city ? (
             <Row className="border-primary-500 w-full justify-between rounded border px-4 py-2">
               <CityRow
@@ -719,7 +787,7 @@ export const OptionalProfileUserForm = (props: {
             the first thing anyone looks at on the finished profile — and as the last row of a
             section about height and gender they were something you scrolled past on the way
             somewhere else, with no entry in the index to come back to. */}
-        <Category title={t('profile.optional.category.photos', 'Photos')} />
+        <Category section="photos" title={t('profile.optional.category.photos', 'Photos')} />
 
         <Col className={clsx(colClassName)} ref={photosRef}>
           {/*<div className="mb-1">*/}
@@ -742,7 +810,11 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.og_card', 'Profile Card')} className={'mt-0'} />
+        <Category
+          section="profile_card"
+          title={t('profile.optional.og_card', 'Profile Card')}
+          className={'mt-0'}
+        />
 
         <label className={clsx('guidance')}>
           {t(
@@ -752,9 +824,7 @@ export const OptionalProfileUserForm = (props: {
         </label>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.headline', 'Headline')}
-          </label>
+          <FieldLabel field="headline">{t('profile.optional.headline', 'Headline')}</FieldLabel>
           <label className={clsx('guidance')}>
             {t(
               'profile.optional.headline_hint',
@@ -762,6 +832,10 @@ export const OptionalProfileUserForm = (props: {
             )}
           </label>
           <Textarea
+            // The anchor the "Add a headline" link on the profile page lands on (see the effect
+            // near the top of this component). A fixed id, because section ids are built from
+            // translated titles.
+            id="profile-headline"
             data-testid="headline"
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               setProfile('headline', e.target.value)
@@ -775,9 +849,7 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.keywords', 'Keywords')}
-          </label>
+          <FieldLabel field="keywords">{t('profile.optional.keywords', 'Keywords')}</FieldLabel>
           <label className={clsx('guidance')}>
             {t(
               'profile.optional.keywords_hint',
@@ -808,7 +880,7 @@ export const OptionalProfileUserForm = (props: {
             the finished profile — burying it under fifty attribute fields meant most people met it
             with the form already exhausted. It follows the hero fields it belongs with: photos,
             headline, keywords. */}
-        <Category title={t('profile.basics.bio', 'Bio')} />
+        <Category section="bio" title={t('profile.basics.bio', 'Bio')} />
         <label className={clsx('guidance')}>
           {t(
             'profile.optional.bio_description',
@@ -824,19 +896,22 @@ export const OptionalProfileUserForm = (props: {
           }}
         />
 
-        <Category title={t('profile.optional.category.interested_in', "Who I'm looking for")} />
+        <Category
+          section="seeking"
+          title={t('profile.optional.category.interested_in', "Who I'm looking for")}
+        />
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="pref_gender">
             {t('profile.optional.interested_in', 'Interested in connecting with')}
-          </label>
+          </FieldLabel>
           <PrefGenderCheckbox profile={profile} setProfile={setProfile} t={t} />
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="pref_age">
             {t('profile.optional.age_range', 'Who are aged between')}
-          </label>
+          </FieldLabel>
           <Row className={'gap-2'}>
             <Col>
               <span className={clsx(labelClassName, 'mb-1')}>{t('common.min', 'Min')}</span>
@@ -882,9 +957,9 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="pref_relation_styles">
             {t('profile.optional.connection_type', 'Connection type')}
-          </label>
+          </FieldLabel>
           <MultiCheckbox
             choices={RELATIONSHIP_CHOICES}
             selected={profile['pref_relation_styles'] || []}
@@ -897,16 +972,16 @@ export const OptionalProfileUserForm = (props: {
 
         <PrefMaxDistanceField profile={profile} setProfile={setProfile} t={t} />
 
-        <Category title={t('profile.optional.category.work', 'Work')} />
+        <Category section="work" title={t('profile.optional.category.work', 'Work')} />
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="occupation">
             {profile['company']
               ? t('profile.optional.job_title_at_company', 'Job title at {company}', {
                   company: profile['company'],
                 })
               : t('profile.optional.job_title', 'Job title')}
-          </label>
+          </FieldLabel>
           <Input
             data-testid="job-title"
             type="text"
@@ -919,7 +994,7 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>{t('profile.optional.company', 'Company')}</label>
+          <FieldLabel field="company">{t('profile.optional.company', 'Company')}</FieldLabel>
           <Input
             data-testid="company"
             type="text"
@@ -938,12 +1013,15 @@ export const OptionalProfileUserForm = (props: {
           label={'work'}
         />
 
-        <Category title={t('profile.optional.category.education', 'Education')} />
+        <Category
+          section="education"
+          title={t('profile.optional.category.education', 'Education')}
+        />
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="education_level">
             {t('profile.optional.education_level', 'Highest completed education level')}
-          </label>
+          </FieldLabel>
           <Carousel className="max-w-full">
             <ChoicesToggleGroup
               currentChoice={profile['education_level']}
@@ -959,9 +1037,9 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="university">
             {t('profile.optional.university', 'University')}
-          </label>
+          </FieldLabel>
           <Input
             data-testid="university"
             type="text"
@@ -973,12 +1051,15 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.category.relationships', 'Relationships')} />
+        <Category
+          section="relationships"
+          title={t('profile.optional.category.relationships', 'Relationships')}
+        />
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="relationship_status">
             {t('profile.optional.relationship_status', 'Relationship status')}
-          </label>
+          </FieldLabel>
           <MultiCheckbox
             choices={RELATIONSHIP_STATUS_CHOICES}
             translationPrefix={'profile.relationship_status'}
@@ -991,9 +1072,9 @@ export const OptionalProfileUserForm = (props: {
           <>
             <Row className={'items-center gap-2'}>
               <Col className={'gap-1'}>
-                <label className={clsx(labelClassName)}>
+                <FieldLabel field="orientation">
                   {t('profile.optional.orientation', 'Orientation')}
-                </label>
+                </FieldLabel>
                 <MultiCheckbox
                   choices={
                     Object.fromEntries(
@@ -1040,9 +1121,9 @@ export const OptionalProfileUserForm = (props: {
             </Row>
 
             <Col className={clsx(colClassName)}>
-              <label className={clsx(labelClassName)}>
+              <FieldLabel field="pref_romantic_styles">
                 {t('profile.optional.relationship_style', 'Relationship style')}
-              </label>
+              </FieldLabel>
               <MultiCheckbox
                 choices={ROMANTIC_CHOICES}
                 translationPrefix={'profile.romantic'}
@@ -1053,12 +1134,12 @@ export const OptionalProfileUserForm = (props: {
               />
             </Col>
 
-            <Category title={t('profile.optional.category.family', 'Family')} />
+            <Category section="family" title={t('profile.optional.category.family', 'Family')} />
 
             <Col className={clsx(colClassName)}>
-              <label className={clsx(labelClassName)}>
+              <FieldLabel field="has_kids">
                 {t('profile.optional.num_kids', 'Current number of kids')}
-              </label>
+              </FieldLabel>
               <Input
                 data-testid="current-number-of-kids"
                 type="number"
@@ -1073,12 +1154,12 @@ export const OptionalProfileUserForm = (props: {
             </Col>
 
             <Col className={clsx(colClassName)}>
-              <label className={clsx(labelClassName)}>
+              <FieldLabel field="wants_kids">
                 {/* A heading, not the first-person statement it used to be: the options answer it in
                     the third person now, because the profile page and the search filter print the
                     same five strings and neither of those is the member speaking. */}
                 {t('profile.optional.want_kids', 'Desire for children')}
-              </label>
+              </FieldLabel>
               {/* The same pills every other single-choice field on this form uses, rather than the
                   five-dot agreement scale this used to be. That scale labelled only its two ends, so
                   the three answers in between were unreadable dots; it tinted every dot on a
@@ -1103,7 +1184,10 @@ export const OptionalProfileUserForm = (props: {
           </>
         )}
 
-        <Category title={t('profile.optional.political_beliefs', 'Political beliefs')} />
+        <Category
+          section="politics"
+          title={t('profile.optional.political_beliefs', 'Political beliefs')}
+        />
 
         <Col className={clsx(colClassName)}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -1127,7 +1211,10 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.religious_beliefs', 'Religious beliefs')} />
+        <Category
+          section="religion"
+          title={t('profile.optional.religious_beliefs', 'Religious beliefs')}
+        />
 
         <Col className={clsx(colClassName)}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -1151,7 +1238,7 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.category.morality', 'Morality')} />
+        <Category section="morality" title={t('profile.optional.category.morality', 'Morality')} />
         <AddOptionEntry
           title={t('profile.optional.causes', 'Causes')}
           profile={profile}
@@ -1159,7 +1246,7 @@ export const OptionalProfileUserForm = (props: {
           label={'causes'}
         />
 
-        <Category title={t('profile.optional.interests', 'Interests')} />
+        <Category section="interests" title={t('profile.optional.interests', 'Interests')} />
         <AddOptionEntry
           // title={t('profile.optional.interests', 'Interests')}
           profile={profile}
@@ -1167,10 +1254,13 @@ export const OptionalProfileUserForm = (props: {
           label={'interests'}
         />
 
-        <Category title={t('profile.optional.category.lifestyle', 'Lifestyle')} />
+        <Category
+          section="lifestyle"
+          title={t('profile.optional.category.lifestyle', 'Lifestyle')}
+        />
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>{t('profile.optional.diet', 'Diet')}</label>
+          <FieldLabel field="diet">{t('profile.optional.diet', 'Diet')}</FieldLabel>
           <MultiCheckbox
             choices={DIET_CHOICES}
             selected={profile['diet'] ?? []}
@@ -1180,9 +1270,7 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.exercise', 'Exercise')}
-          </label>
+          <FieldLabel field="exercise">{t('profile.optional.exercise', 'Exercise')}</FieldLabel>
           <Select
             value={profile['exercise'] ?? ''}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -1199,12 +1287,13 @@ export const OptionalProfileUserForm = (props: {
           </Select>
         </Col>
 
-        <Category title={t('profile.optional.category.substances', 'Substances')} />
+        <Category
+          section="substances"
+          title={t('profile.optional.category.substances', 'Substances')}
+        />
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.smoke', 'Do you smoke?')}
-          </label>
+          <FieldLabel field="smoking">{t('profile.optional.smoke', 'Do you smoke?')}</FieldLabel>
           <ChoicesToggleGroup
             currentChoice={profile['is_smoker'] ?? undefined}
             choicesMap={Object.fromEntries(
@@ -1218,9 +1307,9 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="drinking">
             {t('profile.optional.drinks_per_month', 'Alcoholic beverages consumed per month')}
-          </label>
+          </FieldLabel>
           <Input
             data-testid="alcohol-consumed-per-month"
             type="number"
@@ -1235,9 +1324,9 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="psychedelics">
             {t('profile.optional.psychedelics', 'Psychedelics / plant medicine')}
-          </label>
+          </FieldLabel>
           <Select
             value={profile['psychedelics'] ?? ''}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -1281,9 +1370,7 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.cannabis', 'Cannabis')}
-          </label>
+          <FieldLabel field="cannabis">{t('profile.optional.cannabis', 'Cannabis')}</FieldLabel>
           <Select
             value={profile['cannabis'] ?? ''}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -1326,14 +1413,15 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        <Category title={t('profile.optional.category.psychology', 'Psychology')} />
+        <Category
+          section="psychology"
+          title={t('profile.optional.category.psychology', 'Psychology')}
+        />
 
         {/* Sits with MBTI/Big Five rather than under Relationships: it describes how someone's mind
             works, and it is just as relevant to friendship and collaboration as to dating. */}
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
-            {t('profile.optional.neurotype', 'Neurotype')}
-          </label>
+          <FieldLabel field="neurotype">{t('profile.optional.neurotype', 'Neurotype')}</FieldLabel>
           <MultiCheckbox
             choices={
               Object.fromEntries(
@@ -1378,24 +1466,26 @@ export const OptionalProfileUserForm = (props: {
           )}
         </Col>
 
-        <Col className={clsx(colClassName, 'max-w-[550px]')}>
-          <label className={clsx(labelClassName)}>
+        <Col className={clsx(colClassName)}>
+          <FieldLabel field="mbti">
             {t('profile.optional.mbti', 'MBTI Personality Type')}
-          </label>
-          <ChoicesToggleGroup
-            currentChoice={profile['mbti'] as any}
-            choicesMap={MBTI_CHOICES}
-            setChoice={(c) => setProfile('mbti', c)}
-            className="grid grid-cols-4 xs:grid-cols-8"
-          />
+          </FieldLabel>
+          {/* The width cap that keeps the sixteen types in two rows of eight is on the grid alone, so
+              the label row above runs the full column and its audience chip lines up with the rest. */}
+          <div className="w-full max-w-[550px]">
+            <ChoicesToggleGroup
+              currentChoice={profile['mbti'] as any}
+              choicesMap={MBTI_CHOICES}
+              setChoice={(c) => setProfile('mbti', c)}
+              className="grid grid-cols-4 xs:grid-cols-8"
+            />
+          </div>
         </Col>
 
         {/* Big Five personality traits (0–100) */}
         <Col className={clsx(colClassName)}>
           <Row className="w-full items-center justify-between gap-3">
-            <label className={clsx(labelClassName)}>
-              {t('profile.big5', 'Big Five Personality Traits')}
-            </label>
+            <FieldLabel field="big5">{t('profile.big5', 'Big Five Personality Traits')}</FieldLabel>
             {/* A slider cannot express "unset": drag one and there is no gesture that puts it back,
                 so before this the first accidental touch permanently committed a score. Clearing
                 writes `null` rather than `undefined` on purpose — the edit path
@@ -1477,10 +1567,13 @@ export const OptionalProfileUserForm = (props: {
             anyone describes themselves by first, and up there it was one more number to get past
             before the fields people actually come to fill. Demographics is where the rest of the
             checkbox-shaped facts about you live, so it sits with them. */}
-        <Category title={t('profile.optional.category.demographics', 'Demographics')} />
+        <Category
+          section="demographics"
+          title={t('profile.optional.category.demographics', 'Demographics')}
+        />
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>{t('profile.optional.height', 'Height')}</label>
+          <FieldLabel field="height">{t('profile.optional.height', 'Height')}</FieldLabel>
           <Row className={'gap-2'}>
             <Col>
               <span className={clsx(labelClassName, 'mb-1')}>
@@ -1554,12 +1647,15 @@ export const OptionalProfileUserForm = (props: {
             height and photos. They are secondary — nobody fills the top of the form to answer them —
             and there they pushed the fields people do come for further down. Grouped here with
             languages instead, which is the same kind of cultural-background information. */}
-        <Category title={t('profile.optional.category.background', 'Background')} />
+        <Category
+          section="background"
+          title={t('profile.optional.category.background', 'Background')}
+        />
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="ethnicity">
             {t('profile.optional.ethnicity', 'Ethnicity/origin')}
-          </label>
+          </FieldLabel>
           <MultiCheckbox
             choices={RACE_CHOICES}
             translationPrefix={'profile.race'}
@@ -1569,9 +1665,9 @@ export const OptionalProfileUserForm = (props: {
         </Col>
 
         <Col className={clsx(colClassName)}>
-          <label className={clsx(labelClassName)}>
+          <FieldLabel field="raised_in">
             {t('profile.optional.raised_in', 'Place you grew up')}
-          </label>
+          </FieldLabel>
           <label className={clsx('guidance')}>
             {t(
               'profile.optional.raised_in_hint',
@@ -1603,7 +1699,7 @@ export const OptionalProfileUserForm = (props: {
           )}
         </Col>
 
-        <Category title={t('profile.optional.languages', 'Languages')} />
+        <Category section="languages" title={t('profile.optional.languages', 'Languages')} />
 
         <Col className={clsx(colClassName)}>
           {/*<label className={clsx(labelClassName)}>*/}
@@ -1642,8 +1738,9 @@ export const OptionalProfileUserForm = (props: {
         {/*  />*/}
         {/*</Col>*/}
 
-        <Category title={t('profile.optional.socials', 'Socials')} />
+        <Category section="socials" title={t('profile.optional.socials', 'Socials')} />
 
+        <FieldLabel field="links">{t('profile.optional.links', 'Links')}</FieldLabel>
         <SocialLinksSection profile={profile} setProfile={setProfile} />
 
         {/* Same section as the handles because it is the same question from the other side: handles
@@ -1651,6 +1748,9 @@ export const OptionalProfileUserForm = (props: {
             Telegram group, a Slack, a subreddit, a newsletter — nothing a platform picker could
             enumerate, and nothing visible from the handles above. */}
         <Col className={clsx(colClassName)}>
+          <FieldLabel field="online_communities">
+            {t('profile.optional.online_communities', 'Online communities')}
+          </FieldLabel>
           <label className={clsx('guidance')}>
             {t(
               'profile.optional.online_communities_hint',
@@ -1677,7 +1777,10 @@ export const OptionalProfileUserForm = (props: {
         {/* Socials before Accessibility to match the profile's own rail order (Links, then
             Accessibility), and so the last thing before Submit is a short optional textarea rather
             than an empty platform picker. */}
-        <Category title={t('profile.optional.accessibility_notes', 'Accessibility')} />
+        <Category
+          section="accessibility"
+          title={t('profile.optional.accessibility_notes', 'Accessibility')}
+        />
 
         {/* Free text on purpose, not a checkbox list of conditions: a taxonomy exists mainly to be
             filtered on, and filtering people out by disability is what this field must not enable.
@@ -1706,72 +1809,6 @@ export const OptionalProfileUserForm = (props: {
           />
         </Col>
 
-        {/* Last section on purpose: it is the one question that is *about* everything above it, so it
-            reads as "and who gets to see all that" rather than as one more attribute. Until now the
-            only way to change this was a dropdown item on your own profile page, which meant a new
-            member who did not want to be listed publicly had to notice it and untick it after signup —
-            after the profile was already public. */}
-        <Category title={t('profile.optional.category.visibility', 'Who can see this')} />
-
-        <Col className={clsx(colClassName)}>
-          <label className={clsx('guidance')}>
-            {t(
-              'profile.optional.visibility_hint',
-              'Public profiles can be found on the open web. Members-only profiles are visible just to people signed in to Compass. You can change this at any time.',
-            )}
-          </label>
-          <ChoicesToggleGroup
-            currentChoice={profile.visibility ?? 'public'}
-            allowDeselect={false}
-            choicesMap={VISIBILITY_CHOICES}
-            translationPrefix={'profile.visibility'}
-            setChoice={(choice) => {
-              const visibility = (choice ?? 'public') as ProfileWithoutUser['visibility']
-              setProfile('visibility', visibility)
-              // Members-only turns the feed off for anyone who has not deliberately chosen a level —
-              // see feedVisibilityForMembersOnly. The control below updates in place, so the change
-              // is visible rather than silent.
-              if (visibility === 'member') {
-                const next = feedVisibilityForMembersOnly(profile.feed_visibility)
-                if (next) setProfile('feed_visibility', next)
-              }
-            }}
-          />
-        </Col>
-
-        {/* Separate from `visibility` because the two questions differ in one way that matters: a page
-            on this site can be taken down, a post that has already been republished elsewhere cannot.
-            So being findable on the web is not treated as consent to being broadcast. */}
-        <Col className={clsx(colClassName)}>
-          <label className={clsx('guidance')}>
-            {t(
-              'profile.optional.feed_visibility_hint',
-              'Compass publishes a feed of new public profiles that anyone can follow from a feed reader or the fediverse. Choose how much of yours goes into it. Whatever you pick, the feed never carries your photos.',
-            )}
-          </label>
-          <ChoicesToggleGroup
-            currentChoice={profile.feed_visibility ?? DEFAULT_FEED_VISIBILITY}
-            allowDeselect={false}
-            disabled={profile.visibility === 'member'}
-            choicesMap={FEED_VISIBILITY_CHOICES}
-            translationPrefix={'profile.feed_visibility'}
-            setChoice={(choice) =>
-              setProfile(
-                'feed_visibility',
-                (choice ?? DEFAULT_FEED_VISIBILITY) as ProfileWithoutUser['feed_visibility'],
-              )
-            }
-          />
-          {profile.visibility === 'member' && (
-            <label className={clsx('guidance')}>
-              {t(
-                'profile.optional.feed_visibility_members_only',
-                'The feed only carries public profiles, so nothing of yours is published there while your profile is members-only.',
-              )}
-            </label>
-          )}
-        </Col>
-
         <Row className={'justify-end'}>
           <Button
             className={clsx(
@@ -1793,7 +1830,7 @@ export const OptionalProfileUserForm = (props: {
           </Button>
         </Row>
       </Col>
-    </>
+    </FieldVisibilityProvider>
   )
 }
 
@@ -1874,7 +1911,17 @@ function slugifySectionTitle(title: string) {
   )
 }
 
-function Category({title, className}: {title: string; className?: string}) {
+function Category({
+  title,
+  className,
+  section,
+}: {
+  title: string
+  className?: string
+  /** The profile section this heading opens, when its fields can be hidden. Adds the section chip. */
+  section?: ProfileSection
+}) {
+  const narrowed = useSectionNarrowed(section)
   return (
     // Label above the rule, not below it — the same object as a section heading on the rendered
     // profile, so the form is built in the visual language of the thing it produces. `mt-6` on top of
@@ -1886,16 +1933,29 @@ function Category({title, className}: {title: string; className?: string}) {
     <div
       id={slugifySectionTitle(title)}
       data-form-section={title}
+      data-profile-section={section}
+      // Read by ProfileFormNav to mark, in the index, the sections where something is shown to fewer
+      // people than the rest of the profile.
+      data-form-section-narrowed={narrowed ? 'true' : undefined}
       className={clsx('w-full mt-6 scroll-mt-24', className)}
     >
       {/* `!mt-0` / `!mb-0`: the global h1–h6 rule sets Newsreader at weight 700 with a 24px margin, so
           a heading element has to opt out of all three explicitly or it opts out of none. */}
-      <h3
-        className="font-dm-sans text-primary-700 !mt-0 !mb-3 font-normal uppercase !leading-none"
-        style={{fontSize: '10px', letterSpacing: '0.18em'}}
-      >
-        {title}
-      </h3>
+      {/* The heading and, on the same line, the control that sets who sees every field under it.
+          `items-end` keeps the heading on the rule whether or not the chip is there. */}
+      <Row className="items-end justify-between gap-3">
+        <h3
+          className="font-dm-sans text-primary-700 !mt-0 !mb-3 font-normal uppercase !leading-none"
+          style={{fontSize: '10px', letterSpacing: '0.18em'}}
+        >
+          {title}
+        </h3>
+        {section && (
+          <div className="mb-1 sm:mb-1.5">
+            <SectionAudienceChip section={section} subject={title} />
+          </div>
+        )}
+      </Row>
       <div className="border-canvas-300 border-t" />
     </div>
   )

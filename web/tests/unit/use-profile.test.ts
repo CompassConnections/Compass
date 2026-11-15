@@ -1,6 +1,5 @@
 /** @jest-environment jsdom */
 import {act, renderHook, waitFor} from '@testing-library/react'
-import {getProfileRowWithFrontendSupabase} from 'common/profiles/profile'
 import {User} from 'common/user'
 import {useProfileByUser} from 'web/hooks/use-profile'
 import {useUser} from 'web/hooks/use-user'
@@ -9,10 +8,6 @@ import {api} from 'web/lib/api'
 jest.mock('web/lib/api', () => ({api: jest.fn()}))
 jest.mock('web/lib/supabase/db', () => ({db: {}}))
 jest.mock('web/hooks/use-user', () => ({useUser: jest.fn()}))
-jest.mock('common/profiles/profile', () => ({
-  ...jest.requireActual('common/profiles/profile'),
-  getProfileRowWithFrontendSupabase: jest.fn(),
-}))
 
 const deferred = <T>() => {
   let resolve!: (value: T) => void
@@ -32,8 +27,11 @@ describe('useProfileByUser', () => {
     const user = {id: `user-${nextUserId++}`, username: 'someone'} as User
     const anonymous = deferred<any>()
     const signedIn = deferred<any>()
-    ;(getProfileRowWithFrontendSupabase as jest.Mock).mockReturnValue(anonymous.promise)
-    ;(api as jest.Mock).mockReturnValue(signedIn.promise)
+    // Both reads go through the API now: the signed-out one on the public endpoint, the member's on
+    // the authenticated one.
+    ;(api as jest.Mock).mockImplementation((path: string) =>
+      path === 'get-profile' ? signedIn.promise : anonymous.promise,
+    )
 
     // Signed out at first, as on a full page load, then the session comes back.
     ;(useUser as jest.Mock).mockReturnValue(null)
@@ -48,7 +46,7 @@ describe('useProfileByUser', () => {
     const {result, anonymous, signedIn} = setup()
 
     await act(async () => signedIn.resolve({profile: {headline: 'Whole'}}))
-    await act(async () => anonymous.resolve({headline: null}))
+    await act(async () => anonymous.resolve({profile: {headline: null}}))
 
     expect(result.current.profile?.headline).toBe('Whole')
   })
@@ -65,7 +63,7 @@ describe('useProfileByUser', () => {
   it('uses the latest read when they land in order', async () => {
     const {result, anonymous, signedIn} = setup()
 
-    await act(async () => anonymous.resolve({headline: null}))
+    await act(async () => anonymous.resolve({profile: {headline: null}}))
     await act(async () => signedIn.resolve({profile: {headline: 'Whole'}}))
 
     await waitFor(() => expect(result.current.profile?.headline).toBe('Whole'))

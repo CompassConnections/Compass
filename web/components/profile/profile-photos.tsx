@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
+import {isIdentityOnlyProfile} from 'common/profiles/visibility'
 import {buildArray} from 'common/util/array'
 import {uniq} from 'lodash'
 import Image from 'next/image'
@@ -28,7 +29,9 @@ export function useProfilePhotos(profile: Profile) {
   // no teaser photo either. The row now arrives from the server already stripped of its urls (see
   // common/profiles/visibility), and this keeps the component right even when a cached full row from
   // an earlier session is still in memory.
-  const isLocked = !currentUser && profile.visibility !== 'public'
+  // "Stripped" is recognised by the row's shape rather than by `visibility`: a members-only profile
+  // may still show its photos publicly if its owner set that field wider (docs/profile-visibility.md).
+  const isLocked = !currentUser && isIdentityOnlyProfile(profile)
   const visibleUrls = isLocked ? [] : urls
 
   const safeIndex = Math.min(index, Math.max(0, visibleUrls.length - 1))

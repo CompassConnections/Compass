@@ -3,11 +3,19 @@ import clsx from 'clsx'
 import {MIN_BIO_LENGTH} from 'common/constants'
 import {isAdminUserId} from 'common/envs/constants'
 import {Profile} from 'common/profiles/profile'
+import {
+  effectiveAudience,
+  isNarrowerThan,
+  parseFieldVisibility,
+  profileAudience,
+} from 'common/profiles/visibility'
 import {User, UserActivity} from 'common/user'
 import Link from 'next/link'
-import React, {useRef} from 'react'
+import React, {useRef, useState} from 'react'
+import toast from 'react-hot-toast'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
+import {OwnVisibilityNotice, ProfileAccessBar} from 'web/components/profile/profile-access'
 import ProfileHeroPhoto, {
   HERO_GALLERY_MIN_WIDTH_PX,
   ProfileHeroGallery,
@@ -21,7 +29,9 @@ import {useAdminOrMod} from 'web/hooks/use-admin'
 import {useAPIGetter} from 'web/hooks/use-api-getter'
 import {useElementSize} from 'web/hooks/use-element-size'
 import {useMinWidth} from 'web/hooks/use-min-width'
+import {usePauseProfile} from 'web/hooks/use-pause-profile'
 import {useUser} from 'web/hooks/use-user'
+import {updateProfile} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {capitalizePure} from 'web/lib/util/time'
 
@@ -52,8 +62,10 @@ export default function ProfileHero(props: {
    * profile can never put back what the redaction took out.
    */
   locked?: boolean
+  /** Re-reads the profile after the owner resumes it from the paused notice. */
+  refreshProfile?: () => void
 }) {
-  const {user, profile, isHiddenFromMe, simpleView, locked} = props
+  const {user, profile, isHiddenFromMe, simpleView, locked, refreshProfile} = props
   const currentUser = useUser()
   const isCurrentUser = currentUser?.id === user.id
   const isMod = useAdminOrMod()
@@ -65,9 +77,18 @@ export default function ProfileHero(props: {
   const donorAmountCents = donorBadge?.amountCents ?? 0
 
   // Mirrors the `shortBio` filter in the backend's `get-profiles`: keep the two in sync.
+  // A bio or headline its owner keeps from members does not count: search goes by what a member
+  // would be shown on the card, not by what was written (docs/profile-visibility.md).
+  const shownToMembers = (field: 'bio' | 'headline') =>
+    !isNarrowerThan(effectiveAudience(profile, field), 'member')
+  const hasBio = (profile.bio_length ?? 0) >= MIN_BIO_LENGTH
+  const hasHeadline = profile.headline != null
   const isFilteredFromSearch = !(
-    (profile.bio_length ?? 0) >= MIN_BIO_LENGTH || profile.headline != null
+    (hasBio && shownToMembers('bio')) ||
+    (hasHeadline && shownToMembers('headline'))
   )
+  // Written, but hidden: the fix is a visibility choice, not more writing, so the notice says so.
+  const filteredByVisibility = isFilteredFromSearch && (hasBio || hasHeadline)
 
   // The photo is matched to the height of the text, so both are measured rather than guessed.
   const bandRef = useRef<HTMLDivElement>(null)
@@ -192,19 +213,55 @@ export default function ProfileHero(props: {
           )}
         </Notice>
       )}
+      {/* Who sees this profile, on your own page; and on someone else's, where approvals stand
+          between the two of you (docs/profile-visibility.md). */}
+      {currentUser && isCurrentUser && !locked && <OwnVisibilityNotice profile={profile} />}
+      {currentUser && !isCurrentUser && !locked && !simpleView && (
+        <ProfileAccessBar user={user} profile={profile} />
+      )}
       {currentUser && isCurrentUser && profile.disabled && (
         <Notice icon={<LockClosedIcon className="h-4 w-4 flex-none" />} tone="danger">
-          {t(
-            'profile.header.disabled_notice',
-            'You disabled your profile, so no one else can access it.',
-          )}
+          <span>
+            {t(
+              'profile.header.disabled_notice',
+              'You paused your profile, so no one else can access it.',
+            )}
+          </span>
+          {/* The way back, right where the state is announced: pausing itself lives in Settings. */}
+          <ResumeProfileButton onResumed={refreshProfile} />
         </Notice>
       )}
       {currentUser && isCurrentUser && !profile.disabled && isFilteredFromSearch && (
         <Notice icon={<FunnelIcon className="h-4 w-4 flex-none" />} tone="danger">
-          {t(
-            'profile.bio.too_short_tooltip',
-            "Since you have no headline and your bio is too short, Compass' algorithm filters out your profile from search results by default. This ensures searches show meaningful profiles.",
+          {filteredByVisibility ? (
+            <>
+              <span>
+                {t(
+                  'profile.bio.hidden_from_members_notice',
+                  'What you wrote in your headline and bio is hidden from members, so your profile is left out of search results by default. Show at least one of the two to members to appear there.',
+                )}
+              </span>
+              {/* The one-click fix, for whichever of the two is there to show: the headline when
+                  there is one (it is the shorter, more deliberate text), the bio otherwise. */}
+              <ShowToMembersButton
+                profile={profile}
+                field={hasHeadline ? 'headline' : 'bio'}
+                onDone={refreshProfile}
+              />
+            </>
+          ) : (
+            <>
+              <span>
+                {t(
+                  'profile.bio.too_short_tooltip',
+                  "Since you have no headline and your bio is too short, Compass' algorithm filters out your profile from search results by default. This ensures searches show meaningful profiles.",
+                )}
+              </span>
+              {/* The quickest way back into search: one or two sentences, against a 500-character bio. */}
+              <Link href="/profile#profile-headline" className="font-medium underline">
+                {t('profile.bio.add_headline', 'Add a headline')}
+              </Link>
+            </>
           )}
         </Notice>
       )}
@@ -214,7 +271,7 @@ export default function ProfileHero(props: {
         <Notice icon={<LockClosedIcon className="h-4 w-4 flex-none" />} tone="danger">
           {t(
             'profile.header.disabled_notice_mod',
-            '{name} disabled their profile. Only moderators can see this page.',
+            '{name} paused their profile. Only moderators can see this page.',
             {name: user.name},
           )}
         </Notice>
@@ -332,6 +389,70 @@ const rootFontPx = () =>
     ? 16
     : parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
 
+/**
+ * Sets one field's audience to members, from the notice that says the profile is out of search
+ * because that field is hidden from them. Writes the whole map back with that one entry changed —
+ * removed when the profile-wide setting is already members, since only differences are stored.
+ */
+function ShowToMembersButton(props: {
+  profile: Profile
+  field: 'headline' | 'bio'
+  onDone?: () => void
+}) {
+  const {profile, field, onDone} = props
+  const t = useT()
+  const [busy, setBusy] = useState(false)
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      className="font-medium underline disabled:opacity-60"
+      onClick={async () => {
+        setBusy(true)
+        try {
+          const next = {...parseFieldVisibility(profile.field_visibility)}
+          if (profileAudience(profile) === 'member') delete next[field]
+          else next[field] = 'member'
+          await updateProfile({field_visibility: next})
+          toast.success(t('profile.bio.show_to_members_done', 'Members can see it now'))
+          onDone?.()
+        } catch {
+          toast.error(t('profile.access.failed', 'That did not go through. Try again.'))
+        } finally {
+          setBusy(false)
+        }
+      }}
+    >
+      {field === 'headline'
+        ? t('profile.bio.show_headline_to_members', 'Allow members to view my headline')
+        : t('profile.bio.show_bio_to_members', 'Allow members to view my bio')}
+    </button>
+  )
+}
+
+function ResumeProfileButton(props: {onResumed?: () => void}) {
+  const t = useT()
+  const {setPaused, busy} = usePauseProfile()
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      className="font-medium underline disabled:opacity-60"
+      onClick={async () => {
+        try {
+          await setPaused(false)
+          toast.success(t('profile.header.toast.enabled', 'Profile resumed'))
+          props.onResumed?.()
+        } catch {
+          toast.error(t('profile.header.toast.failed_enable', 'Failed to resume profile'))
+        }
+      }}
+    >
+      {t('profile.header.menu.enable_profile', 'Resume profile')}
+    </button>
+  )
+}
+
 function Notice(props: {
   icon: React.ReactNode
   tone?: 'default' | 'danger'
@@ -339,14 +460,17 @@ function Notice(props: {
 }) {
   const {icon, tone = 'default', children} = props
   return (
+    // Capped at a readable measure: on a wide profile these ran the full width of the page as one
+    // long line. The icon holds the first line while the text, and any action after it, wrap in
+    // their own column beside it rather than back under the icon.
     <div
       className={clsx(
-        'flex w-fit items-center gap-2 rounded-lg px-4 py-3 text-sm',
+        'flex w-fit max-w-2xl items-start gap-2 rounded-lg px-4 py-3 text-sm leading-snug',
         tone === 'danger' ? 'bg-red-50 text-red-700' : 'bg-canvas-200 text-primary-800',
       )}
     >
-      {icon}
-      {children}
+      <span className="mt-0.5 flex-none">{icon}</span>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5">{children}</div>
     </div>
   )
 }

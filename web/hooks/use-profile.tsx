@@ -81,11 +81,14 @@ export const useProfileByUser = (user: User | undefined) => {
       // answer lands last used to win, so a slow redacted read could overwrite the member's whole one.
       const refresh = ++latestRefresh.current
       // console.debug('Refreshing profile in useProfileByUser for', user?.username, profile);
-      // A member is entitled to the whole profile, which the direct read no longer gives out; a
-      // signed-out visitor gets the same redaction either way, so they stay on the cheaper path.
-      const fetched = signedIn
-        ? api('get-profile', {username: user.username}).then((r) => r.profile ?? null)
-        : getProfileRowWithFrontendSupabase(userId, db)
+      // A member is entitled to the whole profile, which the direct read no longer gives out. A
+      // signed-out visitor used to stay on the direct read, which got the same redaction either way;
+      // with per-field visibility it no longer does — the anon RPC cannot redact field by field, so
+      // it returns nothing but identity for any profile with a hidden field, while the API returns
+      // the fields that are public (docs/profile-visibility.md). Both go through the API now.
+      const fetched = api(signedIn ? 'get-profile' : 'get-user-and-profile', {
+        username: user.username,
+      }).then((r) => r.profile ?? null)
       fetched
         .then((profile) => {
           if (refresh !== latestRefresh.current) return

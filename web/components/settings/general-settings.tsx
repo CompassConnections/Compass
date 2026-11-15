@@ -25,6 +25,7 @@ import {DeleteAccountSurveyModal} from 'web/components/profile/delete-account-su
 import {AnalyticsConsentSetting} from 'web/components/settings/analytics-consent-setting'
 import {DonorBadgeSetting} from 'web/components/settings/donor-badge-setting'
 import HiddenProfilesModal from 'web/components/settings/hidden-profiles-modal'
+import {PauseProfileSetting} from 'web/components/settings/pause-profile-setting'
 import {SettingsCard, SettingsRow} from 'web/components/settings/settings-card'
 import {SpotlightConsentSetting} from 'web/components/settings/spotlight-consent-setting'
 import {ThemePicker} from 'web/components/settings/theme-picker'
@@ -312,6 +313,10 @@ const LoadedGeneralSettings = (props: {privateUser: PrivateUser}) => {
               {t('settings.password.send_reset', 'Send password reset email')}
             </Button>
           </SettingsRow>
+
+          {/* Last in Account, so it is the row directly above the Danger Zone: the reversible option
+              in view right before the irreversible one. */}
+          <PauseProfileSetting />
         </SettingsCard>
 
         <SettingsCard

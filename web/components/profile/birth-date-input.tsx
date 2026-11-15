@@ -10,6 +10,7 @@ import {
 import {useEffect, useRef, useState} from 'react'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
+import {FieldAudienceChip} from 'web/components/profile/field-visibility'
 import {InfoTooltip} from 'web/components/widgets/info-tooltip'
 import {Input} from 'web/components/widgets/input'
 import {useT} from 'web/lib/locale'
@@ -72,8 +73,8 @@ export const BirthDateInput = (props: {
     : null
 
   return (
-    <Col className={'gap-2'}>
-      <Row className="items-center gap-1.5">
+    <Col className={'w-full gap-2'}>
+      <Row className="w-full items-center gap-1.5">
         <label className={clsx(labelClassName)} htmlFor="birth-year">
           {t('profile.optional.birth_year', 'Year of birth')}
         </label>
@@ -89,6 +90,12 @@ export const BirthDateInput = (props: {
               'so the age shown on your profile can be a year out for at most six months around ' +
               'your birthday.',
           )}
+        />
+        {/* Who sees the age this produces. Renders nothing outside the profile form's provider. */}
+        <FieldAudienceChip
+          field="age"
+          subject={t('profile.optional.age', 'Age')}
+          className="ml-auto"
         />
       </Row>
       <Row className="items-center gap-3">

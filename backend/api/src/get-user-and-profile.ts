@@ -2,9 +2,11 @@ import {isAdminId} from 'common/envs/constants'
 import {debug} from 'common/logger'
 import {ProfileRow} from 'common/profiles/profile'
 import {
+  canViewerSeePhotos,
   isProfileVisibleTo,
   redactMemberOnlyProfile,
   redactMemberOnlyUser,
+  redactProfileFor,
 } from 'common/profiles/visibility'
 import {convertUser} from 'common/supabase/users'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
@@ -12,6 +14,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 import {isBlockedBetween} from './helpers/blocks'
 import {type APIHandler} from './helpers/endpoint'
 import {isStaff} from './helpers/profile-gate'
+import {getProfileViewer} from './helpers/profile-visibility'
 
 /**
  * A profile by username, projected down to what `viewerId` is allowed to read.
@@ -21,9 +24,17 @@ import {isStaff} from './helpers/profile-gate'
  * common/profiles/visibility); the same redaction applies to a disabled profile (except to its owner
  * and to admins, who review them), to a banned member's profile (except to its owner and to admins and
  * mods, who decide the ban from it) and to a profile with a block in either direction between it and
- * the viewer; and `birth_date` is returned only to the profile's owner.
+ * the viewer; and `birth_date` is returned only to the profile's owner. A profile that passes all of
+ * that is then redacted field by field (`redactProfileFor`): whatever its owner keeps for members, for
+ * the people they approved, or for themselves is left out for a viewer outside that audience.
  */
-export async function getUserAndProfile(username: string, viewerId?: string) {
+/** Who an owner may preview their own profile as (docs/profile-visibility.md, "View as"). */
+export type ViewAs = 'public' | 'member' | 'connected'
+
+/** Stands in for "some signed-in member who is not you" in a preview. Matches no real account. */
+const PREVIEW_VIEWER_ID = '__preview__'
+
+export async function getUserAndProfile(username: string, viewerId?: string, viewAs?: ViewAs) {
   const pg = createSupabaseDirectClient()
 
   const user = await pg.oneOrNone(
@@ -46,13 +57,25 @@ export async function getUserAndProfile(username: string, viewerId?: string) {
   // The redacted shape keeps `disabled`, which is how the page still says "disabled" rather than
   // pretending the account does not exist. Disabled used to be a browser-side decision, which shipped
   // the whole profile to anyone who asked the API directly.
+  // "View as": the owner, and only the owner, may ask for their own profile as one of the three
+  // audiences would get it. From here on the request is treated as coming from that audience — the
+  // same gates and the same redaction a real visitor goes through, so the preview cannot show
+  // something a visitor would not be sent. Anyone else's `viewAs` is ignored.
+  const previewing = !!viewAs && !!viewerId && viewerId === user.id
+  if (previewing) viewerId = viewAs === 'public' ? undefined : PREVIEW_VIEWER_ID
+
   const isOwner = viewerId === user.id
   const isStaffViewer = !!viewerId && isStaff({id: viewerId})
   const hiddenFromViewer =
     !isProfileVisibleTo(profileRes, viewerId) ||
     (!isOwner && profileRes.disabled && !(viewerId && isAdminId(viewerId))) ||
     (!isOwner && user.isBannedFromPosting && !isStaffViewer) ||
-    (!isOwner && !!viewerId && (await isBlockedBetween(viewerId, [user.id])))
+    // Not for an administrator: a block is between two members, and moderating means reading the
+    // profile whoever blocked whom — including when the admin's own account is one side of it.
+    (!isOwner &&
+      !!viewerId &&
+      !isAdminId(viewerId) &&
+      (await isBlockedBetween(viewerId, [user.id])))
   if (hiddenFromViewer) {
     return {
       user: redactMemberOnlyUser(user),
@@ -108,7 +131,17 @@ export async function getUserAndProfile(username: string, viewerId?: string) {
     work_names: workRes.map((r: any) => r.name as string),
   }
 
-  return {user, profile: profileWithItems}
+  // Past the whole-profile gate, the per-field one (docs/profile-visibility.md): each field the
+  // member keeps from this viewer is blanked here, so it is in neither the response nor the static
+  // page props built from it. The avatar on `user` is the same picture as the profile's photos, so it
+  // goes when they do.
+  const viewer = previewing
+    ? {id: viewerId, isConnected: viewAs === 'connected'}
+    : await getProfileViewer(viewerId, user.id)
+  return {
+    user: canViewerSeePhotos(profileRes, viewer) ? user : redactMemberOnlyUser(user),
+    profile: redactProfileFor(profileWithItems, viewer),
+  }
 }
 
 /**
@@ -138,8 +171,8 @@ export const getUserAndProfileHandler: APIHandler<'get-user-and-profile'> = asyn
  * back. Declaring the requirement makes the wait happen and turns a silently empty profile into an
  * error.
  */
-export const getProfileHandler: APIHandler<'get-profile'> = async ({username}, auth) => {
-  const result = await getUserAndProfile(username, auth.uid)
+export const getProfileHandler: APIHandler<'get-profile'> = async ({username, viewAs}, auth) => {
+  const result = await getUserAndProfile(username, auth.uid, viewAs)
   return {
     user: result?.user,
     profile: result?.profile,

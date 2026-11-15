@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import {Lock} from 'lucide-react'
 import {ChevronDownIcon} from 'lucide-react'
 import {useEffect, useRef, useState} from 'react'
 import {Col} from 'web/components/layout/col'
@@ -6,7 +7,8 @@ import {Modal, MODAL_CLASS} from 'web/components/layout/modal'
 import {Row} from 'web/components/layout/row'
 import {useT} from 'web/lib/locale'
 
-type FormSection = {id: string; title: string}
+/** `narrowed`: something in the section is shown to fewer people than the rest of the profile. */
+type FormSection = {id: string; title: string; narrowed?: boolean}
 
 /**
  * Which container to index. Defaults to the profile form, which is what this was written for; the
@@ -36,11 +38,18 @@ function useFormSections(root: string) {
     const read = (form: Element) =>
       setSections((prev) => {
         const next = Array.from(form.querySelectorAll<HTMLElement>('[data-form-section]')).map(
-          (node) => ({id: node.id, title: node.dataset.formSection ?? ''}),
+          (node) => ({
+            id: node.id,
+            title: node.dataset.formSection ?? '',
+            narrowed: node.dataset.formSectionNarrowed === 'true',
+          }),
         )
         const same =
           prev.length === next.length &&
-          prev.every((p, i) => p.id === next[i].id && p.title === next[i].title)
+          prev.every(
+            (p, i) =>
+              p.id === next[i].id && p.title === next[i].title && p.narrowed === next[i].narrowed,
+          )
         return same ? prev : next
       })
 
@@ -52,7 +61,13 @@ function useFormSections(root: string) {
       if (!form) return false
       read(form)
       sectionChanges = new MutationObserver(() => read(form))
-      sectionChanges.observe(form, {childList: true, subtree: true})
+      sectionChanges.observe(form, {
+        childList: true,
+        subtree: true,
+        // A section's lock appears and goes with the choices made in it, with no node added or removed.
+        attributes: true,
+        attributeFilter: ['data-form-section-narrowed'],
+      })
       return true
     }
 
@@ -131,12 +146,13 @@ function useFormSections(root: string) {
 export function ProfileFormNav(props: {className?: string; root?: string}) {
   const {className, root = DEFAULT_ROOT} = props
   const {sections, activeId, goTo} = useFormSections(root)
+  const t = useT()
 
   if (sections.length === 0) return null
 
   return (
     <nav className={clsx('flex flex-col gap-0.5', className)} aria-label="Form sections">
-      {sections.map(({id, title}) => {
+      {sections.map(({id, title, narrowed}) => {
         const isActive = id === activeId
         return (
           <button
@@ -145,13 +161,22 @@ export function ProfileFormNav(props: {className?: string; root?: string}) {
             onClick={() => goTo(id)}
             aria-current={isActive ? 'true' : undefined}
             className={clsx(
-              'border-l-2 py-1.5 pl-3 text-left text-sm transition-colors',
+              'flex items-center justify-between gap-2 border-l-2 py-1.5 pl-3 text-left text-sm transition-colors',
               isActive
                 ? 'border-primary-500 text-ink-1000'
                 : 'border-canvas-300 text-ink-500 hover:border-primary-400 hover:text-ink-800',
             )}
           >
             {title}
+            {narrowed && (
+              <Lock
+                className="h-3 w-3 shrink-0"
+                aria-label={t(
+                  'profile.audience.section_narrowed',
+                  'Something here is shown to fewer people',
+                )}
+              />
+            )}
           </button>
         )
       })}

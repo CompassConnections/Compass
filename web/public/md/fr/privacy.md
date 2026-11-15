@@ -17,9 +17,62 @@ page ou le code.
 - **Données techniques** — l'adresse IP et le navigateur avec lesquels vos requêtes arrivent, que tout serveur
   web voit nécessairement, ainsi que les rapports d'erreur quand quelque chose casse.
 
-L'essentiel de votre profil est **public par conception** : tout l'intérêt d'un annuaire ouvert est que les
-gens puissent se trouver sans qu'un algorithme décide à leur place. Ce qui est visible reste sous votre
-contrôle dans les [paramètres](/settings), et rien de ce que vous n'avez pas rempli n'est affiché.
+Votre profil est **à vous de montrer ou de garder, champ par champ**. Un annuaire ouvert reste l'idée de
+départ — les gens se trouvent sans qu'un algorithme décide à leur place — mais c'est vous qui choisissez ce
+qui y figure, et rien de ce que vous n'avez pas rempli n'est affiché. La section suivante dit précisément
+qui voit quoi.
+
+## Qui voit votre profil
+
+Chaque partie de votre profil a sa propre audience, que vous choisissez dans l'[éditeur de profil](/profile) :
+vos photos, votre âge, votre lieu, votre bio, ce que vous recherchez, vos convictions, vos réponses sur la
+santé et le mode de vie, vos liens, vos réponses de compatibilité, et les recommandations que d'autres
+laissent sur votre page.
+
+- **Tout le monde** : n'importe qui sur le web, connecté ou non, moteurs de recherche compris.
+- **Membres** : les personnes connectées à Compass.
+- **Mon cercle** : uniquement les membres que vous avez ajoutés à votre cercle, un par un.
+- **Moi uniquement** : aucun autre membre.
+
+Un réglage global, Tout le monde ou Membres, sert de valeur par défaut pour chaque champ que vous n'avez pas
+réglé vous-même. Un champ peut être plus ouvert ou plus restreint que ce réglage. Les nouveaux profils
+commencent sur Tout le monde, et ce choix est le premier élément du formulaire de profil : vous pouvez le
+changer avant d'écrire quoi que ce soit.
+
+Ce que cela fait, et ce que cela ne fait pas :
+
+- **Masqué veut dire non envoyé.** Le choix est appliqué sur nos serveurs. Un champ qu'une personne n'a pas
+  le droit de voir n'est pas transmis à son navigateur : il n'est ni dans la page, ni dans son code source, ni
+  dans l'aperçu du lien.
+- **Les champs masqués ne sont pas recherchables.** Un champ que vous cachez aux membres n'est trouvé ni par
+  les filtres ni par la recherche par mots-clés. Masquer l'un de vos champs ne limite pas vos propres recherches : vous pouvez
+  toujours filtrer les autres sur un champ qu'ils montrent.
+- **Votre score de compatibilité utilise toujours votre profil complet.** Le score, et la vérification de
+  votre adéquation avec ce qu'une personne dit rechercher, sont calculés sur tout ce que vous avez rempli,
+  masqué ou non. Seul le chiffre obtenu est affiché ; le détail ne montre jamais de ligne pour un champ que le
+  lecteur ne peut pas voir.
+- **Votre nom d'affichage est toujours visible, et votre photo de profil vous accompagne.** Le nom est ce qui
+  donne un sens à un lien vers votre page. Votre photo principale est aussi la petite image affichée à côté de
+  vos messages, commentaires et notifications : les personnes avec qui vous interagissez la voient donc là,
+  même si vous masquez vos photos sur votre profil.
+- **Votre cercle ne va que dans un sens.** Ajouter quelqu'un lui montre les champs que vous avez réglés sur
+  « Mon cercle » et ne vous montre rien de plus de son profil. Vous pouvez retirer n'importe qui à tout
+  moment, sans que la personne en soit informée. On ne peut demander à rejoindre votre cercle qu'après que
+  vous avez écrit à cette personne, et ignorer une demande ne lui est pas signalé.
+- **Ce que vous montrez à Tout le monde est public au sens plein.** Cela peut être lu sans compte, indexé par
+  les moteurs de recherche, et inclus dans notre [flux public des nouveaux profils](/feed.xml), que d'autres
+  sites et lecteurs de flux peuvent republier. Le flux contient votre nom et, parmi votre accroche, votre
+  lieu, vos mots-clés, votre genre et un court extrait de bio, ceux qui sont publics ; jamais vos photos.
+  Restreindre un champ plus tard le retire aussitôt de Compass, mais nous ne pouvons pas rappeler les copies
+  déjà indexées, republiées ou enregistrées par quelqu'un.
+- **Les administrateurs de Compass peuvent lire votre profil complet, y compris les champs réglés sur « Moi
+  uniquement ».** Ils le font pour modérer : traiter un signalement, enquêter sur un abus ou un faux compte
+  présumé, ou vous aider à votre demande. « Moi uniquement » signifie donc aucun autre membre, et non
+  personne chez Compass. Les modérateurs qui ne sont pas administrateurs ne voient que ce que voit n'importe
+  quel membre.
+- **La mise en pause masque tout.** Un profil en pause sort de la recherche et ne peut pas être ouvert par
+  les autres membres. Vos conversations et tout ce que vous avez écrit sont conservés, et vous pouvez le
+  réactiver à tout moment dans les [paramètres](/settings).
 
 ## Comment nous les utilisons
 
@@ -42,7 +95,9 @@ comme vous, et à déterminer quoi améliorer ensuite.
 
 Chaque e-mail de Compass est de l'un de deux types. La plupart concernent ce que vous avez demandé à suivre —
 un nouveau message, une correspondance, une recherche enregistrée qui a trouvé quelqu'un — et chacun se
-désactive séparément dans les [paramètres](/settings#1). Quelques-uns concernent le compte lui-même : la
+désactive séparément dans les [paramètres](/settings#1). Les e-mails concernant votre cercle (quelqu'un qui
+demande à le rejoindre, ou qui vous ajoute au sien) n'ont pas encore de réglage propre ; ils cessent lorsque
+vous désactivez tous les e-mails. Quelques-uns concernent le compte lui-même : la
 confirmation de votre adresse, et l'avis décrit ci-dessous. Ceux-là ne sont pas de la prospection et partent
 quels que soient vos réglages de notification, parce qu'ils sont le moyen de vous dire ce que nous détenons à
 votre sujet.

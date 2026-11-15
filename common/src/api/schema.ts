@@ -67,6 +67,7 @@ import {
   SPOTLIGHT_STATUSES,
   SpotlightCandidate,
 } from 'common/profiles/spotlights'
+import {type ProfileAccessEntry} from 'common/profiles/visibility'
 import {
   REFERRAL_LEADERBOARD_LIMIT,
   ReferralCount,
@@ -471,6 +472,9 @@ export const API = (_apiTypeCheck = {
     rateLimited: true,
     props: z.object({
       username: z.string().min(1),
+      // Your own profile as a visitor, a member, or someone you approved would receive it. Ignored
+      // for anyone else's profile.
+      viewAs: z.enum(['public', 'member', 'connected']).optional(),
     }),
     returns: {} as {user: User | null | undefined; profile: ProfileWithoutUser | null | undefined},
     summary: 'Get full user and profile data by username, for signed-in members',
@@ -511,6 +515,56 @@ export const API = (_apiTypeCheck = {
     returns: {} as ProfileRow,
     summary:
       'Update profile fields for the authenticated user. `interests`, `causes` and `work` (option ids or new names) are written in the same transaction, so a form save is one request and one compatibility recompute.',
+    tag: 'Profiles',
+  },
+  'get-profile-access': {
+    method: 'GET',
+    authed: true,
+    rateLimited: false,
+    props: z.object({
+      // Another member, to also get how approvals stand between the caller and them.
+      userId: z.string().optional(),
+    }),
+    returns: {} as {
+      approved: ProfileAccessEntry[]
+      requests: ProfileAccessEntry[]
+      pair?: {
+        approvedByMe: boolean
+        requestedOfMe: boolean
+        myRequest: 'approved' | 'requested' | 'none'
+        /** The other member has written to the caller, so the caller may request access. */
+        canRequest: boolean
+        /** The caller may add the other member to their circle (see `set-profile-access`). */
+        canAdd: boolean
+      }
+    },
+    summary:
+      'Members the caller has approved to see the profile fields kept for approved people, and pending requests',
+    tag: 'Profiles',
+  },
+  'request-profile-access': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z.object({userId: z.string()}).strict(),
+    returns: {} as {status: 'approved' | 'requested'},
+    summary:
+      'Ask a member to approve the caller for the profile fields they keep for approved people',
+    tag: 'Profiles',
+  },
+  'set-profile-access': {
+    method: 'POST',
+    authed: true,
+    rateLimited: true,
+    props: z
+      .object({
+        userId: z.string(),
+        action: z.enum(['approve', 'revoke', 'dismiss']),
+      })
+      .strict(),
+    returns: {} as {status: 'approved' | 'none'},
+    summary:
+      'Approve a member for the profile fields kept for approved people, revoke that, or dismiss their request',
     tag: 'Profiles',
   },
   'get-connection-interests': {
@@ -2078,7 +2132,7 @@ export const API = (_apiTypeCheck = {
     // Rendered into RSS by web's /feed.xml, which no one polls more than a few times an hour.
     cache: 'public, max-age=600, stale-while-revalidate=3600',
     summary:
-      'Newest public profiles that allow syndication, projected down to each member’s feed_visibility level.',
+      'Newest profiles with something public to show, projected down to the fields each member shows to everyone (never photos).',
     tag: 'Profiles',
   },
   'get-testimonials': {

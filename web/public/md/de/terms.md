@@ -29,10 +29,12 @@ Inhalt oder Ihr Konto löschen.
 
 Zwei Dinge ergeben sich daraus, wie Compass funktioniert, und wir sagen sie lieber deutlich:
 
-- **Der größte Teil Ihres Profils ist öffentlich.** Ein offenes Verzeichnis ist der Sinn des Produkts — alle,
-  auch nicht angemeldete Personen und Suchmaschinen, können lesen, was Ihr Profil zeigt. Was sichtbar ist,
-  bestimmen Sie in den [Einstellungen](/settings), und Sie sollten alles, was auf einem öffentlichen Profil
-  steht, als öffentlich betrachten.
+- **Ihr Profil ist so öffentlich, wie Sie es einstellen.** Jedes Feld hat ein eigenes Publikum — alle,
+  Mitglieder, Ihr Kreis oder nur Sie —, das Sie im [Profileditor](/profile) festlegen. Was Sie allen zeigen,
+  kann von nicht angemeldeten Personen und von Suchmaschinen gelesen und über unseren öffentlichen Feed
+  weiterverbreitet werden; betrachten Sie es als öffentlich. Die Administratoren von Compass können Ihr
+  gesamtes Profil lesen, einschließlich der Felder mit „Nur ich“, um zu moderieren. Die
+  [Datenschutzerklärung](/privacy#wer-ihr-profil-sieht) legt genau dar, wer was sieht.
 - **Eine Nachricht, die Sie senden, kann von der empfangenden Person gelesen, gespeichert, abfotografiert oder
   gemeldet werden.** Compass verschlüsselt Nachrichten bei der Speicherung und verkauft sie nicht, aber keine
   Plattform kann steuern, was eine Empfängerin oder ein Empfänger damit tut.

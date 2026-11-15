@@ -14,6 +14,12 @@ import {HomeLoadingAnimation} from 'web/components/home/home-loading-animation'
 import {Col} from 'web/components/layout/col'
 import {BannedUserModBar} from 'web/components/moderation/banned-user-mod-bar'
 import {PageBase} from 'web/components/page-base'
+import {
+  ProfilePreview,
+  type ViewAsAudience,
+  ViewAsBar,
+  ViewAsControlContext,
+} from 'web/components/profile/profile-access'
 import {ProfileInfo, ProfileInfoSkeleton} from 'web/components/profile/profile-info'
 import {SEO} from 'web/components/SEO'
 import {useAdminOrMod} from 'web/hooks/use-admin'
@@ -290,6 +296,8 @@ function UserPageInner(props: ActiveUserPageProps) {
   )
 
   const {profile: clientProfile, refreshProfile} = useProfileByUser(user)
+  const [viewAs, setViewAs] = useState<ViewAsAudience | undefined>()
+  const viewAsControl = useMemo(() => ({setViewAs}), [])
 
   // Show the previous profile while loading another one
   const profile = clientProfile ?? staticProfile
@@ -303,7 +311,7 @@ function UserPageInner(props: ActiveUserPageProps) {
       <PageBase trackPageView={'user page'} className={'relative p-2 sm:pt-0'}>
         <Col className="items-center justify-center h-full">
           <div className="text-xl font-semibold text-center mt-8">
-            {t('userpage.profileDisabled', 'The user disabled their profile.')}
+            {t('userpage.profileDisabled', 'This member has paused their profile.')}
           </div>
         </Col>
       </PageBase>
@@ -337,14 +345,33 @@ function UserPageInner(props: ActiveUserPageProps) {
       {currentUser !== undefined ? (
         <Col className={'gap-4'}>
           {isMod && user.isBannedFromPosting && <BannedUserModBar user={user} className="mx-2" />}
-          {profile ? (
-            <ProfileInfo
-              key={profile.user_id}
-              profile={profile}
-              user={user}
-              refreshProfile={refreshProfile}
-              fromSignup={fromSignup}
-            />
+          {/* "View as", on your own profile: the same page as a visitor, a member or someone you
+              approved receives it (docs/profile-visibility.md). Started from the "..." menu in the
+              top bar; while one is running, the bar above it switches audience or leaves. */}
+          {isCurrentUser && profile && viewAs && (
+            <ViewAsBar value={viewAs} onChange={setViewAs} className="px-4 pt-3 sm:px-8" />
+          )}
+          {isCurrentUser && profile && viewAs ? (
+            <ProfilePreview username={user.username} ownProfile={profile} viewAs={viewAs}>
+              {(preview) => (
+                <ProfileInfo
+                  key={`${preview.profile.user_id}-${viewAs}`}
+                  profile={preview.profile}
+                  user={preview.user}
+                  refreshProfile={() => {}}
+                />
+              )}
+            </ProfilePreview>
+          ) : profile ? (
+            <ViewAsControlContext.Provider value={isCurrentUser ? viewAsControl : undefined}>
+              <ProfileInfo
+                key={profile.user_id}
+                profile={profile}
+                user={user}
+                refreshProfile={refreshProfile}
+                fromSignup={fromSignup}
+              />
+            </ViewAsControlContext.Provider>
           ) : (
             <ProfileInfoSkeleton />
           )}

@@ -3,7 +3,8 @@ import {OptionTableKey} from 'common/profiles/constants'
 import {ProfileWithoutUser} from 'common/profiles/profile'
 import {Col} from 'web/components/layout/col'
 import {OptionPicker} from 'web/components/option-picker'
-import {colClassName, labelClassName} from 'web/pages/signup'
+import {FieldLabel} from 'web/components/profile/field-visibility'
+import {colClassName} from 'web/pages/signup'
 
 /**
  * One taxonomy section of the profile form.
@@ -25,7 +26,9 @@ export function AddOptionEntry(props: {
     // "Chess" as both a work area and an interest), so the test id is what lets a locator say
     // *which* section's "Search or add" field or option chip it means.
     <Col className={clsx(colClassName)} data-testid={`option-entry-${label}`}>
-      {title && <label className={clsx(labelClassName)}>{title}</label>}
+      {/* The label carries the field's audience chip; `label` is the option table, which is also the
+          field's key (`work`, `interests`, `causes`). */}
+      {title && <FieldLabel field={label}>{title}</FieldLabel>}
       <OptionPicker
         label={label}
         allowCreate

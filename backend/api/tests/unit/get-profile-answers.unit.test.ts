@@ -44,7 +44,11 @@ describe('getProfileAnswers', () => {
 
       const result: any = await getProfileAnswers(mockProps, mockAuth, mockReq)
 
-      expect(profileVisibility.canReadProfileContent).toBeCalledWith(mockAuth.uid, mockProps.userId)
+      expect(profileVisibility.canReadProfileContent).toBeCalledWith(
+        mockAuth.uid,
+        mockProps.userId,
+        'answers',
+      )
       expect(result.status).toBe('success')
       expect(result.answers).toBe(mockAnswers)
       expect(mockPg.manyOrNone).toBeCalledTimes(1)

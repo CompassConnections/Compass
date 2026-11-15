@@ -15,6 +15,14 @@ export const blockUser: APIHandler<'user/by-id/:id/block'> = async ({id}, auth) 
     await updatePrivateUser(tx, id, {
       blockedByUserIds: FieldVal.arrayConcat(auth.uid),
     })
+    // A block ends any approval between the two, in both directions, pending requests included
+    // (docs/profile-visibility.md). Deleted rather than suspended: unblocking later should not
+    // quietly hand back access to the fields kept for approved people.
+    await tx.none(
+      `delete from profile_access
+       where (owner_id = $1 and viewer_id = $2) or (owner_id = $2 and viewer_id = $1)`,
+      [auth.uid, id],
+    )
   })
 }
 

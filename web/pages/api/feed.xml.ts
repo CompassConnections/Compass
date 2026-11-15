@@ -14,8 +14,8 @@ import {api} from 'web/lib/api'
  * `?country=Italy` narrows it to one country, which is the form worth subscribing to: the bottleneck is
  * local density, so a worldwide firehose would look like activity while every city stays empty.
  *
- * Members choose how much of their profile travels here (`profiles.feed_visibility`); the API applies
- * that per row, so this handler renders whatever it is given without knowing anyone's level.
+ * What travels here is whatever a member shows to everyone (docs/profile-visibility.md), never photos;
+ * the API applies that before anything reaches this renderer.
  */
 // `WEB_URL` is the bare apex (compassmeet.com), which 308-redirects to www — so every `<link>` and
 // `<guid>` built from it would send readers through a redirect, and would disagree with the

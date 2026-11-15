@@ -97,7 +97,22 @@ z.array(z.string()).optional().nullable(),  // array
 z.string().optional().nullable(),   // free-text
 ```
 
+### 4b. `common/src/profiles/visibility.ts`
+
+Place the column in `PROFILE_FIELDS`, so its owner can choose who sees it
+([`profile-visibility.md`](profile-visibility.md)): add it to an existing field's `columns` when it is
+part of the same form control (a `_details` companion, a second coordinate), or add a new field with
+its form section. A column that is a setting and not content goes in `ALWAYS_SHOWN_COLUMNS` instead.
+`common/tests/unit/profile-visibility.test.ts` fails until the column is placed; unplaced, it would be
+sent to nobody but its owner. A new field also needs a name in `useFieldNames`
+(`web/components/profile/profile-access.tsx`) and, in the form, `<FieldLabel field="my_field">` in place
+of the plain label.
+
 ### 5. `backend/api/src/get-profiles.ts`
+
+Use `fieldWhere('my_field', clause, values, unsetPasses)` rather than a bare `where(...)`, so a profile
+that hides the field from members is treated as not having answered. `unsetPasses` is whether this
+filter lets a blank profile through.
 
 Add a filter WHERE clause. The column is already selected automatically (see step 2).
 

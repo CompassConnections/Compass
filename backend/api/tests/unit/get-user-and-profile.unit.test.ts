@@ -42,6 +42,8 @@ describe('getUserAndProfile', () => {
       const mockProfile = {
         id: 'mock-profile-id',
         user_id: 'mock-user-id',
+        // A public profile with no per-field exception: everything comes back, to anyone.
+        visibility: 'public',
         bio: 'Mock bio',
         city: 'Mock city',
       }

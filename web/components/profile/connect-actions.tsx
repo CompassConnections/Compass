@@ -12,7 +12,7 @@ import {Tooltip} from 'web/components/widgets/tooltip'
 import {shortenName} from 'web/components/widgets/user-link'
 import {useAdmin} from 'web/hooks/use-admin'
 import {useProfile} from 'web/hooks/use-profile'
-import {useUser} from 'web/hooks/use-user'
+import {useUser, useViewAs} from 'web/hooks/use-user'
 import {api} from 'web/lib/api'
 import {User} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
@@ -29,6 +29,7 @@ export function ConnectActions(props: {
   const isAdmin = useAdmin()
   const t = useT()
   const isCurrentUser = currentUser?.id === user.id
+  const previewing = !!useViewAs()
 
   const soughtConnections = currentProfile?.pref_relation_styles
   const targetSoughtConnections = profile.pref_relation_styles
@@ -66,9 +67,12 @@ export function ConnectActions(props: {
 
   // Load user preferences
   useEffect(() => {
-    if (!currentUser || isCurrentUser) return
+    // Not in a "view as" preview: the reader there is a stand-in, the request would still go out
+    // under the owner's own session, and asking about your interest in yourself is an error. The
+    // section is drawn as a member with no interest declared would see it.
+    if (!currentUser || isCurrentUser || previewing) return
     loadPreferences()
-  }, [currentUser, user.id, isCurrentUser])
+  }, [currentUser, user.id, isCurrentUser, previewing])
 
   const handleInterestChange = async (connectionType: string, checked: boolean) => {
     if (!currentUser || isCurrentUser) return

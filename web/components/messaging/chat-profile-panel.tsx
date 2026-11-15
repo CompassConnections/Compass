@@ -76,7 +76,7 @@ export function ChatProfilePanel(props: {
     )
   }
   if (profile.disabled && !isMod) {
-    return placeholder(t('userpage.profileDisabled', 'The user disabled their profile.'))
+    return placeholder(t('userpage.profileDisabled', 'This member has paused their profile.'))
   }
 
   return (

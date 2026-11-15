@@ -15,9 +15,53 @@ that is a bug: [tell us](/contact) and we will fix the page or the code.
 - **Technical data** — the IP address and browser your requests arrive with, which any web server necessarily
   sees, plus error reports when something breaks.
 
-Most of your profile is **public by design**: the whole point of an open directory is that people can find each
-other without an algorithm deciding for them. What is visible is under your control in
-[settings](/settings).
+Your profile is **yours to show or keep back, field by field**. An open directory is still the point —
+people find each other without an algorithm deciding for them — but how much of you is in it is your choice.
+
+## Who sees your profile
+
+Every part of your profile has its own audience, which you choose in the [profile editor](/profile): your
+photos, age, location, bio, what you are looking for, your beliefs, your health and lifestyle answers, your
+links, your compatibility answers, and the endorsements other people leave on your page.
+
+- **Everyone**: anyone on the web, signed in or not, including search engines.
+- **Members**: people signed in to Compass.
+- **My circle**: only the members you have added to your circle, one by one.
+- **Only me**: no one (besides Compasss moderators).
+
+A profile-wide setting, Everyone or Members, is the default for every field you have not set yourself. A
+single field can be wider or narrower than that default. New profiles start on Everyone, and that choice is
+the first thing in the profile form, so you can change it before you write anything.
+
+What this does, and what it does not:
+
+- **Hidden means not sent.** The choice is enforced on our servers. A field someone is not allowed to see is
+  not delivered to their browser at all: it is not in the page, not in the page's source, and not in the link
+  preview. No one can read it, not even a clever hacker.
+- **Hidden fields are not searchable.** A field you keep from members is not matched by search filters or by
+  keyword search. Hiding one of your own fields does not limit your own searches: you can still filter
+  other people on a field they show.
+- **Your compatibility score still uses your whole profile.** The score, and the check of whether you fit
+  what someone said they are looking for, are computed on everything you filled in, hidden or not. Only the
+  resulting number is shown; a breakdown never shows a row for a field the reader cannot see.
+- **Your display name is always shown, and your profile picture travels with you.** The name is what makes a
+  link to your page make sense. Your main photo is also the small picture shown next to your messages,
+  comments and notifications, so the people you interact with see it there even if you hide your photos on
+  your profile.
+- **Your circle works one way.** Adding someone shows them the fields you set to "My circle" and shows you
+  nothing more of theirs. You can remove anyone at any time and they are not told. Someone can only ask to
+  join your circle after you have written to them, and ignoring a request is not reported back to them.
+- **What you show to Everyone is public in the full sense.** It can be read without an account, indexed by
+  search engines, and included in our public [feed of new profiles](/feed.xml), which other sites and feed
+  readers can republish. The feed carries your name and whichever of your headline, location, keywords,
+  gender and a short bio excerpt are public, and never your photos. Narrowing a field later removes it from
+  Compass at once, but we cannot recall copies that were already indexed, republished or saved by someone.
+- **Compass administrators can read your whole profile, including fields set to "Only me".** They do so to
+  moderate: handling a report, investigating abuse or a suspected fake account, or helping you when you ask.
+  "Only me" therefore means no other member, not nobody at Compass. Moderators who are not administrators
+  see only what any member sees.
+- **Pausing hides all of it.** A paused profile is out of search and cannot be opened by other members. Your
+  conversations and everything you wrote stay, and you can resume at any time from [settings](/settings).
 
 ## How we use it
 
@@ -37,7 +81,8 @@ out what to improve next.
 
 Every email from Compass is one of two kinds. Most are things you asked to hear about — a new message, a
 match, a saved search that found someone — and each kind can be switched off on its own in
-[settings](/settings#1). A few are about the account itself: confirming your address, and the notice
+[settings](/settings#1). Emails about your circle (someone asking to join it, or adding you to theirs) do not
+have a switch of their own yet; they stop when you turn off all email. A few are about the account itself: confirming your address, and the notice
 described next. Those are not marketing, and they go out regardless of the notification settings, because
 they are how we tell you what we hold about you.
 

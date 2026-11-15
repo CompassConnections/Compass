@@ -25,8 +25,14 @@ import {useT} from 'web/lib/locale'
  * Every factor behind the number, with its weight and likely range.
  *
  * Computed here, in the browser, from the two profiles already on the page plus the stored prompt
- * score — the same `getOverallCompatibility` the backend ran, so the rows reproduce the stored
- * overall whenever nothing has changed since the last recompute. Nothing is fetched to open it.
+ * score — the same `getOverallCompatibility` the backend ran. Nothing is fetched to open it.
+ *
+ * The number at the top is the **stored** one, not the recompute. The backend scores each pair on
+ * both members' whole profiles, while the browser only holds the fields this reader is allowed to
+ * see (docs/profile-visibility.md): a field the other person keeps private arrives blank, so the rows
+ * below show it as unknown and a total summed from them would drift from the score on the card. A
+ * hidden field is deliberately indistinguishable from an unset one here, so the note under the rows
+ * is always shown rather than only when something is hidden.
  */
 export function CompatibilityBreakdownModal(props: {
   open: boolean
@@ -59,9 +65,9 @@ export function CompatibilityBreakdownModal(props: {
   )
 
   const name = shortenName(profile.user.name)
-  // The caveat below is worded for the band the number falls in. The live recompute wins when it
-  // ran; a dealbreaker pair has no live score, so the stored one stands in.
-  const score = result?.kind === 'scored' ? result.score : compatibility.score
+  // The caveat below is worded for the band the number falls in — the stored number, which is the
+  // one computed on both whole profiles and the one the card shows.
+  const score = compatibility.score
 
   return (
     <Modal open={open} setOpen={setOpen} size="lg">
@@ -87,11 +93,11 @@ export function CompatibilityBreakdownModal(props: {
             <>
               <CompatibilityScoreBar
                 compatibility={{
-                  score: result.score,
-                  low: result.low,
-                  high: result.high,
-                  sharedAnswers: result.sharedAnswers,
-                  confidence: result.confidence,
+                  score: compatibility.score,
+                  low: compatibility.low ?? result.low,
+                  high: compatibility.high ?? result.high,
+                  sharedAnswers: compatibility.sharedAnswers ?? result.sharedAnswers,
+                  confidence: compatibility.confidence ?? result.confidence,
                 }}
               />
 
@@ -114,6 +120,13 @@ export function CompatibilityBreakdownModal(props: {
                 sharedAnswers={result.sharedAnswers}
                 muted
               />
+
+              <p className="text-ink-800 m-0 text-sm">
+                {t(
+                  'compatibility.breakdown.whole_profile_note',
+                  'The score at the top is computed on both whole profiles, including anything either of you shows to fewer people. The rows here only use what you can see, so they may not add up to it exactly.',
+                )}
+              </p>
             </>
           )}
 

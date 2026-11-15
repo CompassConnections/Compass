@@ -20,6 +20,12 @@ import {
 import {MIN_BIO_LENGTH} from 'common/constants'
 import {isAdminId} from 'common/envs/constants'
 import {OptionTableKey} from 'common/profiles/constants'
+import {
+  canViewerSeePhotos,
+  fieldOfColumn,
+  type ProfileFieldKey,
+  redactProfileFor,
+} from 'common/profiles/visibility'
 import {parseJsonContentToText} from 'common/util/parse'
 import {getWantsKidsRange} from 'common/wants-kids'
 import {compact} from 'lodash'
@@ -801,6 +807,36 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     )`
   }
 
+  // Per-field visibility (docs/profile-visibility.md). A field its owner keeps from ordinary members
+  // (`connected` or `only_me`) is treated as *unset* by every filter and by keyword search, for every
+  // searcher — otherwise filtering on it would reveal it. `visibleSql` is that test for one field; the
+  // key is one of our own constants, never input. Approved viewers are deliberately not special-cased
+  // here: they see the field on the profile, but a search behaves the same for everyone.
+  //
+  // It runs one way only. Hiding a field of your own does not stop you filtering other people on that
+  // field: they chose to show theirs to members, and that choice is theirs to make. (There was a
+  // reciprocity rule here for a while — a filter on a field the searcher hides was dropped — and it
+  // was removed for that reason.)
+  const visibleSql = (field: ProfileFieldKey) =>
+    `coalesce(profiles.field_visibility ->> '${field}', 'member') in ('public', 'member')`
+
+  /** `clause`, counted only where the field it reads is visible to members. For the keyword OR-list. */
+  const whenVisible = (field: ProfileFieldKey | undefined, clause: string) =>
+    field ? `((${clause}) AND ${visibleSql(field)})` : clause
+
+  /**
+   * A filter on one profile field. `unsetPasses` says what this filter does with a profile that left
+   * the field blank, and a hidden field is given the same answer: let through whatever its value
+   * (so nothing is learned from the profile appearing), or left out whatever its value.
+   */
+  const fieldWhere = (field: ProfileFieldKey, clause: string, values?: any, unsetPasses = false) =>
+    where(
+      unsetPasses
+        ? `(${clause}) OR NOT (${visibleSql(field)})`
+        : `(${clause}) AND ${visibleSql(field)}`,
+      values,
+    )
+
   // Decide whether unfilled (null) profiles should be surfaced by a numeric range
   // filter. Rare searches — a narrow band, or one sitting near an extreme edge of
   // the field's domain — exclude nulls, since people who left the field blank
@@ -808,6 +844,7 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
   // keep nulls. `lo`/`hi` are the field's full domain (used when only one bound is
   // set); `isRare` receives the effective [m, M] range.
   const numericRangeClause = (
+    key: ProfileFieldKey,
     field: string,
     min: number | null | undefined,
     max: number | null | undefined,
@@ -819,8 +856,9 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     const m = min ?? lo
     const M = max ?? hi
     const bounds = compact([min && `${field} >= $(min)`, max && `${field} <= $(max)`]).join(' AND ')
-    const clause = isRare(m, M) ? bounds : `(${bounds}) OR ${field} IS NULL`
-    return where(clause, {min, max})
+    const rare = isRare(m, M)
+    const clause = rare ? bounds : `(${bounds}) OR ${field} IS NULL`
+    return fieldWhere(key, clause, {min, max}, !rare)
   }
 
   // One extra round-trip, and only when two-way search is on: the backward filters compare each
@@ -837,45 +875,59 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
       where(
         [
           // Text field searches
-          ...textFields.map((field) => getTextFieldClauseKeyword(field)),
+          // Each piece counts only where the field it reads is visible to members. `search_text` and
+          // `search_tsv` need no test: the database builds them from visible fields only.
+          ...textFields.map((field) =>
+            whenVisible(fieldOfColumn(field), getTextFieldClauseKeyword(field)),
+          ),
           // Full-text search
           "search_tsv @@ phraseto_tsquery('english', $(word))",
           // Option table searches with translations
-          getOptionClauseKeyword('interests'),
-          getOptionClauseKeyword('causes'),
-          getOptionClauseKeyword('work'),
+          whenVisible('interests', getOptionClauseKeyword('interests')),
+          whenVisible('causes', getOptionClauseKeyword('causes')),
+          whenVisible('work', getOptionClauseKeyword('work')),
           // Choice field searches
-          ...choiceFields.map(({field, choices}) => getChoiceFieldClauseKeyword(field, choices)),
+          ...choiceFields.map(({field, choices}) =>
+            whenVisible(fieldOfColumn(field), getChoiceFieldClauseKeyword(field, choices)),
+          ),
           // Array choice field searches
           ...arrayChoiceFields.map(({field, choices}) =>
-            getArrayChoiceFieldClauseKeyword(field, choices),
+            whenVisible(fieldOfColumn(field), getArrayChoiceFieldClauseKeyword(field, choices)),
           ),
           // Keywords search
-          `EXISTS ( SELECT 1 FROM unnest(keywords) AS kw WHERE ${getTextFieldClauseKeyword('kw')} )`,
+          whenVisible(
+            'keywords',
+            `EXISTS ( SELECT 1 FROM unnest(keywords) AS kw WHERE ${getTextFieldClauseKeyword('kw')} )`,
+          ),
         ].join(' OR '),
         {word, locale},
       ),
     ),
 
-    genders?.length && where(`gender = ANY($(genders))`, {genders}),
+    genders?.length && fieldWhere('gender', `gender = ANY($(genders))`, {genders}),
 
     education_levels?.length &&
-      where(`education_level = ANY($(education_levels))`, {education_levels}),
-
-    mbti?.length && where(`mbti = ANY($(mbti))`, {mbti}),
-
-    pref_gender?.length &&
-      where(`pref_gender is NULL or pref_gender = '{}' OR pref_gender && $(pref_gender)`, {
-        pref_gender,
+      fieldWhere('education_level', `education_level = ANY($(education_levels))`, {
+        education_levels,
       }),
 
+    mbti?.length && fieldWhere('mbti', `mbti = ANY($(mbti))`, {mbti}),
+
+    pref_gender?.length &&
+      fieldWhere(
+        'pref_gender',
+        `pref_gender is NULL or pref_gender = '{}' OR pref_gender && $(pref_gender)`,
+        {pref_gender},
+        true,
+      ),
+
     // age domain 18–100; young (<30), older (>50), or narrow (<15yr) searches are rare
-    numericRangeClause('age', pref_age_min, pref_age_max, 18, 100, (m, M) => {
+    numericRangeClause('age', 'age', pref_age_min, pref_age_max, 18, 100, (m, M) => {
       return M < 30 || m > 50 || M - m < 15
     }),
 
     // drinks/month domain 0–20; narrow band, near-teetotal, or heavy-drinker searches are rare
-    numericRangeClause('drinks_per_month', drinks_min, drinks_max, 0, 20, (m, M) => {
+    numericRangeClause('drinking', 'drinks_per_month', drinks_min, drinks_max, 0, 20, (m, M) => {
       return M - m < 5 || M < 5 || m > 15
     }),
 
@@ -889,59 +941,72 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
         ['big5_neuroticism', big5_neuroticism_min, big5_neuroticism_max],
       ] as const
     ).map(([field, min, max]) =>
-      numericRangeClause(field, min, max, 0, 100, (m, M) => M - m < 25 || M < 25 || m > 75),
+      numericRangeClause('big5', field, min, max, 0, 100, (m, M) => M - m < 25 || M < 25 || m > 75),
     ),
 
     pref_relation_styles?.length &&
-      where(
+      fieldWhere(
+        'pref_relation_styles',
         `pref_relation_styles IS NULL OR pref_relation_styles = '{}' OR pref_relation_styles && $(pref_relation_styles)`,
         {pref_relation_styles},
+        true,
       ),
 
     pref_romantic_styles?.length &&
-      where(
+      fieldWhere(
+        'pref_romantic_styles',
         `pref_romantic_styles IS NULL OR pref_romantic_styles = '{}' OR pref_romantic_styles && $(pref_romantic_styles)`,
         {pref_romantic_styles},
+        true,
       ),
 
     diet?.length &&
-      where(
+      fieldWhere(
+        'diet',
         // most are omnivores, so we don't include the people who didn't answer if we're looking for other diets
         (!diet.includes('omnivore') ? '' : "diet IS NULL OR diet = '{}' OR ") + `diet && $(diet)`,
         {diet},
+        diet.includes('omnivore'),
       ),
 
     // no dominant value, so unfilled profiles are never surfaced by a politics filter
     political_beliefs?.length &&
-      where(`political_beliefs && $(political_beliefs)`, {political_beliefs}),
+      fieldWhere('political_beliefs', `political_beliefs && $(political_beliefs)`, {
+        political_beliefs,
+      }),
 
     relationship_status?.length &&
-      where(
+      fieldWhere(
+        'relationship_status',
         // most are single, so we don't include the people who didn't answer unless looking for single
         (!relationship_status.includes('single')
           ? ''
           : "relationship_status IS NULL OR relationship_status = '{}' OR ") +
           `relationship_status && $(relationship_status)`,
         {relationship_status},
+        relationship_status.includes('single'),
       ),
 
-    languages?.length && where(`languages && $(languages)`, {languages}),
+    languages?.length && fieldWhere('languages', `languages && $(languages)`, {languages}),
 
     // no dominant value, so unfilled profiles are never surfaced by a religion filter
-    religion?.length && where(`religion && $(religion)`, {religion}),
+    religion?.length && fieldWhere('religion', `religion && $(religion)`, {religion}),
 
     orientation?.length &&
-      where(
+      fieldWhere(
+        'orientation',
         // most are straight, so we don't include the people who didn't answer if we're looking for non-straight
         (!orientation.includes('straight') ? '' : "orientation IS NULL OR orientation = '{}' OR ") +
           `orientation && $(orientation)`,
         {
           orientation,
         },
+        orientation.includes('straight'),
       ),
 
     neurotype?.length &&
-      where(
+      fieldWhere(
+        'neurotype',
         // most are neurotypical, so we don't include the people who didn't answer if we're looking for
         // anything else — a rare value is only meaningful when it was actually stated
         (!neurotype.includes('neurotypical') ? '' : "neurotype IS NULL OR neurotype = '{}' OR ") +
@@ -949,20 +1014,24 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
         {
           neurotype,
         },
+        neurotype.includes('neurotypical'),
       ),
 
-    interests?.length && where(getManyToManyClause('interests'), {values: interests.map(Number)}),
+    interests?.length &&
+      fieldWhere('interests', getManyToManyClause('interests'), {values: interests.map(Number)}),
 
-    causes?.length && where(getManyToManyClause('causes'), {values: causes.map(Number)}),
+    causes?.length &&
+      fieldWhere('causes', getManyToManyClause('causes'), {values: causes.map(Number)}),
 
-    work?.length && where(getManyToManyClause('work'), {values: work.map(Number)}),
+    work?.length && fieldWhere('work', getManyToManyClause('work'), {values: work.map(Number)}),
 
     // The band of acceptable answers to "I would like to have kids". Set directly from the filter
     // panel's range slider, or derived from the searcher's own answer by `getWantsKidsRange` when
     // the looking-for bundle is applied. Profiles that never answered stay in — -1/NULL is "no
     // preference", which is not a clash with anything.
     (wants_kids_range_min != null || wants_kids_range_max != null) &&
-      where(
+      fieldWhere(
+        'wants_kids',
         'wants_kids_strength IS NULL OR wants_kids_strength = -1 OR (' +
           compact([
             wants_kids_range_min != null && 'wants_kids_strength >= $(wants_kids_range_min)',
@@ -970,6 +1039,7 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
           ]).join(' AND ') +
           ')',
         {wants_kids_range_min, wants_kids_range_max},
+        true,
       ),
 
     ...(twoWayViewer
@@ -987,64 +1057,79 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     filterCompatibility &&
       where('cs.score >= $(compatibility_min)', {compatibility_min: compatibility_min! / 100}),
 
-    has_kids === 0 && where(`has_kids IS NULL OR has_kids = 0`),
-    has_kids && has_kids > 0 && where(`has_kids > 0`),
+    has_kids === 0 && fieldWhere('has_kids', `has_kids IS NULL OR has_kids = 0`, undefined, true),
+    has_kids && has_kids > 0 && fieldWhere('has_kids', `has_kids > 0`),
 
     is_smoker !== undefined &&
-      where(
+      fieldWhere(
+        'smoking',
         (is_smoker ? '' : 'is_smoker IS NULL OR ') + // smokers are rare, so we don't include the people who didn't answer if we're looking for smokers
           `is_smoker = $(is_smoker)`,
         {is_smoker},
+        !is_smoker,
       ),
 
-    exercise?.length && where(`exercise = ANY($(exercise))`, {exercise}),
+    exercise?.length && fieldWhere('exercise', `exercise = ANY($(exercise))`, {exercise}),
 
     psychedelics?.length &&
-      where(
+      fieldWhere(
+        'psychedelics',
         (psychedelics.includes('never_not_interested') ? 'psychedelics IS NULL OR ' : '') +
           `psychedelics = ANY($(psychedelics))`,
         {psychedelics},
+        psychedelics.includes('never_not_interested'),
       ),
 
     cannabis?.length &&
-      where(
+      fieldWhere(
+        'cannabis',
         (cannabis.includes('never_not_interested') ? 'cannabis IS NULL OR ' : '') +
           `cannabis = ANY($(cannabis))`,
         {cannabis},
+        cannabis.includes('never_not_interested'),
       ),
 
     psychedelics_intention?.length &&
-      where(
+      fieldWhere(
+        'psychedelics',
         `(psychedelics IS NOT NULL AND psychedelics != 'never_not_interested') AND (psychedelics_intention IS NULL OR psychedelics_intention = '{}') OR psychedelics_intention && $(psychedelics_intention)`,
         {psychedelics_intention},
       ),
 
     cannabis_intention?.length &&
-      where(
+      fieldWhere(
+        'cannabis',
         `(cannabis IS NOT NULL AND cannabis != 'never_not_interested') AND (cannabis_intention IS NULL OR cannabis_intention = '{}') OR cannabis_intention && $(cannabis_intention)`,
         {cannabis_intention},
       ),
 
     psychedelics_pref?.length &&
-      where(
+      fieldWhere(
+        'psychedelics',
         `psychedelics_pref IS NULL OR psychedelics_pref = '{}' OR psychedelics_pref && $(psychedelics_pref)`,
         {psychedelics_pref},
+        true,
       ),
 
     cannabis_pref?.length &&
-      where(`cannabis_pref IS NULL OR cannabis_pref = '{}' OR cannabis_pref && $(cannabis_pref)`, {
-        cannabis_pref,
-      }),
+      fieldWhere(
+        'cannabis',
+        `cannabis_pref IS NULL OR cannabis_pref = '{}' OR cannabis_pref && $(cannabis_pref)`,
+        {cannabis_pref},
+        true,
+      ),
 
-    geodbCityIds?.length && where(`geodb_city_id = ANY($(geodbCityIds))`, {geodbCityIds}),
+    geodbCityIds?.length &&
+      fieldWhere('location', `geodb_city_id = ANY($(geodbCityIds))`, {geodbCityIds}),
 
     // Equality, not ILIKE: the dropdown offers the stored spellings themselves (get-countries), and
     // `country` is one of the text search fields already, so fuzzy matching lives in `name`.
-    country && where(`profiles.country = $(country)`, {country}),
+    country && fieldWhere('location', `profiles.country = $(country)`, {country}),
 
     // miles par degree of lat: earth's radius (3950 miles) * pi / 180 = 69.0
     filterLocation &&
-      where(
+      fieldWhere(
+        'location',
         `
       city_latitude BETWEEN $(target_lat) - ($(radius) / 69.0)
            AND $(target_lat) + ($(radius) / 69.0)
@@ -1059,7 +1144,8 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
       ),
 
     filterRaisedInLocation &&
-      where(
+      fieldWhere(
+        'raised_in',
         `
       raised_in_lat BETWEEN $(target_lat) - ($(radius) / 69.0)
            AND $(target_lat) + ($(radius) / 69.0)
@@ -1079,9 +1165,16 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
 
     // Deliberately EXISTS rather than `array_length(profile_work.work, 1) > 0`: reading the aggregate
     // joins here would tie this filter to joins that are only there to shape the output.
-    !shortBio && where(`bio_length >= ${MIN_BIO_LENGTH} OR headline IS NOT NULL `),
+    // A bio or headline its owner keeps from members is no bio as far as the grid is concerned: the
+    // card would be empty, which is what this filter exists to keep out.
+    !shortBio &&
+      where(
+        `(bio_length >= ${MIN_BIO_LENGTH} AND ${visibleSql('bio')}) OR (headline IS NOT NULL AND ${visibleSql('headline')})`,
+      ),
 
-    hasPhoto && where("pinned_url IS NOT NULL AND pinned_url != ''"),
+    // About what the card will show, like the bio filter above: a photo kept from members is no photo
+    // to a searcher who asked for profiles with one.
+    hasPhoto && where(`(pinned_url IS NOT NULL AND pinned_url != '') AND ${visibleSql('photos')}`),
 
     lastModificationWithin &&
       where(`last_modification_time >= NOW() - INTERVAL $(lastModificationWithin)`, {
@@ -1120,7 +1213,9 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
     // clause rather than an entry in `hidden_profiles`. Both sides are checked here because a block
     // the other person initiated should take them out of your grid too — otherwise the person who did
     // the blocking keeps seeing the profile of someone who wanted nothing to do with them.
+    // An administrator is the exception: blocks do not take a profile out of what they can read.
     userId &&
+      !isAdminId(userId) &&
       where(
         `NOT EXISTS (
          SELECT 1 FROM private_users pu
@@ -1138,7 +1233,16 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
       : ((await getProfileCols()) ?? 'profiles.*') // stored at module level
   // `users.name` / `users.username` feed `convertRow`, which folds them into the `user` object and
   // then drops the top-level copies — they are not part of the response.
-  let selectCols = `${profileCols}, users.name, users.username, jsonb_build_object(
+  // `visibility` and `field_visibility` are read on every projection, with whether this searcher is
+  // one of the people the member approved, so each row can be redacted for them below.
+  const viewerApprovedSql = userId
+    ? pgp.as.format(
+        `exists (select 1 from profile_access pa
+                 where pa.owner_id = profiles.user_id and pa.viewer_id = $(userId) and pa.status = 'approved')`,
+        {userId},
+      )
+    : 'false'
+  let selectCols = `${profileCols}, profiles.visibility, profiles.field_visibility, ${viewerApprovedSql} as viewer_approved, users.name, users.username, jsonb_build_object(
     'id', users.id,
     'name', users.name,
     'username', users.username,
@@ -1195,7 +1299,25 @@ export const loadProfiles = async (props: profileQueryType, db?: SupabaseDirectC
   )
   // console.debug('query:', query)
 
-  const profiles = await pg.map(query, [], convertRow)
+  const viewerIsAdmin = !!userId && isAdminId(userId)
+  const profiles = (await pg.map(query, [], convertRow)).map((row) => {
+    // Hidden means not sent: each row is cut down to what this searcher may read of it before
+    // anything else looks at it (the bio snippet below is built from the redacted bio).
+    const {viewer_approved, ...profile} = row as typeof row & {viewer_approved?: boolean}
+    const viewer = {
+      // Search is members-only (the endpoint is `authed`), so a call with no `userId` is server code
+      // working on a member's behalf, never a signed-out visitor: it reads as a member, not as the
+      // public.
+      id: userId ?? 'member',
+      isOwner: !!userId && profile.user_id === userId,
+      isAdmin: viewerIsAdmin,
+      isConnected: !!viewer_approved,
+    }
+    const user = canViewerSeePhotos(profile, viewer)
+      ? profile.user
+      : {...profile.user, avatarUrl: ''}
+    return {...redactProfileFor(profile, viewer), user}
+  })
 
   if (projection === 'card') {
     for (const profile of profiles) {

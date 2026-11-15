@@ -21,6 +21,7 @@ import {getNearbyMemberCount, getProfile} from 'shared/profiles/supabase'
 import {getOptionsIdsToLabels} from 'shared/supabase/options'
 import {createUnsubscribeToken, getUnsubscribeUrlOneClick} from 'shared/unsubscribe-tokens'
 
+import {CircleEmail, type CircleEmailKind} from '../circle'
 import {NewEndorsementEmail} from '../new-endorsement'
 import {NewMessageEmail, type NewMessageStage} from '../new-message'
 import {ProposalCommentEmail} from '../proposal-comment'
@@ -216,6 +217,51 @@ export const sendNewEndorsementEmail = async (
         onUser={onUser}
         endorsementText={text}
         unsubscribeUrl={unsubscribeUrl}
+        email={privateUser.email}
+        locale={locale}
+      />,
+    ),
+  })
+}
+
+/**
+ * The email for a circle request (to the owner) or for being added to a circle (to the member).
+ *
+ * These have no preference of their own: they follow the reader's global email opt-out. A request
+ * can only come from someone the reader has already written to, and an addition is something the
+ * reader may have asked for, so neither is unsolicited.
+ */
+export const sendCircleEmail = async (
+  privateUser: PrivateUser,
+  fromUser: User,
+  toUser: User,
+  kind: CircleEmailKind,
+) => {
+  if (!privateUser.email) return
+  if (privateUser.notificationPreferences?.opt_out_all?.includes('email')) return
+
+  const locale = privateUser?.locale
+  const t = createT(locale)
+
+  const subject =
+    kind === 'requested'
+      ? t('email.circle.requested.subject', '{fromUserName} asked to join your circle', {
+          fromUserName: fromUser.name,
+        })
+      : t('email.circle.added.subject', '{fromUserName} added you to their circle', {
+          fromUserName: fromUser.name,
+        })
+
+  return await sendEmail({
+    from: fromEmail,
+    subject,
+    to: privateUser.email,
+    html: await render(
+      <CircleEmail
+        kind={kind}
+        fromUser={fromUser}
+        toUser={toUser}
+        unsubscribeUrl={UNSUBSCRIBE_URL}
         email={privateUser.email}
         locale={locale}
       />,

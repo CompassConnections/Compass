@@ -1,12 +1,13 @@
 import {APIHandler} from 'api/helpers/endpoint'
 import {
   DEFAULT_FEED_LIMIT,
+  FEED_FIELDS,
   FeedItem,
-  FeedVisibility,
   MAX_FEED_BIO_CHARS,
   truncateAtWord,
 } from 'common/feed/feed'
 import {normalizeCountry} from 'common/geodb'
+import {effectiveAudience, type ProfileFieldKey} from 'common/profiles/visibility'
 import {compact} from 'lodash'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
 
@@ -20,16 +21,30 @@ type FeedQueryRow = {
   gender: string | null
   keywords: string[] | null
   bio_text: string | null
-  feed_visibility: FeedVisibility
+  visibility: string
+  field_visibility: unknown
 }
 
 /**
- * Newest public profiles, for the RSS feed at /feed.xml (and, later, an ActivityPub outbox built on the
- * same rows).
+ * Whether one field of the row is public: its own entry in `field_visibility` when it has one, the
+ * profile-wide `visibility` otherwise. The SQL twin of `effectiveAudience(...) === 'public'`; the key
+ * is one of our own constants, never input.
+ */
+const publicSql = (field: ProfileFieldKey) =>
+  `coalesce(profiles.field_visibility ->> '${field}', profiles.visibility::text) = 'public'`
+
+/**
+ * Newest profiles with something public to show, for the RSS feed at /feed.xml (and, later, an
+ * ActivityPub outbox built on the same rows).
  *
- * The projection happens here rather than in the renderer on purpose: the response for a `basic` member
- * simply does not contain their bio or keywords, so no downstream consumer can leak a field by
- * forgetting to check the level.
+ * There is no separate feed setting any more (docs/feed.md): the feed carries exactly the fields a
+ * member shows to everyone, and never photos. A profile appears when at least one of the fields the
+ * feed can carry is public — so a public profile is in it, a members-only profile is not, and a
+ * members-only profile whose owner made the headline public appears with its headline alone.
+ *
+ * The projection happens here rather than in the renderer on purpose: the response simply does not
+ * contain a field its owner shows to fewer people, so no downstream consumer can leak one by
+ * forgetting to check.
  */
 export const getProfileFeed: APIHandler<'get-profile-feed'> = async ({country, limit}) => {
   const pg = createSupabaseDirectClient()
@@ -44,16 +59,18 @@ export const getProfileFeed: APIHandler<'get-profile-feed'> = async ({country, l
             profiles.gender,
             profiles.keywords,
             profiles.bio_text,
-            profiles.feed_visibility
+            profiles.visibility,
+            profiles.field_visibility
      from profiles
               join users on users.id = profiles.user_id
-     where profiles.visibility = 'public'
-       and profiles.feed_visibility <> 'none'
+     where (${FEED_FIELDS.map(publicSql).join(' or ')})
        and profiles.disabled != true
        and profiles.looking_for_matches = true
        and not users.is_banned_from_posting
        and (users.data ->> 'userDeleted' is null or users.data ->> 'userDeleted' != 'true')
-       and ($(country) is null or lower(profiles.country) = lower($(country)))
+       -- Filtering by country reads the location, so it only matches where the location is public.
+       and ($(country) is null
+         or (lower(profiles.country) = lower($(country)) and ${publicSql('location')}))
      order by profiles.created_time desc
      limit $(limit)`,
     {country: normalizeCountry(country) ?? null, limit: limit ?? DEFAULT_FEED_LIMIT},
@@ -63,24 +80,22 @@ export const getProfileFeed: APIHandler<'get-profile-feed'> = async ({country, l
 }
 
 function toFeedItem(row: FeedQueryRow): FeedItem {
-  const location = compact([row.city, row.country]).join(', ')
+  const isPublic = (field: ProfileFieldKey) => effectiveAudience(row, field) === 'public'
+  const location = isPublic('location') ? compact([row.city, row.country]).join(', ') : ''
 
-  const item: FeedItem = {
+  return {
     username: row.username,
     name: row.name,
     createdTime: new Date(row.created_time).toISOString(),
-    headline: row.headline ?? undefined,
+    headline: (isPublic('headline') && row.headline) || undefined,
     location: location || undefined,
-    keywords: row.keywords?.length ? row.keywords : undefined,
-  }
-
-  if (row.feed_visibility !== 'full') return item
-
-  return {
-    ...item,
-    gender: row.gender ?? undefined,
+    keywords: isPublic('keywords') && row.keywords?.length ? row.keywords : undefined,
+    gender: (isPublic('gender') && row.gender) || undefined,
     // `bio_text` is the plain-text projection of the rich-text `bio`, maintained by
     // trg_profiles_rebuild_search — so the excerpt never carries markup into the feed.
-    bioExcerpt: row.bio_text ? truncateAtWord(row.bio_text, MAX_FEED_BIO_CHARS) : undefined,
+    bioExcerpt:
+      isPublic('bio') && row.bio_text
+        ? truncateAtWord(row.bio_text, MAX_FEED_BIO_CHARS)
+        : undefined,
   }
 }

@@ -15,7 +15,7 @@ import {createSupabaseDirectClient} from 'shared/supabase/init'
 export const getProfileAnswers: APIHandler<'get-profile-answers'> = async (props, auth) => {
   const {userId} = props
 
-  if (!(await canReadProfileContent(auth.uid, userId))) {
+  if (!(await canReadProfileContent(auth.uid, userId, 'answers'))) {
     return {status: 'success', answers: []}
   }
 

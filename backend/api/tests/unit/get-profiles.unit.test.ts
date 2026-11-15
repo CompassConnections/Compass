@@ -110,6 +110,7 @@ describe('loadProfiles', () => {
     mockPg = {
       map: jest.fn().mockResolvedValue([]),
       one: jest.fn().mockResolvedValue(0),
+      oneOrNone: jest.fn().mockResolvedValue(null),
     }
 
     jest.spyOn(supabaseInit, 'createSupabaseDirectClient').mockReturnValue(mockPg)
@@ -474,7 +475,12 @@ describe('loadProfiles', () => {
 
         const results = await profilesModule.loadProfiles(props)
 
-        expect(results).toEqual({profiles: mockProfiles, count: 1})
+        // Each row is rebuilt as the searcher may read it (per-field visibility), so the card's bio
+        // snippet is on the copy rather than written back onto the row from the database.
+        expect(results).toEqual({
+          profiles: mockProfiles.map((profile) => ({...profile, bio_snippet: ''})),
+          count: 1,
+        })
       })
     })
   })
@@ -711,5 +717,92 @@ describe('loadProfiles', () => {
         'coalesce(cs.score_low, cs.score, -1) DESC, coalesce(cs.score, -1) DESC, profiles.created_time DESC',
       )
     })
+  })
+})
+
+describe('loadProfiles and per-field visibility', () => {
+  let mockPg: any
+  const queryOf = () => mockPg.map.mock.calls[0][0] as string
+  const hiddenTest = (field: string) =>
+    `coalesce(profiles.field_visibility ->> '${field}', 'member') in ('public', 'member')`
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+    mockPg = {
+      map: jest.fn().mockResolvedValue([]),
+      one: jest.fn().mockResolvedValue(0),
+      oneOrNone: jest.fn().mockResolvedValue(null),
+    }
+    jest.spyOn(supabaseInit, 'createSupabaseDirectClient').mockReturnValue(mockPg)
+    jest.spyOn(profilesModule, 'getProfileCols').mockResolvedValue(null)
+  })
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
+  it('leaves a profile out of a filter on a field its owner keeps from members', async () => {
+    await profilesModule.loadProfiles({userId: 'searcher', political_beliefs: ['green']})
+    const query = queryOf()
+    expect(query).toContain('political_beliefs &&')
+    expect(query).toContain(`) AND ${hiddenTest('political_beliefs')}`)
+  })
+
+  it('lets a hidden field through a filter that lets a blank one through', async () => {
+    await profilesModule.loadProfiles({userId: 'searcher', pref_gender: ['female']})
+    expect(queryOf()).toContain(`OR NOT (${hiddenTest('pref_gender')})`)
+  })
+
+  it('counts a keyword match only on fields members can see', async () => {
+    await profilesModule.loadProfiles({userId: 'searcher', name: 'chess'})
+    const query = queryOf()
+    expect(query).toContain(`AND ${hiddenTest('headline')}`)
+    expect(query).toContain(`AND ${hiddenTest('interests')}`)
+    expect(query).toContain(`AND ${hiddenTest('accessibility_notes')}`)
+  })
+
+  it('judges "has a photo" by what the card will show', async () => {
+    await profilesModule.loadProfiles({userId: 'searcher', hasPhoto: true})
+    expect(queryOf()).toContain(`AND ${hiddenTest('photos')}`)
+  })
+
+  it('lets a searcher filter on a field they hide themselves', async () => {
+    // No reciprocity: what the searcher shows of their own profile does not limit their filters.
+    await profilesModule.loadProfiles({userId: 'searcher', political_beliefs: ['green']})
+    expect(queryOf()).toContain('political_beliefs &&')
+    expect(mockPg.oneOrNone).not.toHaveBeenCalled()
+  })
+
+  it('redacts each row for the searcher, using whether they were approved', async () => {
+    const row = (viewer_approved: boolean) => ({
+      user_id: 'someone',
+      visibility: 'public',
+      field_visibility: {neurotype: 'connected', photos: 'connected', diet: 'only_me'},
+      neurotype: ['adhd'],
+      diet: ['vegan'],
+      pinned_url: 'https://example.com/a.jpg',
+      headline: 'Hello',
+      viewer_approved,
+      user: {id: 'someone', name: 'Some One', avatarUrl: 'https://example.com/a.jpg'},
+    })
+    mockPg.map.mockResolvedValue([row(false), row(true)])
+
+    const {profiles} = await profilesModule.loadProfiles({userId: 'searcher'})
+    const [stranger, approved] = profiles as any[]
+
+    expect(stranger.headline).toBe('Hello')
+    expect(stranger.neurotype).toBeNull()
+    expect(stranger.pinned_url).toBeNull()
+    expect(stranger.user.avatarUrl).toBe('')
+    expect(stranger.shares_more).toBe(true)
+
+    expect(approved.neurotype).toEqual(['adhd'])
+    expect(approved.pinned_url).toBe('https://example.com/a.jpg')
+    expect(approved.user.avatarUrl).toBe('https://example.com/a.jpg')
+    expect(approved.diet).toBeNull()
+
+    for (const profile of [stranger, approved]) {
+      expect(profile).not.toHaveProperty('viewer_approved')
+      expect(profile).not.toHaveProperty('field_visibility')
+    }
   })
 })

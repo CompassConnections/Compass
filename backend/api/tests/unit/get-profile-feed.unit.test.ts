@@ -14,7 +14,8 @@ const row = (overrides: Record<string, any> = {}) => ({
   gender: 'male',
   keywords: ['photography', 'poetry'],
   bio_text: 'Describing is always a tedious task.',
-  feed_visibility: 'basic',
+  visibility: 'public',
+  field_visibility: {},
   ...overrides,
 })
 
@@ -32,19 +33,26 @@ describe('getProfileFeed', () => {
     (await getProfileFeed(props, undefined as any, {} as any)) as {items: FeedItem[]}
 
   describe('the query', () => {
-    it('only ever reads public, syndicatable, listable profiles', async () => {
+    it('only ever reads listable profiles with something public to show', async () => {
       await call()
       const [query] = mockPg.any.mock.calls[0]
 
-      expect(query).toContain("profiles.visibility = 'public'")
-      expect(query).toContain("profiles.feed_visibility <> 'none'")
+      // A profile is in the feed when at least one field the feed can carry is public — by the
+      // field's own choice, else by the profile-wide default.
+      for (const field of ['headline', 'location', 'keywords', 'gender', 'bio']) {
+        expect(query).toContain(
+          `coalesce(profiles.field_visibility ->> '${field}', profiles.visibility::text) = 'public'`,
+        )
+      }
+      // The retired feed setting is not consulted.
+      expect(query).not.toContain('feed_visibility')
       expect(query).toContain('profiles.disabled != true')
       expect(query).toContain('profiles.looking_for_matches = true')
       expect(query).toContain('not users.is_banned_from_posting')
       expect(query).toContain("users.data ->> 'userDeleted'")
     })
 
-    it('never selects photos, whatever the level', async () => {
+    it('never selects photos, whatever is public', async () => {
       await call()
       const [query] = mockPg.any.mock.calls[0]
       expect(query).not.toContain('photo_urls')
@@ -54,6 +62,10 @@ describe('getProfileFeed', () => {
     it('filters by country case-insensitively, and not at all when none is given', async () => {
       await call({country: 'italy'})
       expect(mockPg.any.mock.calls[0][0]).toContain('lower(profiles.country) = lower($(country))')
+      // And only where the location itself is public: the filter would otherwise reveal it.
+      expect(mockPg.any.mock.calls[0][0]).toMatch(
+        /lower\(profiles\.country\) = lower\(\$\(country\)\) and coalesce\(profiles\.field_visibility ->> 'location'/,
+      )
       expect(mockPg.any.mock.calls[0][1].country).toBe('italy')
 
       await call()
@@ -69,7 +81,7 @@ describe('getProfileFeed', () => {
   })
 
   describe('the projection', () => {
-    it('sends only name, location, headline, keywords and link for a basic member', async () => {
+    it('sends every field the feed can carry for a fully public profile', async () => {
       mockPg.any.mockResolvedValue([row()])
       const {items} = await call()
 
@@ -80,9 +92,36 @@ describe('getProfileFeed', () => {
         headline: 'Lazy Hacker',
         location: 'Rome, Italy',
         keywords: ['photography', 'poetry'],
+        gender: 'male',
+        bioExcerpt: 'Describing is always a tedious task.',
       })
+    })
+
+    it('leaves out a field its owner shows to fewer people', async () => {
+      mockPg.any.mockResolvedValue([
+        row({field_visibility: {bio: 'member', gender: 'only_me', location: 'connected'}}),
+      ])
+      const {items} = await call()
+
+      expect(items[0].headline).toBe('Lazy Hacker')
+      expect(items[0].keywords).toEqual(['photography', 'poetry'])
       expect(items[0].bioExcerpt).toBeUndefined()
       expect(items[0].gender).toBeUndefined()
+      expect(items[0].location).toBeUndefined()
+    })
+
+    it('carries only the public field of a members-only profile', async () => {
+      mockPg.any.mockResolvedValue([
+        row({visibility: 'member', field_visibility: {headline: 'public'}}),
+      ])
+      const {items} = await call()
+
+      expect(items[0]).toEqual({
+        username: 'martin',
+        name: 'Martin',
+        createdTime: '2026-08-05T09:54:00.000Z',
+        headline: 'Lazy Hacker',
+      })
     })
 
     it('omits keywords rather than sending an empty list', async () => {
@@ -91,17 +130,8 @@ describe('getProfileFeed', () => {
       expect(items[0].keywords).toBeUndefined()
     })
 
-    it('adds gender and a bio excerpt for a full member', async () => {
-      mockPg.any.mockResolvedValue([row({feed_visibility: 'full'})])
-      const {items} = await call()
-
-      expect(items[0].gender).toBe('male')
-      expect(items[0].keywords).toEqual(['photography', 'poetry'])
-      expect(items[0].bioExcerpt).toBe('Describing is always a tedious task.')
-    })
-
     it('truncates a long bio rather than republishing the whole thing', async () => {
-      mockPg.any.mockResolvedValue([row({feed_visibility: 'full', bio_text: 'word '.repeat(500)})])
+      mockPg.any.mockResolvedValue([row({bio_text: 'word '.repeat(500)})])
       const {items} = await call()
 
       expect(items[0].bioExcerpt!.length).toBeLessThanOrEqual(MAX_FEED_BIO_CHARS + 1)

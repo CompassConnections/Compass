@@ -1,6 +1,11 @@
 import {flip, offset, shift, useFloating} from '@floating-ui/react'
 import {Popover, PopoverButton, PopoverPanel, Transition} from '@headlessui/react'
-import {ChevronDownIcon, ChevronUpIcon, EllipsisHorizontalIcon} from '@heroicons/react/24/solid'
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+  EllipsisHorizontalIcon,
+} from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import {toKey} from 'common/parsing'
 import {Fragment, ReactNode} from 'react'
@@ -12,7 +17,15 @@ export type DropdownItem = {
   name: string
   icon?: ReactNode
   onClick: () => void | Promise<void>
+  /**
+   * Makes this item open a second menu beside the first instead of acting itself (its own `onClick`
+   * is then not called). One level only. Picking a sub-item closes both menus.
+   */
+  subItems?: DropdownItem[]
 }
+
+const ITEM_CLASS = 'text-ink-700 flex w-full gap-2 px-4 py-2 text-left text-sm rounded-md'
+const ITEM_HOVER_CLASS = 'hover:bg-canvas-25 hover:text-ink-900'
 
 export default function DropdownMenu(props: {
   items: DropdownItem[]
@@ -77,28 +90,97 @@ export default function DropdownMenu(props: {
                 'py-1',
               )}
             >
-              {items.map((item) => (
-                <button
-                  key={item.name}
-                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                    e.stopPropagation()
-                    e.preventDefault()
-                    item.onClick()
-                    if (closeOnClick) close()
-                  }}
-                  className={clsx(
-                    selectedItemName && item.name === selectedItemName
-                      ? 'bg-primary-100'
-                      : 'hover:bg-canvas-25 hover:text-ink-900',
-                    'text-ink-700 flex w-full gap-2 px-4 py-2 text-left text-sm rounded-md',
-                  )}
-                >
-                  {item.icon && <div className="w-5">{item.icon}</div>}
-                  {item.name}
-                </button>
-              ))}
+              {items.map((item) =>
+                item.subItems ? (
+                  <SubMenu key={item.name} item={item} closeParent={close} />
+                ) : (
+                  <button
+                    key={item.name}
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                      e.stopPropagation()
+                      e.preventDefault()
+                      item.onClick()
+                      if (closeOnClick) close()
+                    }}
+                    className={clsx(
+                      selectedItemName && item.name === selectedItemName
+                        ? 'bg-primary-100'
+                        : 'hover:bg-canvas-25 hover:text-ink-900',
+                      'text-ink-700 flex w-full gap-2 px-4 py-2 text-left text-sm rounded-md',
+                    )}
+                  >
+                    {item.icon && <div className="w-5">{item.icon}</div>}
+                    {item.name}
+                  </button>
+                ),
+              )}
             </PopoverPanel>
           </AnimationOrNothing>
+        </>
+      )}
+    </Popover>
+  )
+}
+
+/**
+ * A menu item that opens a second menu. A nested Popover, so the first menu stays open behind it and
+ * Escape or a click outside closes them in order. It opens to the left of the item — these menus hang
+ * off the right edge of a toolbar — and flips or shifts to stay on screen, which on a phone puts it
+ * over the first menu rather than off the side.
+ */
+function SubMenu(props: {item: DropdownItem; closeParent: () => void}) {
+  const {item, closeParent} = props
+  const {refs, floatingStyles} = useFloating({
+    placement: 'left-start',
+    // Beside the item where there is room for it; under it otherwise. On a phone neither side has
+    // room (the first menu is most of the screen's width), and without the fallback the panel
+    // opened off the left edge.
+    middleware: [
+      offset(4),
+      flip({fallbackPlacements: ['bottom-end', 'bottom-start'], padding: 8}),
+      shift({padding: 8}),
+    ],
+  })
+  return (
+    <Popover className="relative">
+      {({open}) => (
+        <>
+          <PopoverButton
+            ref={refs.setReference}
+            aria-haspopup="menu"
+            // `items-center`: the icon, the label and the chevron are three different heights.
+            className={clsx(
+              ITEM_CLASS,
+              'items-center',
+              open ? 'bg-canvas-25 text-ink-900' : ITEM_HOVER_CLASS,
+            )}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
+          >
+            {item.icon && <div className="flex w-5 items-center">{item.icon}</div>}
+            <span className="flex-1">{item.name}</span>
+            <ChevronRightIcon className="text-ink-500 h-4 w-4 shrink-0" aria-hidden />
+          </PopoverButton>
+          <PopoverPanel
+            ref={refs.setFloating}
+            style={floatingStyles}
+            className="bg-canvas-50 ring-ink-1000 z-40 w-56 rounded-md py-1 shadow-lg ring-1 ring-opacity-5 focus:outline-none"
+          >
+            {item.subItems!.map((sub) => (
+              <button
+                key={sub.name}
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  sub.onClick()
+                  closeParent()
+                }}
+                className={clsx(ITEM_CLASS, ITEM_HOVER_CLASS)}
+              >
+                {sub.icon && <div className="w-5">{sub.icon}</div>}
+                {sub.name}
+              </button>
+            ))}
+          </PopoverPanel>
         </>
       )}
     </Popover>

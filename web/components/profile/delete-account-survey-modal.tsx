@@ -15,6 +15,7 @@ import {
   toTestimonialProps,
 } from '../testimonials/testimonial-form'
 import {Title} from '../widgets/title'
+import {PauseInsteadOfDelete} from './pause-instead-of-delete'
 import {shouldShowStayPitch, StayInsteadOfDelete} from './stay-instead-of-delete'
 import {
   canDeleteWithTestimonialPrompt,
@@ -225,6 +226,13 @@ export function DeleteAccountSurveyModal() {
                 optedOut={testimonialOptedOut}
                 setOptedOut={setTestimonialOptedOut}
               />
+            </div>
+          )}
+
+          {/* Once a reason is given, whatever it is: the way to step back without losing anything. */}
+          {selectedReason && (
+            <div className="mt-4">
+              <PauseInsteadOfDelete />
             </div>
           )}
 

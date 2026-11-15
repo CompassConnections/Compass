@@ -4,8 +4,6 @@ import {ImportanceTuple} from 'web/components/answers/answer-compatibility-quest
 
 import {Compatibility, Socials} from '../utils/accountInformation'
 
-type ProfileDropdownOptions = 'Public' | 'Private' | 'Disable'
-
 export class ProfilePage {
   private readonly startAnsweringButton: Locator
   private readonly doThisLaterLink: Locator
@@ -13,9 +11,6 @@ export class ProfilePage {
   private readonly shareButton: Locator
   private readonly editProfileButton: Locator
   private readonly profileOptionsDropdown: Locator
-  private readonly listProfilePubliclyDropdownOption: Locator
-  private readonly limitProfileToMembersDropdownOption: Locator
-  private readonly disableProfileDropdownOption: Locator
   private readonly displayNameAndAgeSection: Locator
   private readonly genderLocationHightInInchesSection: Locator
   private readonly heightSection: Locator
@@ -70,11 +65,6 @@ export class ProfilePage {
     this.shareButton = page.getByRole('button', {name: 'Share'})
     this.editProfileButton = page.getByTestId('profile-edit')
     this.profileOptionsDropdown = page.getByTestId('profile-options')
-    this.listProfilePubliclyDropdownOption = page.getByText('List Profile Publicly', {exact: true})
-    this.limitProfileToMembersDropdownOption = page.getByText('Limit to Members Only', {
-      exact: true,
-    })
-    this.disableProfileDropdownOption = page.getByText('Disable profile', {exact: true})
     this.headlineSection = page.getByTestId('profile-headline')
     this.keywordsSection = page.getByTestId('profile-keywords')
     this.displayNameAndAgeSection = page.getByTestId('profile-display-name-age')
@@ -312,22 +302,6 @@ export class ProfilePage {
   async clickViewQuestionListButton() {
     await expect(this.viewQuestionListButton).toBeVisible()
     await this.viewQuestionListButton.click()
-  }
-
-  async selectOptionFromProfileDropdown(option: ProfileDropdownOptions) {
-    await expect(this.profileOptionsDropdown).toBeVisible()
-    await this.profileOptionsDropdown.click()
-
-    if (option === 'Public') {
-      await expect(this.listProfilePubliclyDropdownOption).toBeVisible()
-      await this.listProfilePubliclyDropdownOption.click()
-    } else if (option === 'Disable') {
-      await expect(this.disableProfileDropdownOption).toBeVisible()
-      await this.disableProfileDropdownOption.click()
-    } else if (option === 'Private') {
-      await expect(this.limitProfileToMembersDropdownOption).toBeVisible()
-      await this.limitProfileToMembersDropdownOption.click()
-    }
   }
 
   async verifyDisplayName(displayName?: string) {

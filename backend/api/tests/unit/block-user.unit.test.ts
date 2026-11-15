@@ -8,6 +8,8 @@ import * as supabaseInit from 'shared/supabase/init'
 import * as supabaseUsers from 'shared/supabase/users'
 import * as supabaseUtils from 'shared/supabase/utils'
 
+const mockTxNone = jest.fn()
+
 describe('blockUser', () => {
   let mockPg: any
 
@@ -15,7 +17,8 @@ describe('blockUser', () => {
     jest.resetAllMocks()
     mockPg = {
       tx: jest.fn(async (cb) => {
-        const mockTx = {}
+        // `none` is the delete that ends any profile approval between the two members.
+        const mockTx = {none: mockTxNone}
         await cb(mockTx)
       }),
     }
@@ -34,6 +37,10 @@ describe('blockUser', () => {
       await blockUserModule.blockUser(mockParams, mockAuth, mockReq)
 
       expect(mockPg.tx).toHaveBeenCalledTimes(1)
+      expect(mockTxNone).toHaveBeenCalledWith(
+        expect.stringContaining('delete from profile_access'),
+        [mockAuth.uid, mockParams.id],
+      )
       expect(supabaseUsers.updatePrivateUser).toBeCalledTimes(2)
       expect(supabaseUsers.updatePrivateUser).toHaveBeenNthCalledWith(
         1,
@@ -69,7 +76,8 @@ describe('unblockUser', () => {
     jest.resetAllMocks()
     mockPg = {
       tx: jest.fn(async (cb) => {
-        const mockTx = {}
+        // `none` is the delete that ends any profile approval between the two members.
+        const mockTx = {none: mockTxNone}
         await cb(mockTx)
       }),
     }
@@ -88,6 +96,8 @@ describe('unblockUser', () => {
       await blockUserModule.unblockUser(mockParams, mockAuth, mockReq)
 
       expect(mockPg.tx).toHaveBeenCalledTimes(1)
+      // Unblocking gives nothing back: the approvals a block deleted stay deleted.
+      expect(mockTxNone).not.toHaveBeenCalled()
       expect(supabaseUsers.updatePrivateUser).toBeCalledTimes(2)
       expect(supabaseUsers.updatePrivateUser).toHaveBeenNthCalledWith(
         1,

@@ -1,29 +1,25 @@
-import {
-  EllipsisHorizontalIcon,
-  EyeIcon,
-  LockClosedIcon,
-  PencilIcon,
-} from '@heroicons/react/24/outline'
-import {feedVisibilityForMembersOnly} from 'common/feed/feed'
+import {EllipsisHorizontalIcon, EyeIcon, PencilIcon} from '@heroicons/react/24/outline'
 import {Profile} from 'common/profiles/profile'
 import {User} from 'common/user'
-import {removeUndefinedProps} from 'common/util/object'
 import Router from 'next/router'
 import React from 'react'
-import toast from 'react-hot-toast'
 import {MoreOptionsUserButton} from 'web/components/buttons/more-options-user-button'
 import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Row} from 'web/components/layout/row'
 import {SendMessageButton} from 'web/components/messaging/send-message-button'
 import {ViewProfileCardButton} from 'web/components/photos-modal'
+import {AUDIENCE_ICONS} from 'web/components/profile/audience-chip'
+import {
+  useViewAsControl,
+  useViewAsNames,
+  VIEW_AS_AUDIENCES,
+} from 'web/components/profile/profile-access'
 import {StarButton} from 'web/components/widgets/star-button'
 import {Tooltip} from 'web/components/widgets/tooltip'
 import {useAdmin} from 'web/hooks/use-admin'
 import {useUser} from 'web/hooks/use-user'
-import {updateProfile} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 import {track} from 'web/lib/service/analytics'
-import {disableProfile} from 'web/lib/util/disable'
 
 import {ShareProfileButton} from '../widgets/share-profile-button'
 
@@ -44,14 +40,14 @@ export function ProfileHeaderActions(props: {
     starredUserIds,
     refreshStars,
     showMessageButton,
-    refreshProfile,
     isProfileVisible = true,
   } = props
   const currentUser = useUser()
   const isAdmin = useAdmin()
   const isCurrentUser = currentUser?.id === user.id
-  const disabled = profile.disabled
   const t = useT()
+  const viewAsControl = useViewAsControl()
+  const viewAsNames = useViewAsNames()
 
   let tooltipText = undefined
   if (!profile.allow_direct_messaging) {
@@ -91,9 +87,14 @@ export function ProfileHeaderActions(props: {
               track('editprofile', {userId: user.id})
               Router.push('profile')
             }}
-            className="border-canvas-300 flex items-center gap-1.5 rounded-lg border px-2 py-2 text-sm text-primary-700 transition-colors hover:border-primary-400 hover:bg-primary-50"
+            // Same shape as Card and Share beside it: the word at every width, the icon joining it
+            // from `sm` up. On a phone three short words fit where three icons plus three words do
+            // not, and the words are the unambiguous half — a pencil is guessable, a "card" icon is
+            // not.
+            className="border-canvas-300 text-ink-500 flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors hover:border-primary-400 hover:bg-primary-50"
           >
-            <PencilIcon className="h-4 w-4 text-ink-500" />
+            <PencilIcon className="hidden h-3.5 w-3.5 sm:block" aria-hidden="true" />
+            {t('profile.header.edit', 'Edit')}
           </button>
         </Tooltip>
 
@@ -110,78 +111,33 @@ export function ProfileHeaderActions(props: {
               </button>
             }
             items={[
-              {
-                name:
-                  profile.visibility === 'member'
-                    ? t('profile.header.menu.list_public', 'List Profile Publicly')
-                    : t('profile.header.menu.limit_members', 'Limit to Members Only'),
-                icon:
-                  profile.visibility === 'member' ? (
-                    <EyeIcon className="h-4 w-4" />
-                  ) : (
-                    <LockClosedIcon className="h-4 w-4" />
-                  ),
-                onClick: async () => {
-                  const visibility = profile.visibility === 'member' ? 'public' : 'member'
-                  // Limiting the profile to members also switches the feed off, unless a level was
-                  // deliberately chosen — see feedVisibilityForMembersOnly.
-                  const feedVisibility =
-                    visibility === 'member'
-                      ? feedVisibilityForMembersOnly(profile.feed_visibility)
-                      : undefined
-                  toast
-                    .promise(
-                      updateProfile(
-                        removeUndefinedProps({visibility, feed_visibility: feedVisibility}),
-                      ),
-                      {
-                        loading: 'Loading...',
-                        success: 'Success!',
-                        error:
-                          'Failed to update profile visibility. Try again later or contact support.',
-                      },
-                    )
-                    .then(() => {
-                      refreshProfile()
-                    })
-                    .catch(() => {
-                      // noop
-                    })
-                },
-              },
-              {
-                name: disabled
-                  ? t('profile.header.menu.enable_profile', 'Enable profile')
-                  : t('profile.header.menu.disable_profile', 'Disable profile'),
-                icon: null,
-                onClick: async () => {
-                  const confirmed = true
-                  if (confirmed) {
-                    toast
-                      .promise(disableProfile(!disabled), {
-                        loading: disabled
-                          ? t('profile.header.toast.enabling', 'Enabling profile...')
-                          : t('profile.header.toast.disabling', 'Disabling profile...'),
-                        success: () => {
-                          return disabled
-                            ? t('profile.header.toast.enabled', 'Profile enabled')
-                            : t('profile.header.toast.disabled', 'Profile disabled')
-                        },
-                        error: () => {
-                          return disabled
-                            ? t('profile.header.toast.failed_enable', 'Failed to enable profile')
-                            : t('profile.header.toast.failed_disable', 'Failed to disable profile')
-                        },
-                      })
-                      .then(() => {
-                        refreshProfile()
-                      })
-                      .catch(() => {
-                        // noop
-                      })
-                  }
-                },
-              },
+              // "View as" (docs/profile-visibility.md): this page as a visitor, a member or someone
+              // you approved receives it. Only where the page offers it — the profile page does, an
+              // embedded profile does not. Switching the whole profile between public and
+              // members-only used to be the first item here; it lives in the profile form now, next
+              // to the per-field choices it is the default for.
+              ...(viewAsControl
+                ? [
+                    {
+                      name: t('profile.header.menu.view_as', 'View as'),
+                      icon: <EyeIcon className="h-4 w-4" aria-hidden />,
+                      onClick: () => {},
+                      // One item, which opens a second menu with the three audiences.
+                      subItems: VIEW_AS_AUDIENCES.map((audience) => {
+                        const Icon = AUDIENCE_ICONS[audience]
+                        return {
+                          name: viewAsNames[audience],
+                          icon: <Icon className="h-4 w-4" aria-hidden />,
+                          onClick: () => viewAsControl.setViewAs(audience),
+                        }
+                      }),
+                    },
+                  ]
+                : []),
+              // Pausing the profile used to be the last item here. It moved to Settings (the row above
+              // the Danger Zone) and into the delete-account dialog: next to Share and Edit it was one
+              // click from taking yourself out of search by accident. A paused profile says so at
+              // the top of its own page, with the button to resume.
             ]}
           />
         </Tooltip>

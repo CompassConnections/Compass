@@ -2,6 +2,7 @@ import {ArrowsPointingOutIcon, LockClosedIcon} from '@heroicons/react/24/outline
 import clsx from 'clsx'
 import {debug} from 'common/logger'
 import {Profile} from 'common/profiles/profile'
+import {isIdentityOnlyProfile} from 'common/profiles/visibility'
 import {UserActivity} from 'common/user'
 import Link from 'next/link'
 import React, {ReactNode, useEffect, useRef, useState} from 'react'
@@ -41,7 +42,7 @@ import {useMinWidth} from 'web/hooks/use-min-width'
 import {useCompatibilityQuestionGroups} from 'web/hooks/use-questions'
 import {useScrolledPast} from 'web/hooks/use-scrolled-past'
 import {useStickyRail} from 'web/hooks/use-sticky-rail'
-import {useUser} from 'web/hooks/use-user'
+import {useUser, useViewAs} from 'web/hooks/use-user'
 import {useUserActivity} from 'web/hooks/use-user-activity'
 import {User} from 'web/lib/firebase/users'
 import {useT} from 'web/lib/locale'
@@ -106,7 +107,9 @@ export function ProfileInfo(props: {
   // Members-only profiles are the default here (see `profiles.visibility`), and the gate is enforced
   // on the server: what arrives for a signed-out visitor is a display name and nothing else. This
   // flag decides what to *draw*, not what to hide — see common/profiles/visibility.
-  const isProfileVisible = currentUser || profile.visibility === 'public'
+  // The gate is read off the row's shape, not off `visibility`: a members-only profile whose owner
+  // made some fields public arrives with those fields, and is drawn (docs/profile-visibility.md).
+  const isProfileVisible = currentUser || !isIdentityOnlyProfile(profile)
 
   // Not asked for when the profile is gated: "last online" is still something about the person, and
   // a request in the network tab is a request whether or not anything renders from it.
@@ -247,6 +250,7 @@ export function ProfileInfo(props: {
               simpleView={!!fromProfilePage}
               isHiddenFromMe={isHiddenFromMe}
               locked={!isProfileVisible}
+              refreshProfile={refreshProfile}
             />
           </div>
         </div>
@@ -667,7 +671,11 @@ function ProfileContent(props: {
       : undefined
   const heroShowsAllPhotos = useMinWidth(HERO_GALLERY_MIN_WIDTH_PX)
   const {answeredQuestions} = useCompatibilityQuestionGroups(user.id)
-  const showCompatibilityPrompts = currentUser && (isCurrentUser || answeredQuestions.length > 0)
+  // In a "view as" preview the answers and endorsements are still fetched with the owner's own
+  // session, so the two sections are left out here when the previewed audience would not get them.
+  const viewAs = useViewAs()
+  const showCompatibilityPrompts =
+    currentUser && !viewAs?.hidden.has('answers') && (isCurrentUser || answeredQuestions.length > 0)
 
   return (
     <>
@@ -693,7 +701,9 @@ function ProfileContent(props: {
         <Col className={clsx('min-w-0 gap-14', layout.bio)}>
           {/* The number most readers come for, ahead of the prose it summarises. Renders nothing on
               your own profile or signed out. */}
-          {!isCurrentUser && <CompatibilityOverview profile={profile} />}
+          {/* Not in a "view as" preview either: the score is between two members, and the stand-in
+              reader is not one. */}
+          {!isCurrentUser && !viewAs && <CompatibilityOverview profile={profile} />}
 
           {profile.bio && (
             <Section title={t('profile.bio.about_me', 'About Me')}>
@@ -764,14 +774,16 @@ function ProfileContent(props: {
             <Col className="min-w-0 gap-8">
               {/* No wrapper surface: the section supplies its own — a dashed invitation while empty, the
                   endorsements themselves once there are any. A box around either just doubles the border. */}
-              <Section title={t('profile.comments.section_title', 'Endorsements')}>
-                <ProfileCommentSection
-                  onUser={user}
-                  profile={profile}
-                  currentUser={currentUser}
-                  simpleView={!!fromProfilePage}
-                />
-              </Section>
+              {!viewAs?.hidden.has('endorsements') && (
+                <Section title={t('profile.comments.section_title', 'Endorsements')}>
+                  <ProfileCommentSection
+                    onUser={user}
+                    profile={profile}
+                    currentUser={currentUser}
+                    simpleView={!!fromProfilePage}
+                  />
+                </Section>
+              )}
 
               {/* Renders its own sections — reaching out and signalling interest privately are two
                   separate things to do, and each gets the same heading as everything else here. */}

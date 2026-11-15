@@ -26,7 +26,7 @@ test.describe('editing a profile', () => {
     expect(profile.keywords).toEqual(expect.arrayContaining([expect.any(String)]))
   })
 
-  test('disabling it takes it out of search', async ({
+  test('pausing it takes it out of search', async ({
     app,
     app2: searcherApp,
     signedInAccount: account,
@@ -43,8 +43,8 @@ test.describe('editing a profile', () => {
     await search()
     await expect(noResults).toHaveCount(0)
 
-    await app.profile.goTo(account.username)
-    await app.profile.selectOptionFromProfileDropdown('Disable')
+    await app.page.goto('/settings')
+    await app.settings.pauseProfile()
 
     await expect
       .poll(async () => (await userInformationFromDb(account)).profile.disabled)

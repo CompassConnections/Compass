@@ -828,6 +828,50 @@ export type Database = {
           },
         ]
       }
+      job_applications: {
+        Row: {
+          about: string
+          availability: string
+          created_time: string
+          id: number
+          plan: string
+          position: string
+          rate: string
+          updated_time: string
+          user_id: string
+        }
+        Insert: {
+          about: string
+          availability: string
+          created_time?: string
+          id?: never
+          plan: string
+          position: string
+          rate: string
+          updated_time?: string
+          user_id: string
+        }
+        Update: {
+          about?: string
+          availability?: string
+          created_time?: string
+          id?: never
+          plan?: string
+          position?: string
+          rate?: string
+          updated_time?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'job_applications_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       notification_template_translations: {
         Row: {
           created_time: string
@@ -1140,6 +1184,45 @@ export type Database = {
             foreignKeyName: 'private_users_id_fkey'
             columns: ['id']
             isOneToOne: true
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      profile_access: {
+        Row: {
+          created_time: string
+          decided_time: string | null
+          owner_id: string
+          status: string
+          viewer_id: string
+        }
+        Insert: {
+          created_time?: string
+          decided_time?: string | null
+          owner_id: string
+          status: string
+          viewer_id: string
+        }
+        Update: {
+          created_time?: string
+          decided_time?: string | null
+          owner_id?: string
+          status?: string
+          viewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'profile_access_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'profile_access_viewer_id_fkey'
+            columns: ['viewer_id']
+            isOneToOne: false
             referencedRelation: 'users'
             referencedColumns: ['id']
           },
@@ -1532,6 +1615,7 @@ export type Database = {
           ethnicity: string[] | null
           exercise: string | null
           feed_visibility: Database['public']['Enums']['profile_feed_visibility']
+          field_visibility: Json
           gender: string | null
           gender_details: string | null
           geodb_city_id: string | null
@@ -1624,6 +1708,7 @@ export type Database = {
           ethnicity?: string[] | null
           exercise?: string | null
           feed_visibility?: Database['public']['Enums']['profile_feed_visibility']
+          field_visibility?: Json
           gender?: string | null
           gender_details?: string | null
           geodb_city_id?: string | null
@@ -1716,6 +1801,7 @@ export type Database = {
           ethnicity?: string[] | null
           exercise?: string | null
           feed_visibility?: Database['public']['Enums']['profile_feed_visibility']
+          field_visibility?: Json
           gender?: string | null
           gender_details?: string | null
           geodb_city_id?: string | null
@@ -2645,6 +2731,7 @@ export type Database = {
           ethnicity: string[] | null
           exercise: string | null
           feed_visibility: Database['public']['Enums']['profile_feed_visibility']
+          field_visibility: Json
           gender: string | null
           gender_details: string | null
           geodb_city_id: string | null
@@ -2758,6 +2845,10 @@ export type Database = {
       millis_to_ts: {Args: {millis: number}; Returns: string}
       normalize_option_name: {Args: {raw: string}; Returns: string}
       profile_age: {Args: {birth_date: string}; Returns: number}
+      profile_field_is_public: {
+        Args: {field: string; pid: number}
+        Returns: boolean
+      }
       random_alphanumeric: {Args: {length: number}; Returns: string}
       rebuild_profile_search: {
         Args: {profile_id_param: number}

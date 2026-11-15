@@ -25,7 +25,7 @@ export type ProfileOptions = {[K in OptionTableKey]?: string[]} & {
   [K in OptionTableKey as `${K}_names`]?: string[]
 }
 
-export type ProfileWithoutUser = ProfileRow & ProfileOptions
+export type ProfileWithoutUser = ProfileRow & ProfileOptions & SharesMore
 export type Profile = ProfileWithoutUser & {
   user: User
   /**
@@ -42,6 +42,14 @@ export type Profile = ProfileWithoutUser & {
    */
   donor_past_year_cents?: number
 }
+
+/**
+ * Set by the server's per-field redaction (`redactProfileFor`) on a profile whose owner keeps some
+ * fields for the people they approve, when the reader is a member who is not one of them. It is all a
+ * visitor is told about what is hidden — not which fields, nor how many — and it is what puts the
+ * "Request access" button on the page.
+ */
+export type SharesMore = {shares_more?: boolean}
 
 export const getProfileRowWithFrontendSupabase = async (
   userId: string,

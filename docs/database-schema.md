@@ -621,6 +621,15 @@ of two ways:
 INSERT and nothing else, and the `anyone can insert` policy is its only policy
 (`supabase/migrations/20261107133247_user_events_insert_only.sql`). Only the backend's service role reads it.
 
+Per-field profile visibility ([`profile-visibility.md`](profile-visibility.md)) adds three things here.
+`profiles.field_visibility` (jsonb) holds a member's per-field audience exceptions. `profile_access`
+(`owner_id`, `viewer_id`, `status`) records who an owner has approved to see their `connected` fields; it
+has RLS with no policy and no `anon`/`authenticated` grants, and is read only through
+`get-profile-access`. And the `public read` policies on `profile_interests`, `profile_causes` and
+`profile_work` go through `profile_field_is_public()`, so those tables answer only for a public,
+enabled, unbanned profile that has not narrowed that field
+(`supabase/migrations/20261115120000_profile_field_visibility.sql`).
+
 When adding a table, do not write a `public read` policy unless the data really is public. Reach for
 an endpoint first, and an RPC only for a read that is identical for everyone.
 

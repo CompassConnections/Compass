@@ -2,6 +2,7 @@ import {type JSONContent} from '@tiptap/core'
 import {FEED_VISIBILITY_LEVELS} from 'common/feed/feed'
 import {MAX_PREF_MAX_DISTANCE, MIN_PREF_MAX_DISTANCE} from 'common/max-distance'
 import {MAX_PROFILE_AGE, MIN_PROFILE_AGE, STORED_BIRTH_DATE_REGEX} from 'common/profiles/birth-date'
+import {AUDIENCES, PROFILE_FIELD_KEYS, type ProfileFieldKey} from 'common/profiles/visibility'
 import {arrify} from 'common/util/array'
 import {isOwnImageUrl} from 'common/util/image-url'
 import {z} from 'zod'
@@ -100,6 +101,16 @@ export const profileSchema = z.object({
   // Optional rather than required like `visibility`: signup does not have to send it, and profiles
   // created before the column existed fall back to the 'basic' column default.
   feed_visibility: z.enum(FEED_VISIBILITY_LEVELS).optional(),
+  // Per-field audience exceptions (docs/profile-visibility.md). The whole map is sent and replaces the
+  // stored one, so removing a key is how a field goes back to following `visibility`. An
+  // unknown key is rejected: it is a client that disagrees with the server about which fields exist, and silently
+  // dropping it would leave the member believing something is hidden that is not.
+  field_visibility: z
+    .record(
+      z.enum(PROFILE_FIELD_KEYS as [ProfileFieldKey, ...ProfileFieldKey[]]),
+      z.enum(AUDIENCES),
+    )
+    .optional(),
   wants_kids_strength: z.number().optional().nullable(),
   big5_openness: z.number().min(0).max(100).optional().nullable(),
   big5_conscientiousness: z.number().min(0).max(100).optional().nullable(),

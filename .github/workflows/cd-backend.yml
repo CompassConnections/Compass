@@ -74,7 +74,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with:
-          version: 3.0.0 # Keep in step with `supabase` in the root package.json
+          version: 3.1.0 # Keep in step with `supabase` in the root package.json
       # A connection string (--remote=<url>) rather than `supabase link`, which needs an account-wide access token. The
       # session pooler (port 5432) because the direct host is IPv6-only and the runners have no IPv6.
       # The password goes into the URL as is, so it must not need percent-encoding.
@@ -94,7 +94,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with:
-          version: 3.0.0 # Keep in step with `supabase` in the root package.json
+          version: 3.1.0 # Keep in step with `supabase` in the root package.json
       # A connection string (--remote=<url>) rather than `supabase link`, which needs an account-wide access token. The
       # session pooler (port 5432) because the direct host is IPv6-only and the runners have no IPv6.
       # The password goes into the URL as is, so it must not need percent-encoding.

@@ -1327,6 +1327,7 @@
   "profile.looking_for": "Sucht",
   "profile.last_online": "Zuletzt online {time}",
   "profile.links": "Links",
+  "profile.online_communities_label": "Online unterwegs in",
   "profile.llm.extract.button_text": "Profildaten aus Text extrahieren",
   "profile.llm.extract.button_url": "Profildaten aus URL extrahieren",
   "profile.llm.extract.description": "Füllen Sie Ihr Profil automatisch aus, indem Sie einen Link (Notion, Google Docs, persönliche Website usw.) einfügen oder Ihren Inhalt direkt einfügen.",

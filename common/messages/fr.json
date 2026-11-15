@@ -1326,6 +1326,7 @@
   "profile.looking_for": "Recherche",
   "profile.last_online": "Actif·ve {time}",
   "profile.links": "Liens",
+  "profile.online_communities_label": "Traîne en ligne sur",
   "profile.llm.extract.button_text": "Extraire les données à partir du texte",
   "profile.llm.extract.button_url": "Extraire les données à ce lien",
   "profile.llm.extract.description": "Remplissez automatiquement votre profil en déposant un lien (Notion, Google Docs, site personnel, etc.) ou en collant directement votre contenu.",

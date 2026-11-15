@@ -1005,15 +1005,23 @@ export function hasOnlineCommunities(profile: Profile) {
 export function ProfileOnlineCommunities(props: {profile: Profile}) {
   const {profile} = props
   const communities = (profile as any).online_communities as string | null | undefined
+  const t = useT()
 
   if (!communities) return null
 
+  // Captioned because it is free text under a "Links" heading: without it, "vegan dating lounge
+  // https://discord.gg/…" reads as a stray link rather than an answer to "where do you hang out online?".
   return (
-    <div
-      className="text-ink-600"
-      style={{fontSize: '15px', lineHeight: '1.55', whiteSpace: 'pre-wrap'}}
-    >
-      {communities}
+    <div>
+      <div className="text-ink-500 font-microcaps" style={{marginBottom: '7px'}}>
+        {t('profile.online_communities_label', 'Hangs out online')}
+      </div>
+      <div
+        className="text-ink-600"
+        style={{fontSize: '15px', lineHeight: '1.55', whiteSpace: 'pre-wrap'}}
+      >
+        {communities}
+      </div>
     </div>
   )
 }

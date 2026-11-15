@@ -108,6 +108,21 @@
   --hloss: var(--tnh);
 }
 
+/* Native apps only (class set by useSuppressLinkLongPress()): a long press on an internal link or an
+   image must not surface the URL. `-webkit-touch-callout` removes the iOS link preview and action
+   sheet; `-webkit-user-drag` removes the Android drag shadow that carries the URL. `a:not([href])`
+   is an anchor used as a button. External links (`http…`, `mailto:`) and prose are left alone, so
+   text selection and "copy link" still work there. */
+.native-app a[href^='/']:not([href^='//']),
+.native-app a[href^='#'],
+.native-app a:not([href]),
+.native-app img {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* Replace default Tailwind behavior */
 .min-h-screen {
   min-height: calc(1dvh * 100 - var(--hloss));

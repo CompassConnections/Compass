@@ -37,6 +37,7 @@ import {PinnedQuestionIdsProvider} from 'web/hooks/use-pinned-question-ids'
 import {ProfileProvider} from 'web/hooks/use-profile'
 import {markNotificationOpened} from 'web/hooks/use-review-prompt'
 import {markBackNavigation, useScrollRestoration} from 'web/hooks/use-scroll-restoration'
+import {useSuppressLinkLongPress} from 'web/hooks/use-suppress-link-long-press'
 import {updateStatusBar} from 'web/hooks/use-theme'
 import {useVisualViewportVars} from 'web/hooks/use-visual-viewport-height'
 import {updateBackendLocale} from 'web/lib/api'
@@ -130,6 +131,8 @@ function MyApp(props: AppProps<PageProps>) {
   // Publishes `--vvh` / `--vvo` for every page: anything that has to stay clear of the keyboard
   // (the chat page's layout, the text editors' max height) sizes itself off the visible viewport.
   useVisualViewportVars()
+
+  useSuppressLinkLongPress()
 
   useEffect(() => {
     debug('native app:', isNativeApp(), nativePlatform())

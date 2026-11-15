@@ -22,8 +22,22 @@ const ZOOM_ANIMATION_MS = 200
 
 type Point = {x: number; y: number}
 
-const SWIPE_MIN_DIST_PX = 50
-const SWIPE_MAX_OFF_AXIS_RATIO = 0.8
+// A drag only becomes a swipe once it has travelled this far, and mostly sideways — a tap or a
+// vertical drag never moves the strip.
+const SWIPE_LOCK_DIST_PX = 8
+// Released past this share of the strip's width, the swipe moves on to the neighbour…
+const SWIPE_COMMIT_RATIO = 0.2
+// …and so does a short, fast flick.
+const SWIPE_FLICK_MIN_DIST_PX = 30
+const SWIPE_FLICK_MIN_VELOCITY_PX_PER_MS = 0.5
+// Dragging past the first or last item follows the finger at this fraction, then springs back.
+const SWIPE_EDGE_RESISTANCE = 0.3
+const SLIDE_ANIMATION_MS = 250
+// Items this close to the one on screen are mounted, so their media is already downloaded when they
+// slide in. Further ones are empty placeholders that only hold their place in the strip.
+const PRELOAD_RADIUS = 2
+// Native video controls sit along the bottom edge; a drag starting there is a scrub, not a swipe.
+const VIDEO_CONTROLS_HEIGHT_PX = 56
 
 // Enlarges an image or video to the largest size that fits within 90% of the
 // viewport in both dimensions, without cropping (aspect ratio preserved).
@@ -31,6 +45,9 @@ const SWIPE_MAX_OFF_AXIS_RATIO = 0.8
 // Pass `url` for a single item, or `urls` + `index` to browse a gallery in place: arrow keys, the
 // on-screen chevrons, and a horizontal swipe all move between items. Swiping is ignored while the
 // image is zoomed in, where the same gesture pans.
+//
+// The gallery is one horizontal strip of full-width slides that follows the finger and settles on
+// the nearest item on release, so the outgoing and incoming media travel together edge to edge.
 export function MediaModal(props: {
   open: boolean
   setOpen: (open: boolean) => void
@@ -49,21 +66,131 @@ export function MediaModal(props: {
   const items = urls?.length ? urls : props.url ? [props.url] : []
   const [internalIndex, setInternalIndex] = useState(index ?? 0)
 
-  // The caller may or may not own the index; follow it when it does, and keep our own when it doesn't.
-  useEffect(() => {
-    if (index != null) setInternalIndex(index)
-  }, [index])
+  // Horizontal offset of the strip while a finger is dragging it, in px.
+  const [dragX, setDragX] = useState(0)
+  // Whether the strip's next move is animated: yes when settling after a swipe or paging to a
+  // neighbour, no while it tracks the finger or jumps (opening on a photo, wrapping around).
+  const [animate, setAnimate] = useState(false)
 
-  const current = items[clamp(internalIndex, 0, Math.max(0, items.length - 1))]
+  // The caller may or may not own the index; follow it when it does, and keep our own when it doesn't.
+  // Done during render rather than in an effect so that a jump from outside (the viewer opening on
+  // another photo) lands without animation, while our own paging — which reports the same index back
+  // through `setIndex` — keeps its slide.
+  const [syncedIndex, setSyncedIndex] = useState(index)
+  if (index !== syncedIndex) {
+    setSyncedIndex(index)
+    if (index != null && index !== internalIndex) {
+      setInternalIndex(index)
+      setAnimate(false)
+    }
+  }
+
+  const shown = clamp(internalIndex, 0, Math.max(0, items.length - 1))
+  const current = items[shown]
   const hasMultiple = items.length > 1
   const caption = current ? descriptions?.[current] : undefined
 
+  const trackRef = useRef<HTMLDivElement>(null)
+  const activePointers = useRef(new Set<number>())
+  const swipe = useRef<{
+    id: number
+    x: number
+    y: number
+    time: number
+    locked: boolean
+  } | null>(null)
+  const zoomed = useRef(false)
+  const onZoomedChange = useEvent((isZoomed: boolean) => {
+    zoomed.current = isZoomed
+  })
+
   const go = useEvent((delta: number) => {
     if (!hasMultiple) return
-    const next = (internalIndex + delta + items.length) % items.length
+    const next = (shown + delta + items.length) % items.length
+    // Neighbours slide into place; wrapping from one end to the other jumps, rather than racing
+    // back across every item in between.
+    setAnimate(Math.abs(next - shown) === 1)
+    setDragX(0)
     setInternalIndex(next)
     setIndex?.(next)
   })
+
+  // The strip is unmounted while closed, so a gesture in flight never gets its pointerup.
+  useEffect(() => {
+    if (open) return
+    activePointers.current.clear()
+    swipe.current = null
+    zoomed.current = false
+    setDragX(0)
+    setAnimate(false)
+  }, [open])
+
+  const cancelSwipe = () => {
+    if (swipe.current?.locked) {
+      setAnimate(true)
+      setDragX(0)
+    }
+    swipe.current = null
+  }
+
+  const onTrackPointerDown = (e: ReactPointerEvent) => {
+    activePointers.current.add(e.pointerId)
+    // A second finger makes it a pinch, which belongs to the image.
+    if (activePointers.current.size > 1) return cancelSwipe()
+    if (!hasMultiple || zoomed.current) return
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    const target = e.target
+    if (
+      target instanceof HTMLVideoElement &&
+      e.clientY > target.getBoundingClientRect().bottom - VIDEO_CONTROLS_HEIGHT_PX
+    )
+      return
+    swipe.current = {id: e.pointerId, x: e.clientX, y: e.clientY, time: e.timeStamp, locked: false}
+  }
+
+  const onTrackPointerMove = (e: ReactPointerEvent) => {
+    const s = swipe.current
+    if (!s || s.id !== e.pointerId) return
+    // Only a lone pointer at rest scale is a swipe — at scale > 1 the same drag is a pan, and with two
+    // pointers down it is a pinch.
+    if (zoomed.current) return cancelSwipe()
+    const dx = e.clientX - s.x
+    const dy = e.clientY - s.y
+    if (!s.locked) {
+      if (Math.hypot(dx, dy) < SWIPE_LOCK_DIST_PX) return
+      if (Math.abs(dy) > Math.abs(dx)) {
+        swipe.current = null
+        return
+      }
+      s.locked = true
+      setAnimate(false)
+    }
+    // Swiping does not wrap: there is nothing beside the first and last items to drag into view.
+    const atEdge = (shown === 0 && dx > 0) || (shown === items.length - 1 && dx < 0)
+    setDragX(atEdge ? dx * SWIPE_EDGE_RESISTANCE : dx)
+  }
+
+  const onTrackPointerEnd = (e: ReactPointerEvent) => {
+    activePointers.current.delete(e.pointerId)
+    const s = swipe.current
+    if (!s || s.id !== e.pointerId) return
+    swipe.current = null
+    if (!s.locked) return
+
+    const dx = e.clientX - s.x
+    const width = trackRef.current?.offsetWidth || window.innerWidth
+    const velocity = Math.abs(dx) / Math.max(1, e.timeStamp - s.time)
+    const committed =
+      e.type !== 'pointercancel' &&
+      (Math.abs(dx) > width * SWIPE_COMMIT_RATIO ||
+        (Math.abs(dx) > SWIPE_FLICK_MIN_DIST_PX && velocity > SWIPE_FLICK_MIN_VELOCITY_PX_PER_MS))
+    const delta = dx < 0 ? 1 : -1
+    const target = shown + delta
+
+    setAnimate(true)
+    setDragX(0)
+    if (committed && target >= 0 && target < items.length) go(delta)
+  }
 
   useEffect(() => {
     if (!open || !hasMultiple) return
@@ -78,8 +205,6 @@ export function MediaModal(props: {
   }, [open, hasMultiple, go])
 
   if (!current) return null
-
-  const url = current
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -119,7 +244,7 @@ export function MediaModal(props: {
             {/* A column, not a centred box: the caption needs its own row under the media, and the
                 media area has to be allowed to shrink (`min-h-0`) so a long caption cannot push it
                 past the bottom of the screen. */}
-            <Dialog.Panel className="relative flex h-full w-full flex-col items-center justify-center gap-4 px-4 pb-6 pt-16 sm:px-16">
+            <Dialog.Panel className="relative flex h-full w-full flex-col items-center justify-center gap-4 pb-6 pt-16">
               {/* Inside the panel, not beside it: Headless UI closes the dialog on any click that
                   lands outside the panel's subtree, which is what made paging dismiss the viewer.
                   They are `fixed`, so they still sit against the viewport edges. */}
@@ -134,26 +259,48 @@ export function MediaModal(props: {
                 </>
               )}
 
-              <div className="relative flex min-h-0 w-full flex-1 items-center justify-center">
-                {isVideo(url) ? (
-                  <video
-                    src={url}
-                    controls
-                    autoPlay
-                    playsInline
-                    className="h-auto max-h-full w-auto max-w-full rounded object-contain"
-                  />
-                ) : (
-                  <ZoomableImage
-                    url={url}
-                    active={open}
-                    onSwipe={hasMultiple ? (direction) => go(direction) : undefined}
-                  />
-                )}
+              {/* The viewport of the strip. It spans the full panel width — the side padding lives on
+                  the slides (desktop only) and the caption — so on a phone a photo leaves by one
+                  screen edge exactly as the next arrives at the other. */}
+              <div
+                className="relative min-h-0 w-full flex-1 overflow-hidden"
+                style={{touchAction: 'none'}}
+                onPointerDown={onTrackPointerDown}
+                onPointerMove={onTrackPointerMove}
+                onPointerUp={onTrackPointerEnd}
+                onPointerCancel={onTrackPointerEnd}
+                onPointerLeave={onTrackPointerEnd}
+              >
+                <div
+                  ref={trackRef}
+                  className="flex h-full w-full will-change-transform"
+                  style={{
+                    transform: `translate3d(calc(${-shown * 100}% + ${dragX}px), 0, 0)`,
+                    transition: animate ? `transform ${SLIDE_ANIMATION_MS}ms ease-out` : 'none',
+                  }}
+                >
+                  {items.map((url, i) => (
+                    <div
+                      key={url}
+                      aria-hidden={i !== shown}
+                      className="flex h-full w-full shrink-0 items-center justify-center sm:px-16"
+                    >
+                      {Math.abs(i - shown) > PRELOAD_RADIUS ? null : isVideo(url) ? (
+                        <SlideVideo url={url} active={open && i === shown} />
+                      ) : (
+                        <ZoomableImage
+                          url={url}
+                          active={open && i === shown}
+                          onZoomedChange={i === shown ? onZoomedChange : undefined}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {(caption || hasMultiple) && (
-                <div className="flex w-full shrink-0 flex-col items-center gap-1.5">
+                <div className="flex w-full shrink-0 flex-col items-center gap-1.5 px-4 sm:px-16">
                   {caption && (
                     <p className="text-ink-800 max-w-2xl whitespace-pre-wrap text-center text-sm">
                       {caption}
@@ -193,6 +340,34 @@ function NavButton(props: {side: 'left' | 'right'; label: string; onClick: () =>
   )
 }
 
+// Mounted for the neighbours too, so it only plays while it is the slide on screen.
+function SlideVideo(props: {url: string; active: boolean}) {
+  const {url, active} = props
+  const ref = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video = ref.current
+    if (!video) return
+    if (active) {
+      // Rejects when the browser blocks autoplay; the controls are right there.
+      video.play()?.catch(() => {})
+    } else {
+      video.pause()
+    }
+  }, [active])
+
+  return (
+    <video
+      ref={ref}
+      src={url}
+      controls
+      playsInline
+      preload="metadata"
+      className="h-auto max-h-full w-auto max-w-full rounded object-contain"
+    />
+  )
+}
+
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n))
 }
@@ -225,10 +400,10 @@ function anchoredTranslate(
 function ZoomableImage(props: {
   url: string
   active: boolean
-  /** Called with -1 (previous) or 1 (next) on a horizontal swipe, when not zoomed in. */
-  onSwipe?: (direction: number) => void
+  /** Reports whether the image is zoomed in — the gallery swipes only when it is not. */
+  onZoomedChange?: (zoomed: boolean) => void
 }) {
-  const {url, active, onSwipe} = props
+  const {url, active, onZoomedChange} = props
   const containerRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
   const [scale, setScale] = useState(1)
@@ -249,6 +424,11 @@ function ZoomableImage(props: {
     dragStart.current = null
     lastTap.current = null
   }, [url, active])
+
+  const isZoomed = scale > 1
+  useEffect(() => {
+    onZoomedChange?.(isZoomed)
+  }, [isZoomed, onZoomedChange])
 
   const clampTranslate = (s: number, t: Point): Point => {
     const img = imageRef.current
@@ -338,19 +518,6 @@ function ZoomableImage(props: {
   }
 
   const endPointer = (e: ReactPointerEvent) => {
-    // Only a lone pointer at rest scale is a swipe — at scale > 1 the same drag is a pan, and with two
-    // pointers down it is a pinch.
-    if (onSwipe && scale === 1 && pointers.current.size === 1 && dragStart.current) {
-      const dx = e.clientX - dragStart.current.pointer.x
-      const dy = e.clientY - dragStart.current.pointer.y
-      if (
-        Math.abs(dx) > SWIPE_MIN_DIST_PX &&
-        Math.abs(dy) < Math.abs(dx) * SWIPE_MAX_OFF_AXIS_RATIO
-      ) {
-        onSwipe(dx < 0 ? 1 : -1)
-      }
-    }
-
     pointers.current.delete(e.pointerId)
     if (pointers.current.size < 2) pinchDistance.current = null
 

@@ -1669,7 +1669,7 @@ export const OptionalProfileUserForm = (props: {
             maxLength={500}
             placeholder={t(
               'profile.optional.online_communities_placeholder',
-              'e.g. r/vegan, an EA WhatsApp group, an MBTI Discord server.',
+              'e.g. r/vegan, an EA WhatsApp group, a non-profit Discord server.',
             )}
           />
         </Col>

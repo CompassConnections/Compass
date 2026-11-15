@@ -15,9 +15,11 @@ import {getUser} from 'shared/utils'
  * circle"), take that back, or set a pending request aside.
  *
  * - `approve` needs a reason to exist between the two: the other person asked, was in the circle
- *   before, or the two have a conversation. Nobody can be added — and so notified, emailed and
- *   pushed — by a stranger. The other person is told the first time, and not again when they are
- *   re-added shortly after being removed, so add/remove cannot be looped into a stream of messages.
+ *   before, or the two have a conversation. Nobody can be added — and so notified and pushed — by
+ *   a stranger. The other person is told the first time, and not again when they are re-added
+ *   shortly after being removed, so add/remove cannot be looped into a stream of messages. The
+ *   email goes out only as the answer to their own request; an addition they did not ask for is
+ *   an in-app notification and a push.
  * - `revoke` marks the row `removed`. Immediate, and silent.
  * - `dismiss` leaves a pending request in place with `decided_time` set, which hides it from the
  *   owner's list while looking unchanged to the requester — declining carries no social cost.
@@ -78,7 +80,12 @@ export const setProfileAccess: APIHandler<'set-profile-access'> = async (
   const recentlyRemoved =
     removedAt != null && Date.now() - removedAt < REQUEST_AGAIN_AFTER_DAYS * DAY_MS
   // Before the response for the same reason as in `request-profile-access`.
-  if (!recentlyRemoved) await notifyProfileAccess('approved', auth.uid, viewerId)
+  if (!recentlyRemoved) {
+    await notifyProfileAccess('approved', auth.uid, viewerId, {
+      // An email only answers a request: nobody is emailed about a circle they did not ask to join.
+      email: existing?.status === 'requested',
+    })
+  }
 
   return {status: 'approved' as const}
 }

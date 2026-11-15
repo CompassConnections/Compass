@@ -66,11 +66,15 @@ export const getProfileAccessRow = (ownerId: string, viewerId: string) =>
  * There is no preference of its own for these; they follow the recipient's global opt-outs (in-app
  * under `browser`, email under `email`, push under `mobile`). A failed email or push never fails the
  * request — the in-app row is already written by then.
+ *
+ * `email: false` leaves the email out and keeps the other two: being added to a circle you did not
+ * ask to join is worth a notification, not a message in your inbox.
  */
 export const notifyProfileAccess = async (
   kind: 'requested' | 'approved',
   fromUserId: string,
   toUserId: string,
+  {email = true}: {email?: boolean} = {},
 ) => {
   const [fromUser, toUser, toPrivateUser] = await Promise.all([
     getUser(fromUserId),
@@ -137,12 +141,14 @@ export const notifyProfileAccess = async (
 
   // The email checks its own opt-out, and a failure there must not cost the request either.
   try {
-    await sendCircleEmail(
-      toPrivateUser,
-      fromUser,
-      toUser,
-      kind === 'requested' ? 'requested' : 'added',
-    )
+    if (email) {
+      await sendCircleEmail(
+        toPrivateUser,
+        fromUser,
+        toUser,
+        kind === 'requested' ? 'requested' : 'added',
+      )
+    }
   } catch (err) {
     log.error('Failed to send profile-access email', {err, toUserId})
   }

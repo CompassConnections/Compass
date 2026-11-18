@@ -102,7 +102,7 @@ export class ProfilePage {
     this.editDropdownOptions = page.getByText('Edit', {exact: true})
     this.deleteDropdownOptions = page.getByText('Delete', {exact: true})
     this.answerCoreQuestionsButton = page.getByRole('button', {name: 'Answer Core Questions'})
-    this.viewQuestionListButton = page.getByRole('link', {name: 'View List of Questions'})
+    this.viewQuestionListButton = page.getByRole('link', {name: 'View All Questions'})
     this.compatibilityQuestion = page.getByTestId('compatibility-question')
     this.compatibilityQuestionYourChoices = page.getByTestId('compatibility-question-your-answer')
     this.compatibilityQuestionAnswersYouAccept = page.getByTestId(

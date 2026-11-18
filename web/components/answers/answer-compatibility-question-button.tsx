@@ -72,15 +72,15 @@ export function AnswerCompatibilityQuestionButton(props: {
       {size === 'md' ? (
         <Button
           onClick={() => setOpen(true)}
-          color="none"
-          className={
-            'px-3 py-2 rounded-md border border-primary-600 text-primary-800 hover:bg-primary-50'
-          }
+          // The filled one of the pair: "View All Questions" beside it stays outlined, so this reads
+          // as the thing to do.
+          color="indigo"
+          className={'px-3 py-2'}
         >
           {t('answers.answer.cta', 'Answer{core} Questions', {
             core: isCore ? ' Core' : '',
           })}{' '}
-          <span className="text-primary-700 ml-2">+{questionsToAnswer.length}</span>
+          <span className="ml-2 text-white/80">+{questionsToAnswer.length}</span>
         </Button>
       ) : (
         <button
@@ -118,7 +118,7 @@ export function CompatibilityPageButton() {
       href="/compatibility"
       className="px-3 py-2 rounded-md border border-primary-600 text-primary-800 hover:bg-primary-50 flex items-center justify-center text-center text-sm"
     >
-      {t('answers.answer.view_list', 'View List of Questions')}
+      {t('answers.answer.view_list', 'View All Questions')}
     </Link>
   )
 }

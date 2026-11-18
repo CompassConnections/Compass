@@ -50,7 +50,7 @@ import {useT} from 'web/lib/locale'
 import {CompatibilityScoreBar} from '../widgets/compatible-badge'
 import {
   AnswerCompatibilityQuestionButton,
-  AnswerSkippedCompatibilityQuestionsButton,
+  // AnswerSkippedCompatibilityQuestionsButton,
   CompatibilityPageButton,
 } from './answer-compatibility-question-button'
 import {
@@ -139,7 +139,7 @@ export function CompatibilityQuestionsDisplay(props: {
 
   const {
     answers,
-    skippedQuestions,
+    // skippedQuestions,
     answeredQuestions,
     otherQuestions,
     compatibilityQuestions,
@@ -477,15 +477,15 @@ export function CompatibilityQuestionsDisplay(props: {
           <CompatibilityPageButton />
         </Row>
       )}
-      {skippedQuestions.length > 0 && isCurrentUser && (
-        <Row className="w-full justify-end">
-          <AnswerSkippedCompatibilityQuestionsButton
-            user={user}
-            skippedQuestions={skippedQuestions}
-            refreshCompatibilityAll={refreshCompatibilityAll}
-          />
-        </Row>
-      )}
+      {/*{skippedQuestions.length > 0 && isCurrentUser && (*/}
+      {/*  <Row className="w-full justify-end">*/}
+      {/*    <AnswerSkippedCompatibilityQuestionsButton*/}
+      {/*      user={user}*/}
+      {/*      skippedQuestions={skippedQuestions}*/}
+      {/*      refreshCompatibilityAll={refreshCompatibilityAll}*/}
+      {/*    />*/}
+      {/*  </Row>*/}
+      {/*)}*/}
     </Col>
   )
 }
@@ -610,7 +610,9 @@ export function CompatibilityAnswerBlock(props: {
         <h3
           // `font-figtree` is the body face: globals.css sets every h1–h6 to Newsreader at weight 700,
           // so a heading element opts out of the serif explicitly or it does not opt out at all.
-          className="font-figtree text-ink-600 min-w-0 font-normal"
+          // `m-0` for the same reason: those rules also give every heading a 1.5rem top margin, which
+          // stacked on the block's own top padding and left twice the space below each rule as above.
+          className="font-figtree text-ink-600 m-0 min-w-0 font-normal"
           style={{fontSize: '16px', lineHeight: '1.45'}}
           data-testid="profile-compatibility-question"
         >

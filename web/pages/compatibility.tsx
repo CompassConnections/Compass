@@ -310,12 +310,14 @@ function QuestionList({
   const visibleQuestions = questions.slice(0, visibleCount)
 
   return (
-    <div className="space-y-4 p-2">
+    <div className="p-2">
       {visibleQuestions.map((q) => (
         <div
           key={q.id}
           className={clsx(
-            'border-canvas-100 rounded-lg border px-2 pt-2 shadow-sm transition-colors',
+            // No card and no gap between rows: each block already carries equal padding either side
+            // of its own rule, and a wrapper's border, top padding and gap all landed below the rule.
+            'px-2 transition-colors',
             isLoading && 'animate-pulse opacity-80',
           )}
         >

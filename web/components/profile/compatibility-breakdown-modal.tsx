@@ -121,10 +121,10 @@ export function CompatibilityBreakdownModal(props: {
                 muted
               />
 
-              <p className="text-ink-800 m-0 text-sm">
+              <p className="text-ink-600 m-0 text-sm">
                 {t(
                   'compatibility.breakdown.whole_profile_note',
-                  'The score at the top is computed on both whole profiles, including anything either of you shows to fewer people. The rows here only use what you can see, so they may not add up to it exactly.',
+                  'The score at the top is computed on the whole profiles. The rows only use what they let you see, so they may not add up to it exactly.',
                 )}
               </p>
             </>

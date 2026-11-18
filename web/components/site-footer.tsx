@@ -219,7 +219,7 @@ export function SiteFooter(props: {className?: string}) {
                     aria-label={t(key, name)}
                     title={t(key, name)}
                     className={clsx(
-                      'flex h-10 w-10 items-center justify-center rounded-lg text-white/70 transition-colors duration-150 hover:bg-white/[0.08] hover:text-white',
+                      'flex h-10 w-10 items-center justify-center rounded-lg text-white/70 transition-colors duration-150 hover:text-white',
                       focusRingDark,
                     )}
                   >

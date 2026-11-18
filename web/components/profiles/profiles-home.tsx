@@ -38,6 +38,12 @@ import {api} from 'web/lib/api'
 import {useLocale, useT} from 'web/lib/locale'
 import {getStars} from 'web/lib/supabase/stars'
 
+/**
+ * Profiles fetched per page. 24 divides evenly into 2, 3 and 4 columns, so a page always ends on a
+ * full row. `get-profiles` caps `limit` at the same number in common/src/api/schema.ts.
+ */
+const PROFILES_PAGE_SIZE = 24
+
 function ProfileBanner(props: {
   icon: ReactNode
   onDismiss: () => void
@@ -163,7 +169,7 @@ export function ProfilesHome() {
       return
     }
     const args = removeNullOrUndefinedProps({
-      limit: 20,
+      limit: PROFILES_PAGE_SIZE,
       compatibleWithUserId: user?.id,
       locale,
       // The grid only renders a card per profile; the full row is several times the size.
@@ -197,7 +203,7 @@ export function ProfilesHome() {
   // const displayProfiles = profiles && orderProfiles(profiles, starredUserIds)
   const displayProfiles = profiles
 
-  const limit = 20
+  const limit = PROFILES_PAGE_SIZE
 
   const loadMore = useCallback(async () => {
     if (!user) return false

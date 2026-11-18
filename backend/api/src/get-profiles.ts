@@ -193,7 +193,7 @@ const arrayChoiceFields = [
 
 // Search-only columns. `bio_text`/`bio_tsv` were already stripped from the response by `convertRow`,
 // but they were still being read out of Postgres on every query — `bio_tsv` is a tsvector roughly the
-// size of the bio itself, so 20 of them per page is real DB→API transfer for bytes nobody reads.
+// size of the bio itself, so 24 of them per page is real DB→API transfer for bytes nobody reads.
 // `birth_date` is deliberately here as well: `age` is what the cards show, the database derives it,
 // and a list of strangers has no reason to carry the date it was derived from.
 const EXCLUDED_PROFILE_COLS = new Set([

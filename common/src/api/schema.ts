@@ -1007,7 +1007,7 @@ export const API = (_apiTypeCheck = {
     rateLimited: true,
     props: z
       .object({
-        limit: z.coerce.number().gt(0).lte(20).optional().default(20),
+        limit: z.coerce.number().gt(0).lte(24).optional().default(24),
         after: z.string().optional(),
         // Search and filter parameters
         name: z.string().optional(),

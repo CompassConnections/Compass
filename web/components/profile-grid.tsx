@@ -201,7 +201,7 @@ export function ProfileGridSkeleton(props: {
   cardSize?: CardSize
   gridLayout?: GridLayout
 }) {
-  const {count = 20, className, cardSize, gridLayout} = props
+  const {count = 24, className, cardSize, gridLayout} = props
   const config = CARD_SIZE_CONFIG[cardSize ?? 'medium']
   const isUniform = gridLayout === 'uniform'
 

@@ -357,33 +357,39 @@ export function ProfileAccessManager(props: {
             <h2 className="text-ink-900 !m-0 text-lg font-semibold">
               {t('profile.access.manage', 'My circle')}
             </h2>
-            <p className="text-ink-800 text-sm">
-              {t(
-                'profile.access.explainer',
-                'Members in your circle see the sensitive fields you set to “My circle”.',
-              )}
-            </p>
             {/* Which fields those are, by name: the sentence above is abstract until it says what
                 someone actually gets to see by being added. */}
             {circleFields.length > 0 ? (
               // Not a `<ul>`: the global list styles draw a bullet on every `<li>`, which showed up
               // between the tags. The roles keep it a list for a screen reader.
-              <div className="mt-2 flex flex-wrap gap-1.5" role="list" data-testid="circle-fields">
-                {circleFields.map((field) => (
-                  <span
-                    key={field}
-                    role="listitem"
-                    className="bg-canvas-200 text-ink-900 rounded-full px-2.5 py-0.5 text-xs"
-                  >
-                    {fieldNames[field]}
-                  </span>
-                ))}
-              </div>
+              <>
+                <p className="text-ink-800 text-sm">
+                  {t(
+                    'profile.access.explainer',
+                    'Members in your circle see the fields you marked as sensitive:',
+                  )}
+                </p>
+                <div
+                  className="mt-2 flex flex-wrap gap-1.5"
+                  role="list"
+                  data-testid="circle-fields"
+                >
+                  {circleFields.map((field) => (
+                    <span
+                      key={field}
+                      role="listitem"
+                      className="bg-canvas-200 text-ink-900 rounded-full px-2.5 py-0.5 text-xs"
+                    >
+                      {fieldNames[field]}
+                    </span>
+                  ))}
+                </div>
+              </>
             ) : (
               <p className="text-ink-800 mt-1 text-sm">
                 {t(
                   'profile.access.no_fields',
-                  'You have not set any field to “My circle” yet, so being in it shows nothing extra. Each field has its own control in the profile editor.',
+                  'You have not yet set any field to “My circle” in the profile editor, so being in it shows nothing extra.',
                 )}
               </p>
             )}

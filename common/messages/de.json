@@ -2773,5 +2773,7 @@
   "email.circle.requested.button": "Profil öffnen und entscheiden",
   "email.circle.added.button": "Profil ansehen",
   "profile.access.no_fields": "Sie haben noch kein Feld auf „Mein Kreis“ gesetzt, daher zeigt die Aufnahme nichts Zusätzliches. Jedes Feld hat im Profileditor eine eigene Einstellung.",
-  "profile.view_as.title": "Vorschaumodus"
+  "profile.view_as.title": "Vorschaumodus",
+  "profile.photos.previous": "Vorherige Fotos",
+  "profile.photos.next": "Weitere Fotos"
 }

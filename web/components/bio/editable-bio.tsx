@@ -123,6 +123,7 @@ export function EditableBio(props: {profile: Profile; onSave: () => void; onCanc
           )}
           <Button
             size="xs"
+            color="indigo"
             onClick={async () => {
               await saveBio()
               onSave()

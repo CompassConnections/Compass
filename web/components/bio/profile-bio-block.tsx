@@ -1,14 +1,11 @@
-import {PencilIcon, XMarkIcon} from '@heroicons/react/24/outline'
+import {PencilIcon} from '@heroicons/react/24/outline'
 import {JSONContent} from '@tiptap/core'
 import clsx from 'clsx'
 import {Profile} from 'common/profiles/profile'
-import {tryCatch} from 'common/util/try-catch'
-import DropdownMenu from 'web/components/comments/dropdown-menu'
 import {Col} from 'web/components/layout/col'
 import {Row} from 'web/components/layout/row'
 import {Content} from 'web/components/widgets/editor'
 import {Tooltip} from 'web/components/widgets/tooltip'
-import {updateProfile} from 'web/lib/api'
 import {useT} from 'web/lib/locale'
 
 import {BIO_PARAGRAPH_SPACING, BIO_TEXT_SIZE, EditableBio} from './editable-bio'
@@ -52,30 +49,19 @@ export function BioBlock(props: {
         )}
         {isCurrentUser && !edit && (
           <Tooltip
-            text={t('more_options_user.edit_bio', 'Bio options')}
+            text={t('more_options_user.edit_bio', 'Edit bio')}
             noTap
             testId="profile-bio-options"
             className={'h-fit'}
           >
-            <DropdownMenu
-              items={[
-                {
-                  name: t('profile.bio.edit', 'Edit'),
-                  icon: <PencilIcon className="h-5 w-5" />,
-                  onClick: () => setEdit(true),
-                },
-                {
-                  name: t('profile.bio.delete', 'Delete'),
-                  icon: <XMarkIcon className="h-5 w-5" />,
-                  onClick: async () => {
-                    const {error} = await tryCatch(updateProfile({bio: null}))
-                    if (error) console.error(error)
-                    else refreshProfile()
-                  },
-                },
-              ]}
-              closeOnClick
-            />
+            <button
+              type="button"
+              className="text-ink-500 hover-bold flex items-center"
+              aria-label={t('more_options_user.edit_bio', 'Edit bio')}
+              onClick={() => setEdit(true)}
+            >
+              <PencilIcon className="h-5 w-5" aria-hidden="true" />
+            </button>
           </Tooltip>
         )}
       </Row>

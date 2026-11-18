@@ -1069,8 +1069,6 @@
   "profile.bio.add_characters_many": "Fügen Sie {count} weitere Zeichen hinzu, um in den Suchergebnissen zu erscheinen — oder nehmen Sie sich Zeit und erkunden Sie zunächst die anderen.",
   "profile.bio.add_characters_one": "Fügen Sie {count} weiteres Zeichen hinzu, um in den Suchergebnissen zu erscheinen — oder nehmen Sie sich Zeit und erkunden Sie zunächst die anderen.",
   "profile.bio.cancel": "Abbrechen",
-  "profile.bio.delete": "Löschen",
-  "profile.bio.edit": "Bearbeiten",
   "profile.bio.hide_info": "Informationen ausblenden",
   "profile.bio.placeholder": "Erzählen Sie uns von sich — und wonach Sie suchen!",
   "profile.bio.save": "Speichern",

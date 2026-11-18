@@ -291,6 +291,10 @@ function WhatHappens() {
       'delete.kept.reports',
       'Reports involving your account, without your identity, so we can keep the community safe',
     ),
+    t(
+      'delete.kept.follow_up',
+      'Your email address, only if you asked us to write to you once after you found someone here, and only until that message is sent',
+    ),
     t('delete.kept.legal', 'Anything we are required to keep by law, for example to prevent fraud'),
   ]
 

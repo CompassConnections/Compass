@@ -842,3 +842,32 @@ select {
     animation-name: typing-dot-fade;
   }
 }
+
+/* The hearts in `HeartBurst`: each rises from below the bottom edge, drifting and tilting by its own
+   amount, and fades out before it reaches the top. */
+.heart-burst-heart {
+  position: absolute;
+  bottom: -48px;
+  opacity: 0;
+  animation-name: heart-burst-rise;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  animation-fill-mode: forwards;
+}
+
+@keyframes heart-burst-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.6);
+  }
+  12% {
+    opacity: 0.95;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--heart-drift, 0px), -85vh, 0) rotate(var(--heart-tilt, 0deg))
+      scale(1);
+  }
+}

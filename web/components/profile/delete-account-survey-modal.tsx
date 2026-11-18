@@ -1,5 +1,6 @@
 import {RadioGroup} from '@headlessui/react'
 import clsx from 'clsx'
+import {FOUND_ON_COMPASS_DELETION_REASON} from 'common/deletion'
 import router from 'next/router'
 import {useState} from 'react'
 import toast from 'react-hot-toast'
@@ -14,7 +15,9 @@ import {
   TestimonialDraftState,
   toTestimonialProps,
 } from '../testimonials/testimonial-form'
+import {HeartBurst} from '../widgets/heart-burst'
 import {Title} from '../widgets/title'
+import {DonateBeforeDelete} from './donate-before-delete'
 import {PauseInsteadOfDelete} from './pause-instead-of-delete'
 import {shouldShowStayPitch, StayInsteadOfDelete} from './stay-instead-of-delete'
 import {
@@ -31,6 +34,7 @@ export function DeleteAccountSurveyModal() {
   const [testimonialDraft, setTestimonialDraft] =
     useState<TestimonialDraftState>(EMPTY_TESTIMONIAL_DRAFT)
   const [testimonialOptedOut, setTestimonialOptedOut] = useState(false)
+  const [followUpEmailConsent, setFollowUpEmailConsent] = useState(false)
   const t = useT()
 
   /**
@@ -69,6 +73,8 @@ export function DeleteAccountSurveyModal() {
   }
 
   const promptForTestimonial = shouldPromptForTestimonial(selectedReason)
+  // They are leaving because it worked. The screen stops apologising and says so.
+  const foundOnCompass = selectedReason === FOUND_ON_COMPASS_DELETION_REASON
 
   // Sent only when they actually finished one: opting out, picking a different reason after typing
   // something, or leaving the box half-written must not smuggle a draft through. The validity check
@@ -101,6 +107,9 @@ export function DeleteAccountSurveyModal() {
             reasonCategory: selectedReason,
             reasonDetails: reasonFreeText,
             testimonial: testimonialToSend,
+            // Only for the reason the box is shown on: ticking it and then picking another reason
+            // must not carry the consent along.
+            followUpEmailConsent: foundOnCompass && followUpEmailConsent,
           }),
           {
             loading: t('delete_yourself.toast.loading', 'Deleting account...'),
@@ -168,15 +177,29 @@ export function DeleteAccountSurveyModal() {
       }}
       onSubmitWithSuccess={handleDeleteAccount}
       disabled={false}
+      // Wider than a plain confirmation: this one carries a survey, the pause offer and the stay pitch,
+      // and at the default width it was a long narrow column of three-line paragraphs.
+      modalSize="lg"
     >
       <Col className="gap-4" data-testid="delete-survey-modal">
-        <Title>{t('delete_survey.title', 'Sorry to see you go')}</Title>
+        {/* Plays when they pick the reason that means it worked, and again if they come back to it. */}
+        {foundOnCompass && <HeartBurst />}
+        <Title>
+          {foundOnCompass
+            ? t('delete_survey.found.title', 'You found someone; our mission is accomplished!')
+            : t('delete_survey.title', 'Sorry to see you go')}
+        </Title>
 
         <div>
-          {t(
-            'delete_survey.description',
-            "We're sorry to see you go. To help us improve Compass, please let us know why you're deleting your account.",
-          )}
+          {foundOnCompass
+            ? t(
+                'delete_survey.found.description',
+                'This is exactly what Compass is for, and we are glad it worked for you.',
+              )
+            : t(
+                'delete_survey.description',
+                "We're sorry to see you go. To help us improve Compass, please let us know why you're deleting your account.",
+              )}
         </div>
 
         <div className="w-full">
@@ -192,7 +215,7 @@ export function DeleteAccountSurveyModal() {
                   value={key}
                   className={({checked}) =>
                     `${
-                      checked ? 'bg-canvas-100' : 'border-gray-300'
+                      checked ? 'border-primary-500 bg-canvas-100' : 'border-canvas-300'
                     } relative block cursor-pointer rounded-lg border p-4 focus:bg-canvas-100`
                   }
                 >
@@ -201,7 +224,7 @@ export function DeleteAccountSurveyModal() {
                       <div className="flex h-5 items-center">
                         <input
                           type="radio"
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                          className="text-primary-700 focus:ring-primary-500 h-4 w-4"
                           checked={checked}
                           readOnly
                         />
@@ -218,6 +241,12 @@ export function DeleteAccountSurveyModal() {
             </div>
           </RadioGroup>
 
+          {foundOnCompass && (
+            <div className="mt-4">
+              <DonateBeforeDelete />
+            </div>
+          )}
+
           {promptForTestimonial && (
             <div className="mt-4">
               <TestimonialBeforeDelete
@@ -229,8 +258,28 @@ export function DeleteAccountSurveyModal() {
             </div>
           )}
 
-          {/* Once a reason is given, whatever it is: the way to step back without losing anything. */}
-          {selectedReason && (
+          {/* Not a <Checkbox>, for the same reason as the testimonial opt-out: its label does not wrap. */}
+          {foundOnCompass && (
+            <label className="text-ink-700 mt-4 flex cursor-pointer items-start gap-2.5 text-sm">
+              <input
+                type="checkbox"
+                className="border-ink-300 bg-canvas-50 text-primary-700 focus:ring-primary-500 mt-0.5 h-4 w-4 shrink-0 rounded"
+                checked={followUpEmailConsent}
+                onChange={(e) => setFollowUpEmailConsent(e.target.checked)}
+                data-testid="delete-survey-follow-up-consent"
+              />
+              <span>
+                {t(
+                  'delete_survey.follow_up.label',
+                  "Email me once in a few months to ask how it's going and help us advance the research in relationship science.",
+                )}
+              </span>
+            </label>
+          )}
+
+          {/* Once a reason is given, the way to step back without losing anything — except when the
+              reason is that they found someone here, where "need a break?" misreads why they are going. */}
+          {selectedReason && !foundOnCompass && (
             <div className="mt-4">
               <PauseInsteadOfDelete />
             </div>
@@ -260,7 +309,7 @@ export function DeleteAccountSurveyModal() {
                   // reads as a bug, and the greyed-out box with a reason under it is what makes it
                   // obvious the testimonial replaced it.
                   disabled={!detailsRequired}
-                  className="block w-full bg-canvas-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:opacity-50"
+                  className="block w-full bg-canvas-50 rounded-md border-canvas-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder={t('delete_survey.other_placeholder', 'Please share more details')}
                   value={reasonFreeText}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>

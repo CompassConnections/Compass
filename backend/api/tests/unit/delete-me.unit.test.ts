@@ -55,8 +55,11 @@ describe('deleteMe', () => {
       expect(mockPg.none).toBeCalledTimes(3)
       expect(mockPg.none).toHaveBeenNthCalledWith(
         1,
-        sqlMatch('INSERT INTO deleted_users (username, reason_category, reason_details)'),
-        [mockUser.username, mockRef.reasonCategory, mockRef.reasonDetails],
+        sqlMatch(
+          'INSERT INTO deleted_users (username, reason_category, reason_details, follow_up_email)',
+        ),
+        // No consent given, so no address is kept.
+        [mockUser.username, mockRef.reasonCategory, mockRef.reasonDetails, null],
       )
       expect(mockPg.none).toHaveBeenNthCalledWith(2, sqlMatch('update search_alert_sends'), [
         mockUser.id,
@@ -70,6 +73,42 @@ describe('deleteMe', () => {
       expect(mockDeleteUser).toBeCalledWith(mockUser.id)
 
       expect(debugSpy).toBeCalledWith(expect.stringContaining(mockUser.id))
+    })
+  })
+  describe('the follow-up email', () => {
+    const mockUser = {id: 'mockId', username: 'mockUsername'}
+    const mockAuth = {uid: '321'} as AuthedUser
+
+    const run = async (props: any) => {
+      ;(sharedUtils.getUser as jest.Mock).mockResolvedValue(mockUser)
+      ;(sharedUtils.getPrivateUser as jest.Mock).mockResolvedValue({email: 'a@example.com'})
+      ;(mockPg.none as jest.Mock).mockResolvedValue(null)
+      ;(firebaseUtils.deleteUserFiles as jest.Mock).mockResolvedValue(null)
+      ;(firebaseAdmin.auth as jest.Mock).mockReturnValue({
+        deleteUser: jest.fn().mockResolvedValue(null),
+      })
+      jest.spyOn(console, 'debug').mockImplementation(() => {})
+      await deleteMe(props, mockAuth, {} as any)
+      return (mockPg.none as jest.Mock).mock.calls[0][1][3]
+    }
+
+    it('keeps the address when they found someone here and asked for it', async () => {
+      const kept = await run({
+        reasonCategory: 'found_connection_on_compass',
+        followUpEmailConsent: true,
+      })
+      expect(kept).toBe('a@example.com')
+    })
+
+    it('keeps nothing without consent', async () => {
+      const kept = await run({reasonCategory: 'found_connection_on_compass'})
+      expect(kept).toBeNull()
+      expect(sharedUtils.getPrivateUser).not.toBeCalled()
+    })
+
+    it('keeps nothing for any other reason, even with the flag set', async () => {
+      const kept = await run({reasonCategory: 'other', followUpEmailConsent: true})
+      expect(kept).toBeNull()
     })
   })
   describe('when an error occurs', () => {

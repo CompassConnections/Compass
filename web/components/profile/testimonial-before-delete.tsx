@@ -36,7 +36,7 @@ export const canDeleteWithTestimonialPrompt = (
  * Shown in the deletion survey when the stated reason is that they found someone here.
  *
  * The visual weight is on the ask, not on the opt-out: warm panel, heart, the composer open by
- * default and focused. The opt-out is a plain checkbox underneath — findable in a second, but not the
+ * default. The opt-out is a plain checkbox underneath — findable in a second, but not the
  * path of least resistance.
  */
 export function TestimonialBeforeDelete({
@@ -71,7 +71,7 @@ export function TestimonialBeforeDelete({
           <div className="text-ink-700 text-sm leading-relaxed">
             {t(
               'delete_survey.testimonial.body',
-              'This is the last thing we will ever ask of you, and it is the one thing we cannot do ourselves. Someone deciding whether Compass is worth trying will believe two sentences from you over anything we write. It takes a minute, and we will never contact you again.',
+              'Someone deciding whether Compass is worth trying will believe two sentences from you over most of what we write. It can be anonymous.',
             )}
           </div>
         </Col>
@@ -82,7 +82,8 @@ export function TestimonialBeforeDelete({
           draft={draft}
           setDraft={setDraft}
           idPrefix="delete-testimonial"
-          autoFocus
+          // Not focused on open any more: the donation ask now sits above this panel, and focusing the
+          // composer scrolled the dialog straight past it.
           className="pt-1"
         />
       )}

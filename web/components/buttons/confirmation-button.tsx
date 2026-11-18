@@ -31,6 +31,8 @@ export function ConfirmationButton(props: {
   onOpenChanged?: (isOpen: boolean) => void
   onSubmitWithSuccess?: () => Promise<boolean>
   disabled?: boolean
+  /** Width of the dialog. Defaults to the modal's own default (`md`). */
+  modalSize?: 'sm' | 'md' | 'lg' | 'xl'
 }) {
   const {
     openModalBtn,
@@ -41,6 +43,7 @@ export function ConfirmationButton(props: {
     onOpenChanged,
     onSubmitWithSuccess,
     disabled,
+    modalSize,
   } = props
 
   const [open, setOpen] = useState(false)
@@ -52,7 +55,7 @@ export function ConfirmationButton(props: {
 
   return (
     <>
-      <Modal open={open} setOpen={updateOpen}>
+      <Modal open={open} setOpen={updateOpen} size={modalSize}>
         <Col className="bg-canvas-50 gap-4 rounded-md px-8 py-6">
           {children}
           <Row className="w-full justify-end gap-4">

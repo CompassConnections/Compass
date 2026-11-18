@@ -668,6 +668,12 @@ export const API = (_apiTypeCheck = {
           })
           .strict()
           .optional(),
+        /**
+         * "Email me once in a few months to ask how it's going." Consent to keep the account's email
+         * address past the deletion, for that one message. A flag rather than an address: the server
+         * uses the address already on the account, so this cannot be used to enrol someone else.
+         */
+        followUpEmailConsent: zBoolean.optional(),
       })
       .strict(),
     summary: 'Delete the authenticated user account',

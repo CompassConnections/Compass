@@ -18,6 +18,8 @@ export async function deleteAccount(reasons?: {
     rating?: number | null
     showAuthor?: boolean
   }
+  /** Consent to one follow-up email after deletion — see the `me/delete` schema entry. */
+  followUpEmailConsent?: boolean
 }) {
   track('delete account', {wroteTestimonial: !!reasons?.testimonial})
 

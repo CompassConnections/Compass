@@ -1,8 +1,9 @@
+import {FOLLOW_UP_EMAIL_DELETION_REASON} from 'common/deletion'
 import {debug} from 'common/logger'
 import * as admin from 'firebase-admin'
 import {deleteUserFiles} from 'shared/firebase-utils'
 import {createSupabaseDirectClient} from 'shared/supabase/init'
-import {getUser} from 'shared/utils'
+import {getPrivateUser, getUser} from 'shared/utils'
 
 import {APIErrors, APIHandler} from './helpers/endpoint'
 import {
@@ -12,7 +13,7 @@ import {
 } from './helpers/testimonials'
 
 export const deleteMe: APIHandler<'me/delete'> = async (
-  {reasonCategory, reasonDetails, testimonial},
+  {reasonCategory, reasonDetails, testimonial, followUpEmailConsent},
   auth,
 ) => {
   const user = await getUser(auth.uid)
@@ -48,14 +49,25 @@ export const deleteMe: APIHandler<'me/delete'> = async (
     }
   }
 
+  // Kept only when they ticked the box asking for one follow-up message, and only for the reason the
+  // box is offered on. Read before the delete below, which takes the private row with it.
+  let followUpEmail: string | null = null
+  if (followUpEmailConsent && reasonCategory === FOLLOW_UP_EMAIL_DELETION_REASON) {
+    try {
+      followUpEmail = (await getPrivateUser(userId))?.email ?? null
+    } catch (e) {
+      console.error('Error reading email for the deletion follow-up:', e)
+    }
+  }
+
   // Store deletion reason before deleting the account
   try {
     await pg.none(
       `
-      INSERT INTO deleted_users (username, reason_category, reason_details)
-      VALUES ($1, $2, $3)
+      INSERT INTO deleted_users (username, reason_category, reason_details, follow_up_email)
+      VALUES ($1, $2, $3, $4)
       `,
-      [user.username, reasonCategory, reasonDetails],
+      [user.username, reasonCategory, reasonDetails, followUpEmail],
     )
   } catch (e) {
     console.error('Error storing deletion reason:', e)

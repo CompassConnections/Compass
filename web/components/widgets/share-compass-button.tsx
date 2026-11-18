@@ -28,14 +28,19 @@ export function ShareCompassButton(props: {
   trackingProps?: Record<string, string>
   /** Which edge the phone sheet hangs from — see `SharePanel`. */
   mobileSheet?: 'top' | 'bottom'
+  /**
+   * Replaces the filled amber CTA on the trigger, for the one place where sharing is the fallback
+   * rather than the main ask and must not outweigh the button above it.
+   */
+  triggerClassName?: string
 }) {
-  const {url, label, className, trackingProps, mobileSheet} = props
+  const {url, label, className, trackingProps, mobileSheet, triggerClassName} = props
   const t = useT()
 
   return (
     <SharePanel
       className={className}
-      triggerClassName={SHARE_CTA_BUTTON_CLASS}
+      triggerClassName={triggerClassName ?? SHARE_CTA_BUTTON_CLASS}
       url={url}
       copyMessage={getShareCompassText(t)}
       xShareUrl={getXShareCompassUrl(t, url)}
